@@ -252,7 +252,7 @@ def literal_parts(value: str, subkind: str) -> tuple[str, str]:
     if subkind == "diagnostic":
         return "", ""
     if subkind == "comment":
-        prefix = next((p for p in ("//", "/*", "--", "#") if value.startswith(p)), "#")
+        prefix = next((p for p in ("#!", "//", "/*", "--", "#") if value.startswith(p)), "#")
         return prefix, "*/" if prefix == "/*" else ""
     if value.startswith("`"):
         return "`", "`"
@@ -289,7 +289,12 @@ class CodeParser:
                 re.match(r"#[ \t]*([A-Za-z_]\w*)", code[i:])
                 if language in {"c", "cpp"} and c == "#" and at_line_start else None
             )
-            comment = next(
+            hashbang = (
+                language in {"javascript", "typescript"}
+                and (i == 0 or (i == 1 and code.startswith("\ufeff")))
+                and code.startswith("#!", i)
+            )
+            comment = "#!" if hashbang else next(
                 (
                     p
                     for p in ("/*", "//", "--", "#")

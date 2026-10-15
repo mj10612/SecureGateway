@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureMCP 0.6.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureMCP 0.6.2 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.

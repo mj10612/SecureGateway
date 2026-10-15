@@ -309,6 +309,43 @@ def test_language_literals_and_identifiers_do_not_leak(
         ast.parse(result["masked_text"])
 
 
+@pytest.mark.parametrize("strategy", list(SurrogateStrategy))
+@pytest.mark.parametrize("language", ["javascript", "typescript"])
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/Users/PrivateCustomer/bin/node",
+        "/home/PrivateCustomer/bin/node",
+    ],
+)
+def test_hashbang_paths_are_masked_and_strictly_restored(strategy, language, path):
+    code = f"#!{path}\nconst client = createClient();"
+    result = json.loads(mask_code(code, "hashbang", strategy.value, language))
+
+    assert result["masked_text"].startswith("#!")
+    assert path not in result["masked_text"]
+    assert (
+        json.loads(unmask_text(result["masked_text"], "hashbang", strict=True))[
+            "unmasked_text"
+        ]
+        == code
+    )
+
+
+def test_ordinary_javascript_comment_path_remains_masked_and_restorable():
+    code = "// /Users/PrivateCustomer/bin/node"
+    result = json.loads(mask_code(code, "ordinary-comment", language="javascript"))
+
+    assert result["masked_text"].startswith("//")
+    assert "PrivateCustomer" not in result["masked_text"]
+    assert (
+        json.loads(
+            unmask_text(result["masked_text"], "ordinary-comment", strict=True)
+        )["unmasked_text"]
+        == code
+    )
+
+
 @pytest.mark.parametrize(
     "language,code,keywords",
     [

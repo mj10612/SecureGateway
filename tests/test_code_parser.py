@@ -1,6 +1,6 @@
 """Tests for code syntax and keyword preservation parser."""
 
-from secure_mcp.engine.code_parser import CodeParser
+from secure_mcp.engine.code_parser import CodeParser, literal_parts
 from secure_mcp.models import TokenType
 
 
@@ -34,3 +34,24 @@ def test_string_literal_parsing():
     literals = [val for val, t_type, sub in tokens if t_type == TokenType.LITERAL]
     assert len(literals) == 1
     assert "supersecret" in literals[0]
+
+
+def test_javascript_hashbang_and_regular_comment_are_lexed_as_comments():
+    source = "#!/Users/PrivateCustomer/bin/node\nconst pattern = /PrivateCustomer/;"
+    tokens = CodeParser.tokenize(source, "javascript")
+
+    assert tokens[0] == (
+        "#!/Users/PrivateCustomer/bin/node",
+        TokenType.LITERAL,
+        "comment",
+    )
+    assert literal_parts(tokens[0][0], tokens[0][2]) == ("#!", "")
+    assert any(kind == "regex" for _, _, kind in tokens)
+
+    ordinary_comment = CodeParser.tokenize(
+        "// /Users/PrivateCustomer/bin/node\nconst pattern = /PrivateCustomer/;",
+        "javascript",
+    )
+    assert ordinary_comment[0][0] == "// /Users/PrivateCustomer/bin/node"
+    assert ordinary_comment[0][2] == "comment"
+    assert any(kind == "regex" for _, _, kind in ordinary_comment)

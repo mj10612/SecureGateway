@@ -121,6 +121,20 @@ def test_shared_prompt_code_and_korean_roundtrip():
     assert session.restore(prompt) == payload["input"][0]["content"]
 
 
+def test_gateway_request_masks_hashbang_path_before_forwarding():
+    session = GatewaySession()
+    source = "#!/Users/PrivateCustomer/bin/node\nconst client = createClient();"
+    prompt = f"Review this source:\n```javascript\n{source}\n```"
+    masked = session.request(
+        {"model": "fixture", "messages": [{"role": "user", "content": prompt}]}
+    )
+    forwarded = masked["messages"][0]["content"]
+
+    assert "PrivateCustomer" not in json.dumps(masked)
+    assert "\n#!" in forwarded
+    assert session.restore(forwarded) == prompt
+
+
 def test_early_prompt_name_matches_later_code():
     session = GatewaySession()
     prompt = session.mask("A 함수를 봐줘")
