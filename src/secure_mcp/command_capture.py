@@ -29,7 +29,9 @@ def _cancel(process: subprocess.Popen[bytes]) -> None:
     else:
         try:
             os.killpg(process.pid, signal.SIGKILL)  # type: ignore[attr-defined]
-        except ProcessLookupError:
+        except (ProcessLookupError, PermissionError):
+            # Group termination can be unavailable even for an owned child.
+            # Still terminate and reap the child through its direct handle.
             pass
     if process.poll() is None:
         process.kill()

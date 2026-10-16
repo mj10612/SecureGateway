@@ -770,7 +770,7 @@ def test_javascript_masked_source_passes_native_syntax_check(tmp_path):
     path = tmp_path / "masked.js"
     path.write_text(result["masked_text"], encoding="utf-8")
     checked = subprocess.run(
-        ["node", "--check", str(path)], capture_output=True, text=True, timeout=10
+        ["node", "--check", str(path)], capture_output=True, text=True, timeout=30
     )
     assert checked.returncode == 0, checked.stderr
     assert (

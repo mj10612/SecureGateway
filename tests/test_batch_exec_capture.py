@@ -7,6 +7,27 @@ import time
 import pytest
 
 from secure_mcp.command_capture import capture_command
+from secure_mcp import command_capture
+
+
+def test_group_permission_failure_still_terminates_and_reaps_child(monkeypatch):
+    from types import SimpleNamespace
+
+    calls = []
+
+    def denied(*args):
+        raise PermissionError("process group unavailable")
+
+    child = SimpleNamespace(
+        pid=123,
+        poll=lambda: None,
+        kill=lambda: calls.append("kill"),
+        wait=lambda: calls.append("wait"),
+    )
+    monkeypatch.setattr(command_capture, "os", SimpleNamespace(name="posix", killpg=denied))
+    monkeypatch.setattr(command_capture, "signal", SimpleNamespace(SIGKILL=9))
+    command_capture._cancel(child)
+    assert calls == ["kill", "wait"]
 
 
 def command(code):

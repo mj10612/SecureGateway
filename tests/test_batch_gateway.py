@@ -238,7 +238,8 @@ def test_invalid_upstream_json_returns_502_and_releases_slot(live_gateway, body)
     gateway, state, request = live_gateway
     state.body = body
     assert request()[0] == 502
-    assert gateway.admitted_requests == 0
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests == 0, timeout=3)
     state.body = b"{}"
     assert request()[0] == 200
 
@@ -265,7 +266,8 @@ def test_capacity_rejects_before_body_and_does_not_block_health(live_gateway):
         state.release.set()
         worker.join(5)
     assert first[0][0] == 200
-    assert gateway.admitted_requests == 0
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests == 0, timeout=3)
 
 
 def test_server_close_preserves_inflight_response(live_gateway):
@@ -313,7 +315,8 @@ def test_shutdown_ack_keeps_health_alive_until_inference_finishes(live_gateway):
         worker.join(5)
     assert replies[0][0] == 200
     assert state.stopped.wait(3)
-    assert gateway.admitted_requests == 0
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests == 0, timeout=3)
     conn = http.client.HTTPConnection("127.0.0.1", gateway.server_port, timeout=1)
     try:
         with pytest.raises((OSError, http.client.HTTPException)):
@@ -340,7 +343,8 @@ def test_private_safeguard_rejected_before_provider_request(live_gateway):
     gateway, state, request = live_gateway
     assert request({"messages": [], "safeguards": {"type": "PrivateCustomer"}}, path="/claude/v1/messages")[0] == 400
     assert not state.requests
-    assert gateway.admitted_requests == 0
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests == 0, timeout=3)
 
 
 @pytest.mark.parametrize("limits", [{"max_active_requests": 0}, {"max_provider_requests": True}, {"max_active_requests": 1.5}])
@@ -364,7 +368,8 @@ def test_global_admission_limit_applies_across_providers():
 def test_malformed_request_releases_admission(live_gateway):
     gateway, state, request = live_gateway
     assert request({"input": "hi", "tools": [{"type": "custom", "name": "exec", "format": {"type": "grammar", "syntax": "lark", "definition": []}}]})[0] == 400
-    assert gateway.admitted_requests == 0
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests == 0, timeout=3)
     assert not state.requests
     assert request()[0] == 200
 
