@@ -1250,7 +1250,8 @@ class GatewaySession:
         return result
 
     def response(self, body: bytes, content_type: str, *, dialect=None) -> bytes:
-        if "text/event-stream" not in content_type:
+        media_type = content_type.split(";", 1)[0].strip().lower()
+        if media_type != "text/event-stream":
             payload = json.loads(body)
             if not isinstance(payload, dict):
                 raise ValueError("Upstream response must be a JSON object.")

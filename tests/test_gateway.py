@@ -489,6 +489,63 @@ def test_loopback_only():
         PrivacyGateway(("0.0.0.0", 0), "token")
 
 
+@pytest.mark.parametrize("content_type", [
+    "text/event-stream",
+    "Text/Event-Stream",
+    "TEXT/EVENT-STREAM; charset=utf-8",
+])
+@pytest.mark.parametrize("prefix", [b"", b"\xef\xbb\xbf", b"\n"])
+def test_sse_media_type_is_case_insensitive_with_valid_prefixes(content_type, prefix):
+    body = prefix + b'data: {"type":"response.completed","response":{"output":[]}}\n\n'
+    restored = GatewaySession().response(body, content_type)
+    assert b'"response.completed"' in restored
+
+
+def test_non_sse_media_type_does_not_select_stream_parser():
+    body = b'data: {"type":"response.completed"}\n\n'
+    with pytest.raises(ValueError):
+        GatewaySession().response(body, "application/x-text/event-stream")
+
+
+def test_gateway_accepts_mixed_case_sse_with_bom_from_upstream():
+    class Provider(BaseHTTPRequestHandler):
+        def log_message(self, *_args):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            body = b'\xef\xbb\xbfdata: {"type":"response.completed","response":{"output":[]}}\n\n'
+            self.send_response(200)
+            self.send_header("Content-Type", "Text/Event-Stream; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    provider = ThreadingHTTPServer(("127.0.0.1", 0), Provider)
+    gateway = PrivacyGateway(
+        ("127.0.0.1", 0), "local-token",
+        upstreams={"codex": f"http://127.0.0.1:{provider.server_port}"},
+    )
+    threads = [Thread(target=server.serve_forever, daemon=True) for server in (provider, gateway)]
+    for thread in threads:
+        thread.start()
+    try:
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{gateway.server_port}/codex/responses",
+            b'{"input":"hello","stream":true}',
+            {"X-SecureMCP-Token": "local-token", "Authorization": "Bearer eyJ-fixture"},
+        )
+        with urllib.request.urlopen(request, timeout=5) as response:
+            assert response.status == 200
+            assert b'"response.completed"' in response.read()
+    finally:
+        for server in (gateway, provider):
+            server.shutdown()
+            server.server_close()
+        for thread in threads:
+            thread.join(timeout=2)
+
+
 def test_encrypted_restart_preserves_shared_aliases_and_signed_reasoning(tmp_path):
     state = tmp_path / "sessions"
     gateway = PrivacyGateway(("127.0.0.1", 0), "password-local-token", state_dir=state)
