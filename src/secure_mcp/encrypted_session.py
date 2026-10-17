@@ -137,7 +137,9 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
         session.total_mask_calls = payload["total_mask_calls"]
         session.total_unmask_calls = payload["total_unmask_calls"]
         if not all(
-            isinstance(v, (int, float)) and math.isfinite(v)
+            isinstance(v, (int, float))
+            and not isinstance(v, bool)
+            and math.isfinite(v)
             for v in (session.created_at, session.last_accessed)
         ):
             raise ValueError("Invalid timestamps")
@@ -184,7 +186,7 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
                 raise ValueError("Invalid allocation counter")
             session.generator._type_counters[TokenType(kind)] = count
         expired = session.is_expired()
-    except (KeyError, TypeError, ValueError):
+    except (KeyError, TypeError, ValueError, OverflowError):
         raise ValueError("Invalid encrypted session payload.") from None
     if session_id is not None and session.session_id != session_id:
         session.clear()
