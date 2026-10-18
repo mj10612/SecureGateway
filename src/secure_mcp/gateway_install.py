@@ -463,6 +463,10 @@ def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_pat
         value["model_provider"] = "secure_mcp_subscription"
         value["forced_login_method"] = "chatgpt"
         providers = value.setdefault("model_providers", {})
+        if not isinstance(providers, dict):
+            raise ValueError(
+                "Codex model_providers must be a table; no settings were overwritten."
+            )
         providers["secure_mcp_subscription"] = {
             "name": "SecureMCP subscription",
             "base_url": f"http://127.0.0.1:{config['port']}/codex",
