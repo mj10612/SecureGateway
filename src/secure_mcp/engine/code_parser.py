@@ -306,7 +306,7 @@ class CodeParser:
                 None,
             )
             cpp = re.match(r'(?:u8|u|U|L)?R"([^ ()\\\t\r\n]{0,16})\(', code[i:])
-            rust = re.match(r'(?:br|r)(#+)"', code[i:])
+            rust = re.match(r'(?:br|r)(#*)"', code[i:]) if language == "rust" else None
             string = STRING_START.match(code, i)
             prefixed = re.match(r'(?:u8|u|U|L)("|\')', code[i:])
             if c.isspace():
