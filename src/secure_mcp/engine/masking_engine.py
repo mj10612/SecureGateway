@@ -62,6 +62,8 @@ class MaskingEngine:
         self.tokenizer = MultilingualTokenizer()
 
     def _check_input(self, text: str) -> None:
+        if not isinstance(text, str):
+            raise ValueError("Input must be text.")
         if len(text.encode("utf-8")) > self.max_input_bytes:
             raise ValueError("Input size limit reached; split the input into smaller requests.")
 

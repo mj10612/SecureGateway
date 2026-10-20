@@ -414,3 +414,33 @@ def test_negative_numeric_json_alias_keeps_its_unary_sign():
     mapping = next(mapping for mapping in session.session.forward_store.values()
                    if mapping.token_type == TokenType.NUMBER)
     assert session.values({"value": -int(mapping.surrogate)}, restore=True) == {"value": -42}
+
+@pytest.mark.parametrize('name', [None, 2, True, [], {'private': 'SecretCustomer'}])
+@pytest.mark.parametrize('nested', [False, True])
+def test_invalid_tool_names_return_400_and_release_admission(live_gateway, name, nested):
+    gateway, state, request = live_gateway
+    tool = {'type': 'function', 'function': {'name': name}} if nested else {'name': name}
+    status, body, _ = request({'input': 'SecretCustomer', 'tools': [tool]})
+    assert status == 400
+    assert b'SecretCustomer' not in body
+    assert b'Traceback' not in body
+    assert not state.requests
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests == 0, timeout=3)
+    assert request({'input': 'hi', 'tools': [{'type': 'function', 'name': 'privateTool'}]})[0] == 200
+    assert len(state.requests) == 1
+    assert state.requests[0]['tools'][0]['name'] != 'privateTool'
+
+
+@pytest.mark.parametrize('text', [None, 2, True, [], {}])
+@pytest.mark.parametrize('method', ['mask_text', 'mask_code'])
+def test_masking_engine_rejects_non_text_input(text, method):
+    from secure_mcp.engine.masking_engine import MaskingEngine
+    from secure_mcp.session import PrivacySession
+
+    session = PrivacySession('invalid-text')
+    with pytest.raises(ValueError, match='Input must be text'):
+        getattr(MaskingEngine(), method)(text, session.session_id, session.generator,
+                                       session.forward_store, session.reverse_store)
+    assert not session.forward_store
+    assert not session.reverse_store

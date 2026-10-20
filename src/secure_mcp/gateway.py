@@ -673,6 +673,8 @@ class GatewaySession:
                 else:
                     result[key] = self.mask(item)
             elif key in {"name", "tool_name"}:
+                if not isinstance(item, str):
+                    raise ValueError("Tool names must be strings.")
                 result[key] = (
                     self.restore(item)
                     if restore
