@@ -22,7 +22,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 agy_binary = (
-    os.environ.get("SECURE_MCP_AGY_BINARY")
+    os.environ.get("SECURE_GATEWAY_AGY_BINARY")
     or shutil.which("agy")
     or shutil.which("agy.EXE")
 )
@@ -55,7 +55,7 @@ def config_file(home):
 
 
 def test_sdk_transport_authentication_paths_and_lifetime():
-    from secure_mcp.antigravity_sdk import antigravity_endpoint
+    from secure_gateway.antigravity_sdk import antigravity_endpoint
 
     captured = []
 
@@ -105,7 +105,7 @@ def test_sdk_transport_authentication_paths_and_lifetime():
             path, body, headers = captured[0]
             assert path == "/xai/v1/chat/completions"
             assert body == b"{}"
-            assert headers["X-Securemcp-Token"] == "t" * 32
+            assert headers["X-Securegateway-Token"] == "t" * 32
             assert headers["Authorization"] == "Bearer xai-fixture"
             assert capability not in repr(captured)
         with pytest.raises(urllib.error.URLError):
@@ -126,7 +126,7 @@ def test_sdk_transport_authentication_paths_and_lifetime():
     ],
 )
 def test_sdk_transport_refuses_nonlocal_or_credential_origins(origin):
-    from secure_mcp.antigravity_sdk import antigravity_endpoint
+    from secure_gateway.antigravity_sdk import antigravity_endpoint
 
     with pytest.raises(ValueError, match="loopback"):
         with antigravity_endpoint(origin, "t" * 32, "xai-fixture"):
@@ -134,8 +134,8 @@ def test_sdk_transport_refuses_nonlocal_or_credential_origins(origin):
 
 
 def test_sdk_transport_preserves_failclosed_gateway_boundary():
-    from secure_mcp.antigravity_sdk import antigravity_endpoint
-    from secure_mcp.gateway import LIMIT, PrivacyGateway
+    from secure_gateway.antigravity_sdk import antigravity_endpoint
+    from secure_gateway.gateway import LIMIT, PrivacyGateway
 
     captured = []
 
@@ -221,7 +221,7 @@ def test_sdk_transport_preserves_failclosed_gateway_boundary():
 
 
 def test_sdk_transport_refuses_redirects_and_sanitizes_errors():
-    from secure_mcp.antigravity_sdk import antigravity_endpoint
+    from secure_gateway.antigravity_sdk import antigravity_endpoint
 
     received = []
 
@@ -262,8 +262,8 @@ def test_sdk_transport_refuses_redirects_and_sanitizes_errors():
 @pytest.mark.parametrize("korean", [False, True], ids=["english", "korean"])
 async def test_sdk_gateway_native_file_read_roundtrip(tmp_path, monkeypatch, korean):
     import asyncio
-    from secure_mcp.antigravity_sdk import antigravity_endpoint
-    from secure_mcp.gateway import PrivacyGateway
+    from secure_gateway.antigravity_sdk import antigravity_endpoint
+    from secure_gateway.gateway import PrivacyGateway
 
     sdk = pytest.importorskip("google.antigravity")
     from google.antigravity.hooks import policy
@@ -404,7 +404,7 @@ async def test_sdk_gateway_native_file_read_roundtrip(tmp_path, monkeypatch, kor
             assert value not in serialized
             assert "alice@example.com" not in serialized
             assert headers["Authorization"] == "Bearer xai-offline-fixture"
-            assert "x-securemcp-token" not in {key.lower() for key in headers}
+            assert "x-securegateway-token" not in {key.lower() for key in headers}
         assert any(
             message.get("role") == "tool" for message in captured[1][0]["messages"]
         )
@@ -422,16 +422,16 @@ def test_agy_mcp_registration_cycle(tmp_path, monkeypatch):
     home = isolated_env(tmp_path, monkeypatch)
     assert agy("mcp", "list").stdout.strip() == "No MCP servers configured."
 
-    added = agy("mcp", "add", "secure-mcp", sys.executable, "-m", "secure_mcp", "serve")
+    added = agy("mcp", "add", "secure-gateway", sys.executable, "-m", "secure_gateway", "serve")
     assert added.returncode == 0, added.stderr
-    assert "secure-mcp" in agy("mcp", "list").stdout
+    assert "secure-gateway" in agy("mcp", "list").stdout
 
     written = json.loads(config_file(home).read_text(encoding="utf-8"))
-    entry = written["mcpServers"]["secure-mcp"]
-    assert entry["args"] == ["-m", "secure_mcp", "serve"]
+    entry = written["mcpServers"]["secure-gateway"]
+    assert entry["args"] == ["-m", "secure_gateway", "serve"]
     assert entry["command"].lower().endswith(("python.exe", "python"))
 
-    removed = agy("mcp", "remove", "secure-mcp")
+    removed = agy("mcp", "remove", "secure-gateway")
     assert removed.returncode == 0, removed.stderr
     assert agy("mcp", "list").stdout.strip() == "No MCP servers configured."
     assert json.loads(config_file(home).read_text(encoding="utf-8")) == {
@@ -448,18 +448,18 @@ def test_agy_updates_named_entry_and_preserves_other_servers(tmp_path, monkeypat
     original = {
         "mcpServers": {
             "other": {"command": "other-program", "args": ["arg with spaces"]},
-            "secure-mcp": {"command": "previous-program", "args": ["old"]},
+            "secure-gateway": {"command": "previous-program", "args": ["old"]},
         }
     }
     path.write_text(json.dumps(original), encoding="utf-8")
     command = str(tmp_path / "Python with spaces" / "python.exe")
-    added = agy("mcp", "add", "secure-mcp", command, "-m", "secure_mcp", "serve")
+    added = agy("mcp", "add", "secure-gateway", command, "-m", "secure_gateway", "serve")
     assert added.returncode == 0, added.stderr
     written = json.loads(path.read_text(encoding="utf-8"))
     assert written["mcpServers"]["other"] == original["mcpServers"]["other"]
-    assert written["mcpServers"]["secure-mcp"]["command"] == command
-    assert written["mcpServers"]["secure-mcp"]["args"] == ["-m", "secure_mcp", "serve"]
-    removed = agy("mcp", "remove", "secure-mcp")
+    assert written["mcpServers"]["secure-gateway"]["command"] == command
+    assert written["mcpServers"]["secure-gateway"]["args"] == ["-m", "secure_gateway", "serve"]
+    removed = agy("mcp", "remove", "secure-gateway")
     assert removed.returncode == 0, removed.stderr
     assert json.loads(path.read_text(encoding="utf-8")) == {
         "mcpServers": {"other": original["mcpServers"]["other"]}
@@ -474,16 +474,16 @@ def test_agy_updates_named_entry_and_preserves_other_servers(tmp_path, monkeypat
 async def test_agy_registered_command_offline_stdio_handshake(tmp_path, monkeypatch):
     """Launch the exact registered command with a real MCP client, no inference."""
     home = isolated_env(tmp_path, monkeypatch)
-    added = agy("mcp", "add", "secure-mcp", sys.executable, "-m", "secure_mcp", "serve")
+    added = agy("mcp", "add", "secure-gateway", sys.executable, "-m", "secure_gateway", "serve")
     assert added.returncode == 0, added.stderr
     entry = json.loads(config_file(home).read_text(encoding="utf-8"))["mcpServers"][
-        "secure-mcp"
+        "secure-gateway"
     ]
     parameters = StdioServerParameters(command=entry["command"], args=entry["args"])
     async with stdio_client(parameters) as (read, write):
         async with ClientSession(read, write) as session:
             initialized = await session.initialize()
-            assert initialized.server_info.name == "SecureMCP"
+            assert initialized.server_info.name == "SecureGateway"
             tools = await session.list_tools()
             assert "mask_text" in {tool.name for tool in tools.tools}
             result = await session.call_tool("mask_text", {"text": "alice@example.com"})
@@ -544,7 +544,7 @@ async def test_sdk_local_endpoint_wire_format(tmp_path, monkeypatch):
         assert "SyntheticFixture hello" in json.dumps(body["messages"])
         # LocalOpenAIAgentConfig exposes no custom inference headers. The
         # gateway token must never be bypassed to make this path look supported.
-        assert "x-securemcp-token" not in {name.lower() for name in headers}
+        assert "x-securegateway-token" not in {name.lower() for name in headers}
     finally:
         provider.shutdown()
         provider.server_close()
@@ -560,18 +560,18 @@ def test_agy_written_format_matches_shipped_example(tmp_path, monkeypatch):
         / "antigravity_mcp_config.json"
     )
     shipped = json.loads(example.read_text(encoding="utf-8"))["mcpServers"][
-        "secure-mcp"
+        "secure-gateway"
     ]
     try:
-        added = agy("mcp", "add", "secure-mcp", shipped["command"], *shipped["args"])
+        added = agy("mcp", "add", "secure-gateway", shipped["command"], *shipped["args"])
         assert added.returncode == 0, added.stderr
-        assert "secure-mcp" in agy("mcp", "list").stdout
+        assert "secure-gateway" in agy("mcp", "list").stdout
     finally:
-        agy("mcp", "remove", "secure-mcp")
+        agy("mcp", "remove", "secure-gateway")
 
 
 @pytest.mark.skipif(
-    os.environ.get("SECURE_MCP_LIVE_SUBSCRIPTION") != "1",
+    os.environ.get("SECURE_GATEWAY_LIVE_SUBSCRIPTION") != "1",
     reason="Real subscription tests require explicit opt-in",
 )
 @agy_required
@@ -585,7 +585,7 @@ def test_agy_live_mcp_tool_handshake(tmp_path, monkeypatch):
     isolated_env(tmp_path, monkeypatch)
     work = tmp_path / "work"
     work.mkdir()
-    added = agy("mcp", "add", "secure-mcp", sys.executable, "-m", "secure_mcp", "serve")
+    added = agy("mcp", "add", "secure-gateway", sys.executable, "-m", "secure_gateway", "serve")
     assert added.returncode == 0, added.stderr
     try:
         env = dict(os.environ)
@@ -593,7 +593,7 @@ def test_agy_live_mcp_tool_handshake(tmp_path, monkeypatch):
             [
                 agy_binary,
                 "-p",
-                "Use the secure-mcp mask_text tool on the word "
+                "Use the secure-gateway mask_text tool on the word "
                 "'FixturePatient' and report the masked_text value only.",
                 "--model",
                 "gemini-3.8-flash-low",
@@ -613,5 +613,5 @@ def test_agy_live_mcp_tool_handshake(tmp_path, monkeypatch):
             completed.stdout[-1500:]
         )
     finally:
-        agy("mcp", "remove", "secure-mcp")
+        agy("mcp", "remove", "secure-gateway")
     assert agy("mcp", "list").stdout.strip() == "No MCP servers configured."

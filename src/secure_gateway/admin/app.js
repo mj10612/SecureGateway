@@ -78,7 +78,7 @@ async function load() {
     if (value) params.set(key, key === "since" ? new Date(value).toISOString() : value);
   }
   try {
-    const response = await fetch(`/admin/api/logs?${params}`, {headers: {"X-SecureMCP-Token": token}, cache: "no-store"});
+    const response = await fetch(`/admin/api/logs?${params}`, {headers: {"X-SecureGateway-Token": token}, cache: "no-store"});
     if (current !== generation) return false;
     if (!response.ok) throw new Error(response.status === 401 ? "인증 토큰을 확인하세요." : response.status === 400 ? "필터 조건을 확인하세요." : "게이트웨이 또는 로그 저장소에 연결할 수 없습니다.");
     const data = await response.json();

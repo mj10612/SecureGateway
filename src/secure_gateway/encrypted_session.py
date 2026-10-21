@@ -20,14 +20,14 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from secure_mcp.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
-from secure_mcp.session import PrivacySession
-from secure_mcp.engine.strategies import mapping_key, StrategyGenerator
+from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
+from secure_gateway.session import PrivacySession
+from secure_gateway.engine.strategies import mapping_key, StrategyGenerator
 
 
-_MAGIC = b"SecureMCP-session-v1\n"
+_MAGIC = b"SecureGateway-session-v1\n"
 _SALT_SIZE = 16
-_LOCK_MAGIC = b"SecureMCP-native-lock-v1\n"
+_LOCK_MAGIC = b"SecureGateway-native-lock-v1\n"
 
 
 class SessionExpiredError(ValueError):
@@ -90,7 +90,7 @@ def save_session(
     encrypted = (encryption or SnapshotEncryption(password)).encrypt(
         json.dumps(payload, ensure_ascii=False).encode("utf-8")
     )
-    fd, temporary = tempfile.mkstemp(prefix=".secure-mcp-", dir=path.parent)
+    fd, temporary = tempfile.mkstemp(prefix=".secure-gateway-", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as stream:
             stream.write(encrypted)
@@ -215,7 +215,7 @@ def session_file_lock(path: Path):
         # Publish a fully initialized marker atomically. A crash between a bare
         # O_CREAT and marker write would otherwise strand an ambiguous empty file.
         initial_fd, temporary = tempfile.mkstemp(
-            prefix=".secure-mcp-lock-", dir=lock.parent
+            prefix=".secure-gateway-lock-", dir=lock.parent
         )
         try:
             with os.fdopen(initial_fd, "wb") as stream:
@@ -247,7 +247,7 @@ def session_file_lock(path: Path):
             raise
         if os.read(fd, len(_LOCK_MAGIC) + 1) != _LOCK_MAGIC:
             raise ValueError(
-                "Legacy or unrecognized lock file: stop all old SecureMCP writers, "
+                "Legacy or unrecognized lock file: stop all old SecureGateway writers, "
                 f"then manually remove '{lock}' before retrying. "
                 "An active legacy writer cannot be distinguished safely from a crashed one."
             )

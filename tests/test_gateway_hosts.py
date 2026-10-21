@@ -11,7 +11,7 @@ from threading import Thread
 
 import pytest
 
-from secure_mcp.gateway import PrivacyGateway, GatewayHandler, GatewaySession
+from secure_gateway.gateway import PrivacyGateway, GatewayHandler, GatewaySession
 
 
 class Provider(BaseHTTPRequestHandler):
@@ -252,7 +252,7 @@ def fake_jwt():
 
 @pytest.mark.parametrize(
     "agent,variable",
-    [("claude", "SECURE_MCP_CLAUDE_BINARY"), ("codex", "SECURE_MCP_CODEX_BINARY")],
+    [("claude", "SECURE_GATEWAY_CLAUDE_BINARY"), ("codex", "SECURE_GATEWAY_CODEX_BINARY")],
 )
 @pytest.mark.parametrize("use_tool", [False, True])
 def test_native_subscription_cli_gateway(
@@ -336,7 +336,7 @@ def test_native_subscription_cli_gateway(
             '[model_providers.fixture]\nname = "Offline fixture"\nwire_api = "responses"\n'
             f'base_url = "http://127.0.0.1:{gateway.server_port}/codex"\n'
             "requires_openai_auth = true\nsupports_websockets = false\n"
-            'http_headers = { "X-SecureMCP-Token" = "offline-local-token" }\n'
+            'http_headers = { "X-SecureGateway-Token" = "offline-local-token" }\n'
             "[features]\napps = false\nplugins = false\n",
             encoding="utf-8",
         )
@@ -362,7 +362,7 @@ def test_native_subscription_cli_gateway(
                 "CLAUDE_CODE_OAUTH_TOKEN": "sk-ant-oat01-offline-fixture-only",
                 "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
                 "ANTHROPIC_BASE_URL": f"http://127.0.0.1:{gateway.server_port}/claude",
-                "ANTHROPIC_CUSTOM_HEADERS": "X-SecureMCP-Token: offline-local-token",
+                "ANTHROPIC_CUSTOM_HEADERS": "X-SecureGateway-Token: offline-local-token",
             }
         )
         command = [

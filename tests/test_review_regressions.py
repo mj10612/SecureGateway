@@ -9,14 +9,14 @@ import pytest
 from click.testing import CliRunner
 from mcp.server.mcpserver.exceptions import ToolError, UnexpectedToolError
 
-from secure_mcp.cli import main
-from secure_mcp.encrypted_session import load_session, save_session
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import SurrogateStrategy
-from secure_mcp.engine.strategies import mapping_key
-from secure_mcp.models import TokenType
-from secure_mcp.server import app, mask_text, mask_code, unmask_text, unmask_code, vault
-from secure_mcp.session import PrivacySession, SessionVault
+from secure_gateway.cli import main
+from secure_gateway.encrypted_session import load_session, save_session
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import SurrogateStrategy
+from secure_gateway.engine.strategies import mapping_key
+from secure_gateway.models import TokenType
+from secure_gateway.server import app, mask_text, mask_code, unmask_text, unmask_code, vault
+from secure_gateway.session import PrivacySession, SessionVault
 
 
 @pytest.fixture(autouse=True)
@@ -243,13 +243,13 @@ def test_core_metadata_uses_actual_generator_strategy():
 @pytest.mark.parametrize("strategy", list(SurrogateStrategy))
 def test_cli_roundtrip_across_real_processes(tmp_path, strategy):
     path = tmp_path / "session.enc"
-    env = dict(os.environ, SECURE_MCP_SESSION_PASSWORD="synthetic-test-password")
+    env = dict(os.environ, SECURE_GATEWAY_SESSION_PASSWORD="synthetic-test-password")
     common = ["--session-id", "review", "--session-file", str(path)]
     text = "Alice from Google"
 
     def run(args):
         return subprocess.run(
-            [sys.executable, "-m", "secure_mcp", *args],
+            [sys.executable, "-m", "secure_gateway", *args],
             env=env,
             capture_output=True,
             text=True,
@@ -268,7 +268,7 @@ def test_cli_roundtrip_across_real_processes(tmp_path, strategy):
     # Another process appends mappings without reusing existing surrogates.
     result = run(["mask", "Bob", "--strategy", strategy.value, *common])
     assert result.returncode == 0, result.stderr
-    loaded = load_session(path, env["SECURE_MCP_SESSION_PASSWORD"], "review")
+    loaded = load_session(path, env["SECURE_GATEWAY_SESSION_PASSWORD"], "review")
     assert {m.original for m in loaded.forward_store.values()} == {
         "Alice",
         "Google",
@@ -306,7 +306,7 @@ def test_cli_strategy_mismatch_leaves_encrypted_file_unchanged(tmp_path):
     path = tmp_path / "session.enc"
     runner = CliRunner()
     options = ["--session-id", "review", "--session-file", str(path)]
-    env = {"SECURE_MCP_SESSION_PASSWORD": "test-password"}
+    env = {"SECURE_GATEWAY_SESSION_PASSWORD": "test-password"}
     assert runner.invoke(main, ["mask", "Alice", *options], env=env).exit_code == 0
     encrypted = path.read_bytes()
     for command, text in [("mask", "Bob"), ("unmask", "[NOUN_1]")]:

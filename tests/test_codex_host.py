@@ -1,6 +1,6 @@
 """Opt-in real Codex host test against an offline, deterministic fixture provider.
 
-Set SECURE_MCP_CODEX_BINARY to a native Codex binary. No OpenAI credential or
+Set SECURE_GATEWAY_CODEX_BINARY to a native Codex binary. No OpenAI credential or
 external provider is used. Only freshly generated fixture hooks bypass trust.
 """
 
@@ -14,10 +14,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from secure_mcp.hooks import configure
+from secure_gateway.hooks import configure
 
 pytestmark = pytest.mark.skipif(
-    not os.environ.get("SECURE_MCP_CODEX_BINARY"),
+    not os.environ.get("SECURE_GATEWAY_CODEX_BINARY"),
     reason="Native Codex binary not configured",
 )
 
@@ -166,7 +166,7 @@ class Fixture(BaseHTTPRequestHandler):
 
 def test_actual_codex_host_masks_and_restores(tmp_path):
     root = tmp_path
-    binary = Path(os.environ["SECURE_MCP_CODEX_BINARY"])
+    binary = Path(os.environ["SECURE_GATEWAY_CODEX_BINARY"])
     secret = "alice@example.com"
     requests = []
     home = root / "home"

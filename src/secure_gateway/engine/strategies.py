@@ -8,7 +8,7 @@ import secrets
 from threading import RLock
 from typing import Iterator
 
-from secure_mcp.models import SurrogateStrategy, TokenType
+from secure_gateway.models import SurrogateStrategy, TokenType
 
 PREFIXES = {
     TokenType.ENTITY: "ENT",

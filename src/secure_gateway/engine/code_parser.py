@@ -7,7 +7,7 @@ import re
 import io
 import tokenize as python_tokenize
 
-from secure_mcp.models import TokenType
+from secure_gateway.models import TokenType
 
 LANGUAGE_KEYWORDS: dict[str, set[str]] = {
     "python": set(keyword.kwlist),

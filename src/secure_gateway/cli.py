@@ -11,16 +11,16 @@ import sys
 import time
 
 import click
-from secure_mcp import __version__
+from secure_gateway import __version__
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-from secure_mcp.encrypted_session import load_session, save_session, session_file_lock
-from secure_mcp.models import MaskMode, SurrogateStrategy
-from secure_mcp.server import app, engine, vault
-from secure_mcp.session import PrivacySession
-from secure_mcp.hooks import (
+from secure_gateway.encrypted_session import load_session, save_session, session_file_lock
+from secure_gateway.models import MaskMode, SurrogateStrategy
+from secure_gateway.server import app, engine, vault
+from secure_gateway.session import PrivacySession
+from secure_gateway.hooks import (
     agent_state_dir,
     configure,
     default_state_dir,
@@ -46,7 +46,7 @@ def _file_options(command):
         "--session-file", type=click.Path(dir_okay=False, path_type=Path)
     )(command)
     return click.option(
-        "--session-password", envvar="SECURE_MCP_SESSION_PASSWORD", hide_input=True
+        "--session-password", envvar="SECURE_GATEWAY_SESSION_PASSWORD", hide_input=True
     )(command)
 
 
@@ -120,17 +120,17 @@ def _session(sid, path, password, mode=None, strategy=None):
 @click.group(cls=LiteralArgumentGroup)
 @click.version_option(version=__version__)
 def main():
-    """SecureMCP: local English/Korean masking. Mask BEFORE sending data to a provider."""
+    """SecureGateway: local English/Korean masking. Mask BEFORE sending data to a provider."""
 
 
 @main.command()
 @click.option("--transport", type=click.Choice(["stdio"]), default="stdio")
 @click.option("--max-sessions", type=click.IntRange(1), default=1000,
-              envvar="SECURE_MCP_MAX_SESSIONS")
+              envvar="SECURE_GATEWAY_MAX_SESSIONS")
 @click.option("--mapping-limit", type=click.IntRange(1), default=100_000,
-              envvar="SECURE_MCP_MAPPING_LIMIT")
+              envvar="SECURE_GATEWAY_MAPPING_LIMIT")
 @click.option("--input-limit", type=click.IntRange(1), default=16 * 1024 * 1024,
-              envvar="SECURE_MCP_INPUT_LIMIT")
+              envvar="SECURE_GATEWAY_INPUT_LIMIT")
 def serve(transport, max_sessions, mapping_limit, input_limit):
     """Run local MCP utilities. Network transports are disabled without authentication."""
     try:
@@ -171,10 +171,10 @@ def init_hooks(agent, global_scope, state_dir):
     """Install local agent tool hooks. Prompts/attachments are not intercepted."""
     try:
         if agent in {"antigravity", "agy"}:
-            from secure_mcp.antigravity_install import configure_antigravity
+            from secure_gateway.antigravity_install import configure_antigravity
 
             backup = configure_antigravity(_hook_settings(global_scope, agent))
-            click.echo("Antigravity stdio MCP registered. Restart agy; run secure-mcp doctor --agent antigravity.")
+            click.echo("Antigravity stdio MCP registered. Restart agy; run secure-gateway doctor --agent antigravity.")
             click.echo("Scope: MCP utilities only; prompts and inference are not intercepted.")
             if backup:
                 click.echo(f"Settings backup: {backup}")
@@ -188,7 +188,7 @@ def init_hooks(agent, global_scope, state_dir):
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from None
     click.echo(
-        f"{agent} tool hooks installed. Restart the agent; run secure-mcp doctor --agent {agent}."
+        f"{agent} tool hooks installed. Restart the agent; run secure-gateway doctor --agent {agent}."
     )
     click.echo(
         "Scope: tool text only. Direct prompts, attachments and telemetry are not covered."
@@ -204,13 +204,13 @@ def init_hooks(agent, global_scope, state_dir):
 @main.command("uninstall")
 @_hook_options
 def uninstall_hooks(agent, global_scope, state_dir):
-    """Remove only SecureMCP hooks; preserve other settings and encrypted state."""
+    """Remove only SecureGateway hooks; preserve other settings and encrypted state."""
     try:
         if agent in {"antigravity", "agy"}:
-            from secure_mcp.antigravity_install import configure_antigravity
+            from secure_gateway.antigravity_install import configure_antigravity
 
             configure_antigravity(_hook_settings(global_scope, agent), install=False)
-            click.echo("Antigravity SecureMCP registration restored. Restart agy.")
+            click.echo("Antigravity SecureGateway registration restored. Restart agy.")
             return
         configure(
             _hook_settings(global_scope, agent),
@@ -221,7 +221,7 @@ def uninstall_hooks(agent, global_scope, state_dir):
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from None
     click.echo(
-        "SecureMCP hooks removed. Restart the agent. Encrypted state is retained."
+        "SecureGateway hooks removed. Restart the agent. Encrypted state is retained."
     )
 
 
@@ -231,7 +231,7 @@ def doctor(agent, global_scope, state_dir):
     """Inspect hook registration. Host-version compatibility needs a real smoke test."""
     try:
         if agent in {"antigravity", "agy"}:
-            from secure_mcp.antigravity_install import antigravity_status
+            from secure_gateway.antigravity_install import antigravity_status
 
             status = antigravity_status(_hook_settings(global_scope, agent))
         else:
@@ -253,7 +253,7 @@ def doctor(agent, global_scope, state_dir):
 @click.option("--session-id", required=True)
 def stats(agent, state_dir, session_id):
     """Show local hook session counters, without original values or mappings."""
-    from secure_mcp.hooks import HookStore
+    from secure_gateway.hooks import HookStore
 
     try:
         with HookStore(agent_state_dir(state_dir, agent)).session(
@@ -273,7 +273,7 @@ def state():
 @click.option("--agent", type=click.Choice(["claude", "codex"]), default="claude")
 @click.option("--state-dir", type=click.Path(path_type=Path), default=default_state_dir)
 def state_status(agent, state_dir):
-    from secure_mcp.hooks import HookStore
+    from secure_gateway.hooks import HookStore
     click.echo(json.dumps(HookStore(agent_state_dir(state_dir, agent)).snapshot_diagnostics()))
 
 
@@ -283,7 +283,7 @@ def state_status(agent, state_dir):
 @click.option("--apply", "apply_cleanup", is_flag=True,
               help="Retire expired snapshots; default is a read-only preview.")
 def state_gc(agent, state_dir, apply_cleanup):
-    from secure_mcp.hooks import HookStore
+    from secure_gateway.hooks import HookStore
     click.echo(json.dumps(HookStore(agent_state_dir(state_dir, agent)).gc(dry_run=not apply_cleanup)))
 
 
@@ -310,7 +310,7 @@ def hook(agent, state_dir):
                         "hookSpecificOutput": {
                             "hookEventName": "PreToolUse",
                             "permissionDecision": "deny",
-                            "permissionDecisionReason": "SecureMCP restoration failed; check local state.",
+                            "permissionDecisionReason": "SecureGateway restoration failed; check local state.",
                         }
                     }
                 )
@@ -325,13 +325,13 @@ def hook(agent, state_dir):
                 json.dumps(
                     {
                         "continue": False,
-                        "stopReason": "SecureMCP could not mask this tool result; original output withheld.",
+                        "stopReason": "SecureGateway could not mask this tool result; original output withheld.",
                     }
                 )
             )
         else:
             click.echo(
-                "SecureMCP hook failed; original host output may be used.", err=True
+                "SecureGateway hook failed; original host output may be used.", err=True
             )
             raise click.exceptions.Exit(1)
 
@@ -345,8 +345,8 @@ def hook(agent, state_dir):
 @click.argument("command", nargs=-1, type=click.UNPROCESSED, required=True)
 def exec_masked(agent, state_dir, session_id, timeout, max_output_bytes, command):
     """Run executable + arguments locally; return only masked stdout/stderr (no implicit shell)."""
-    from secure_mcp.hooks import HookStore
-    from secure_mcp.command_capture import capture_command
+    from secure_gateway.hooks import HookStore
+    from secure_gateway.command_capture import capture_command
 
     store = HookStore(agent_state_dir(state_dir, agent))
     try:
@@ -376,7 +376,7 @@ def exec_masked(agent, state_dir, session_id, timeout, max_output_bytes, command
 @click.option("--session-id", required=True)
 def restore_hook_text(agent, state_dir, session_id):
     """Restore UTF-8 stdin using a local hook session, for user display only."""
-    from secure_mcp.hooks import HookStore
+    from secure_gateway.hooks import HookStore
 
     store = HookStore(agent_state_dir(state_dir, agent))
     try:
@@ -552,7 +552,7 @@ def demo():
 @main.command()
 def benchmark():
     """Measure this machine's throughput; masking ratio is not a privacy guarantee."""
-    text = "The engineers at Microsoft protect patient records with SecureMCP. " * 50
+    text = "The engineers at Microsoft protect patient records with SecureGateway. " * 50
     session = vault.create(f"bench_{time.time_ns()}")
     try:
         started = time.perf_counter()
@@ -590,7 +590,7 @@ def gateway():
 @click.option("--port", type=click.IntRange(1024, 65535), default=38117)
 def gateway_install(agent, config, port):
     """One-time user-wide setup. Keeps auth caches; installs automatic startup."""
-    from secure_mcp.gateway_install import (
+    from secure_gateway.gateway_install import (
         default_config,
         ensure_gateway,
         install_gateway,
@@ -612,7 +612,7 @@ def gateway_install(agent, config, port):
 @gateway.command("ensure", hidden=True)
 @click.option("--config", type=click.Path(path_type=Path), required=True)
 def gateway_ensure(config):
-    from secure_mcp.gateway_install import ensure_gateway
+    from secure_gateway.gateway_install import ensure_gateway
 
     try:
         ensure_gateway(config)
@@ -626,8 +626,8 @@ def gateway_ensure(config):
 @click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
 def gateway_run(config, mapping_limit, mask_numbers):
     """Run the subscription gateway in the foreground (normally auto-started)."""
-    from secure_mcp.gateway import PrivacyGateway
-    from secure_mcp.gateway_install import default_config, load_config
+    from secure_gateway.gateway import PrivacyGateway
+    from secure_gateway.gateway_install import default_config, load_config
 
     try:
         settings = load_config(config or default_config())
@@ -654,7 +654,7 @@ def gateway_run(config, mapping_limit, mask_numbers):
 @click.option("--no-open", is_flag=True, help="Print the local URL without opening a browser.")
 def gateway_admin(config, no_open):
     """Open the local processing-log dashboard. Sign in with the config token."""
-    from secure_mcp.gateway_install import default_config, healthy, load_config
+    from secure_gateway.gateway_install import default_config, healthy, load_config
 
     path = config or default_config()
     try:
@@ -674,7 +674,7 @@ def gateway_admin(config, no_open):
 @click.option("--config", type=click.Path(path_type=Path))
 def gateway_uninstall(config):
     """Restore backed-up settings; refuses to overwrite subsequent user edits."""
-    from secure_mcp.gateway_install import default_config, uninstall_gateway
+    from secure_gateway.gateway_install import default_config, uninstall_gateway
 
     try:
         changed = uninstall_gateway(config or default_config())
@@ -687,7 +687,7 @@ def gateway_uninstall(config):
 @click.option("--config", type=click.Path(path_type=Path))
 def gateway_status(config):
     """Check the authenticated local gateway without contacting a provider."""
-    from secure_mcp.gateway_install import (
+    from secure_gateway.gateway_install import (
         changed_installation_files, default_config, healthy, load_config,
     )
 
@@ -721,8 +721,8 @@ def gateway_status(config):
 def gateway_reset(config, agent):
     """Clear idle provider mappings. Start a new conversation after reset."""
     import urllib.request
-    from secure_mcp.gateway_install import default_config, load_config
-    from secure_mcp.gateway import NoRedirect
+    from secure_gateway.gateway_install import default_config, load_config
+    from secure_gateway.gateway import NoRedirect
 
     try:
         settings = load_config(config or default_config())
@@ -730,7 +730,7 @@ def gateway_reset(config, agent):
             f"http://127.0.0.1:{settings['port']}/reset",
             data=json.dumps({"agent": agent}).encode(),
             headers={
-                "X-SecureMCP-Token": settings["token"],
+                "X-SecureGateway-Token": settings["token"],
                 "Content-Type": "application/json",
             },
         )
@@ -752,13 +752,13 @@ def gateway_reset(config, agent):
 def gateway_diagnostics(config):
     """Show authenticated aggregate usage and lifetimes without private mappings."""
     import urllib.request
-    from secure_mcp.gateway_install import default_config, load_config
-    from secure_mcp.gateway import NoRedirect
+    from secure_gateway.gateway_install import default_config, load_config
+    from secure_gateway.gateway import NoRedirect
     try:
         settings = load_config(config or default_config())
         request = urllib.request.Request(
             f"http://127.0.0.1:{settings['port']}/admin/api/sessions",
-            headers={"X-SecureMCP-Token": settings["token"]},
+            headers={"X-SecureGateway-Token": settings["token"]},
         )
         opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
         with opener.open(request, timeout=5) as response:
@@ -772,7 +772,7 @@ def gateway_diagnostics(config):
 @click.option("--config", type=click.Path(path_type=Path))
 def gateway_stop(config):
     """Stop the local daemon and release mappings; login startup can restart it."""
-    from secure_mcp.gateway_install import default_config, stop_gateway
+    from secure_gateway.gateway_install import default_config, stop_gateway
 
     try:
         changed = stop_gateway(config or default_config())
@@ -789,7 +789,7 @@ def gateway_stop(config):
 @click.option("--port", type=click.IntRange(1024, 65535), default=38118)
 def gateway_api_install(provider, model, config, grok_home, port):
     """Opt into separately billed xAI API mode and add a Grok custom model."""
-    from secure_mcp.xai_install import default_api_config, install_api
+    from secure_gateway.xai_install import default_api_config, install_api
 
     try:
         install_api(config or default_api_config(), model, port, grok_home)
@@ -799,7 +799,7 @@ def gateway_api_install(provider, model, config, grok_home, port):
         "xAI API mode configured. API charges apply; browser subscription login is not used."
     )
     click.echo(
-        "Run gateway api-run, then select grok -m secure_mcp_xai with XAI_API_KEY in its environment."
+        "Run gateway api-run, then select grok -m secure_gateway_xai with XAI_API_KEY in its environment."
     )
 
 
@@ -808,8 +808,8 @@ def gateway_api_install(provider, model, config, grok_home, port):
 @click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
 def gateway_api_run(config, mask_numbers):
     """Run the isolated xAI API gateway in the foreground; Ctrl+C stops it."""
-    from secure_mcp.gateway import API_UPSTREAMS, PrivacyGateway
-    from secure_mcp.xai_install import default_api_config, load_api_config
+    from secure_gateway.gateway import API_UPSTREAMS, PrivacyGateway
+    from secure_gateway.xai_install import default_api_config, load_api_config
 
     path = config or default_api_config()
     try:
@@ -835,8 +835,8 @@ def gateway_api_run(config, mask_numbers):
 @click.option("--config", type=click.Path(path_type=Path))
 def gateway_api_uninstall(config):
     """Stop API mode and restore the backed-up Grok settings, preserving logins."""
-    from secure_mcp.gateway_install import uninstall_gateway
-    from secure_mcp.xai_install import default_api_config, load_api_config
+    from secure_gateway.gateway_install import uninstall_gateway
+    from secure_gateway.xai_install import default_api_config, load_api_config
 
     path = config or default_api_config()
     if not path.exists() and not (path.parent / "installation.json").exists():

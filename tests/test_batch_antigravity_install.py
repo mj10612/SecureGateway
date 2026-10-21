@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from secure_mcp import antigravity_install as a
+from secure_gateway import antigravity_install as a
 
 
 @pytest.mark.parametrize("exists", [True, False])
@@ -35,11 +35,11 @@ def test_install_interruption_retries_without_stranding_record(
         assert json.loads(path.read_bytes())["mcpServers"] == {
             "other": {"command": "keep"}
         }
-        assert path.with_name(path.name + ".secure-mcp.bak").read_bytes() == original
+        assert path.with_name(path.name + ".secure-gateway.bak").read_bytes() == original
     else:
         assert not path.exists() or json.loads(path.read_bytes())["mcpServers"] == {}
-    assert not path.with_name(path.name + ".secure-mcp.json").exists()
-    assert not path.with_name(path.name + ".secure-mcp.pending.json").exists()
+    assert not path.with_name(path.name + ".secure-gateway.json").exists()
+    assert not path.with_name(path.name + ".secure-gateway.pending.json").exists()
 
 
 def test_interrupted_registration_refuses_user_edit_before_any_restore(
@@ -59,7 +59,7 @@ def test_interrupted_registration_refuses_user_edit_before_any_restore(
         with pytest.raises(KeyboardInterrupt):
             a.configure_antigravity(path)
     path.write_text('{"mcpServers":{"new":{"command":"user"}}}')
-    record = path.with_name(path.name + ".secure-mcp.json")
+    record = path.with_name(path.name + ".secure-gateway.json")
     before = [path.read_bytes(), record.read_bytes()]
     for install in (True, False):
         with pytest.raises(ValueError, match="changed"):
@@ -76,7 +76,7 @@ def test_uninstall_interruption_recovers_owned_entry_and_other_servers(
     settings = json.loads(path.read_bytes())
     settings["mcpServers"]["later"] = {"command": "retain"}
     path.write_text(json.dumps(settings))
-    record = path.with_name(path.name + ".secure-mcp.json")
+    record = path.with_name(path.name + ".secure-gateway.json")
     if boundary == "settings":
         write = a._atomic_json
 
@@ -109,11 +109,11 @@ def test_uninstall_interruption_recovers_owned_entry_and_other_servers(
 
 def test_reinstall_recovery_preserves_existing_record_and_backup(tmp_path, monkeypatch):
     path = tmp_path / "mcp.json"
-    raw = b'{"mcpServers":{"secure-mcp":{"command":"previous"}}}\n'
+    raw = b'{"mcpServers":{"secure-gateway":{"command":"previous"}}}\n'
     path.write_bytes(raw)
     a.configure_antigravity(path)
-    record = path.with_name(path.name + ".secure-mcp.json")
-    backup = path.with_name(path.name + ".secure-mcp.bak")
+    record = path.with_name(path.name + ".secure-gateway.json")
+    backup = path.with_name(path.name + ".secure-gateway.bak")
     before = [path.read_bytes(), record.read_bytes(), backup.read_bytes()]
     write = a._atomic_json
 
@@ -129,7 +129,7 @@ def test_reinstall_recovery_preserves_existing_record_and_backup(tmp_path, monke
     a.configure_antigravity(path)
     assert [path.read_bytes(), record.read_bytes(), backup.read_bytes()] == before
     a.configure_antigravity(path, False)
-    assert json.loads(path.read_bytes())["mcpServers"]["secure-mcp"] == {
+    assert json.loads(path.read_bytes())["mcpServers"]["secure-gateway"] == {
         "command": "previous"
     }
 
@@ -137,7 +137,7 @@ def test_reinstall_recovery_preserves_existing_record_and_backup(tmp_path, monke
 def test_recovery_can_itself_be_interrupted(tmp_path, monkeypatch):
     path = tmp_path / "mcp.json"
     path.write_bytes(b'{"mcpServers":{}}\n')
-    record = path.with_name(path.name + ".secure-mcp.json")
+    record = path.with_name(path.name + ".secure-gateway.json")
     write = a._atomic_json
 
     def interrupt_write(target, value):

@@ -2,9 +2,9 @@
 
 import pytest
 
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.engine.strategies import StrategyGenerator
-from secure_mcp.models import MaskMode, SurrogateStrategy
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.engine.strategies import StrategyGenerator
+from secure_gateway.models import MaskMode, SurrogateStrategy
 
 
 def test_roundtrip_english_text():

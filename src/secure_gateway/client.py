@@ -5,9 +5,9 @@ from __future__ import annotations
 from typing import Callable
 import uuid
 
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import MaskMode, SurrogateStrategy, UnmaskResult
-from secure_mcp.session import SessionVault
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import MaskMode, SurrogateStrategy, UnmaskResult
+from secure_gateway.session import SessionVault
 
 
 class LocalPrivacyClient:

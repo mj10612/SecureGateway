@@ -15,15 +15,15 @@ from click.testing import CliRunner
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 
-from secure_mcp import (
+from secure_gateway import (
     LocalPrivacyClient,
     MaskingEngine,
     MaskMode,
     SessionVault,
     SurrogateStrategy,
 )
-from secure_mcp.cli import main
-from secure_mcp.encrypted_session import (
+from secure_gateway.cli import main
+from secure_gateway.encrypted_session import (
     load_session,
     save_session,
     session_file_lock,
@@ -31,11 +31,11 @@ from secure_mcp.encrypted_session import (
     _MAGIC,
     _SALT_SIZE,
 )
-from secure_mcp.engine.grammar_ko import KoreanGrammarEngine
-from secure_mcp.engine.strategies import mapping_key
-from secure_mcp.engine.tokenizer import MultilingualTokenizer
-from secure_mcp.models import TokenType
-from secure_mcp.server import (
+from secure_gateway.engine.grammar_ko import KoreanGrammarEngine
+from secure_gateway.engine.strategies import mapping_key
+from secure_gateway.engine.tokenizer import MultilingualTokenizer
+from secure_gateway.models import TokenType
+from secure_gateway.server import (
     app,
     mask_text,
     mask_code,
@@ -45,7 +45,7 @@ from secure_mcp.server import (
     get_session_stats,
     get_privacy_status,
 )
-from secure_mcp.session import PrivacySession
+from secure_gateway.session import PrivacySession
 
 
 @pytest.fixture(autouse=True)
@@ -372,7 +372,7 @@ def test_core_keywords_preserved_per_language(language, code, keywords):
 
 
 def test_repository_python_code_is_parseable_after_masking():
-    code = Path("src/secure_mcp/session.py").read_text(encoding="utf-8")
+    code = Path("src/secure_gateway/session.py").read_text(encoding="utf-8")
     result = json.loads(mask_code(code, "s", language="python"))
     compile(result["masked_text"], "<masked>", "exec")
     assert json.loads(unmask_text(result["masked_text"], "s"))["unmasked_text"] == code
@@ -565,7 +565,7 @@ def test_cli_file_lock_covers_read_modify_write(tmp_path):
         result = CliRunner().invoke(
             main,
             ["mask", "Alice", "--session-file", str(path)],
-            env={"SECURE_MCP_SESSION_PASSWORD": "pw"},
+            env={"SECURE_GATEWAY_SESSION_PASSWORD": "pw"},
         )
         assert result.exit_code != 0 and "in use" in result.output
     assert not path.exists() and path.with_name("s.enc.lock").is_file()
@@ -699,7 +699,7 @@ def test_unterminated_literals_fail_closed(code):
 
 def test_legacy_pseudoword_snapshot_can_be_read_updated_and_read_again(tmp_path):
     import os
-    from secure_mcp.models import TokenMapping
+    from secure_gateway.models import TokenMapping
 
     path = tmp_path / "legacy.enc"
     session = PrivacySession("s", strategy=SurrogateStrategy.PSEUDOWORD)

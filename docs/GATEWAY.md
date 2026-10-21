@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureMCP 0.7.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 1.0.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -11,11 +11,11 @@ The gateway serves a local dashboard at `http://127.0.0.1:38117/admin` (use your
 configured port). Open it with:
 
 ```bash
-secure-mcp gateway admin
+secure-gateway gateway admin
 # For a custom config, including the isolated xAI API gateway:
-secure-mcp gateway admin --config /path/to/config.json
+secure-gateway gateway admin --config /path/to/config.json
 # Print the URL without launching a browser:
-secure-mcp gateway admin --no-open
+secure-gateway gateway admin --no-open
 ```
 
 Start or restart the updated gateway first. Sign in with the `token` in its local
@@ -67,8 +67,8 @@ Keep your existing Claude/ChatGPT subscription login:
 
 ```bash
 uv tool install .
-secure-mcp gateway install
-secure-mcp gateway status
+secure-gateway gateway install
+secure-gateway gateway status
 ```
 
 Restart both agents. No per-prompt wrapper, file list or manual restoration is required.
@@ -76,8 +76,8 @@ If an earlier gateway is already running, update/restart it from the repository:
 
 ```bash
 uv tool install --force .
-secure-mcp gateway stop
-secure-mcp gateway install
+secure-gateway gateway stop
+secure-gateway gateway install
 ```
 
 Then restart both agents. These steps are needed only when updating the installed gateway.
@@ -111,12 +111,12 @@ and [Codex's proxy authentication option](https://learn.chatgpt.com/docs/auth#al
 OAuth is forwarded to Anthropic's service / the ChatGPT Codex backend. API-key requests
 are refused; there is no automatic switch to separately billed API usage. Existing plan
 limits and provider acceptance still apply. Login caches/keychains and token refresh remain
-CLI-owned; SecureMCP never reads or copies them. The local access header is stripped upstream.
+CLI-owned; SecureGateway never reads or copies them. The local access header is stripped upstream.
 Provider 401/403/429 statuses are retained with sanitized error bodies.
 
 Unrelated hooks, permissions and model choices are preserved. Remove old project privacy
 hooks before using this gateway: combining independent mapping tables can change references.
-The installer removes old SecureMCP hooks in the Claude user settings it edits, does not
+The installer removes old SecureGateway hooks in the Claude user settings it edits, does not
 scan other repositories and does not register new hooks.
 
 ## Automatic startup and removal
@@ -125,24 +125,24 @@ Setup starts a detached process immediately and registers user-login startup:
 
 | Platform | Registration |
 | --- | --- |
-| Windows | `Startup/SecureMCP.vbs`, hidden WScript launch |
-| macOS | `~/Library/LaunchAgents/io.securemcp.gateway.plist`, `RunAtLoad` |
-| Linux desktop | `$XDG_CONFIG_HOME/autostart/secure-mcp.desktop`, default `~/.config/autostart/`, `Terminal=false` |
+| Windows | `Startup/SecureGateway.vbs`, hidden WScript launch |
+| macOS | `~/Library/LaunchAgents/io.securegateway.gateway.plist`, `RunAtLoad` |
+| Linux desktop | `$XDG_CONFIG_HOME/autostart/secure-gateway.desktop`, default `~/.config/autostart/`, `Terminal=false` |
 
 No administrator access or agent lifecycle hook is needed. Linux autostart requires a
 desktop login; headless hosts can run the foreground command under their own supervisor.
 
 ```bash
-secure-mcp gateway status
-secure-mcp gateway stop
-secure-mcp gateway run       # foreground restart/diagnostics; Ctrl-C stops it
-secure-mcp gateway uninstall
+secure-gateway gateway status
+secure-gateway gateway stop
+secure-gateway gateway run       # foreground restart/diagnostics; Ctrl-C stops it
+secure-gateway gateway uninstall
 ```
 
 If the daemon stops, configured inference fails at the loopback endpoint. There is no raw
 direct-provider fallback. `uninstall` stops it and restores exact backed-up settings/startup
 bytes. It refuses to overwrite files edited since setup; manually merge originals recorded
-in private `installation.json` in that case. State/backups remain in `~/.secure-mcp/gateway`
+in private `installation.json` in that case. State/backups remain in `~/.secure-gateway/gateway`
 by default for recovery; remove this directory after stopping if you want to discard them.
 Do not commit local state or reuse its access token for other services.
 
@@ -171,7 +171,7 @@ Gateway identifiers use `private_symbol_<number>`. A controlled live comparison 
 the previous `smcp_ID_` aliases caused Sonnet 5.5 to refuse benign masked requests, while
 neutral aliases succeeded with the same masking. This does not establish the classifier's
 internal cause. No safety filter is disabled and no raw-source fallback is used. Other
-SecureMCP integrations retain their existing alias format.
+SecureGateway integrations retain their existing alias format.
 
 Claude's first system attribution block (`x-anthropic-billing-header`) is protocol,
 not source text. Its observed version, entry-point and optional hexadecimal fingerprint
@@ -251,7 +251,7 @@ content remain validated.
 Claude/Codex have separate tables, shared across this installation's conversations/accounts;
 requests per agent are serialized. Use separate configurations/ports for separate trust domains.
 
-Encrypted snapshots reuse SecureMCP's authenticated encryption and password KDF. They preserve
+Encrypted snapshots reuse SecureGateway's authenticated encryption and password KDF. They preserve
 aliases across daemon restart. Reasoning provenance stores only hashes. Snapshots expire after
 24 hours idle; the running daemon and a restarted daemon both drop expired aliases and
 provenance (files are not automatically deleted). Expired/corrupt reasoning state blocks
@@ -309,9 +309,9 @@ Live tests are opt-in and consume the existing plan's allowance. Normal CI uses 
 fixtures. Set the native executable paths and run all four real-provider scenarios:
 
 ```powershell
-$env:SECURE_MCP_LIVE_SUBSCRIPTION = '1'
-$env:SECURE_MCP_CLAUDE_BINARY = 'C:/path/to/claude.exe'
-$env:SECURE_MCP_CODEX_BINARY = 'C:/path/to/codex.exe'
+$env:SECURE_GATEWAY_LIVE_SUBSCRIPTION = '1'
+$env:SECURE_GATEWAY_CLAUDE_BINARY = 'C:/path/to/claude.exe'
+$env:SECURE_GATEWAY_CODEX_BINARY = 'C:/path/to/codex.exe'
 python -m pytest tests/test_gateway_live.py -v
 ```
 
@@ -321,7 +321,7 @@ interfering with file-read verification; the installer preserves users' permissi
 
 ## 한국어 안내
 
-처음 `secure-mcp gateway install`을 실행한 뒤 두 CLI를 재시작하면, 이후에는 평소처럼
+처음 `secure-gateway gateway install`을 실행한 뒤 두 CLI를 재시작하면, 이후에는 평소처럼
 `claude` / `codex`를 사용합니다. 매번 별도 명령이나 파일 목록을 입력할 필요가 없습니다.
 직접 입력·코드·도구 결과는 전송 전에 치환하고, 화면의 답변과 로컬 도구 인자는 자동 복원합니다.
 함수명·변수명·문자열·숫자·주석도 코드 마스킹 대상이며 입력과 코드의 참조는 같은 치환표를 사용합니다.
@@ -335,7 +335,7 @@ Claude의 기존 429는 식별 블록 처리 오류였고, 정상 요청의 거�
 0.5.0에서 업데이트하면 기존 상태 파일은 보존하며, 새 치환표를 쓰도록 대화를 한 번 새로 시작하세요.
 
 새 Hook을 등록하지 않습니다. 운영체제 사용자 로그인 시 백그라운드로 자동 실행합니다.
-해제는 `secure-mcp gateway uninstall`이며, 설치 뒤 사용자가 수정한 설정은 덮어쓰지 않습니다.
+해제는 `secure-gateway gateway uninstall`이며, 설치 뒤 사용자가 수정한 설정은 덮어쓰지 않습니다.
 스트리밍 전체를 모아 복원하므로 표시가 늦어질 수 있습니다. 서명·암호화된 추론은 가명 상태를
 유지합니다. 이미지·원격 첨부·미지원 요청은 차단합니다. 별도 도구 통신·텔레메트리는 보호 범위에
 포함되지 않으며, 문법·코드 구조·알고리즘이 남으므로 완전한 익명성을 보장하지 않습니다.
@@ -355,8 +355,8 @@ foreground subscription daemon. The bound applies before allocating a new alias;
 existing aliases remain usable at the limit. To recover deliberately:
 
 ```shell
-secure-mcp gateway reset --agent claude
-secure-mcp gateway reset --config /path/to/api-gateway.json --agent xai
+secure-gateway gateway reset --agent claude
+secure-gateway gateway reset --config /path/to/api-gateway.json --agent xai
 ```
 
 Reset requires the local gateway token and refuses while the selected provider has

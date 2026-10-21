@@ -8,7 +8,7 @@ import urllib.error
 
 import pytest
 
-from secure_mcp import gateway_install as g
+from secure_gateway import gateway_install as g
 
 
 def install(tmp_path, **kwargs):
@@ -158,10 +158,10 @@ def test_control_requests_never_follow_token_redirect(tmp_path, monkeypatch, ope
             pass
 
         def do_GET(self):
-            received.append(self.headers.get("X-SecureMCP-Token"))
+            received.append(self.headers.get("X-SecureGateway-Token"))
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b'{"service":"secure-mcp-subscription-gateway"}')
+            self.wfile.write(b'{"service":"secure-gateway-subscription-gateway"}')
 
     receiver = ThreadingHTTPServer(("127.0.0.1", 0), Receiver)
 

@@ -1,7 +1,7 @@
 """Tests for code syntax and keyword preservation parser."""
 
-from secure_mcp.engine.code_parser import CodeParser, literal_parts
-from secure_mcp.models import TokenType
+from secure_gateway.engine.code_parser import CodeParser, literal_parts
+from secure_gateway.models import TokenType
 
 
 def test_keyword_preservation():

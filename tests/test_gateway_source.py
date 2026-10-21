@@ -2,7 +2,7 @@
 
 import pytest
 
-from secure_mcp.gateway_source import looks_like_source
+from secure_gateway.gateway_source import looks_like_source
 
 
 @pytest.mark.parametrize(

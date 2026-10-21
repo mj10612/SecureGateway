@@ -10,8 +10,8 @@ import time
 import uuid
 import weakref
 
-from secure_mcp.engine.strategies import StrategyGenerator
-from secure_mcp.models import MaskMode, SessionStats, SurrogateStrategy, TokenMapping
+from secure_gateway.engine.strategies import StrategyGenerator
+from secure_gateway.models import MaskMode, SessionStats, SurrogateStrategy, TokenMapping
 
 
 def validate_ttl(ttl: float) -> None:

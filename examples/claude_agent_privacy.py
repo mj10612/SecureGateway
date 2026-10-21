@@ -2,7 +2,7 @@
 
 import sys
 
-from secure_mcp import LocalPrivacyClient, SurrogateStrategy
+from secure_gateway import LocalPrivacyClient, SurrogateStrategy
 
 
 def run_claude_privacy_pipeline():

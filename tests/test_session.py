@@ -4,8 +4,8 @@ import time
 from threading import TIMEOUT_MAX
 
 import pytest
-from secure_mcp.session import SessionVault
-from secure_mcp.models import TokenType
+from secure_gateway.session import SessionVault
+from secure_gateway.models import TokenType
 
 
 @pytest.mark.parametrize(
@@ -70,7 +70,7 @@ def test_session_sanitized_stats():
     sess = vault.get_or_create("stats_session")
     gen = sess.generator
     surrogate = gen.generate(TokenType.ENTITY, "ConfidentialClient")
-    from secure_mcp.models import TokenMapping
+    from secure_gateway.models import TokenMapping
 
     sess.forward_store["ConfidentialClient"] = TokenMapping(
         original="ConfidentialClient", surrogate=surrogate, token_type=TokenType.ENTITY

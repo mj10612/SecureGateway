@@ -78,8 +78,8 @@ invoke the same module or copy its assertions, not to redefine weaker checks.
    a plugin framework before a second real adapter needs shared ownership; extend upstreams,
    routes and auth prefixes only.
 3. Run the contract tests offline first. Live provider tests stay opt-in
-   (`SECURE_MCP_LIVE_SUBSCRIPTION=1`) and must not run in normal CI.
-   xAI uses a separate `SECURE_MCP_LIVE_XAI_API=1` flag and caller-owned API key/model;
+   (`SECURE_GATEWAY_LIVE_SUBSCRIPTION=1`) and must not run in normal CI.
+   xAI uses a separate `SECURE_GATEWAY_LIVE_XAI_API=1` flag and caller-owned API key/model;
    those tests incur API charges, independently of subscription limits.
 4. Keep per-provider trust domains separate (state dir, port, token). Never forward one
    provider's credentials to another origin.
@@ -87,7 +87,7 @@ invoke the same module or copy its assertions, not to redefine weaker checks.
 
 
 The explicit xAI gateway supports `GET /xai/v1/models`. Both the local
-`X-SecureMCP-Token` and caller-owned `Authorization: Bearer xai-...` are required.
+`X-SecureGateway-Token` and caller-owned `Authorization: Bearer xai-...` are required.
 The gateway fetches only the fixed provider catalog, rejects redirects/environment proxies,
 and bounds JSON size. It returns public model IDs and bounded public metadata; arbitrary
 provider descriptions are omitted. This enables catalog discovery for compatibility probes;

@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from secure_mcp.gateway import GatewaySession
+from secure_gateway.gateway import GatewaySession
 
 
 def test_schema_dependent_names_share_property_aliases():

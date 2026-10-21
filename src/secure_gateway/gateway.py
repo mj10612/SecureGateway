@@ -25,24 +25,24 @@ import urllib.error
 import urllib.request
 import urllib.parse
 
-from secure_mcp.engine.masking_engine import MaskingEngine, NumericLiteralConflict
-from secure_mcp.engine.strategies import mapping_key
-from secure_mcp.encrypted_session import (
+from secure_gateway.engine.masking_engine import MaskingEngine, NumericLiteralConflict
+from secure_gateway.engine.strategies import mapping_key
+from secure_gateway.encrypted_session import (
     SessionExpiredError,
     SnapshotEncryption,
     load_session,
     save_session,
 )
-from secure_mcp.hooks import _atomic_json
-from secure_mcp.gateway_validation import validate_request
-from secure_mcp.gateway_validation import validate_cache_control
-from secure_mcp.engine.grammar_en import CLOSED_CLASS_WORDS
-from secure_mcp.gateway_source import looks_like_source
-from secure_mcp.gateway_catalog import fetch_catalog
-from secure_mcp.gateway_audit import AuditStore, anonymous_ref
-from secure_mcp.gateway_admin import handle_admin
-from secure_mcp.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
-from secure_mcp.session import PrivacySession
+from secure_gateway.hooks import _atomic_json
+from secure_gateway.gateway_validation import validate_request
+from secure_gateway.gateway_validation import validate_cache_control
+from secure_gateway.engine.grammar_en import CLOSED_CLASS_WORDS
+from secure_gateway.gateway_source import looks_like_source
+from secure_gateway.gateway_catalog import fetch_catalog
+from secure_gateway.gateway_audit import AuditStore, anonymous_ref
+from secure_gateway.gateway_admin import handle_admin
+from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
+from secure_gateway.session import PrivacySession
 
 LIMIT = 16 * 1024 * 1024
 JSON_SCHEMA_DIALECTS = {
@@ -1672,7 +1672,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
 
     def authorized(self):
         return secrets.compare_digest(
-            self.headers.get("X-SecureMCP-Token", "").encode(), self.server.token.encode()
+            self.headers.get("X-SecureGateway-Token", "").encode(), self.server.token.encode()
         )
 
     def do_GET(self):
@@ -1700,7 +1700,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 self.send_body(502, b'{"error":"Model catalog unavailable"}')
             return
         if self.path == "/health" and self.authorized():
-            self.send_body(200, b'{"service":"secure-mcp-subscription-gateway"}')
+            self.send_body(200, b'{"service":"secure-gateway-subscription-gateway"}')
         elif (
             self.authorized()
             and re.fullmatch(r"/codex/models(?:\?client_version=[\d.]+)?", self.path)
@@ -1889,7 +1889,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 meta["account_ref"] = anonymous_ref(
                     self.server.token, "account", self.headers.get("chatgpt-account-id", ""),
                 )
-            source = self.headers.get("X-SecureMCP-Agent")
+            source = self.headers.get("X-SecureGateway-Agent")
             if agent == "xai" and source in {"Grok Build", "Antigravity SDK"}:
                 meta["agent"] = source
         try:

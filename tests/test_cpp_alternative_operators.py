@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from secure_mcp.engine.code_parser import CodeParser
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import SurrogateStrategy, TokenType
-from secure_mcp.session import PrivacySession
+from secure_gateway.engine.code_parser import CodeParser
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import SurrogateStrategy, TokenType
+from secure_gateway.session import PrivacySession
 
 OPERATORS = ('and', 'or', 'xor', 'bitand', 'bitor', 'not_eq', 'not', 'compl',
              'and_eq', 'or_eq', 'xor_eq')

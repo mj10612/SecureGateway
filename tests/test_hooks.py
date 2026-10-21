@@ -7,9 +7,9 @@ import sys
 import pytest
 from click.testing import CliRunner
 
-from secure_mcp.cli import main
-from secure_mcp.encrypted_session import session_file_lock
-from secure_mcp.hooks import (
+from secure_gateway.cli import main
+from secure_gateway.encrypted_session import session_file_lock
+from secure_gateway.hooks import (
     EVENTS,
     HookStore,
     configure,
@@ -303,7 +303,7 @@ def test_cli_project_install_doctor_stats_uninstall(tmp_path, monkeypatch):
 
 def test_real_process_stdin_stdout_roundtrip(installed):
     _, state = installed
-    command = [sys.executable, "-m", "secure_mcp", "hook", "--state-dir", str(state)]
+    command = [sys.executable, "-m", "secure_gateway", "hook", "--state-dir", str(state)]
 
     def run(payload):
         result = subprocess.run(

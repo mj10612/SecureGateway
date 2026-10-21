@@ -9,7 +9,7 @@ import urllib.request
 def fetch_catalog(origin: str, auth: str) -> bytes:
     """Fetch only ``/v1/models`` from the fixed provider or a loopback fixture."""
     # Imported at call time so GatewayHandler can import this small helper.
-    from secure_mcp.gateway import API_UPSTREAMS, LIMIT, NoRedirect
+    from secure_gateway.gateway import API_UPSTREAMS, LIMIT, NoRedirect
 
     if origin != API_UPSTREAMS["xai"]:
         if not isinstance(origin, str) or not re.fullmatch(r"http://127\.0\.0\.1:[0-9]{1,5}", origin):

@@ -8,8 +8,8 @@ import urllib.request
 import pytest
 import tomlkit
 
-from secure_mcp.gateway import GatewaySession, PrivacyGateway
-from secure_mcp.gateway_install import (
+from secure_gateway.gateway import GatewaySession, PrivacyGateway
+from secure_gateway.gateway_install import (
     install_gateway,
     uninstall_gateway,
     healthy,
@@ -19,7 +19,7 @@ from secure_mcp.gateway_install import (
 
 
 def test_claude_attribution_stays_first_without_exposing_user_context():
-    from secure_mcp.gateway import PUBLIC_CLAUDE_IDENTITIES, PRIVACY_INSTRUCTION
+    from secure_gateway.gateway import PUBLIC_CLAUDE_IDENTITIES, PRIVACY_INSTRUCTION
 
     session = GatewaySession()
     attribution = {
@@ -85,7 +85,7 @@ def test_claude_attribution_cannot_be_moved_or_merged():
 
 
 def test_claude_public_identity_in_source_is_still_masked():
-    from secure_mcp.gateway import PUBLIC_CLAUDE_IDENTITIES
+    from secure_gateway.gateway import PUBLIC_CLAUDE_IDENTITIES
 
     session = GatewaySession()
     code = "identity = " + repr(PUBLIC_CLAUDE_IDENTITIES[1])
@@ -328,7 +328,7 @@ def test_gateway_install_preserves_settings_login_and_uninstalls(tmp_path):
     assert "ANTHROPIC_AUTH_TOKEN" not in settings["env"]
     value = tomlkit.parse(ct.read_text())
     assert value["model"] == "existing-model"
-    assert value["model_providers"]["secure_mcp_subscription"]["requires_openai_auth"]
+    assert value["model_providers"]["secure_gateway_subscription"]["requires_openai_auth"]
     assert value["forced_login_method"] == "chatgpt"
     assert auth.read_text() == "LOGIN-CACHE-UNCHANGED"
     install_gateway(config, claude_dir=claude, codex_dir=codex, startup_path=startup)
@@ -439,7 +439,7 @@ def test_http_proxy_oauth_no_api_keys_or_raw_upstream(tmp_path):
                 {"model": "fixture", field: [{"role": "user", "content": raw}]}
             ).encode()
             headers = {
-                "X-SecureMCP-Token": "local-token",
+                "X-SecureGateway-Token": "local-token",
                 "Authorization": auth,
                 "Content-Type": "application/json",
                 "anthropic-beta": "oauth-capability",
@@ -469,7 +469,7 @@ def test_http_proxy_oauth_no_api_keys_or_raw_upstream(tmp_path):
             assert raw not in json.dumps(provider.requests[-1][1])
             assert "alice@example.com" not in json.dumps(provider.requests[-1][1])
             assert provider.requests[-1][2]["Authorization"] == auth
-            assert "X-Securemcp-Token" not in provider.requests[-1][2]
+            assert "X-Securegateway-Token" not in provider.requests[-1][2]
             before = len(provider.requests)
             request.headers["Authorization"] = "Bearer sk-paid-api-key"
             with pytest.raises(urllib.error.HTTPError) as exc:
@@ -533,7 +533,7 @@ def test_gateway_accepts_mixed_case_sse_with_bom_from_upstream():
         request = urllib.request.Request(
             f"http://127.0.0.1:{gateway.server_port}/codex/responses",
             b'{"input":"hello","stream":true}',
-            {"X-SecureMCP-Token": "local-token", "Authorization": "Bearer eyJ-fixture"},
+            {"X-SecureGateway-Token": "local-token", "Authorization": "Bearer eyJ-fixture"},
         )
         with urllib.request.urlopen(request, timeout=5) as response:
             assert response.status == 200
@@ -596,10 +596,10 @@ def test_neutral_aliases_are_strict_and_do_not_collide_with_source_names():
 
 
 def test_legacy_snapshots_remain_readable_and_are_not_rewritten(tmp_path):
-    from secure_mcp.encrypted_session import load_session, save_session
-    from secure_mcp.engine.strategies import mapping_key
-    from secure_mcp.models import SurrogateStrategy, TokenMapping, TokenType
-    from secure_mcp.session import PrivacySession
+    from secure_gateway.encrypted_session import load_session, save_session
+    from secure_gateway.engine.strategies import mapping_key
+    from secure_gateway.models import SurrogateStrategy, TokenMapping, TokenType
+    from secure_gateway.session import PrivacySession
 
     state = tmp_path / "sessions"
     state.mkdir()
@@ -831,7 +831,7 @@ def test_empty_tool_arguments_survive_followup_request(arguments):
 
 
 def test_public_exec_grammar_is_preserved_and_private_grammar_is_refused():
-    from secure_mcp.gateway import EXEC_GRAMMAR
+    from secure_gateway.gateway import EXEC_GRAMMAR
 
     tool = {
         "type": "custom",
@@ -890,13 +890,13 @@ def test_source_identifier_overrides_task_vocabulary_and_unfenced_code_is_lexed(
 @pytest.mark.parametrize("platform", ["win32", "darwin", "linux"])
 def test_startup_registration_formats(platform, monkeypatch, tmp_path):
     import plistlib
-    from secure_mcp import gateway_install
+    from secure_gateway import gateway_install
 
     monkeypatch.setattr(gateway_install.sys, "platform", platform)
     args = [
         "C:/Program Files/Python/python.exe",
         "-m",
-        "secure_mcp",
+        "secure_gateway",
         "gateway",
         "ensure",
         "--config",
@@ -920,7 +920,7 @@ def test_windows_hidden_startup_launcher_executes_quoted_command(tmp_path):
     import subprocess
     import sys
     import time
-    from secure_mcp.gateway_install import startup_registration
+    from secure_gateway.gateway_install import startup_registration
 
     if os.name != "nt":
         pytest.skip("Native Windows startup launcher")
@@ -944,7 +944,7 @@ def test_windows_hidden_startup_launcher_executes_quoted_command(tmp_path):
 
 
 def test_install_rolls_back_partial_file_updates(monkeypatch, tmp_path):
-    from secure_mcp import gateway_install
+    from secure_gateway import gateway_install
 
     claude = tmp_path / "claude"
     claude.mkdir()
@@ -1131,15 +1131,15 @@ def test_expired_snapshot_is_discarded_without_losing_file(tmp_path):
 
 
 def test_expired_load_session_raises_dedicated_error(tmp_path):
-    from secure_mcp.encrypted_session import SessionExpiredError, save_session
-    from secure_mcp.session import PrivacySession
+    from secure_gateway.encrypted_session import SessionExpiredError, save_session
+    from secure_gateway.session import PrivacySession
 
     path = tmp_path / "expired.enc"
     session = PrivacySession("gateway", ttl_seconds=1)
     session.last_accessed -= 10
     save_session(path, session, "password")
     with pytest.raises(SessionExpiredError):
-        from secure_mcp.encrypted_session import load_session
+        from secure_gateway.encrypted_session import load_session
 
         load_session(path, "password", "gateway")
 

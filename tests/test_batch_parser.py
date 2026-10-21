@@ -4,10 +4,10 @@ import ast
 
 import pytest
 
-from secure_mcp.engine.code_parser import CodeParser, literal_parts
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import TokenType
-from secure_mcp.session import PrivacySession
+from secure_gateway.engine.code_parser import CodeParser, literal_parts
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import TokenType
+from secure_gateway.session import PrivacySession
 
 
 def mask(code, language):

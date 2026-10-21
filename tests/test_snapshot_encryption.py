@@ -8,15 +8,15 @@ import time
 import pytest
 from click.testing import CliRunner
 
-from secure_mcp.cli import main
-from secure_mcp import encrypted_session
-from secure_mcp.encrypted_session import (
+from secure_gateway.cli import main
+from secure_gateway import encrypted_session
+from secure_gateway.encrypted_session import (
     SessionExpiredError,
     SnapshotEncryption,
     load_session,
     save_session,
 )
-from secure_mcp.session import PrivacySession
+from secure_gateway.session import PrivacySession
 
 
 def test_encryption_context_derives_once_and_snapshots_decrypt_after_restart(
@@ -151,7 +151,7 @@ def test_snapshot_ttl_boundaries_remain_valid(
 ):
     snapshot_payload["ttl_seconds"] = ttl
     monkeypatch.setattr(
-        "secure_mcp.session.time.time", lambda: snapshot_payload["last_accessed"]
+        "secure_gateway.session.time.time", lambda: snapshot_payload["last_accessed"]
     )
     path, password = write_snapshot(snapshot_payload)
     assert load_session(path, password).ttl_seconds == ttl
@@ -164,7 +164,7 @@ def test_finite_timestamp_boundaries_remain_valid(
     snapshot_payload["created_at"] = value
     snapshot_payload["last_accessed"] = value
     path, password = write_snapshot(snapshot_payload)
-    monkeypatch.setattr("secure_mcp.session.time.time", lambda: value)
+    monkeypatch.setattr("secure_gateway.session.time.time", lambda: value)
     assert load_session(path, password).created_at == value
 
 

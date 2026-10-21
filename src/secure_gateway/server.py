@@ -10,13 +10,13 @@ import uuid
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
-from secure_mcp import __version__
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import MaskMode, SurrogateStrategy
-from secure_mcp.session import SessionVault
+from secure_gateway import __version__
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import MaskMode, SurrogateStrategy
+from secure_gateway.session import SessionVault
 
 app = MCPServer(
-    name="SecureMCP",
+    name="SecureGateway",
     version=__version__,
     instructions=(
         "Local masking utilities. Model-invoked tool arguments are already visible to the provider. "
@@ -214,7 +214,7 @@ def clear_privacy_session(session_id: str = "") -> str:
 def privacy_preserving_assistant(task_description: str = "") -> str:
     """Instructions for a payload already masked by the trusted local client."""
     return (
-        "SecureMCP: process the already-masked payload. Preserve every surrogate exactly, "
+        "SecureGateway: process the already-masked payload. Preserve every surrogate exactly, "
         "including brackets and delimiters. Do not guess hidden values. Restoration happens "
         "outside the model context in the trusted local client. Task: "
         + task_description
@@ -248,7 +248,7 @@ def get_privacy_policies() -> str:
 def get_privacy_status() -> str:
     return json.dumps(
         {
-            "server": "SecureMCP",
+            "server": "SecureGateway",
             "version": __version__,
             "active_sessions": vault.active_count,
             "protocol": "Model Context Protocol (MCP)",

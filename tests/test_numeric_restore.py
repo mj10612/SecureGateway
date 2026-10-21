@@ -2,9 +2,9 @@
 
 import pytest
 
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import TokenMapping, TokenType
-from secure_mcp.session import PrivacySession
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import TokenMapping, TokenType
+from secure_gateway.session import PrivacySession
 
 
 @pytest.mark.parametrize("normalize_particles", [False, True])

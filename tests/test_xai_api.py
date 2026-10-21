@@ -13,7 +13,7 @@ import urllib.request
 
 import pytest
 
-from secure_mcp.gateway import GatewaySession, PrivacyGateway
+from secure_gateway.gateway import GatewaySession, PrivacyGateway
 
 
 class XaiProvider(BaseHTTPRequestHandler):
@@ -105,7 +105,7 @@ def test_xai_responses_masks_and_restores(xai_gateway):
         f"http://127.0.0.1:{gateway.server_port}/xai/v1/responses",
         body,
         {
-            "X-SecureMCP-Token": "xai-local-token",
+            "X-SecureGateway-Token": "xai-local-token",
             "Authorization": "Bearer xai-fixture-key",
             "Content-Type": "application/json",
         },
@@ -132,7 +132,7 @@ def test_xai_chat_completions_roundtrip(xai_gateway):
         f"http://127.0.0.1:{gateway.server_port}/xai/v1/chat/completions",
         body,
         {
-            "X-SecureMCP-Token": "xai-local-token",
+            "X-SecureGateway-Token": "xai-local-token",
             "Authorization": "Bearer xai-fixture-key",
         },
     )
@@ -150,7 +150,7 @@ def test_xai_mode_is_disabled_by_default():
             f"http://127.0.0.1:{gateway.server_port}/xai/v1/responses",
             b"{}",
             {
-                "X-SecureMCP-Token": "no-xai-token",
+                "X-SecureGateway-Token": "no-xai-token",
                 "Authorization": "Bearer xai-fixture-key",
             },
         )
@@ -171,7 +171,7 @@ def test_xai_rejects_subscription_and_missing_keys(xai_gateway):
             f"http://127.0.0.1:{gateway.server_port}/xai/v1/responses",
             b"{}",
             {
-                "X-SecureMCP-Token": "xai-local-token",
+                "X-SecureGateway-Token": "xai-local-token",
                 "Authorization": authorization,
             },
         )
@@ -192,7 +192,7 @@ def test_subscription_gateway_never_serves_xai_without_api_mode():
             f"http://127.0.0.1:{gateway.server_port}/xai/v1/responses",
             b"{}",
             {
-                "X-SecureMCP-Token": "sub-token",
+                "X-SecureGateway-Token": "sub-token",
                 "Authorization": "Bearer eyJfake",
             },
         )
@@ -238,7 +238,7 @@ def test_xai_unsupported_requests_never_reach_provider(xai_gateway, payload):
     request = urllib.request.Request(
         f"http://127.0.0.1:{gateway.server_port}/xai/v1/responses",
         json.dumps({"model": "fixture", **payload}).encode(),
-        {"X-SecureMCP-Token": "xai-local-token", "Authorization": "Bearer xai-fixture"},
+        {"X-SecureGateway-Token": "xai-local-token", "Authorization": "Bearer xai-fixture"},
     )
     with pytest.raises(urllib.error.HTTPError) as error:
         urllib.request.urlopen(request, timeout=5)
@@ -327,7 +327,7 @@ def test_xai_drops_subscription_headers_and_routes(xai_gateway):
         f"http://127.0.0.1:{gateway.server_port}/xai/v1/responses",
         json.dumps({"input": [{"role": "user", "content": "hello"}]}).encode(),
         {
-            "X-SecureMCP-Token": "xai-local-token",
+            "X-SecureGateway-Token": "xai-local-token",
             "Authorization": "Bearer xai-fixture",
             "chatgpt-account-id": "private-account",
             "anthropic-beta": "private-beta",
@@ -341,7 +341,7 @@ def test_xai_drops_subscription_headers_and_routes(xai_gateway):
         "chatgpt-account-id",
         "anthropic-beta",
         "openai-beta",
-        "x-securemcp-token",
+        "x-securegateway-token",
     ):
         assert header not in headers
     for route, auth in [
@@ -351,7 +351,7 @@ def test_xai_drops_subscription_headers_and_routes(xai_gateway):
         request = urllib.request.Request(
             f"http://127.0.0.1:{gateway.server_port}{route}",
             b"{}",
-            {"X-SecureMCP-Token": "xai-local-token", "Authorization": auth},
+            {"X-SecureGateway-Token": "xai-local-token", "Authorization": auth},
         )
         with pytest.raises(urllib.error.HTTPError) as error:
             urllib.request.urlopen(request, timeout=5)
@@ -366,7 +366,7 @@ def test_xai_redirects_cannot_forward_credentials(xai_gateway):
     request = urllib.request.Request(
         f"http://127.0.0.1:{gateway.server_port}/xai/v1/responses",
         json.dumps({"input": [{"role": "user", "content": "hello"}]}).encode(),
-        {"X-SecureMCP-Token": "xai-local-token", "Authorization": "Bearer xai-fixture"},
+        {"X-SecureGateway-Token": "xai-local-token", "Authorization": "Bearer xai-fixture"},
     )
     with pytest.raises(urllib.error.HTTPError) as error:
         urllib.request.urlopen(request, timeout=5)
@@ -385,7 +385,7 @@ def test_xai_upstream_ignores_environment_proxy(xai_gateway, monkeypatch):
     request = urllib.request.Request(
         f"http://127.0.0.1:{gateway.server_port}/xai/v1/responses",
         json.dumps({"input": [{"role": "user", "content": "hello"}]}).encode(),
-        {"X-SecureMCP-Token": "xai-local-token", "Authorization": "Bearer xai-fixture"},
+        {"X-SecureGateway-Token": "xai-local-token", "Authorization": "Bearer xai-fixture"},
     )
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     with opener.open(request, timeout=5) as response:
@@ -438,13 +438,13 @@ def test_chat_sse_split_text_reasoning_and_tool_restore(identifier):
 
 
 @pytest.mark.skipif(
-    os.environ.get("SECURE_MCP_LIVE_XAI_API") != "1"
+    os.environ.get("SECURE_GATEWAY_LIVE_XAI_API") != "1"
     or not os.environ.get("XAI_API_KEY")
-    or not os.environ.get("SECURE_MCP_XAI_MODEL"),
+    or not os.environ.get("SECURE_GATEWAY_XAI_MODEL"),
     reason="Opt-in separately billed xAI API smoke requires explicit flag, key, and model",
 )
 def test_live_xai_api_smoke():
-    """SECURE_MCP_LIVE_XAI_API=1 incurs API cost; browser subscriptions do not apply."""
+    """SECURE_GATEWAY_LIVE_XAI_API=1 incurs API cost; browser subscriptions do not apply."""
     gateway = PrivacyGateway(
         ("127.0.0.1", 0),
         "live-xai-local-token",
@@ -457,13 +457,13 @@ def test_live_xai_api_smoke():
             f"http://127.0.0.1:{gateway.server_port}/xai/v1/chat/completions",
             json.dumps(
                 {
-                    "model": os.environ["SECURE_MCP_XAI_MODEL"],
+                    "model": os.environ["SECURE_GATEWAY_XAI_MODEL"],
                     "messages": [{"role": "user", "content": "Reply with OK."}],
                     "max_tokens": 16,
                 }
             ).encode(),
             {
-                "X-SecureMCP-Token": "live-xai-local-token",
+                "X-SecureGateway-Token": "live-xai-local-token",
                 "Authorization": "Bearer " + os.environ["XAI_API_KEY"],
             },
         )

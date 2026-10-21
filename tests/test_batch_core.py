@@ -4,10 +4,10 @@ from threading import Event, Thread
 
 import pytest
 
-from secure_mcp.client import LocalPrivacyClient
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import SurrogateStrategy
-from secure_mcp.session import PrivacySession, SessionVault
+from secure_gateway.client import LocalPrivacyClient
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import SurrogateStrategy
+from secure_gateway.session import PrivacySession, SessionVault
 
 
 @pytest.mark.parametrize("text", ["123비밀고객정보", "123secret비밀", "100만원비밀고객"])

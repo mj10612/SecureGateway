@@ -1,7 +1,7 @@
 """Tests for English grammar and token classification."""
 
-from secure_mcp.engine.grammar_en import EnglishGrammarEngine, CLOSED_CLASS_WORDS
-from secure_mcp.models import TokenType
+from secure_gateway.engine.grammar_en import EnglishGrammarEngine, CLOSED_CLASS_WORDS
+from secure_gateway.models import TokenType
 
 
 def test_closed_class_words():

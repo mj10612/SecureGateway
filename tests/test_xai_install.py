@@ -6,9 +6,9 @@ import pytest
 import tomlkit
 from click.testing import CliRunner
 
-from secure_mcp.cli import main
-from secure_mcp.gateway_install import uninstall_gateway
-from secure_mcp.xai_install import install_api, load_api_config
+from secure_gateway.cli import main
+from secure_gateway.gateway_install import uninstall_gateway
+from secure_gateway.xai_install import install_api, load_api_config
 
 
 @pytest.fixture
@@ -31,12 +31,12 @@ def test_install_preserves_settings_and_login_then_restores_bytes(api_paths):
     assert value["model"]["existing"]["model"] == "personal"
     assert value["hooks"]["finish"] == "echo done"
     assert value["mcp_servers"]["local"]["command"] == "local"
-    model = value["model"]["secure_mcp_xai"]
+    model = value["model"]["secure_gateway_xai"]
     assert model["model"] == "grok-fixture"
     assert model["env_key"] == "XAI_API_KEY"
     assert model["supports_backend_search"] is False
     assert (
-        model["extra_headers"]["X-SecureMCP-Token"] == load_api_config(config)["token"]
+        model["extra_headers"]["X-SecureGateway-Token"] == load_api_config(config)["token"]
     )
     assert login.read_bytes() == b'{"token":"private-login"}'
     uninstall_gateway(config)
@@ -51,7 +51,7 @@ def test_uninstall_removes_new_settings_and_reinstall_preserves_token(api_paths)
     install_api(config, "grok-two", grok_dir=home)
     assert load_api_config(config)["token"] == token
     assert (
-        tomlkit.parse(settings.read_text())["model"]["secure_mcp_xai"]["model"]
+        tomlkit.parse(settings.read_text())["model"]["secure_gateway_xai"]["model"]
         == "grok-two"
     )
     uninstall_gateway(config)
@@ -59,7 +59,7 @@ def test_uninstall_removes_new_settings_and_reinstall_preserves_token(api_paths)
 
 
 @pytest.mark.parametrize(
-    "original", [b"broken = [", b'[model.secure_mcp_xai]\nmodel = "personal"\n']
+    "original", [b"broken = [", b'[model.secure_gateway_xai]\nmodel = "personal"\n']
 )
 def test_malformed_or_collision_leaves_original_untouched(api_paths, original):
     config, home, settings = api_paths
@@ -94,7 +94,7 @@ def test_other_grok_home_manifest_does_not_bypass_model_collision(api_paths, tmp
     other = tmp_path / "Other Grok home"
     other.mkdir()
     other_settings = other / "config.toml"
-    personal = b'[model.secure_mcp_xai]\nmodel = "personal"\n'
+    personal = b'[model.secure_gateway_xai]\nmodel = "personal"\n'
     other_settings.write_bytes(personal)
     with pytest.raises(ValueError, match="already exists"):
         install_api(config, "grok-other", grok_dir=other)
@@ -104,7 +104,7 @@ def test_other_grok_home_manifest_does_not_bypass_model_collision(api_paths, tmp
 
 
 def test_write_failure_keeps_original_and_removes_manifest(api_paths, monkeypatch):
-    from secure_mcp import gateway_install
+    from secure_gateway import gateway_install
 
     config, home, settings = api_paths
     original = b'default_model = "personal"\n'
@@ -183,7 +183,7 @@ def test_api_config_refuses_subscription_mode(api_paths):
 
 
 def test_api_run_uses_only_fixed_xai_origin_and_separate_state(api_paths, monkeypatch):
-    from secure_mcp import gateway
+    from secure_gateway import gateway
 
     config, home, _ = api_paths
     install_api(config, "grok-fixture", grok_dir=home)

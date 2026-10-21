@@ -7,10 +7,10 @@ import time
 
 import pytest
 
-from secure_mcp.encrypted_session import save_session, session_file_lock
-from secure_mcp.hooks import HookStore, _owned, configure, installation_status
-from secure_mcp.hooks import _command_parts, _hook_command
-from secure_mcp.session import PrivacySession
+from secure_gateway.encrypted_session import save_session, session_file_lock
+from secure_gateway.hooks import HookStore, _owned, configure, installation_status
+from secure_gateway.hooks import _command_parts, _hook_command
+from secure_gateway.session import PrivacySession
 
 
 def snapshot(store, sid, expired=False):
@@ -130,7 +130,7 @@ def test_gc_tombstone_precedes_snapshot_unlink_and_survives_failure(store, monke
 def test_encoded_windows_command_preserves_metachars_and_rejects_appended_script():
     import base64
 
-    args = [r'C:\private&%VARIABLE%\python.exe', '-m', 'secure_mcp', 'hook',
+    args = [r'C:\private&%VARIABLE%\python.exe', '-m', 'secure_gateway', 'hook',
             '--state-dir', r'C:\private|percent%quoted\state', '--agent', 'codex']
     command = _hook_command(args)
     assert _command_parts(command) == args
@@ -144,12 +144,12 @@ def test_encoded_windows_command_preserves_metachars_and_rejects_appended_script
 @pytest.mark.skipif(os.name != 'nt', reason='cmd.exe integration')
 def test_windows_metachar_command_runs_and_registration_survives_reinstall(tmp_path):
     settings = tmp_path / 'settings.json'
-    state = tmp_path / 'private&%SECURE_MCP_TEST_EXPANSION%state'
+    state = tmp_path / 'private&%SECURE_GATEWAY_TEST_EXPANSION%state'
     configure(settings, state, True)
     command = json.loads(settings.read_text(encoding='utf-8'))['hooks']['PostToolUse'][0]['hooks'][0]['command']
     assert _owned({'type': 'command', 'command': command}, 'claude')
     assert installation_status(settings, state)['ready']
-    env = dict(os.environ, SECURE_MCP_TEST_EXPANSION='EXPANDED_WRONG_PATH')
+    env = dict(os.environ, SECURE_GATEWAY_TEST_EXPANSION='EXPANDED_WRONG_PATH')
     result = subprocess.run([os.environ.get('COMSPEC', 'cmd.exe'), '/d', '/c', command],
                             input=json.dumps({'hook_event_name': 'PostToolUse',
                                               'session_id': 'windows-session',

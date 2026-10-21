@@ -18,13 +18,13 @@ import tempfile
 import time
 from typing import Any, Callable, Iterator
 
-from secure_mcp.encrypted_session import (
+from secure_gateway.encrypted_session import (
     _LOCK_MAGIC, SessionExpiredError, load_session, save_session, session_file_lock,
 )
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.engine.strategies import StrategyGenerator
-from secure_mcp.models import MaskMode, SurrogateStrategy
-from secure_mcp.session import PrivacySession
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.engine.strategies import StrategyGenerator
+from secure_gateway.models import MaskMode, SurrogateStrategy
+from secure_gateway.session import PrivacySession
 
 
 EVENTS = ("PreToolUse", "PostToolUse", "MessageDisplay", "SessionEnd")
@@ -32,7 +32,7 @@ AGENT_EVENTS = {
     "claude": EVENTS,
     "codex": ("PreToolUse", "PostToolUse", "SessionEnd"),
 }
-MARKER = "-m secure_mcp hook --state-dir"
+MARKER = "-m secure_gateway hook --state-dir"
 _ENCODED_COMMAND = "powershell.exe -NoProfile -NonInteractive -EncodedCommand "
 _SNAPSHOT_NAME = re.compile(r"[a-f0-9]{64}\.enc")
 _SNAPSHOT_STATUSES = ("valid", "expired", "corrupt", "active", "legacy_lock", "retired", "unknown")
@@ -72,7 +72,7 @@ LOCAL_TOOLS = frozenset(
 
 
 def default_state_dir() -> Path:
-    return Path.home() / ".secure-mcp" / "hooks"
+    return Path.home() / ".secure-gateway" / "hooks"
 
 
 def agent_state_dir(directory: Path, agent: str) -> Path:
@@ -81,7 +81,7 @@ def agent_state_dir(directory: Path, agent: str) -> Path:
 
 
 def _atomic_json(path: Path, value: Any) -> None:
-    fd, temporary = tempfile.mkstemp(prefix=".secure-mcp-", dir=path.parent)
+    fd, temporary = tempfile.mkstemp(prefix=".secure-gateway-", dir=path.parent)
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
             json.dump(value, stream, ensure_ascii=False, indent=2)
@@ -149,7 +149,7 @@ def _owned(hook: dict[str, Any], agent: str | None = None) -> bool:
         parts = _command_parts(command)
     except ValueError:
         return False
-    if parts[1:5] != ["-m", "secure_mcp", "hook", "--state-dir"]:
+    if parts[1:5] != ["-m", "secure_gateway", "hook", "--state-dir"]:
         return False
     owner = "claude" if len(parts) == 6 else None
     if len(parts) == 8 and parts[6] == "--agent" and parts[7] in AGENT_EVENTS:
@@ -192,7 +192,7 @@ def configure(
             args = [
                 sys.executable,
                 "-m",
-                "secure_mcp",
+                "secure_gateway",
                 "hook",
                 "--state-dir",
                 str(state_dir),
@@ -218,7 +218,7 @@ def configure(
         backup = None
         if settings.exists():
             backup = settings.with_name(
-                settings.name + f".secure-mcp-{time.time_ns()}.bak"
+                settings.name + f".secure-gateway-{time.time_ns()}.bak"
             )
             fd = os.open(backup, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, "wb") as stream:
@@ -407,7 +407,7 @@ class HookStore:
                         retired = self._retired(path)
                         fd = os.open(retired, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
                         with os.fdopen(fd, "wb") as stream:
-                            stream.write(b"SecureMCP-retired-hook-session-v1\n")
+                            stream.write(b"SecureGateway-retired-hook-session-v1\n")
                             stream.flush()
                             os.fsync(stream.fileno())
                         path.unlink()
@@ -551,7 +551,7 @@ def handle_hook(
             )
             return {
                 "continue": False,
-                "stopReason": text or "SecureMCP: empty tool output.",
+                "stopReason": text or "SecureGateway: empty tool output.",
             }
         return {
             "hookSpecificOutput": {

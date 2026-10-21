@@ -13,12 +13,12 @@ configuration.
 Install the gateway configuration with an explicit upstream model:
 
 ```sh
-secure-mcp gateway api-install --provider xai --model YOUR_XAI_MODEL
-secure-mcp gateway api-run
+secure-gateway gateway api-install --provider xai --model YOUR_XAI_MODEL
+secure-gateway gateway api-run
 ```
 
 Set `XAI_API_KEY` in the environment where Grok Build runs, then select the
-`secure_mcp_xai` custom model. The key is read from the environment; do not put it
+`secure_gateway_xai` custom model. The key is read from the environment; do not put it
 in a prompt or configuration file. The generated model uses the loopback gateway
 at `http://127.0.0.1:38118/xai/v1`, the Responses protocol, and a separate local
 gateway token. Backend search is disabled for this custom model.
@@ -29,7 +29,7 @@ arguments. Grok executes tools locally; subsequent tool output passes through
 the same masking boundary. The gateway does not validate or authorize Grok's
 local tool execution, so retain the host's permission controls.
 
-API configuration is stored separately in `~/.secure-mcp/xai-api/config.json`;
+API configuration is stored separately in `~/.secure-gateway/xai-api/config.json`;
 the API key is never written there. API mode runs in the foreground and has no
 login startup registration. Installation preserves the default model, other
 models, MCP/hooks settings and login files. Uninstall restores the original
@@ -46,7 +46,7 @@ Requests cannot fall back to direct traffic or browser subscription tokens.
 To remove the generated custom model:
 
 ```sh
-secure-mcp gateway api-uninstall
+secure-gateway gateway api-uninstall
 ```
 
 ## Offline native-host verification
@@ -57,7 +57,7 @@ which rejects unsupported destinations. It does not call paid inference or
 read an existing Grok login. Supply a separately installed official Grok binary:
 
 ```powershell
-$env:SECURE_MCP_GROK_BINARY = 'C:\path\to\grok.exe'
+$env:SECURE_GATEWAY_GROK_BINARY = 'C:\path\to\grok.exe'
 .venv\Scripts\python.exe -m pytest tests/test_grok_host.py -q
 ```
 
@@ -71,13 +71,13 @@ tool arguments and answer text, masked tool output, and restored answers. The
 fixture file remained unchanged. Live paid xAI inference was not exercised.
 
 The real API smoke test defaults to skip. To run it intentionally, set
-`SECURE_MCP_LIVE_XAI_API=1`, `SECURE_MCP_XAI_MODEL` and `XAI_API_KEY` in the test
+`SECURE_GATEWAY_LIVE_XAI_API=1`, `SECURE_GATEWAY_XAI_MODEL` and `XAI_API_KEY` in the test
 process, then run `pytest tests/test_xai_api.py -k live_xai_api_smoke`.
 It consumes separately billed API usage, not a Grok subscription allowance.
 
 
 The explicit xAI gateway supports `GET /xai/v1/models`. Both the local
-`X-SecureMCP-Token` and caller-owned `Authorization: Bearer xai-...` are required.
+`X-SecureGateway-Token` and caller-owned `Authorization: Bearer xai-...` are required.
 The gateway fetches only the fixed provider catalog, rejects redirects/environment proxies,
 and bounds JSON size. It returns public model IDs and bounded public metadata; arbitrary
 provider descriptions are omitted. This enables catalog discovery for compatibility probes;

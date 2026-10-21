@@ -11,10 +11,10 @@ import urllib.request
 from click.testing import CliRunner
 import pytest
 
-from secure_mcp.antigravity_sdk import antigravity_endpoint
-from secure_mcp.cli import main
-from secure_mcp.gateway import PrivacyGateway
-from secure_mcp.hooks import configure
+from secure_gateway.antigravity_sdk import antigravity_endpoint
+from secure_gateway.cli import main
+from secure_gateway.gateway import PrivacyGateway
+from secure_gateway.hooks import configure
 
 
 def test_utf8_stdin_and_file_roundtrip(tmp_path):
@@ -84,7 +84,7 @@ def test_session_diagnostics_and_credential_filter_are_authenticated(tmp_path):
                     "duration_ms": 1, "input_bytes": 0, "masked_bytes": 0, "output_bytes": 0, "new_aliases": 0}
             gateway.audit.finish(request_id, meta)
         for path in ["/admin/api/sessions", "/admin/api/logs?credential_ref=credential-one"]:
-            request = urllib.request.Request(url + path, headers={"X-SecureMCP-Token": gateway.token})
+            request = urllib.request.Request(url + path, headers={"X-SecureGateway-Token": gateway.token})
             with urllib.request.urlopen(request) as response:
                 data = json.load(response)
             if "logs" in path:

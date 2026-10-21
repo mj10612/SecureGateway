@@ -6,9 +6,9 @@ import secrets
 
 import tomlkit
 
-from secure_mcp.encrypted_session import session_file_lock
-from secure_mcp.gateway import validate_api_options
-from secure_mcp.gateway_install import (
+from secure_gateway.encrypted_session import session_file_lock
+from secure_gateway.gateway import validate_api_options
+from secure_gateway.gateway_install import (
     apply_settings,
     load_config,
     load_installation_manifest,
@@ -17,7 +17,7 @@ from secure_mcp.gateway_install import (
 
 
 def default_api_config():
-    return Path.home() / ".secure-mcp" / "xai-api" / "config.json"
+    return Path.home() / ".secure-gateway" / "xai-api" / "config.json"
 
 
 def load_api_config(path):
@@ -66,18 +66,18 @@ def install_api(path: Path, model: str, port=38118, grok_dir=None):
             else tomlkit.document()
         )
         models = value.setdefault("model", {})
-        if "secure_mcp_xai" in models and str(settings.resolve()) not in records:
+        if "secure_gateway_xai" in models and str(settings.resolve()) not in records:
             raise ValueError(
-                "The secure_mcp_xai model already exists; choose a clean configuration."
+                "The secure_gateway_xai model already exists; choose a clean configuration."
             )
-        models["secure_mcp_xai"] = {
-            "name": "SecureMCP xAI API (separate API billing)",
+        models["secure_gateway_xai"] = {
+            "name": "SecureGateway xAI API (separate API billing)",
             "model": model,
             "base_url": f"http://127.0.0.1:{port}/xai/v1",
             "api_backend": "responses",
             "env_key": "XAI_API_KEY",
-            "extra_headers": {"X-SecureMCP-Token": config["token"],
-                              "X-SecureMCP-Agent": "Grok Build"},
+            "extra_headers": {"X-SecureGateway-Token": config["token"],
+                              "X-SecureGateway-Agent": "Grok Build"},
             "supports_backend_search": False,
         }
         # Add an explicitly selectable model; do not change the user's default.

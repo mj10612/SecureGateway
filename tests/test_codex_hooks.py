@@ -9,8 +9,8 @@ import sys
 from click.testing import CliRunner
 import pytest
 
-from secure_mcp.cli import main
-from secure_mcp.hooks import (
+from secure_gateway.cli import main
+from secure_gateway.hooks import (
     AGENT_EVENTS,
     HookStore,
     agent_state_dir,

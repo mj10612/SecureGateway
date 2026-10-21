@@ -9,7 +9,7 @@ from threading import Event, Thread
 
 import pytest
 
-from secure_mcp.gateway import EXEC_GRAMMAR, GatewaySession, PrivacyGateway
+from secure_gateway.gateway import EXEC_GRAMMAR, GatewaySession, PrivacyGateway
 
 
 @pytest.mark.parametrize("tag", ["type", "permission_mode", "platform", "source"])
@@ -208,7 +208,7 @@ def live_gateway():
     def request(payload=None, *, method="POST", path="/codex/responses", declared_length=None):
         conn = http.client.HTTPConnection("127.0.0.1", gateway.server_port, timeout=3)
         body = json.dumps({"input": "hi"} if payload is None else payload).encode() if method == "POST" else None
-        headers = {"X-SecureMCP-Token": "fixture-token", "Authorization": "Bearer eyJ-fixture"}
+        headers = {"X-SecureGateway-Token": "fixture-token", "Authorization": "Bearer eyJ-fixture"}
         if path.startswith("/claude"):
             headers["Authorization"] = "Bearer sk-ant-oat-fixture"
         if declared_length is not None:
@@ -320,7 +320,7 @@ def test_shutdown_ack_keeps_health_alive_until_inference_finishes(live_gateway):
     conn = http.client.HTTPConnection("127.0.0.1", gateway.server_port, timeout=1)
     try:
         with pytest.raises((OSError, http.client.HTTPException)):
-            conn.request("GET", "/health", headers={"X-SecureMCP-Token": "fixture-token"})
+            conn.request("GET", "/health", headers={"X-SecureGateway-Token": "fixture-token"})
             conn.getresponse()
     finally:
         conn.close()
@@ -408,7 +408,7 @@ def test_api_function_tool_choice_retains_definition_alias(kind):
     else:
         assert masked["tool_choice"]["function"]["name"] == masked["tools"][0]["function"]["name"]
 def test_negative_numeric_json_alias_keeps_its_unary_sign():
-    from secure_mcp.models import TokenType
+    from secure_gateway.models import TokenType
     session = GatewaySession(mask_numbers=True)
     session.mask("private_value=-42", code=True)
     mapping = next(mapping for mapping in session.session.forward_store.values()
@@ -435,8 +435,8 @@ def test_invalid_tool_names_return_400_and_release_admission(live_gateway, name,
 @pytest.mark.parametrize('text', [None, 2, True, [], {}])
 @pytest.mark.parametrize('method', ['mask_text', 'mask_code'])
 def test_masking_engine_rejects_non_text_input(text, method):
-    from secure_mcp.engine.masking_engine import MaskingEngine
-    from secure_mcp.session import PrivacySession
+    from secure_gateway.engine.masking_engine import MaskingEngine
+    from secure_gateway.session import PrivacySession
 
     session = PrivacySession('invalid-text')
     with pytest.raises(ValueError, match='Input must be text'):

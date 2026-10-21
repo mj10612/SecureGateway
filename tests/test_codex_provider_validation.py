@@ -6,8 +6,8 @@ from click.testing import CliRunner
 import pytest
 import tomlkit
 
-from secure_mcp import gateway_install
-from secure_mcp.cli import main
+from secure_gateway import gateway_install
+from secure_gateway.cli import main
 
 
 @pytest.fixture
@@ -111,11 +111,11 @@ def test_valid_provider_tables_install_and_uninstall_preserving_settings(
     assert ensured == [config]
     installed = tomlkit.parse(settings.read_text())
     assert installed["model"] == "fixture-model"
-    assert installed["model_provider"] == "secure_mcp_subscription"
-    provider = installed["model_providers"]["secure_mcp_subscription"]
+    assert installed["model_provider"] == "secure_gateway_subscription"
+    provider = installed["model_providers"]["secure_gateway_subscription"]
     assert provider["wire_api"] == "responses"
     assert (
-        provider["http_headers"]["X-SecureMCP-Token"]
+        provider["http_headers"]["X-SecureGateway-Token"]
         == json.loads(config.read_text())["token"]
     )
     previous = tomlkit.parse(original).get("model_providers", {})

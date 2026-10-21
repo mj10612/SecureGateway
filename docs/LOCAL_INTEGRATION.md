@@ -4,9 +4,9 @@ For automatic prompt/code protection and result restoration with existing subscr
 logins, use the [0.5 subscription gateway](GATEWAY.md). It registers no agent hooks.
 This page documents the optional legacy hook integration.
 
-SecureMCP 0.4 supports opt-in Claude Code and Codex command hooks without an API gateway, HTTP service,
+SecureGateway 0.4 supports opt-in Claude Code and Codex command hooks without an API gateway, HTTP service,
 or provider endpoint changes. This is an experimental **tool-text integration**, not
-a guarantee that all confidential data stays off the network. The project name remains SecureMCP.
+a guarantee that all confidential data stays off the network. The project name remains SecureGateway.
 
 ## Install and remove
 
@@ -16,8 +16,8 @@ Install the package in an environment that will remain available to Claude Code:
 
 ```powershell
 uv tool install .
-secure-mcp init --agent claude
-secure-mcp doctor
+secure-gateway init --agent claude
+secure-gateway doctor
 ```
 
 The default scope is the current project: `.claude/settings.local.json`. Use `--global`
@@ -26,14 +26,14 @@ different local state directory; pass the same path to installation, diagnostics
 manual commands. Restart Claude Code after installation or removal.
 
 ```powershell
-secure-mcp init --agent claude --global
-secure-mcp doctor --agent claude --global
-secure-mcp uninstall --agent claude --global
+secure-gateway init --agent claude --global
+secure-gateway doctor --agent claude --global
+secure-gateway uninstall --agent claude --global
 ```
 
 Installation merges our four command hooks into the existing registry. Other hooks,
 permissions and settings are retained. Existing settings receive an exact byte backup
-named `settings.json.secure-mcp-<timestamp>.bak` (or the project equivalent).
+named `settings.json.secure-gateway-<timestamp>.bak` (or the project equivalent).
 Repeated installation replaces our entries rather than duplicating them. Invalid JSON
 or invalid hook registries are refused. Removal deletes only our registrations, retaining
 encrypted state and backups. It never restores an old entire settings file over newer changes.
@@ -48,13 +48,13 @@ installed host with a disposable, nonsensitive fixture before relying on the int
 ## Codex
 
 ```powershell
-secure-mcp init --agent codex
-secure-mcp doctor --agent codex
-secure-mcp uninstall --agent codex
+secure-gateway init --agent codex
+secure-gateway doctor --agent codex
+secure-gateway uninstall --agent codex
 ```
 
 The default project file is `.codex/hooks.json`. Use `--global` on each command to select
-`$CODEX_HOME/hooks.json`, or `~/.codex/hooks.json` when `CODEX_HOME` is unset. SecureMCP
+`$CODEX_HOME/hooks.json`, or `~/.codex/hooks.json` when `CODEX_HOME` is unset. SecureGateway
 does not edit `config.toml`, enable disabled features, change approval/sandbox settings, or
 mark hooks trusted. Restart Codex, trust the project if using project hooks, and review/trust
 the exact hook definitions through `/hooks`. Changed definitions can require renewed trust.
@@ -62,7 +62,7 @@ the exact hook definitions through `/hooks`. Changed definitions can require ren
 
 Codex has three registered hooks:
 
-| Event | SecureMCP behavior |
+| Event | SecureGateway behavior |
 | :--- | :--- |
 | `PostToolUse` | Mask supported tool text and return feedback replacing the original tool result |
 | `PreToolUse` | Restore string argument values for `Bash` and `apply_patch`; refuse unknown surrogates |
@@ -80,9 +80,9 @@ There is no Codex display-only restoration hook in the currently documented inte
 remain surrogate text. For local display before the session ends, feed UTF-8 text into:
 
 ```powershell
-secure-mcp restore --agent codex --session-id <codex-session-id>
-secure-mcp stats --agent codex --session-id <codex-session-id>
-secure-mcp exec --agent codex --session-id <codex-session-id> -- git status
+secure-gateway restore --agent codex --session-id <codex-session-id>
+secure-gateway stats --agent codex --session-id <codex-session-id>
+secure-gateway exec --agent codex --session-id <codex-session-id> -- git status
 ```
 
 `restore` reads text from stdin until EOF and writes restored text to stdout. Never invoke it as
@@ -97,7 +97,7 @@ and captured provider requests contained no original fixture email. No external 
 API was used. Reproduce this optional host test with a native binary:
 
 ```powershell
-$env:SECURE_MCP_CODEX_BINARY = "C:\path\to\codex.exe"
+$env:SECURE_GATEWAY_CODEX_BINARY = "C:\path\to\codex.exe"
 python -m pytest tests/test_codex_host.py -q
 ```
 
@@ -162,8 +162,8 @@ For commands whose output must be masked **before the host receives it**, invoke
 wrapper explicitly (or through your own validated command-rewrite integration):
 
 ```powershell
-secure-mcp exec --session-id example -- git status
-secure-mcp stats --session-id example
+secure-gateway exec --session-id example -- git status
+secure-gateway stats --session-id example
 ```
 
 The wrapper accepts an executable and argument list, with no implicit shell. For pipelines,
@@ -181,7 +181,7 @@ matching and shell behavior and needs a separate host-specific validation.
 ## State and lifecycle
 
 Hook subprocesses share authenticated, encrypted session snapshots under
-`~/.secure-mcp/hooks` by default. A random local password is stored in `key` beside them;
+`~/.secure-gateway/hooks` by default. A random local password is stored in `key` beside them;
 it is never included in hook settings. The existing encrypted-session transaction lock prevents
 concurrent updates; a conflicting writer fails without overwriting mappings. Session filenames
 are hashes of host conversation IDs, preventing path traversal.
@@ -193,7 +193,7 @@ on process exit, while marked `.lock` files remain and must be retained. Legacy 
 require migration after confirming no old writer is active. Removal retains state so a conversation can still be
 restored manually. Delete the state directory after all conversations are finished if desired.
 
-Use `secure-mcp state status [--agent codex]` to inspect aggregate snapshot states without
+Use `secure-gateway state status [--agent codex]` to inspect aggregate snapshot states without
 original IDs, mappings, passwords, or paths. `state gc` previews expired ciphertext retirement;
 `state gc --apply` revalidates expiry under the transaction lock. It preserves valid, corrupt,
 unknown, active, and legacy-locked files, and never deletes persistent locks. A durable retired
@@ -209,18 +209,18 @@ same local trust requirement. No physical memory-zeroization guarantee is made.
 
 ## 한국어 사용 안내
 
-Codex는 `secure-mcp init --agent codex`로 등록하고, `secure-mcp doctor --agent codex`로
+Codex는 `secure-gateway init --agent codex`로 등록하고, `secure-gateway doctor --agent codex`로
 확인합니다. 프로젝트의 `.codex/hooks.json`에 설치하며 `--global`은 `CODEX_HOME` 또는
 `~/.codex`를 사용합니다. Codex를 재시작한 뒤 `/hooks`에서 정확한 Hook 정의를 검토하고
 신뢰해야 합니다. 자동으로 신뢰하거나 보안 설정을 바꾸지는 않습니다.
 
 Codex는 도구 결과를 마스킹한 피드백으로 교체하고 `Bash`·`apply_patch` 실행 인자를 복원합니다.
-화면 자동 복원은 제공하지 않습니다. 대화가 끝나기 전에 `secure-mcp restore --agent codex
+화면 자동 복원은 제공하지 않습니다. 대화가 끝나기 전에 `secure-gateway restore --agent codex
 --session-id <ID>`에 마스킹된 텍스트를 UTF-8 표준입력으로 전달하면 로컬에서 복원할 수 있습니다.
 이 복원 명령을 모델이 보는 도구로 실행하면 안 됩니다. Codex 상태는 별도 `codex` 하위 폴더에
 저장합니다. CLI 0.160.0에서 로컬 가상 제공자를 사용하여 실제 실행과 재전송 데이터까지 검증했습니다.
 
-이름은 SecureMCP로 유지합니다. 로컬에 설치한 뒤 `secure-mcp init --agent claude`를
+이름은 SecureGateway로 유지합니다. 로컬에 설치한 뒤 `secure-gateway init --agent claude`를
 실행하면 프로젝트의 Claude Code Hook을 등록합니다. API 주소 변경이나 게이트웨이 서버는
 필요하지 않습니다. 전체 프로젝트에 적용하려면 `--global`을 사용하세요. `doctor`는 설정과
 키 존재 여부를 검사하며, 실제 호스트의 동작을 보증하지는 않습니다.
@@ -233,7 +233,7 @@ Codex는 도구 결과를 마스킹한 피드백으로 교체하고 `Bash`·`app
 **직접 입력, 자동 첨부, 시스템 지시문, 미지원 필드, 이미지, 실패한 도구 결과, 텔레메트리는
 보호 범위에 포함되지 않습니다.** Hook 오류나 호스트 출력 형식 변경으로 원문이 전달될 수
 있으므로 전체 개인정보 유출 방지 수단으로 사용하면 안 됩니다. 실행 결과를 호스트에 전달하기
-전에 가리려면 `secure-mcp exec --session-id <ID> -- <실행파일> <인자>`를 사용하세요.
+전에 가리려면 `secure-gateway exec --session-id <ID> -- <실행파일> <인자>`를 사용하세요.
 이 명령은 현재 자동 등록되는 명령 재작성 기능이 아닙니다.
 
 치환표는 대화 ID별로 암호화하여 저장하고 별도 Hook 프로세스가 공유합니다. 로컬 키가 같은

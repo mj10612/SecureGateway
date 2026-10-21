@@ -8,7 +8,7 @@ from threading import Thread
 
 import pytest
 
-from secure_mcp.gateway import PrivacyGateway
+from secure_gateway.gateway import PrivacyGateway
 
 
 class GrokProvider(BaseHTTPRequestHandler):
@@ -189,7 +189,7 @@ class GrokProvider(BaseHTTPRequestHandler):
 
 @pytest.mark.parametrize("language", ["en", "ko"])
 def test_native_grok_responses_gateway(tmp_path, language):
-    binary = os.environ.get("SECURE_MCP_GROK_BINARY")
+    binary = os.environ.get("SECURE_GATEWAY_GROK_BINARY")
     if not binary:
         pytest.skip("Native Grok Build host not configured")
     provider = ThreadingHTTPServer(("127.0.0.1", 0), GrokProvider)
@@ -217,12 +217,12 @@ def test_native_grok_responses_gateway(tmp_path, language):
         else "fixture.py 파일을 읽고 파일에 있는 이메일 주소를 알려줘."
     )
     (home / "config.toml").write_text(
-        '[models]\ndefault = "secure_mcp_xai"\n'
-        '[model.secure_mcp_xai]\nmodel = "offline-fixture"\n'
+        '[models]\ndefault = "secure_gateway_xai"\n'
+        '[model.secure_gateway_xai]\nmodel = "offline-fixture"\n'
         f'base_url = "http://127.0.0.1:{gateway.server_port}/xai/v1"\n'
         'env_key = "XAI_API_KEY"\napi_backend = "responses"\n'
         "supports_backend_search = false\nmax_retries = 0\n"
-        'extra_headers = { "X-SecureMCP-Token" = "offline-local-token" }\n',
+        'extra_headers = { "X-SecureGateway-Token" = "offline-local-token" }\n',
         encoding="utf-8",
     )
     env = {
@@ -253,7 +253,7 @@ def test_native_grok_responses_gateway(tmp_path, language):
                 "--single",
                 prompt,
                 "--model",
-                "secure_mcp_xai",
+                "secure_gateway_xai",
                 "--disable-web-search",
                 "--no-subagents",
                 "--max-turns",
@@ -295,7 +295,7 @@ def test_native_grok_responses_gateway(tmp_path, language):
             assert payload["model"] == "offline-fixture"
             assert payload["stream"] is True
             assert headers["Authorization"] == "Bearer xai-offline-fixture"
-            assert not any(key.lower() == "x-securemcp-token" for key in headers)
+            assert not any(key.lower() == "x-securegateway-token" for key in headers)
     finally:
         for server in (gateway, provider):
             server.shutdown()

@@ -11,7 +11,7 @@ import time
 
 import pytest
 
-from secure_mcp import gateway_install
+from secure_gateway import gateway_install
 
 
 @pytest.fixture
@@ -115,7 +115,7 @@ def test_uninstall_rejects_install_in_another_process_then_retries(
     script = """
 from pathlib import Path
 import sys, time
-from secure_mcp import gateway_install as install
+from secure_gateway import gateway_install as install
 config, home, startup, ready, release = map(Path, sys.argv[1:])
 write = install.atomic_bytes
 def paused_write(path, data):

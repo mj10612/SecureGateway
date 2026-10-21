@@ -1,7 +1,7 @@
 """Offline validation for host MCP example configs (issue #65).
 
 These tests only check the shipped JSON examples: valid JSON, a
-secure-mcp stdio entry, no remote URLs and no credentials. They never launch
+secure-gateway stdio entry, no remote URLs and no credentials. They never launch
 a host or contact a provider.
 """
 
@@ -26,8 +26,8 @@ def test_example_configs_are_stdio_and_credential_free():
     for name in CONFIGS:
         config = load(name)
         servers = config.get("mcpServers")
-        assert isinstance(servers, dict) and "secure-mcp" in servers
-        entry = servers["secure-mcp"]
+        assert isinstance(servers, dict) and "secure-gateway" in servers
+        entry = servers["secure-gateway"]
         assert isinstance(entry.get("command"), str) and entry["command"]
         assert isinstance(entry.get("args"), list) and "serve" in entry["args"]
         serialized = json.dumps(config)
@@ -37,5 +37,5 @@ def test_example_configs_are_stdio_and_credential_free():
 
 def test_antigravity_example_uses_local_stdio_serve():
     config = load("antigravity_mcp_config.json")
-    entry = config["mcpServers"]["secure-mcp"]
-    assert entry["args"] == ["-m", "secure_mcp", "serve"]
+    entry = config["mcpServers"]["secure-gateway"]
+    assert entry["args"] == ["-m", "secure_gateway", "serve"]

@@ -6,8 +6,8 @@ import shutil
 from click.testing import CliRunner
 import tomlkit
 
-from secure_mcp.cli import main
-from secure_mcp import gateway_install
+from secure_gateway.cli import main
+from secure_gateway import gateway_install
 
 
 def test_orca_sync_retains_gateway_and_uninstall_restores_both(tmp_path, monkeypatch):
@@ -32,7 +32,7 @@ def test_orca_sync_retains_gateway_and_uninstall_restores_both(tmp_path, monkeyp
     shutil.copyfile(canonical / "config.toml", managed / "config.toml")
     for home in (canonical, managed):
         value = tomlkit.parse((home / "config.toml").read_text())
-        assert value["model_provider"] == "secure_mcp_subscription"
+        assert value["model_provider"] == "secure_gateway_subscription"
         assert value["model"] == "existing-model"
         assert (home / "auth.json").read_bytes() == b"unchanged-login"
     assert gateway_install.changed_installation_files(config) == []

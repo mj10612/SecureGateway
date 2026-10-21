@@ -9,7 +9,7 @@ from urllib.error import HTTPError
 
 import pytest
 
-from secure_mcp.gateway import PrivacyGateway, sanitized_upstream_error
+from secure_gateway.gateway import PrivacyGateway, sanitized_upstream_error
 
 
 @pytest.mark.parametrize(
@@ -75,13 +75,13 @@ def test_mapping_limit_reuse_and_authenticated_reset(tmp_path):
         worker.start()
         url = f"http://127.0.0.1:{server.server_port}/reset"
         request = urllib.request.Request(
-            url, data=b'{"agent":"claude"}', headers={"X-SecureMCP-Token": "wrong"}
+            url, data=b'{"agent":"claude"}', headers={"X-SecureGateway-Token": "wrong"}
         )
         with pytest.raises(HTTPError) as caught:
             urllib.request.urlopen(request)
         assert caught.value.code == 401 and server.get_session("claude") is session
         caught.value.close()
-        request.add_header("X-SecureMCP-Token", "secret")
+        request.add_header("X-SecureGateway-Token", "secret")
         with urllib.request.urlopen(request) as response:
             assert response.status == 200
         assert session.session.generator.closed
@@ -130,7 +130,7 @@ def test_gateway_does_not_hold_alias_lock_while_provider_waits():
                     f"http://127.0.0.1:{gateway.server_port}" + path,
                     data=json.dumps(payload).encode(),
                     headers={
-                        "X-SecureMCP-Token": "secret",
+                        "X-SecureGateway-Token": "secret",
                         "Authorization": "Bearer sk-ant-oat-test"
                         if "claude" in path
                         else "Bearer eyJ-test",
@@ -186,7 +186,7 @@ def test_gateway_does_not_hold_alias_lock_while_provider_waits():
     ],
 )
 def test_malformed_chat_stream_rejects_with_value_error(event):
-    from secure_mcp.gateway import GatewaySession
+    from secure_gateway.gateway import GatewaySession
 
     with pytest.raises(ValueError):
         GatewaySession().response(
@@ -198,18 +198,18 @@ def test_malformed_chat_stream_rejects_with_value_error(event):
 
 @pytest.mark.parametrize("query", ["beta=true", "beta=false&client_version=1.2.3", "api-version=2026-01-01"])
 def test_supported_query_preserves_public_metadata(query):
-    from secure_mcp.gateway import supported_query
+    from secure_gateway.gateway import supported_query
     assert supported_query(query)
 
 
 @pytest.mark.parametrize("query", ["private=alice@example.com", "beta=private", "client_version=alice", "beta=true&beta=false"])
 def test_private_or_ambiguous_query_is_rejected(query):
-    from secure_mcp.gateway import supported_query
+    from secure_gateway.gateway import supported_query
     assert not supported_query(query)
 
 
 def test_gateway_snapshot_derives_key_once_per_owner_and_drops_on_reset(tmp_path, monkeypatch):
-    import secure_mcp.encrypted_session as storage
+    import secure_gateway.encrypted_session as storage
     count = []
     original = storage._cipher
     def counted(password, salt):
@@ -234,6 +234,6 @@ def test_gateway_snapshot_derives_key_once_per_owner_and_drops_on_reset(tmp_path
 @pytest.mark.parametrize("data", ["null", "[]", "123", '\"private\"'])
 @pytest.mark.parametrize("dialect", [None, "responses", "chat_completions"])
 def test_scalar_sse_events_fail_closed(data, dialect):
-    from secure_mcp.gateway import GatewaySession
+    from secure_gateway.gateway import GatewaySession
     with pytest.raises(ValueError):
         GatewaySession().response(("data: "+data+"\n\n").encode(), "text/event-stream", dialect=dialect)

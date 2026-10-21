@@ -21,24 +21,30 @@ def main():
     env.pop("PYTHONPATH", None)
     env.pop("PYTHONHOME", None)
     proof = """
-from importlib.metadata import version
+from importlib.metadata import version, distribution
+from importlib.util import find_spec
 from importlib.resources import files
-from secure_mcp import __version__
-from secure_mcp.server import app, get_privacy_status
-from secure_mcp.command_capture import capture_command
+from secure_gateway import __version__
+from secure_gateway.server import app, get_privacy_status
+from secure_gateway.command_capture import capture_command
 import json
 import sys
-assert version('secure-mcp') == __version__ == app.version
+assert version('secure-gateway') == __version__ == app.version
+assert app.name == 'SecureGateway'
+assert find_spec('secure_mcp') is None
+assert find_spec('secure_router') is None
+assert any(e.name == 'secure-gateway' and e.value == 'secure_gateway.cli:main'
+           for e in distribution('secure-gateway').entry_points)
 assert json.loads(get_privacy_status())['version'] == __version__
 for name in ('index.html', 'app.js', 'style.css', 'favicon.svg'):
-    assert files('secure_mcp').joinpath('admin', name).is_file(), name
+    assert files('secure_gateway').joinpath('admin', name).is_file(), name
 result = capture_command([sys.executable, '-c', "print('smoke')"],
                          timeout=5, max_output_bytes=128)
 assert result.returncode == 0 and result.stdout.strip() == b'smoke'
 print(__version__)
 """
     for distribution in distributions:
-        with tempfile.TemporaryDirectory(prefix="securemcp-package-") as temporary:
+        with tempfile.TemporaryDirectory(prefix="securegateway-package-") as temporary:
             work = Path(temporary)
             venv = work / "environment"
             subprocess.run(["uv", "venv", str(venv), "--python", sys.executable],
@@ -48,12 +54,12 @@ print(__version__)
                            cwd=work, env=env, check=True)
             expected = subprocess.check_output([str(python), "-I", "-c", proof],
                                                cwd=work, env=env, text=True).strip()
-            reported = subprocess.check_output([str(python), "-I", "-m", "secure_mcp", "--version"],
+            reported = subprocess.check_output([str(python), "-I", "-m", "secure_gateway", "--version"],
                                                cwd=work, env=env, text=True)
             if not reported.strip().endswith(expected):
                 raise SystemExit("CLI version disagrees with installed package.")
             masked = subprocess.check_output(
-                [str(python), "-I", "-m", "secure_mcp", "mask", "--json-output"],
+                [str(python), "-I", "-m", "secure_gateway", "mask", "--json-output"],
                 input=b"ConfidentialCustomer", cwd=work, env=env,
             )
             if b"ConfidentialCustomer" in masked:

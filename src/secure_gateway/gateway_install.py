@@ -20,8 +20,8 @@ import urllib.request
 
 import tomlkit
 
-from secure_mcp.encrypted_session import session_file_lock
-from secure_mcp.hooks import _atomic_json, _remove_owned, _settings
+from secure_gateway.encrypted_session import session_file_lock
+from secure_gateway.hooks import _atomic_json, _remove_owned, _settings
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -89,12 +89,12 @@ def _recover_install(path):
 
 
 def default_config() -> Path:
-    return Path.home() / ".secure-mcp" / "gateway" / "config.json"
+    return Path.home() / ".secure-gateway" / "gateway" / "config.json"
 
 
 def atomic_bytes(path: Path, data: bytes):
     path.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary = tempfile.mkstemp(prefix=".secure-mcp-", dir=path.parent)
+    fd, temporary = tempfile.mkstemp(prefix=".secure-gateway-", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as stream:
             stream.write(data)
@@ -167,7 +167,7 @@ def load_installation_manifest(path: Path):
 def _healthy_response(config):
     request = urllib.request.Request(
         f"http://127.0.0.1:{config['port']}/health",
-        headers={"X-SecureMCP-Token": config["token"]},
+        headers={"X-SecureGateway-Token": config["token"]},
     )
     try:
         with urllib.request.build_opener(
@@ -176,7 +176,7 @@ def _healthy_response(config):
             value = json.load(response)
             return (
                 isinstance(value, dict)
-                and value.get("service") == "secure-mcp-subscription-gateway"
+                and value.get("service") == "secure-gateway-subscription-gateway"
             )
     except urllib.error.HTTPError as exc:
         exc.close()
@@ -214,7 +214,7 @@ def ensure_gateway(path: Path):
                 [
                     sys.executable,
                     "-m",
-                    "secure_mcp",
+                    "secure_gateway",
                     "gateway",
                     "run",
                     "--config",
@@ -260,7 +260,7 @@ def stop_gateway(path: Path):
     request = urllib.request.Request(
         f"http://127.0.0.1:{config['port']}/shutdown",
         data=b"",
-        headers={"X-SecureMCP-Token": config["token"]},
+        headers={"X-SecureGateway-Token": config["token"]},
     )
     try:
         with urllib.request.build_opener(
@@ -338,7 +338,7 @@ def startup_registration(arguments, startup_path=None):
     if sys.platform == "win32":
         destination = startup_path or (
             Path(os.environ["APPDATA"])
-            / "Microsoft/Windows/Start Menu/Programs/Startup/SecureMCP.vbs"
+            / "Microsoft/Windows/Start Menu/Programs/Startup/SecureGateway.vbs"
         )
         command = subprocess.list2cmdline(arguments).replace('"', '""')
         data = f'CreateObject("WScript.Shell").Run "{command}", 0, False\r\n'.encode(
@@ -347,11 +347,11 @@ def startup_registration(arguments, startup_path=None):
     elif sys.platform == "darwin":
         destination = (
             startup_path
-            or Path.home() / "Library/LaunchAgents/io.securemcp.gateway.plist"
+            or Path.home() / "Library/LaunchAgents/io.securegateway.gateway.plist"
         )
         data = plistlib.dumps(
             {
-                "Label": "io.securemcp.gateway",
+                "Label": "io.securegateway.gateway",
                 "RunAtLoad": True,
                 "ProgramArguments": arguments,
             }
@@ -360,7 +360,7 @@ def startup_registration(arguments, startup_path=None):
         destination = (
             startup_path
             or Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
-            / "autostart/secure-mcp.desktop"
+            / "autostart/secure-gateway.desktop"
         )
 
         def quote(value):
@@ -376,7 +376,7 @@ def startup_registration(arguments, startup_path=None):
 
         # Desktop Entry string escaping is decoded before Exec argument quoting.
         command = " ".join(quote(value) for value in arguments).replace("\\", "\\\\")
-        data = f"[Desktop Entry]\nType=Application\nName=SecureMCP\nExec={command}\nTerminal=false\n".encode()
+        data = f"[Desktop Entry]\nType=Application\nName=SecureGateway\nExec={command}\nTerminal=false\n".encode()
     return destination, data
 
 
@@ -409,7 +409,7 @@ def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_pat
     arguments = [
         sys.executable,
         "-m",
-        "secure_mcp",
+        "secure_gateway",
         "gateway",
         "ensure",
         "--config",
@@ -443,10 +443,10 @@ def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_pat
         lines = [
             line
             for line in existing.splitlines()
-            if not line.lower().startswith("x-securemcp-token:")
+            if not line.lower().startswith("x-securegateway-token:")
         ]
         env["ANTHROPIC_CUSTOM_HEADERS"] = "\n".join(
-            lines + ["X-SecureMCP-Token: " + config["token"]]
+            lines + ["X-SecureGateway-Token: " + config["token"]]
         )
         _remove_owned(value, "claude")
         changes[settings] = (
@@ -460,20 +460,20 @@ def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_pat
             if settings.exists()
             else tomlkit.document()
         )
-        value["model_provider"] = "secure_mcp_subscription"
+        value["model_provider"] = "secure_gateway_subscription"
         value["forced_login_method"] = "chatgpt"
         providers = value.setdefault("model_providers", {})
         if not isinstance(providers, dict):
             raise ValueError(
                 "Codex model_providers must be a table; no settings were overwritten."
             )
-        providers["secure_mcp_subscription"] = {
-            "name": "SecureMCP subscription",
+        providers["secure_gateway_subscription"] = {
+            "name": "SecureGateway subscription",
             "base_url": f"http://127.0.0.1:{config['port']}/codex",
             "wire_api": "responses",
             "requires_openai_auth": True,
             "supports_websockets": False,
-            "http_headers": {"X-SecureMCP-Token": config["token"]},
+            "http_headers": {"X-SecureGateway-Token": config["token"]},
         }
         changes[settings] = tomlkit.dumps(value).encode()
     mirrors = (

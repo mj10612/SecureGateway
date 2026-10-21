@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from secure_mcp.encrypted_session import session_file_lock
+from secure_gateway.encrypted_session import session_file_lock
 
 
 def _hold_lock(path, ready, release):
@@ -61,7 +61,7 @@ def test_legacy_empty_lock_is_not_reclaimed_without_stopping_old_writers(tmp_pat
     path = tmp_path / "session.enc"
     lock = path.with_name("session.enc.lock")
     lock.write_bytes(b"")
-    with pytest.raises(ValueError, match="stop all old SecureMCP writers"):
+    with pytest.raises(ValueError, match="stop all old SecureGateway writers"):
         with session_file_lock(path):
             pytest.fail("Legacy lock ownership was guessed")
     assert lock.read_bytes() == b""

@@ -2,7 +2,7 @@
 
 import sys
 
-from secure_mcp import LocalPrivacyClient
+from secure_gateway import LocalPrivacyClient
 
 
 def run_privacy_pipeline():

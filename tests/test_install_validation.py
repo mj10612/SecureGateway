@@ -7,8 +7,8 @@ from threading import Thread
 
 import pytest
 
-from secure_mcp import gateway_install
-from secure_mcp.xai_install import install_api
+from secure_gateway import gateway_install
+from secure_gateway.xai_install import install_api
 
 
 def test_absent_stop_and_uninstall_are_idempotent(tmp_path):
@@ -126,7 +126,7 @@ def test_stop_confirms_shutdown_after_interrupted_response(
         def do_GET(self):
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b'{"service":"secure-mcp-subscription-gateway"}')
+            self.wfile.write(b'{"service":"secure-gateway-subscription-gateway"}')
 
         def do_POST(self):
             if shutdown_kind == "truncated":
@@ -161,7 +161,7 @@ def test_shutdown_auth_failure_is_not_treated_as_success(tmp_path):
         def do_GET(self):
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b'{"service":"secure-mcp-subscription-gateway"}')
+            self.wfile.write(b'{"service":"secure-gateway-subscription-gateway"}')
 
         def do_POST(self):
             self.send_response(401)

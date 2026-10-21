@@ -1,8 +1,8 @@
 ﻿"""Code numbers are preserved by default; masking requires explicit opt-in."""
 import pytest
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import SurrogateStrategy, TokenType
-from secure_mcp.session import PrivacySession
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import SurrogateStrategy, TokenType
+from secure_gateway.session import PrivacySession
 
 
 @pytest.mark.parametrize('strategy', list(SurrogateStrategy))
@@ -13,7 +13,7 @@ from secure_mcp.session import PrivacySession
 ])
 @pytest.mark.parametrize('mask_numbers', [False, True])
 def test_number_policy_and_roundtrip(strategy, source, language, mask_numbers):
-    from secure_mcp.engine.code_parser import CodeParser
+    from secure_gateway.engine.code_parser import CodeParser
     session = PrivacySession('number-policy', strategy=strategy)
     engine = MaskingEngine()
     numbers = [raw for raw, kind, _ in CodeParser.tokenize(source, language) if kind == TokenType.NUMBER]
@@ -42,16 +42,16 @@ def test_default_preserves_reserved_looking_number_and_detects_old_alias_collisi
 
 @pytest.mark.parametrize('mask_numbers', [False, True])
 def test_mcp_cli_client_and_gateway_policy(mask_numbers, monkeypatch):
-    from secure_mcp.engine import strategies
+    from secure_gateway.engine import strategies
     # A masked alias may end in the original digits; compare complete tokens.
     monkeypatch.setattr(strategies.secrets, "randbelow", lambda _: 42)
     import json
     from click.testing import CliRunner
-    from secure_mcp.cli import main
-    from secure_mcp.client import LocalPrivacyClient
-    from secure_mcp.gateway import GatewaySession
-    from secure_mcp.models import MaskMode
-    from secure_mcp.server import mask_code, mask_text, vault
+    from secure_gateway.cli import main
+    from secure_gateway.client import LocalPrivacyClient
+    from secure_gateway.gateway import GatewaySession
+    from secure_gateway.models import MaskMode
+    from secure_gateway.server import mask_code, mask_text, vault
 
     source = 'privateLimit = 42'
     for function, options in [(mask_code, {'language': 'python'}),
@@ -80,7 +80,7 @@ def test_mcp_cli_client_and_gateway_policy(mask_numbers, monkeypatch):
 
 
 def test_number_identity_entries_and_legacy_aliases_survive_snapshots(tmp_path):
-    from secure_mcp.encrypted_session import save_session, load_session
+    from secure_gateway.encrypted_session import save_session, load_session
     engine = MaskingEngine()
     session = PrivacySession('number-snapshot')
     def mask(source, mask_numbers=False):
@@ -98,7 +98,7 @@ def test_number_identity_entries_and_legacy_aliases_survive_snapshots(tmp_path):
 
 
 def test_default_preserves_code_numbers_but_prose_policy_is_unchanged():
-    from secure_mcp.models import MaskMode
+    from secure_gateway.models import MaskMode
     engine = MaskingEngine()
     for mode in [MaskMode.CODE_AWARE, MaskMode.CONTENT_WORDS]:
         session = PrivacySession('number-mode')
@@ -111,8 +111,8 @@ def test_default_preserves_code_numbers_but_prose_policy_is_unchanged():
 @pytest.mark.parametrize('flag,expected', [(None, None), ('--mask-numbers', True), ('--preserve-numbers', False)])
 def test_gateway_cli_config_and_explicit_override(tmp_path, monkeypatch, command, configured, flag, expected):
     from click.testing import CliRunner
-    from secure_mcp.cli import main
-    from secure_mcp import gateway, gateway_install, xai_install
+    from secure_gateway.cli import main
+    from secure_gateway import gateway, gateway_install, xai_install
     captured = []
     settings = {'port': 8765, 'token': 'x' * 32, 'mask_numbers': configured}
     monkeypatch.setattr(gateway_install, 'load_config', lambda _: settings)
@@ -136,7 +136,7 @@ def test_gateway_cli_config_and_explicit_override(tmp_path, monkeypatch, command
 
 
 def test_gateway_numeric_collision_is_not_retried_as_prose():
-    from secure_mcp.gateway import GatewaySession
+    from secure_gateway.gateway import GatewaySession
     session = GatewaySession(mask_numbers=True)
     alias = session.mask('42', code=True)
     session.mask_numbers = False

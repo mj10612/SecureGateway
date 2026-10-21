@@ -1,15 +1,17 @@
 <div align="center">
 
-# 🛡️ SecureMCP
+# 🛡️ SecureGateway (formerly SecureMCP)
+
+Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENAME.md).
 
 **Local English/Korean Masking · Subscription Gateway · Trusted Restoration**
 
 *영어·한국어·코드를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-0.7.1-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
-[![CI](https://github.com/mj10612/SecureMCP/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureMCP/actions/workflows/ci.yml)
+[![CI](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-orange.svg)](docs/ARCHITECTURE.md)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
@@ -23,10 +25,10 @@
 
 ## English Overview
 
-**SecureMCP** masks English/Korean text and code locally, with session-based restoration.
+**SecureGateway** masks English/Korean text and code locally, with session-based restoration.
 
 Version 0.5 adds an experimental **local subscription gateway** for Claude Code and Codex.
-Run `secure-mcp gateway install` once, then use `claude` / `codex` normally. Requests are
+Run `secure-gateway gateway install` once, then use `claude` / `codex` normally. Requests are
 masked automatically; responses and local tool arguments are restored automatically. Existing
 CLI subscription OAuth is forwarded to the original subscription service; API keys are refused.
 No agent hooks are installed. See [subscription gateway](docs/GATEWAY.md) for setup,
@@ -54,7 +56,7 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureMCP | **0.7.1** |
+| SecureGateway | **1.0.0** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |
@@ -79,8 +81,8 @@ This does not certify all-traffic privacy.
 
 ```bash
 uv tool install .
-secure-mcp gateway install
-secure-mcp gateway status
+secure-gateway gateway install
+secure-gateway gateway status
 ```
 
 Restart Claude Code/Codex and use their normal commands. Setup preserves login caches and
@@ -99,11 +101,11 @@ Python 3.10 이상, `uv`, Git을 준비하고 사용할 에이전트에서 기�
 #### 1. 패키지 설치와 최초 설정
 
 ```bash
-git clone https://github.com/mj10612/SecureMCP.git
-cd SecureMCP
+git clone https://github.com/mj10612/SecureGateway.git
+cd SecureGateway
 uv tool install .
-secure-mcp gateway install
-secure-mcp gateway status
+secure-gateway gateway install
+secure-gateway gateway status
 ```
 
 이미 저장소를 내려받았다면 해당 폴더에서 `uv tool install .`부터 실행하세요.
@@ -115,16 +117,16 @@ secure-mcp gateway status
 한 에이전트만 설정하거나 포트를 바꾸려면 최초 설치 때 옵션을 지정하세요.
 
 ```bash
-secure-mcp gateway install --agent codex
+secure-gateway gateway install --agent codex
 # 또는 Claude Code만 설정
-secure-mcp gateway install --agent claude
+secure-gateway gateway install --agent claude
 # 기본 포트 38117 대신 다른 포트 사용
-secure-mcp gateway install --port 38119
+secure-gateway gateway install --port 38119
 ```
 
 위 예시는 선택지이며 전부 실행할 필요는 없습니다. 기존 설치의 포트를 변경하려면
 먼저 `gateway uninstall`로 설정을 복원한 뒤 원하는 포트로 다시 설치하세요.
-`secure-mcp` 명령을 찾지 못한다면 `uv tool update-shell`을 실행하고 터미널을 다시 여세요.
+`secure-gateway` 명령을 찾지 못한다면 `uv tool update-shell`을 실행하고 터미널을 다시 여세요.
 
 #### 2. 실행·상태 확인·재시작
 
@@ -132,7 +134,7 @@ secure-mcp gateway install --port 38119
 게이트웨이가 마스킹·중계·복원을 처리합니다. 상태는 다음 명령으로 확인합니다.
 
 ```bash
-secure-mcp gateway status
+secure-gateway gateway status
 ```
 
 이 명령은 서버 상태와 설치 파일 변경 여부를 확인합니다. 실제 추론 요청이 게이트웨이를
@@ -141,21 +143,21 @@ secure-mcp gateway status
 수동 실행 또는 진단이 필요하면 기존 백그라운드 프로세스를 먼저 종료한 뒤 실행합니다.
 
 ```bash
-secure-mcp gateway stop
-secure-mcp gateway run
+secure-gateway gateway stop
+secure-gateway gateway run
 ```
 
 `gateway run`은 **현재 터미널에서 계속 실행**되며 `Ctrl+C`로 종료합니다.
 이 상태에서 관리자 페이지를 열려면 다른 터미널을 사용하세요.
 종료한 게이트웨이를 다시 백그라운드로 실행하려면 설치 설정이 변경되지 않은 상태에서
-`secure-mcp gateway install`을 다시 실행할 수 있습니다.
+`secure-gateway gateway install`을 다시 실행할 수 있습니다.
 
 저장소의 최신 코드로 기존 패키지를 업데이트할 때는 다음 순서를 사용하세요.
 
 ```bash
-secure-mcp gateway stop
+secure-gateway gateway stop
 uv tool install --force .
-secure-mcp gateway install
+secure-gateway gateway install
 ```
 
 이후 에이전트를 재시작하세요. 설치 뒤 호스트 설정이 수정됐다면 재설치·제거가 거부될 수
@@ -166,7 +168,7 @@ secure-mcp gateway install
 게이트웨이가 실행 중일 때 다음 명령으로 기본 브라우저를 엽니다.
 
 ```bash
-secure-mcp gateway admin
+secure-gateway gateway admin
 ```
 
 기본 주소는 **http://127.0.0.1:38117/admin**입니다. 설치 시 포트를 변경했다면 해당 포트를
@@ -174,7 +176,7 @@ secure-mcp gateway admin
 브라우저를 자동으로 열지 않고 주소만 확인하려면 다음 명령을 사용하세요.
 
 ```bash
-secure-mcp gateway admin --no-open
+secure-gateway gateway admin --no-open
 ```
 
 이 명령은 게이트웨이를 새로 시작하지 않습니다. 서버가 중지됐다면 먼저 실행하세요.
@@ -191,8 +193,8 @@ secure-mcp gateway admin --no-open
 
 | 운영체제 | 기본 설정 파일 |
 | --- | --- |
-| Windows | `%USERPROFILE%\.secure-mcp\gateway\config.json` |
-| macOS / Linux | `~/.secure-mcp/gateway/config.json` |
+| Windows | `%USERPROFILE%\.secure-gateway\gateway\config.json` |
+| macOS / Linux | `~/.secure-gateway/gateway/config.json` |
 
 이 토큰은 설치할 때 생성되는 **로컬 게이트웨이 접근 토큰**입니다. Claude/ChatGPT의
 구독 로그인 토큰이나 API 키를 입력하는 것이 아닙니다. 별도의 관리자 계정·비밀번호는
@@ -219,11 +221,11 @@ SQLite 로그는 게이트웨이를 종료한 뒤 백업하거나 SQLite 온라�
 아래 경로는 실제 사용 중인 경로로 바꾸세요.
 
 ```bash
-secure-mcp gateway install --config ./gateway-state/config.json
-secure-mcp gateway status --config ./gateway-state/config.json
-secure-mcp gateway admin --config ./gateway-state/config.json
-secure-mcp gateway stop --config ./gateway-state/config.json
-secure-mcp gateway uninstall --config ./gateway-state/config.json
+secure-gateway gateway install --config ./gateway-state/config.json
+secure-gateway gateway status --config ./gateway-state/config.json
+secure-gateway gateway admin --config ./gateway-state/config.json
+secure-gateway gateway stop --config ./gateway-state/config.json
+secure-gateway gateway uninstall --config ./gateway-state/config.json
 ```
 
 수동 실행도 `gateway run --config ./gateway-state/config.json`을 사용합니다.
@@ -232,11 +234,11 @@ secure-mcp gateway uninstall --config ./gateway-state/config.json
 xAI API 모드는 구독 게이트웨이와 별도로 설정·실행하며 **별도 API 요금이 발생합니다**.
 설치는 [Grok / xAI 안내](docs/GROK.md)를 따르고, 실행에는 `gateway api-run`,
 제거에는 `gateway api-uninstall`을 사용하세요. 기본 설정은
-`~/.secure-mcp/xai-api/config.json`, 기본 포트는 `38118`입니다.
+`~/.secure-gateway/xai-api/config.json`, 기본 포트는 `38118`입니다.
 관리자 화면은 동일한 명령으로 해당 설정 파일을 지정해 엽니다.
 
 ```bash
-secure-mcp gateway admin --config /path/to/xai-api/config.json
+secure-gateway gateway admin --config /path/to/xai-api/config.json
 ```
 
 #### 6. 종료·설정 해제·패키지 삭제
@@ -244,9 +246,9 @@ secure-mcp gateway admin --config /path/to/xai-api/config.json
 | 원하는 작업 | 방법 | 남는 항목 |
 | --- | --- | --- |
 | 관리자 화면 로그아웃 | 화면의 **로그아웃** | 게이트웨이는 계속 실행되고 DB 로그는 유지 |
-| 현재 게이트웨이만 종료 | `secure-mcp gateway stop` 또는 수동 실행 터미널에서 `Ctrl+C` | 에이전트 설정·자동 시작 등록·로컬 데이터 유지 |
-| 게이트웨이 설정 해제 | `secure-mcp gateway uninstall` | 설정 복원 후 로컬 설정 파일·로그·세션 데이터 유지 |
-| 설치한 패키지 삭제 | 설정 해제 후 `uv tool uninstall secure-mcp` | 저장소와 로컬 데이터 유지 |
+| 현재 게이트웨이만 종료 | `secure-gateway gateway stop` 또는 수동 실행 터미널에서 `Ctrl+C` | 에이전트 설정·자동 시작 등록·로컬 데이터 유지 |
+| 게이트웨이 설정 해제 | `secure-gateway gateway uninstall` | 설정 복원 후 로컬 설정 파일·로그·세션 데이터 유지 |
+| 설치한 패키지 삭제 | 설정 해제 후 `uv tool uninstall secure-gateway` | 저장소와 로컬 데이터 유지 |
 
 `stop`만 실행하면 다음 운영체제 로그인 때 게이트웨이가 다시 시작될 수 있습니다.
 종료된 동안에는 게이트웨이를 사용하도록 설정된 에이전트 요청이 실패합니다.
@@ -255,8 +257,8 @@ secure-mcp gateway admin --config /path/to/xai-api/config.json
 완전히 사용을 중단할 때의 순서는 다음과 같습니다.
 
 ```bash
-secure-mcp gateway uninstall
-uv tool uninstall secure-mcp
+secure-gateway gateway uninstall
+uv tool uninstall secure-gateway
 ```
 
 `uninstall`은 실행 중인 게이트웨이를 종료하고, 백업한 에이전트 설정과 자동 시작 파일을
@@ -271,9 +273,9 @@ uv tool uninstall secure-mcp
 
 | 설치 방식 | 삭제할 데이터 폴더 |
 | --- | --- |
-| 기본 구독 게이트웨이 | Windows: `%USERPROFILE%\.secure-mcp\gateway` / macOS·Linux: `~/.secure-mcp/gateway` |
-| 기본 xAI API 게이트웨이 | Windows: `%USERPROFILE%\.secure-mcp\xai-api` / macOS·Linux: `~/.secure-mcp/xai-api` |
-| 사용자 지정 설정 | 지정한 `config.json`의 부모 폴더에서 SecureMCP 데이터만 삭제 |
+| 기본 구독 게이트웨이 | Windows: `%USERPROFILE%\.secure-gateway\gateway` / macOS·Linux: `~/.secure-gateway/gateway` |
+| 기본 xAI API 게이트웨이 | Windows: `%USERPROFILE%\.secure-gateway\xai-api` / macOS·Linux: `~/.secure-gateway/xai-api` |
+| 사용자 지정 설정 | 지정한 `config.json`의 부모 폴더에서 SecureGateway 데이터만 삭제 |
 
 사용자 지정 폴더에 다른 파일이 있다면 폴더 전체를 삭제하지 마세요. 소스 저장소는 패키지
 제거와 별개이므로 더 이상 필요하지 않을 때 직접 삭제할 수 있습니다.
@@ -284,8 +286,8 @@ uv tool uninstall secure-mcp
 
 ```bash
 uv tool install .
-secure-mcp init --agent claude
-secure-mcp doctor
+secure-gateway init --agent claude
+secure-gateway doctor
 ```
 
 Restart Claude Code after installation. Hooks default to the current project; use `--global`
@@ -295,13 +297,13 @@ tool fields, installation/removal and limitations.
 For Codex:
 
 ```bash
-secure-mcp init --agent codex
-secure-mcp doctor --agent codex
+secure-gateway init --agent codex
+secure-gateway doctor --agent codex
 ```
 
 Restart Codex and review/trust the installed definitions in `/hooks`. Project hooks require a
 trusted project. Codex masks tool results and restores `Bash`/`apply_patch` inputs; automatic
-screen restoration is unavailable. Use `secure-mcp restore --agent codex --session-id <id>`
+screen restoration is unavailable. Use `secure-gateway restore --agent codex --session-id <id>`
 with masked text on UTF-8 stdin for local display. See [Codex integration](docs/LOCAL_INTEGRATION.md#codex).
 
 ### Development installation and demo
@@ -309,13 +311,13 @@ with masked text on UTF-8 stdin for local display. See [Codex integration](docs/
 ```bash
 uv venv
 uv pip install -e ".[dev]"
-uv run python -m secure_mcp demo
+uv run python -m secure_gateway demo
 ```
 
 ### Trusted local Python API
 
 ```python
-from secure_mcp import LocalPrivacyClient
+from secure_gateway import LocalPrivacyClient
 
 # Replace echo with your provider adapter. Only its argument may leave the host.
 def provider(masked_payload: str) -> str:
@@ -423,12 +425,12 @@ partial tool-text path; they do not intercept all outgoing context. See the
 ## CLI and Sessions
 
 ```bash
-python -m secure_mcp mask "Alice from Google" --session-id example --session-file example.enc --json-output
-python -m secure_mcp unmask "[ENT_1] from [ENT_2]" --session-id example --session-file example.enc --strict
-python -m secure_mcp mask "john doe" --mode entities_only --sensitive-term "john doe"
+python -m secure_gateway mask "Alice from Google" --session-id example --session-file example.enc --json-output
+python -m secure_gateway unmask "[ENT_1] from [ENT_2]" --session-id example --session-file example.enc --strict
+python -m secure_gateway mask "john doe" --mode entities_only --sensitive-term "john doe"
 ```
 
-Use the same hidden password, or `SECURE_MCP_SESSION_PASSWORD`. CLI files use authenticated
+Use the same hidden password, or `SECURE_GATEWAY_SESSION_PASSWORD`. CLI files use authenticated
 Fernet encryption, random salt, PBKDF2-HMAC-SHA256 with 600,000 iterations, atomic writes and a
 lock over the complete CLI read/modify/write operation. A concurrent writer fails clearly.
 Marked `.lock` files are persistent and their OS locks are released after a crash; retain
@@ -452,11 +454,11 @@ Version 0.6 adds UTF-8 stdin and `--input-file` for `mask`/`unmask`, configurabl
 resource limits, and local Hook snapshot diagnostics:
 
 ```bash
-secure-mcp mask --input-file private.txt --session-file example.enc --json-output
-secure-mcp state status
-secure-mcp state gc             # read-only preview
-secure-mcp state gc --apply     # retire expired snapshots; use new conversations
-secure-mcp gateway diagnostics
+secure-gateway mask --input-file private.txt --session-file example.enc --json-output
+secure-gateway state status
+secure-gateway state gc             # read-only preview
+secure-gateway state gc --apply     # retire expired snapshots; use new conversations
+secure-gateway gateway diagnostics
 ```
 
 MCP defaults are 1,000 sessions, 100,000 mappings per session, and 16 MiB per input.
@@ -474,7 +476,7 @@ occurrences. Deprecated `privacy_entropy_score` is an alias, not information ent
 
 ## MCP Tools Reference
 
-`python -m secure_mcp serve` supports local stdio only. HTTP/SSE transports are disabled in the CLI;
+`python -m secure_gateway serve` supports local stdio only. HTTP/SSE transports are disabled in the CLI;
 directly exposing the Python server over a network requires host-provided authentication and isolation.
 
 | MCP tool | Purpose |
@@ -501,7 +503,7 @@ or `mapping_key`. Validate explicitly requested strategies; omitted strategies f
 ## 한국어 안내 (Korean Overview)
 
 0.5에서는 **Claude Code·Codex의 기존 구독 로그인을 유지하는 로컬 게이트웨이**를 제공합니다.
-`uv tool install .` 설치 후 `secure-mcp gateway install`을 **한 번** 실행하고 두 CLI를 재시작하세요.
+`uv tool install .` 설치 후 `secure-gateway gateway install`을 **한 번** 실행하고 두 CLI를 재시작하세요.
 그 뒤에는 평소처럼 `claude` / `codex`를 사용하면 됩니다. 직접 입력·텍스트 코드·도구 결과를 자동으로
 마스킹하고, 답변과 로컬 실행 인자는 자동 복원합니다. 함수명·변수명·문자열·숫자·주석을 보존하는
 예외는 추가하지 않았습니다. 입력에서 지칭한 함수와 코드의 함수는 같은 치환표를 사용합니다.
@@ -515,7 +517,7 @@ Claude Code 2.1.287·Codex 0.160.0의 실제 CLI를 모의 OAuth/로컬 서버�
 두 CLI 모두 기존 구독 로그인으로 영어·한국어 질문 → 실제 파일 읽기 → 코드 마스킹 전송 → 정상 답변·자동 복원까지 검증했습니다. Claude의 식별 블록·치환명 호환 오류를 수정했으며, 기존 429는 구독 한도 소진이 아니었습니다. 이미지·원격 첨부·미지원 요청은 차단하고,
 게이트웨이 밖의 도구 네트워크·텔레메트리까지 보호한다고 주장하지 않습니다.
 
-SecureMCP는 영어·한국어·혼합 문장을 로컬에서 마스킹하고 복원합니다. 클라우드에 요청하기
+SecureGateway는 영어·한국어·혼합 문장을 로컬에서 마스킹하고 복원합니다. 클라우드에 요청하기
 **전에** `LocalPrivacyClient` 또는 로컬 API/CLI로 원문을 가리고, 응답은 로컬에서만 복원하세요.
 모델이 호출하는 MCP 도구의 인자는 이미 제공자에게 전달되어 있으므로, Claude Desktop/Cursor에
 서버를 추가하는 것만으로 개인정보가 보호되지는 않습니다. 복원한 원문을 모델 컨텍스트에 다시
@@ -543,7 +545,7 @@ SecureMCP는 영어·한국어·혼합 문장을 로컬에서 마스킹하고 �
 ```bash
 python -m ruff check src tests examples
 python -m mypy src
-python -m pytest -W error --cov=secure_mcp --cov-report=term-missing --cov-fail-under=85
+python -m pytest -W error --cov=secure_gateway --cov-report=term-missing --cov-fail-under=85
 ```
 
 ---
@@ -571,7 +573,7 @@ natural-language number masking and provider protocol controls are unchanged.
 
 To hide sensitive code numbers explicitly:
 
-- CLI: `secure-mcp mask --mode code_aware --mask-numbers ...`
+- CLI: `secure-gateway mask --mode code_aware --mask-numbers ...`
 - MCP/Python: pass `mask_numbers=True` to `mask_code`, or to `mask_text` with
   `mode="code_aware"` (Python engine/client use `MaskMode.CODE_AWARE`).
 - Gateway: set `"mask_numbers": true` in the gateway configuration, or start

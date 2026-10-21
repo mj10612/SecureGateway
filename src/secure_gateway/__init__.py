@@ -1,10 +1,10 @@
 """Local English/Korean masking and trusted-client restoration with MCP utilities."""
 
-__version__ = "0.7.1"
-__author__ = "SecureMCP Contributors"
+__version__ = "1.0.0"
+__author__ = "SecureGateway Contributors"
 __license__ = "Apache-2.0"
 
-from secure_mcp.models import (
+from secure_gateway.models import (
     MaskMode,
     SurrogateStrategy,
     TokenType,
@@ -13,9 +13,9 @@ from secure_mcp.models import (
     UnmaskResult,
     SessionStats,
 )
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.session import SessionVault
-from secure_mcp.client import LocalPrivacyClient
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.session import SessionVault
+from secure_gateway.client import LocalPrivacyClient
 
 __all__ = [
     "MaskMode",

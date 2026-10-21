@@ -2,7 +2,7 @@
 
 import json
 import pytest
-from secure_mcp.server import app, unmask_text, unmask_code
+from secure_gateway.server import app, unmask_text, unmask_code
 
 
 @pytest.mark.asyncio
@@ -67,8 +67,8 @@ async def test_mcp_code_tools():
 
 @pytest.mark.asyncio
 async def test_mcp_server_reports_package_version():
-    from secure_mcp import __version__
-    from secure_mcp.server import get_privacy_status
+    from secure_gateway import __version__
+    from secure_gateway.server import get_privacy_status
 
     assert app.version == __version__
     assert json.loads(get_privacy_status())["version"] == __version__
@@ -85,7 +85,7 @@ async def test_mcp_prompts():
         "privacy_preserving_assistant", {"task_description": "Summarize legal brief"}
     )
     assert len(p_data.messages) > 0
-    assert "SecureMCP" in p_data.messages[0].content.text
+    assert "SecureGateway" in p_data.messages[0].content.text
 
 
 @pytest.mark.asyncio

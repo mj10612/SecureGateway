@@ -1,4 +1,4 @@
-"""Pydantic data models and schemas for SecureMCP."""
+"""Pydantic data models and schemas for SecureGateway."""
 
 from __future__ import annotations
 

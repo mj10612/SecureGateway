@@ -1,7 +1,7 @@
 """Tests for surrogate token generation strategies."""
 
-from secure_mcp.engine.strategies import StrategyGenerator
-from secure_mcp.models import SurrogateStrategy, TokenType
+from secure_gateway.engine.strategies import StrategyGenerator
+from secure_gateway.models import SurrogateStrategy, TokenType
 
 
 def test_bracket_strategy():

@@ -6,7 +6,7 @@ from urllib.error import HTTPError
 
 import pytest
 
-from secure_mcp.gateway import sanitized_upstream_error
+from secure_gateway.gateway import sanitized_upstream_error
 
 
 @pytest.mark.parametrize("message", ["prompt is too long: 210000 tokens > 200000 maximum alice@example.com", "Prompt is too long", "PROMPT IS TOO LONG; privateFile"])

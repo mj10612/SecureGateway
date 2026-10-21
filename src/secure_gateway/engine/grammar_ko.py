@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from typing import Set, Tuple
-from secure_mcp.models import TokenType
+from secure_gateway.models import TokenType
 
 
 # Korean closed-class connective and grammatical functional words (접속사, 기능부사, 지시대명사 등)

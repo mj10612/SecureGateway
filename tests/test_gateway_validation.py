@@ -2,7 +2,7 @@
 
 import pytest
 
-from secure_mcp.gateway_validation import validate_request
+from secure_gateway.gateway_validation import validate_request
 
 
 @pytest.mark.parametrize(

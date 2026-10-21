@@ -1,6 +1,6 @@
 """Explicit opt-in subscription proof; normal CI never contacts model providers.
 
-Set SECURE_MCP_LIVE_SUBSCRIPTION=1 and the relevant native CLI binary path.
+Set SECURE_GATEWAY_LIVE_SUBSCRIPTION=1 and the relevant native CLI binary path.
 Uses existing CLI-owned logins, temporary fixture code and no host settings changes.
 """
 
@@ -14,7 +14,7 @@ import urllib.request
 
 import pytest
 
-from secure_mcp.gateway import GatewaySession, PrivacyGateway
+from secure_gateway.gateway import GatewaySession, PrivacyGateway
 
 
 @pytest.mark.parametrize("language", ["english", "korean"])
@@ -22,9 +22,9 @@ from secure_mcp.gateway import GatewaySession, PrivacyGateway
 def test_live_subscription_read_mask_and_restore(
     tmp_path, monkeypatch, agent, language
 ):
-    if os.environ.get("SECURE_MCP_LIVE_SUBSCRIPTION") != "1":
+    if os.environ.get("SECURE_GATEWAY_LIVE_SUBSCRIPTION") != "1":
         pytest.skip("Real subscription tests require explicit opt-in")
-    binary = os.environ.get(f"SECURE_MCP_{agent.upper()}_BINARY")
+    binary = os.environ.get(f"SECURE_GATEWAY_{agent.upper()}_BINARY")
     if not binary:
         pytest.skip("Native CLI not configured")
     function = "privateFunction" if language == "english" else "고객조회"
@@ -123,7 +123,7 @@ def test_live_subscription_read_mask_and_restore(
         env.update(
             {
                 "ANTHROPIC_BASE_URL": f"http://127.0.0.1:{gateway.server_port}/claude",
-                "ANTHROPIC_CUSTOM_HEADERS": "X-SecureMCP-Token: live-fixture-local-token",
+                "ANTHROPIC_CUSTOM_HEADERS": "X-SecureGateway-Token: live-fixture-local-token",
                 "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
                 "CLAUDE_CODE_MAX_RETRIES": "0",
             }
@@ -147,19 +147,19 @@ def test_live_subscription_read_mask_and_restore(
             "5",
         ]
     else:
-        provider = "model_providers.secure_mcp_subscription."
+        provider = "model_providers.secure_gateway_subscription."
         configs = {
-            "model_provider": "secure_mcp_subscription",
+            "model_provider": "secure_gateway_subscription",
             "model": "gpt-6.1-sol",
             "forced_login_method": "chatgpt",
-            provider + "name": "SecureMCP subscription",
+            provider + "name": "SecureGateway subscription",
             provider + "base_url": f"http://127.0.0.1:{gateway.server_port}/codex",
             provider + "wire_api": "responses",
             provider + "requires_openai_auth": True,
             provider + "supports_websockets": False,
             provider + "request_max_retries": 0,
             provider + "stream_max_retries": 0,
-            provider + "http_headers.X-SecureMCP-Token": "live-fixture-local-token",
+            provider + "http_headers.X-SecureGateway-Token": "live-fixture-local-token",
         }
         for feature in [
             "hooks",

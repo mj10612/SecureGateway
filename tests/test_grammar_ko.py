@@ -1,11 +1,11 @@
 """Tests for Korean grammar, particle decomposition, and token classification."""
 
-from secure_mcp.engine.grammar_ko import (
+from secure_gateway.engine.grammar_ko import (
     KoreanGrammarEngine,
     is_hangul_string,
     has_batchim,
 )
-from secure_mcp.models import TokenType
+from secure_gateway.models import TokenType
 
 
 def test_hangul_detection():

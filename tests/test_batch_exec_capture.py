@@ -6,8 +6,8 @@ import time
 
 import pytest
 
-from secure_mcp.command_capture import capture_command
-from secure_mcp import command_capture
+from secure_gateway.command_capture import capture_command
+from secure_gateway import command_capture
 
 
 def test_group_permission_failure_still_terminates_and_reaps_child(monkeypatch):

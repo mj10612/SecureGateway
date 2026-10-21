@@ -8,8 +8,8 @@ import urllib.request
 
 import pytest
 
-from secure_mcp.gateway import PrivacyGateway
-from secure_mcp.gateway_catalog import fetch_catalog
+from secure_gateway.gateway import PrivacyGateway
+from secure_gateway.gateway_catalog import fetch_catalog
 
 
 @pytest.fixture
@@ -68,7 +68,7 @@ def test_catalog_arbitrary_owner_and_metadata_types_are_dropped(catalog_provider
 
 
 def test_catalog_size_and_redirect_bounds(catalog_provider, monkeypatch):
-    import secure_mcp.gateway as gateway
+    import secure_gateway.gateway as gateway
 
     server, origin = catalog_provider
     monkeypatch.setattr(gateway, "LIMIT", 8)
@@ -96,17 +96,17 @@ def test_xai_models_gateway_requires_both_tokens(catalog_provider):
     worker.start()
     try:
         url = f"http://127.0.0.1:{gateway.server_port}/xai/v1/models"
-        for headers in [{}, {"X-SecureMCP-Token": "local-secret"}, {"X-SecureMCP-Token": "wrong", "Authorization": "Bearer xai-fixture"}, {"X-SecureMCP-Token": "local-secret", "Authorization": "Bearer eyJ-subscription"}]:
+        for headers in [{}, {"X-SecureGateway-Token": "local-secret"}, {"X-SecureGateway-Token": "wrong", "Authorization": "Bearer xai-fixture"}, {"X-SecureGateway-Token": "local-secret", "Authorization": "Bearer eyJ-subscription"}]:
             with pytest.raises(urllib.error.HTTPError) as error:
                 urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=5)
             assert error.value.code == 401
             error.value.close()
         assert provider.requests == []
-        request = urllib.request.Request(url, headers={"X-SecureMCP-Token": "local-secret", "Authorization": "Bearer xai-fixture"})
+        request = urllib.request.Request(url, headers={"X-SecureGateway-Token": "local-secret", "Authorization": "Bearer xai-fixture"})
         with urllib.request.urlopen(request, timeout=5) as response:
             assert json.load(response)["data"][0]["id"] == "grok-fixture"
         assert len(provider.requests) == 1
-        assert "x-securemcp-token" not in {key.lower() for key in provider.requests[0][1]}
+        assert "x-securegateway-token" not in {key.lower() for key in provider.requests[0][1]}
     finally:
         gateway.shutdown()
         gateway.server_close()

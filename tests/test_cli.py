@@ -1,14 +1,14 @@
-"""Tests for SecureMCP Click CLI commands."""
+"""Tests for SecureGateway Click CLI commands."""
 
 from click.testing import CliRunner
-from secure_mcp.cli import main
+from secure_gateway.cli import main
 
 
 def test_cli_help():
     runner = CliRunner()
     result = runner.invoke(main, ["--help"])
     assert result.exit_code == 0
-    assert "SecureMCP" in result.output
+    assert "SecureGateway" in result.output
 
 
 def test_cli_mask_and_unmask():

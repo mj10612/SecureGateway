@@ -13,13 +13,13 @@ import urllib.request
 from click.testing import CliRunner
 import pytest
 
-from secure_mcp import __version__, gateway_install
-from secure_mcp.antigravity_install import configure_antigravity
-from secure_mcp.antigravity_sdk import antigravity_endpoint
-from secure_mcp.cli import main
-from secure_mcp.engine.grammar_ko import normalize_particle
-from secure_mcp.gateway import GatewayHandler, GatewaySession, PrivacyGateway
-from secure_mcp.models import TokenMapping, TokenType
+from secure_gateway import __version__, gateway_install
+from secure_gateway.antigravity_install import configure_antigravity
+from secure_gateway.antigravity_sdk import antigravity_endpoint
+from secure_gateway.cli import main
+from secure_gateway.engine.grammar_ko import normalize_particle
+from secure_gateway.gateway import GatewayHandler, GatewaySession, PrivacyGateway
+from secure_gateway.models import TokenMapping, TokenType
 
 CLIENT = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
@@ -42,7 +42,7 @@ def send_request(server, payload):
         f"http://127.0.0.1:{server.server_port}/claude/v1/messages",
         json.dumps(payload).encode(),
         {
-            "X-SecureMCP-Token": "t" * 32,
+            "X-SecureGateway-Token": "t" * 32,
             "Authorization": "Bearer sk-ant-oat-fixture",
             "Content-Type": "application/json",
         },
@@ -270,7 +270,7 @@ def test_incomplete_client_request_releases_handler(monkeypatch, partial_headers
         socket.create_connection(server.server_address, timeout=2) as client,
     ):
         headers = (
-            b"POST /claude/v1/messages HTTP/1.0\r\nX-SecureMCP-Token: "
+            b"POST /claude/v1/messages HTTP/1.0\r\nX-SecureGateway-Token: "
             + b"t" * 32
             + b"\r\nAuthorization: Bearer sk-ant-oat-fixture\r\nContent-Length: 100\r\n"
         )
@@ -397,7 +397,7 @@ def test_antigravity_registration_uses_interpreter_and_preserves_user_changes(
     original = {
         "mcpServers": {
             "other": {"command": "other"},
-            "secure-mcp": {"command": "previous"},
+            "secure-gateway": {"command": "previous"},
         },
         "personal": True,
     }
@@ -406,13 +406,13 @@ def test_antigravity_registration_uses_interpreter_and_preserves_user_changes(
     assert runner.invoke(main, ["init", "--agent", "antigravity"]).exit_code == 0
     assert runner.invoke(main, ["init", "--agent", "agy"]).exit_code == 0
     settings = json.loads(path.read_text())
-    assert settings["mcpServers"]["secure-mcp"] == {
+    assert settings["mcpServers"]["secure-gateway"] == {
         "command": sys.executable,
-        "args": ["-m", "secure_mcp", "serve"],
+        "args": ["-m", "secure_gateway", "serve"],
     }
     assert settings["mcpServers"]["other"] == original["mcpServers"]["other"]
     assert (
-        json.loads(path.with_name(path.name + ".secure-mcp.bak").read_text())
+        json.loads(path.with_name(path.name + ".secure-gateway.bak").read_text())
         == original
     )
     settings["mcpServers"]["new-server"] = {"command": "new"}
@@ -420,7 +420,7 @@ def test_antigravity_registration_uses_interpreter_and_preserves_user_changes(
     assert runner.invoke(main, ["doctor", "--agent", "antigravity"]).exit_code == 0
     assert runner.invoke(main, ["uninstall", "--agent", "agy"]).exit_code == 0
     restored = json.loads(path.read_text())
-    assert restored["mcpServers"]["secure-mcp"] == {"command": "previous"}
+    assert restored["mcpServers"]["secure-gateway"] == {"command": "previous"}
     assert "new-server" in restored["mcpServers"]
     assert restored["personal"] is True
 
@@ -429,14 +429,14 @@ def test_antigravity_registration_refuses_edits_and_uninstalls_new_entry(tmp_pat
     path = tmp_path / "mcp_config.json"
     configure_antigravity(path)
     settings = json.loads(path.read_text())
-    settings["mcpServers"]["secure-mcp"]["command"] = "user-edit"
+    settings["mcpServers"]["secure-gateway"]["command"] = "user-edit"
     path.write_text(json.dumps(settings))
     with pytest.raises(ValueError, match="changed"):
         configure_antigravity(path, install=False)
-    settings["mcpServers"]["secure-mcp"]["command"] = sys.executable
+    settings["mcpServers"]["secure-gateway"]["command"] = sys.executable
     path.write_text(json.dumps(settings))
     configure_antigravity(path, install=False)
-    assert "secure-mcp" not in json.loads(path.read_text())["mcpServers"]
+    assert "secure-gateway" not in json.loads(path.read_text())["mcpServers"]
 
 
 def test_cli_version_matches_package():
@@ -476,7 +476,7 @@ def test_prose_function_words_and_source_identifier_references():
 def test_antigravity_failed_write_restores_registration(
     tmp_path, monkeypatch, existing
 ):
-    import secure_mcp.antigravity_install as install
+    import secure_gateway.antigravity_install as install
 
     path = tmp_path / "mcp_config.json"
     if existing:
@@ -493,7 +493,7 @@ def test_antigravity_failed_write_restores_registration(
     with pytest.raises(OSError):
         configure_antigravity(path)
     assert (path.read_bytes() if path.exists() else None) == original
-    assert not path.with_name(path.name + ".secure-mcp.json").exists()
+    assert not path.with_name(path.name + ".secure-gateway.json").exists()
 
 
 def test_original_index_and_legacy_aliases_follow_store_mutations():

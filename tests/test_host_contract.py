@@ -21,7 +21,7 @@ import urllib.request
 
 import pytest
 
-from secure_mcp.gateway import GatewaySession, PrivacyGateway
+from secure_gateway.gateway import GatewaySession, PrivacyGateway
 
 
 SECRET_CODE = "def privateFunction(privateValue):\n    return privateValue + 42 # alice@example.com\n"
@@ -307,7 +307,7 @@ def test_contract_refresh_preserves_aliases_and_provider_domains(tmp_path):
                     f"http://127.0.0.1:{gateway.server_port}{route}",
                     json.dumps(factory(SECRET_CODE)).encode(),
                     {
-                        "X-SecureMCP-Token": "contract-local-token",
+                        "X-SecureGateway-Token": "contract-local-token",
                         "Authorization": prefix + suffix,
                     },
                 )
@@ -354,7 +354,7 @@ def test_contract_refresh_preserves_aliases_and_provider_domains(tmp_path):
             f"http://127.0.0.1:{gateway.server_port}/codex/responses",
             json.dumps(codex_payload("hello")).encode(),
             {
-                "X-SecureMCP-Token": "contract-local-token",
+                "X-SecureGateway-Token": "contract-local-token",
                 "Authorization": "Bearer sk-ant-oat01-refreshed",
             },
         )
@@ -377,10 +377,10 @@ def test_contract_local_token_and_api_key_boundary():
         raw = json.dumps(claude_payload("hello")).encode()
         for headers, expected in [
             ({}, 401),
-            ({"X-SecureMCP-Token": "contract-local-token"}, 401),
+            ({"X-SecureGateway-Token": "contract-local-token"}, 401),
             (
                 {
-                    "X-SecureMCP-Token": "contract-local-token",
+                    "X-SecureGateway-Token": "contract-local-token",
                     "Authorization": "Bearer sk-ant-oat01-offline",
                     "x-api-key": "paid-key",
                 },
@@ -429,7 +429,7 @@ def test_contract_provider_statuses_are_preserved(status, dialect):
             f"http://127.0.0.1:{gateway.server_port}{route}",
             json.dumps(factory("hello")).encode(),
             {
-                "X-SecureMCP-Token": "contract-local-token",
+                "X-SecureGateway-Token": "contract-local-token",
                 "Authorization": auth,
             },
         )

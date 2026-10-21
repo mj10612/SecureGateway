@@ -1,10 +1,10 @@
 ﻿"""Rust raw delimiters and exact restoration, including zero hashes."""
 import pytest
 
-from secure_mcp.engine.code_parser import CodeParser, literal_parts
-from secure_mcp.engine.masking_engine import MaskingEngine
-from secure_mcp.models import SurrogateStrategy, TokenType
-from secure_mcp.session import PrivacySession
+from secure_gateway.engine.code_parser import CodeParser, literal_parts
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.models import SurrogateStrategy, TokenType
+from secure_gateway.session import PrivacySession
 
 
 @pytest.mark.parametrize('prefix', ['r', 'br'])

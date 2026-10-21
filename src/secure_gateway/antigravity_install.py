@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 import sys
 
-from secure_mcp.encrypted_session import session_file_lock
-from secure_mcp.gateway_install import atomic_bytes
-from secure_mcp.hooks import _atomic_json
+from secure_gateway.encrypted_session import session_file_lock
+from secure_gateway.gateway_install import atomic_bytes
+from secure_gateway.hooks import _atomic_json
 
 
 def _settings(path):
@@ -75,17 +75,17 @@ def configure_antigravity(path: Path, install=True):
     """Back up once, preserve other servers, and restore only our owned entry."""
     path = path.resolve()
     path.parent.mkdir(parents=True, exist_ok=True)
-    record_path = path.with_name(path.name + ".secure-mcp.json")
-    pending = path.with_name(path.name + ".secure-mcp.pending.json")
-    backup = path.with_name(path.name + ".secure-mcp.bak")
+    record_path = path.with_name(path.name + ".secure-gateway.json")
+    pending = path.with_name(path.name + ".secure-gateway.pending.json")
+    backup = path.with_name(path.name + ".secure-gateway.bak")
     with session_file_lock(path):
         _recover(path, record_path, pending)
         settings = _settings(path)
         servers = settings.get("mcpServers", {})
         record = _record(record_path) if record_path.exists() else None
-        if record is not None and servers.get("secure-mcp") != record["installed"]:
+        if record is not None and servers.get("secure-gateway") != record["installed"]:
             raise ValueError(
-                "SecureMCP registration changed; merge it before reinstalling/removing."
+                "SecureGateway registration changed; merge it before reinstalling/removing."
             )
         if not install and record is None:
             return None
@@ -94,25 +94,25 @@ def configure_antigravity(path: Path, install=True):
         if install:
             installed = {
                 "command": sys.executable,
-                "args": ["-m", "secure_mcp", "serve"],
+                "args": ["-m", "secure_gateway", "serve"],
             }
             if record is None:
                 record = {
-                    "had_entry": "secure-mcp" in servers,
-                    "original": servers.get("secure-mcp"),
+                    "had_entry": "secure-gateway" in servers,
+                    "original": servers.get("secure-gateway"),
                     "installed": installed,
                 }
                 if original_bytes is not None:
                     atomic_bytes(backup, original_bytes)
             else:
                 record["installed"] = installed
-            servers["secure-mcp"] = installed
+            servers["secure-gateway"] = installed
         else:
             assert record is not None
             if record["had_entry"]:
-                servers["secure-mcp"] = record["original"]
+                servers["secure-gateway"] = record["original"]
             else:
-                servers.pop("secure-mcp", None)
+                servers.pop("secure-gateway", None)
         settings["mcpServers"] = servers
         _atomic_json(
             pending,
@@ -154,11 +154,11 @@ def configure_antigravity(path: Path, install=True):
 
 def antigravity_status(path: Path):
     settings = _settings(path)
-    record_path = path.with_name(path.name + ".secure-mcp.json")
+    record_path = path.with_name(path.name + ".secure-gateway.json")
     record = _record(record_path) if record_path.exists() else None
     return {
         "agent": "antigravity",
         "settings": str(path),
         "ready": record is not None
-        and settings.get("mcpServers", {}).get("secure-mcp") == record["installed"],
+        and settings.get("mcpServers", {}).get("secure-gateway") == record["installed"],
     }

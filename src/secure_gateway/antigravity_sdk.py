@@ -13,7 +13,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from secure_mcp.gateway import LIMIT, NoRedirect, supported_query
+from secure_gateway.gateway import LIMIT, NoRedirect, supported_query
 
 
 @contextmanager
@@ -121,9 +121,9 @@ def antigravity_endpoint(gateway_origin: str, local_token: str, api_key: str):
                     body,
                     {
                         "Content-Type": "application/json",
-                        "X-SecureMCP-Token": local_token,
+                        "X-SecureGateway-Token": local_token,
                         "Authorization": "Bearer " + api_key,
-                        "X-SecureMCP-Agent": "Antigravity SDK",
+                        "X-SecureGateway-Agent": "Antigravity SDK",
                     },
                 )
                 with opener.open(request, timeout=65) as response:

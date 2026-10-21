@@ -5,9 +5,9 @@ from __future__ import annotations
 from contextlib import nullcontext
 import re
 
-from secure_mcp.engine.code_parser import CodeParser, detect_language, literal_parts
-from secure_mcp.engine.grammar_en import EnglishGrammarEngine
-from secure_mcp.engine.grammar_ko import (
+from secure_gateway.engine.code_parser import CodeParser, detect_language, literal_parts
+from secure_gateway.engine.grammar_en import EnglishGrammarEngine
+from secure_gateway.engine.grammar_ko import (
     KOREAN_COPULA_LIST,
     KOREAN_JOSA_LIST,
     KOREAN_PLURAL,
@@ -15,9 +15,9 @@ from secure_mcp.engine.grammar_ko import (
     is_hangul_string,
     normalize_particle,
 )
-from secure_mcp.engine.strategies import StrategyGenerator, mapping_key
-from secure_mcp.engine.tokenizer import MultilingualTokenizer, TextChunk
-from secure_mcp.models import (
+from secure_gateway.engine.strategies import StrategyGenerator, mapping_key
+from secure_gateway.engine.tokenizer import MultilingualTokenizer, TextChunk
+from secure_gateway.models import (
     MaskMode,
     MaskResult,
     SurrogateStrategy,

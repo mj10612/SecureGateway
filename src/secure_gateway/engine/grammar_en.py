@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import re
 from typing import Set, Tuple
-from secure_mcp.models import TokenType
-from secure_mcp.engine.tokenizer import (
+from secure_gateway.models import TokenType
+from secure_gateway.engine.tokenizer import (
     SECRET_PATTERN,
     PHONE_PATTERN,
     IP_PATTERN,

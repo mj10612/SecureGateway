@@ -6,27 +6,27 @@ SDK native tool 계약은 `google-antigravity==0.1.21`을 별도 환경에서 �
 
 ## CLI의 stdio MCP 연결
 
-자동 등록은 SecureMCP가 설치된 인터프리터를 그대로 사용한다:
+자동 등록은 SecureGateway가 설치된 인터프리터를 그대로 사용한다:
 
 ```powershell
-secure-mcp init --agent antigravity
-secure-mcp doctor --agent antigravity
-secure-mcp uninstall --agent antigravity
+secure-gateway init --agent antigravity
+secure-gateway doctor --agent antigravity
+secure-gateway uninstall --agent antigravity
 ```
 
 `--agent agy`도 같은 명령이다. 사용자 `~/.gemini/config/mcp_config.json`에
-등록하며 최초 설정의 `.secure-mcp.bak` 백업과 설치 소유권 기록을 남긴다.
-재설치는 원래 백업을 유지하고, 제거는 이전 `secure-mcp` 항목만 복원한다.
+등록하며 최초 설정의 `.secure-gateway.bak` 백업과 설치 소유권 기록을 남긴다.
+재설치는 원래 백업을 유지하고, 제거는 이전 `secure-gateway` 항목만 복원한다.
 다른 서버와 이후 사용자 설정 변경은 보존한다. 설치한 항목 자체를 편집한
 경우 재설치·제거를 거절하므로 먼저 해당 항목을 병합한다.
 이는 stdio MCP 등록이며 추론 요청 전체를 가리는 기능은 아니다.
 
-먼저 SecureMCP가 설치된 Python의 절대 경로를 확인한다. PowerShell 예:
+먼저 SecureGateway가 설치된 Python의 절대 경로를 확인한다. PowerShell 예:
 
 ```powershell
-$secureMcpPython = (Resolve-Path .venv\Scripts\python.exe).Path
+$secureGatewayPython = (Resolve-Path .venv\Scripts\python.exe).Path
 agy mcp list
-agy mcp add secure-mcp $secureMcpPython -m secure_mcp serve
+agy mcp add secure-gateway $secureGatewayPython -m secure_gateway serve
 agy mcp list
 ```
 
@@ -38,16 +38,16 @@ Python 절대 경로로 바꾸면 PATH에 의존하지 않는다. 경로에 공�
 command 문자열 하나와 args 배열을 유지한다.
 
 `agy mcp add`는 같은 이름의 기존 서버를 **덮어쓴다**. 설치 전 설정 파일을
-백업하고 `secure-mcp`가 이미 있으면 해당 항목을 보존한다. 다른 서버
+백업하고 `secure-gateway`가 이미 있으면 해당 항목을 보존한다. 다른 서버
 항목은 유지된다. 제거:
 
 ```powershell
-agy mcp remove secure-mcp
+agy mcp remove secure-gateway
 ```
 
-제거는 덮어쓴 이전 항목을 복원하지 않는다. 기존 `secure-mcp` 항목이
+제거는 덮어쓴 이전 항목을 복원하지 않는다. 기존 `secure-gateway` 항목이
 있었다면 백업에서 그 항목만 복원하고, 설치 이후 추가된 다른 서버는 유지한다.
-SecureMCP는 Gemini/Antigravity 인증 파일을 읽거나 저장하지 않는다.
+SecureGateway는 Gemini/Antigravity 인증 파일을 읽거나 저장하지 않는다.
 
 자동 검증은 격리된 HOME/USERPROFILE에서 add/list/remove, 기존 서버 보존,
 동명 항목 교체, 공백 경로를 확인한다. 등록된 command/args를 실제 MCP
@@ -75,7 +75,7 @@ SDK 0.1.21은 실제 `/v1/chat/completions` streaming 요청을 사용하지만,
 [`LocalOpenAIAgentConfig` 구현](https://github.com/google-antigravity/antigravity-sdk-python/blob/main/google/antigravity/connections/local/local_openai_connection_config.py)과
 [`LocalOpenAIConnectionStrategy`](https://github.com/google-antigravity/antigravity-sdk-python/blob/main/google/antigravity/connections/local/local_openai_connection.py)는
 `GemmaEndpoint(base_url=...)`만 전달한다. 따라서 mandatory gateway header를
-설정하기 위해 SecureMCP의 context helper를 사용한다.
+설정하기 위해 SecureGateway의 context helper를 사용한다.
 
 ```python
 import asyncio
@@ -83,8 +83,8 @@ import os
 from pathlib import Path
 
 from google.antigravity import Agent, LocalOpenAIAgentConfig
-from secure_mcp.antigravity_sdk import antigravity_endpoint
-from secure_mcp.xai_install import default_api_config, load_api_config
+from secure_gateway.antigravity_sdk import antigravity_endpoint
+from secure_gateway.xai_install import default_api_config, load_api_config
 
 async def main():
     # 먼저 명시적인 xAI API gateway를 api-run으로 실행한다.
@@ -129,7 +129,7 @@ listener는 capability를 constant-time 비교로 검증한 뒤에만 body를 �
 
 helper는 SDK에 gateway token이나 제공자 key를 전달하지 않는다. 승인된 요청만
 고정된 local gateway `/xai/v1/chat/completions`로 전달하며, 이때 gateway가
-필수로 요구하는 `X-SecureMCP-Token`과 xAI 인증을 포함한다. gateway에서 마스킹한
+필수로 요구하는 `X-SecureGateway-Token`과 xAI 인증을 포함한다. gateway에서 마스킹한
 payload만 고정 xAI origin으로 나간다. 자동 재시도, proxy 환경변수 사용,
 redirect, 직접 제공자 fallback은 없다. 요청/응답 크기를 제한하고 오류 본문은
 generic 메시지로 대체하여 token·provider 오류·원문이 SDK 로그에 반사되지 않는다.
