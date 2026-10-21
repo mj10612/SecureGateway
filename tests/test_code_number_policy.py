@@ -41,7 +41,10 @@ def test_default_preserves_reserved_looking_number_and_detects_old_alias_collisi
         mask(alias)
 
 @pytest.mark.parametrize('mask_numbers', [False, True])
-def test_mcp_cli_client_and_gateway_policy(mask_numbers):
+def test_mcp_cli_client_and_gateway_policy(mask_numbers, monkeypatch):
+    from secure_mcp.engine import strategies
+    # A masked alias may end in the original digits; compare complete tokens.
+    monkeypatch.setattr(strategies.secrets, "randbelow", lambda _: 42)
     import json
     from click.testing import CliRunner
     from secure_mcp.cli import main
@@ -55,7 +58,7 @@ def test_mcp_cli_client_and_gateway_policy(mask_numbers):
                               (mask_text, {'mode': 'code_aware', 'code_language': 'python'})]:
         result = json.loads(function(source, strategy='bracket', mask_numbers=mask_numbers, **options))
         try:
-            assert result['masked_text'].endswith('42') is (not mask_numbers)
+            assert (result['masked_text'].rsplit('=', 1)[-1].strip() == '42') is (not mask_numbers)
         finally:
             vault.clear_session(result['session_id'])
     args = ['mask', source, '--mode', 'code_aware', '--code-language', 'python', '--json-output']
@@ -63,16 +66,16 @@ def test_mcp_cli_client_and_gateway_policy(mask_numbers):
         args.append('--mask-numbers')
     result = CliRunner().invoke(main, args)
     assert result.exit_code == 0, result.output
-    assert json.loads(result.output)['masked_text'].endswith('42') is (not mask_numbers)
+    assert (json.loads(result.output)['masked_text'].rsplit('=', 1)[-1].strip() == '42') is (not mask_numbers)
     seen = []
     with LocalPrivacyClient() as client:
         result = client.request(source, lambda masked: (seen.append(masked) or masked),
                                 mode=MaskMode.CODE_AWARE, mask_numbers=mask_numbers)
         assert result.unmasked_text == source
-    assert seen[0].endswith('42') is (not mask_numbers)
+    assert (seen[0].rsplit('=', 1)[-1].strip() == '42') is (not mask_numbers)
     gateway = GatewaySession(mask_numbers=mask_numbers)
     masked = gateway.mask(source, code=True, language='python')
-    assert masked.endswith('42') is (not mask_numbers)
+    assert (masked.rsplit('=', 1)[-1].strip() == '42') is (not mask_numbers)
     assert gateway.restore(masked) == source
 
 
