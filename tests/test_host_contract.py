@@ -55,8 +55,9 @@ def dialect(request):
     return request.param
 
 
-def test_contract_private_source_never_reaches_provider(dialect):
-    session = GatewaySession()
+@pytest.mark.parametrize("mask_numbers", [False, True])
+def test_contract_private_source_never_reaches_provider(dialect, mask_numbers):
+    session = GatewaySession(mask_numbers=mask_numbers)
     factory = claude_payload if dialect == "claude" else codex_payload
     masked = session.request(
         factory(SECRET_CODE), dialect="responses" if dialect == "xai" else None
@@ -66,7 +67,7 @@ def test_contract_private_source_never_reaches_provider(dialect):
         assert secret not in serialized
     # "42" is short: only a standalone occurrence means a real leak, since the
     # random numeric alias itself may contain those digits as a substring.
-    assert not re.search(r"(?<!\d)42(?!\d)", serialized)
+    assert bool(re.search(r"(?<!\d)42(?!\d)", serialized)) is (not mask_numbers)
 
 
 def test_contract_prompt_and_code_share_alias(dialect):

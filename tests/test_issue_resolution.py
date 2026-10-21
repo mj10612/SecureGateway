@@ -297,7 +297,7 @@ def test_bilingual_matrix(strategy, mode, language, text):
 def test_language_literals_and_identifiers_do_not_leak(
     strategy, language, code, hidden
 ):
-    result = json.loads(mask_code(code, "s", strategy.value, language))
+    result = json.loads(mask_code(code, "s", strategy.value, language, mask_numbers=True))
     assert hidden not in result["masked_text"]
     assert (
         json.loads(unmask_text(result["masked_text"], "s", strict=True))[

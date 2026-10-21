@@ -93,7 +93,7 @@ def test_claude_public_identity_in_source_is_still_masked():
 
 
 def test_shared_prompt_code_and_korean_roundtrip():
-    session = GatewaySession()
+    session = GatewaySession(mask_numbers=True)
     payload = {
         "model": "fixture",
         "input": [
@@ -153,7 +153,7 @@ def test_early_prompt_name_matches_later_code():
     ],
 )
 def test_code_all_identifiers_literals_and_comments(source):
-    session = GatewaySession()
+    session = GatewaySession(mask_numbers=True)
     masked = session.mask(source, code=True)
     assert session.restore(masked) == source
     for marker in [
@@ -710,7 +710,7 @@ def test_redacted_thinking_is_opaque_and_replayable():
 
 
 def test_legacy_glued_numeric_alias_is_restored_in_gateway_tool_arguments():
-    session = GatewaySession()
+    session = GatewaySession(mask_numbers=True)
     first = session.mask("0.5", code=True)
     second = session.mask(".1", code=True)
     session.session.reverse_store[first].context = "code"
@@ -878,7 +878,7 @@ def test_source_identifier_overrides_task_vocabulary_and_unfenced_code_is_lexed(
     code = session.mask(
         'def review(secret):\n    return "private literal" + secret + 42'
     )
-    assert "private literal" not in code and not re.search(r"\b42\b", code)
+    assert "private literal" not in code and re.search(r"\b42\b", code)
     alias = session.session.forward_store["code:identifier:review"].surrogate
     assert alias in session.mask("Please review review.")
     assert (

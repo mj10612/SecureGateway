@@ -406,6 +406,7 @@ def restore_hook_text(agent, state_dir, session_id):
 )
 @click.option("--language", type=click.Choice(["auto", "en", "ko"]), default="auto")
 @click.option("--code-language", default="auto")
+@click.option("--mask-numbers", is_flag=True, help="Mask numeric literals in code mode (default: preserve).")
 @click.option("--sensitive-term", multiple=True)
 @click.option("--preserve", multiple=True)
 @click.option("--json-output", is_flag=True)
@@ -418,6 +419,7 @@ def mask(
     strategy,
     language,
     code_language,
+    mask_numbers,
     sensitive_term,
     preserve,
     json_output,
@@ -439,6 +441,7 @@ def mask(
             mode=mask_mode,
             language=language,
             code_language=code_language,
+            mask_numbers=mask_numbers,
             sensitive_terms=set(sensitive_term),
             custom_preserve=set(preserve),
         )
@@ -620,7 +623,8 @@ def gateway_ensure(config):
 @gateway.command("run")
 @click.option("--config", type=click.Path(path_type=Path))
 @click.option("--mapping-limit", type=click.IntRange(1), default=None)
-def gateway_run(config, mapping_limit):
+@click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
+def gateway_run(config, mapping_limit, mask_numbers):
     """Run the subscription gateway in the foreground (normally auto-started)."""
     from secure_mcp.gateway import PrivacyGateway
     from secure_mcp.gateway_install import default_config, load_config
@@ -636,6 +640,7 @@ def gateway_run(config, mapping_limit):
             state_dir=state,
             audit_path=state.parent / "logs.sqlite3",
             mapping_limit=mapping_limit or settings.get("mapping_limit", 100_000),
+            mask_numbers=settings.get("mask_numbers", False) if mask_numbers is None else mask_numbers,
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
         ) as server:
@@ -800,7 +805,8 @@ def gateway_api_install(provider, model, config, grok_home, port):
 
 @gateway.command("api-run")
 @click.option("--config", type=click.Path(path_type=Path))
-def gateway_api_run(config):
+@click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
+def gateway_api_run(config, mask_numbers):
     """Run the isolated xAI API gateway in the foreground; Ctrl+C stops it."""
     from secure_mcp.gateway import API_UPSTREAMS, PrivacyGateway
     from secure_mcp.xai_install import default_api_config, load_api_config
@@ -814,6 +820,7 @@ def gateway_api_run(config):
             upstreams={},
             api_upstreams={"xai": API_UPSTREAMS["xai"]},
             mapping_limit=settings.get("mapping_limit", 100_000),
+            mask_numbers=settings.get("mask_numbers", False) if mask_numbers is None else mask_numbers,
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
             state_dir=path.resolve().parent / "sessions",

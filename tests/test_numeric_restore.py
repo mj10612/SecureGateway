@@ -20,6 +20,7 @@ def test_numeric_original_alias_is_restored_once(normalize_particles):
             session.forward_store,
             session.reverse_store,
             language="python",
+            mask_numbers=True,
         ).masked_text
 
     original_alias = mask("42")

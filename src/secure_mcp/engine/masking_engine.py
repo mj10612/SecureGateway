@@ -51,6 +51,10 @@ NUMERIC_ALIAS_LENGTH = 18
 NUMERIC_ALIAS_RUN = re.compile(r"(?<![A-Za-z0-9_])(?:732846\d{12})+(?![A-Za-z0-9_])")
 
 
+class NumericLiteralConflict(ValueError):
+    """A preserved number would be interpreted as an existing alias."""
+
+
 class MaskingEngine:
     def __init__(self, max_input_bytes: int = 16 * 1024 * 1024) -> None:
         if type(max_input_bytes) is not int or max_input_bytes < 1:
@@ -88,6 +92,7 @@ class MaskingEngine:
         language: str = "auto",
         sensitive_terms: set[str] | None = None,
         code_language: str = "auto",
+        mask_numbers: bool = False,
     ) -> MaskResult:
         strategy = self._strategy(generator, strategy)
         self._check_input(text)
@@ -103,6 +108,7 @@ class MaskingEngine:
                     reverse_store,
                     strategy,
                     language=code_language,
+                    mask_numbers=mask_numbers,
                 )
             terms = sensitive_terms or set()
             preserve = {word.casefold() for word in (custom_preserve or set())}
@@ -235,12 +241,19 @@ class MaskingEngine:
         reverse_store: dict[str, TokenMapping],
         strategy: SurrogateStrategy | None = None,
         language: str = "auto",
+        mask_numbers: bool = False,
     ) -> MaskResult:
+        if type(mask_numbers) is not bool:
+            raise ValueError("mask_numbers must be a boolean.")
         strategy = self._strategy(generator, strategy)
         self._check_input(code)
         language = detect_language(code, language)
         with generator.operation():
             tokens = self.code_parser.tokenize(code, language)
+            if not mask_numbers:
+                for raw, token_type, _ in tokens:
+                    if token_type == TokenType.NUMBER:
+                        self._preserve_number(raw, generator, mapping_store, reverse_store)
             output: list[str] = []
             total = masked = 0
             for raw, token_type, subkind in tokens:
@@ -251,7 +264,7 @@ class MaskingEngine:
                     output.append(raw)
                     continue
                 total += 1
-                if token_type == TokenType.GRAMMAR:
+                if token_type == TokenType.GRAMMAR or (token_type == TokenType.NUMBER and not mask_numbers):
                     output.append(raw)
                 elif subkind == "character":
                     # A whole character literal is an opaque identifier expression.
@@ -300,6 +313,28 @@ class MaskingEngine:
             )
             result.code_language = language
             return result
+
+    def _preserve_number(self, raw, generator, mapping_store, reverse_store):
+        # Identity entries disambiguate literal numbers in the reserved alias range
+        # and survive encrypted snapshots using the existing mapping format.
+        for match in NUMERIC_ALIAS_RUN.finditer(raw):
+            for offset in range(0, len(match[0]), NUMERIC_ALIAS_LENGTH):
+                number = match[0][offset:offset + NUMERIC_ALIAS_LENGTH]
+                key = mapping_key(number, TokenType.NUMBER, code=True)
+                reverse = reverse_store.get(number)
+                forward = mapping_store.get(key)
+                if ((reverse is not None and reverse.original != number)
+                        or (forward is not None and forward.surrogate != number)):
+                    raise NumericLiteralConflict("Numeric literal conflicts with an existing alias; use a new session.")
+                if reverse is None:
+                    limit = min(generator.max_mappings, getattr(self, "mapping_limit", generator.max_mappings))
+                    if len(mapping_store) >= limit:
+                        raise ValueError("Mapping limit reached; use a new session.")
+                    mapping = TokenMapping(original=number, surrogate=number,
+                                           token_type=TokenType.NUMBER, context="code")
+                    mapping_store[key] = mapping
+                    reverse_store[number] = mapping
+                generator.used_surrogates.add(number)
 
     @staticmethod
     def _result(
@@ -420,6 +455,8 @@ class MaskingEngine:
         with generator.operation():
             key = mapping_key(original_token, token_type, code)
             if key in mapping_store:
+                if code and token_type == TokenType.NUMBER and mapping_store[key].surrogate == original_token:
+                    raise NumericLiteralConflict("Numeric literal conflicts with a preserved number; use a new session.")
                 mapping_store[key].occurrence_count += 1
                 return mapping_store[key].surrogate
             if len(mapping_store) >= generator.max_mappings:

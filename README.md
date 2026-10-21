@@ -6,7 +6,7 @@
 
 *영어·한국어·코드를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-0.6.9-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-0.7.0-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
 [![CI](https://github.com/mj10612/SecureMCP/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureMCP/actions/workflows/ci.yml)
@@ -54,7 +54,7 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureMCP | **0.6.9** |
+| SecureMCP | **0.7.0** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |
@@ -336,7 +336,7 @@ with LocalPrivacyClient() as client:
 | Feature | Behavior |
 | :--- | :--- |
 | 🌐 English & Korean | Per-word multilingual handling, conservative Korean particle separation and explicit sensitive terms |
-| 🧩 Code-aware masking | Language-specific lexer modes for identifiers, literals, numbers and comments |
+| 🧩 Code-aware masking | Language-specific lexer modes for identifiers, literals and comments; numbers preserved by default |
 | 🎭 Four surrogate strategies | Bracket, Unicode, delimited pseudoword and random hash representations |
 | 🔁 Subscription gateway | Automatic request masking, shared prompt/code aliases, local tool-argument restoration and automatic answer display; existing OAuth, no API-key fallback |
 | 📊 Local admin dashboard | Token-authenticated log viewer, routing/account metadata, filters and request details; SQLite storage, no prompt/reply/credential logging |
@@ -351,7 +351,7 @@ with LocalPrivacyClient() as client:
 | `content_words` | Mask content words and detected sensitive spans; keep functional grammar. |
 | `entities_only` | Mask recognized PII, URLs, secrets, code spans, numbers and capitalized names. Korean and other case-free/non-ASCII words are masked conservatively, including ordinary nouns. |
 | `aggressive` | Keep a small structural subset of articles/prepositions/conjunctions; mask auxiliaries, adverbs, pronouns and other words. |
-| `code_aware` | Mask identifiers, numbers, literals and comments using the selected language lexer. |
+| `code_aware` | Mask identifiers, literals and comments using the selected lexer; preserve numbers unless explicitly enabled. |
 
 English, Korean and mixed input are handled per word. Unicode names remain atomic. Korean
 particle splitting uses known stems and conservative rules; unknown ambiguous words stay whole.
@@ -390,10 +390,12 @@ Auto detection is best effort. Keywords are language-specific; builtins and shad
 names are masked. Unicode identifiers, SQL comments/doubled quotes, backticks, Python f-strings
 and escaped newlines, C++/Rust raw strings and numeric suffixes/separators are covered by tests.
 Code allocations use ASCII names (`smcp_ID_n` and `smcp_LIT_n` inside literals)
-and random native integer constants for numbers (reserved `732846` prefix plus 12 digits),
+and, when numeric masking is enabled, random native integer constants for numbers
+(reserved `732846` prefix plus 12 digits),
 independently of the text strategy, so byte literals remain valid too. Python output
 is syntax-checked in tests. Output is an opaque review representation: it need not execute,
-type-check, retain numeric types/values, or preserve f-string/template interpolation behavior. This
+type-check or preserve f-string/template interpolation behavior. Numeric types/values can
+change when numeric masking is enabled. This
 small lexer is not a complete parser for every version of every supported language.
 
 ---
@@ -558,3 +560,27 @@ python -m pytest -W error --cov=secure_mcp --cov-report=term-missing --cov-fail-
 ## License
 
 Licensed under **Apache License 2.0**. See [LICENSE](LICENSE) for details.
+
+### Code numeric literals
+
+Code masking preserves numeric literals by default, including their original spelling,
+base, exponent, separators and suffixes. This keeps indexes, loop bounds and comparison
+constants useful for code review. Names, strings and comments remain masked. Numeric
+values inside strings/comments follow their existing literal masking policy; ordinary
+natural-language number masking and provider protocol controls are unchanged.
+
+To hide sensitive code numbers explicitly:
+
+- CLI: `secure-mcp mask --mode code_aware --mask-numbers ...`
+- MCP/Python: pass `mask_numbers=True` to `mask_code`, or to `mask_text` with
+  `mode="code_aware"` (Python engine/client use `MaskMode.CODE_AWARE`).
+- Gateway: set `"mask_numbers": true` in the gateway configuration, or start
+  `gateway run --mask-numbers` / `gateway api-run --mask-numbers`.
+  `--preserve-numbers` overrides a configured opt-in. Both paths default to preservation.
+
+Existing saved numeric aliases still restore. A literal that collides with an existing
+numeric alias is rejected rather than silently restored to another value; start a fresh
+session/conversation in that case. Literal numbers in the reserved alias range receive
+identity mappings so strict restoration and saved sessions remain unambiguous. Switching
+those particular literals to numeric masking also requires a fresh session. Turning on
+numeric masking changes values and does not preserve executable behavior.

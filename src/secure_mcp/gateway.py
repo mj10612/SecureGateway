@@ -25,7 +25,7 @@ import urllib.error
 import urllib.request
 import urllib.parse
 
-from secure_mcp.engine.masking_engine import MaskingEngine
+from secure_mcp.engine.masking_engine import MaskingEngine, NumericLiteralConflict
 from secure_mcp.engine.strategies import mapping_key
 from secure_mcp.encrypted_session import (
     SessionExpiredError,
@@ -440,6 +440,8 @@ class SharedEngine(MaskingEngine):
             )
             key = mapping_key(original_token, kind, code=True)
             if key in mapping_store:
+                if kind == TokenType.NUMBER and mapping_store[key].surrogate == original_token:
+                    raise NumericLiteralConflict("Numeric literal conflicts with a preserved number; use a new session.")
                 mapping_store[key].occurrence_count += 1
                 return mapping_store[key].surrogate
             if len(mapping_store) >= self.mapping_limit:
@@ -469,7 +471,10 @@ class SharedEngine(MaskingEngine):
 
 
 class GatewaySession:
-    def __init__(self, session=None, mapping_limit=100_000):
+    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False):
+        if type(mask_numbers) is not bool:
+            raise ValueError("mask_numbers must be a boolean.")
+        self.mask_numbers = mask_numbers
         self.session = session or PrivacySession(
             "gateway", strategy=SurrogateStrategy.UNICODE, ttl_seconds=86400
         )
@@ -529,7 +534,10 @@ class GatewaySession:
                 s.forward_store,
                 s.reverse_store,
                 language=language,
+                mask_numbers=self.mask_numbers,
             ).masked_text
+        except NumericLiteralConflict:
+            raise
         except ValueError:
             return self._mask_prose(text, preserve_task_words=False)
 
@@ -1435,7 +1443,11 @@ class PrivacyGateway(ThreadingHTTPServer):
         audit_path: Path | None = None,
         max_active_requests=32,
         max_provider_requests=8,
+        mask_numbers=False,
     ):
+        if type(mask_numbers) is not bool:
+            raise ValueError("mask_numbers must be a boolean.")
+        self.mask_numbers = mask_numbers
         if address[0] != "127.0.0.1":
             raise ValueError("Gateway must bind to IPv4 loopback.")
         if (
@@ -1551,7 +1563,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                     saved = load_session(path, self.token, "gateway")
                 except SessionExpiredError:
                     saved = None
-            session = GatewaySession(saved, self.mapping_limit)
+            session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers)
             # Reasoning provenance is only meaningful while the matching alias
             # table is alive. Expired/missing snapshots start fresh, so stale
             # digests must not be loaded into the new table.

@@ -120,7 +120,7 @@ def test_legacy_glued_numeric_aliases_are_restored_and_reported():
     forward = {}
     reverse = {}
 
-    engine.mask_code("first = 1.2\nsecond = 3.4", "legacy", gen, forward, reverse)
+    engine.mask_code("first = 1.2\nsecond = 3.4", "legacy", gen, forward, reverse, mask_numbers=True)
     aliases = {
         key.split(":", 2)[2]: mapping.surrogate
         for key, mapping in forward.items()

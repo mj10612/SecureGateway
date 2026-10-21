@@ -51,6 +51,7 @@ def mask_text(
     sensitive_terms: list[str] | None = None,
     custom_preserve: list[str] | None = None,
     code_language: str = "auto",
+    mask_numbers: bool = False,
 ) -> str:
     """Mask text. Tool arguments are provider-visible; pre-mask confidential data locally.
 
@@ -58,6 +59,7 @@ def mask_text(
     strategy: bracket, unicode, pseudoword, hash. language: auto, en, ko.
     sensitive_terms forces explicit words/phrases; custom_preserve opts terms out of masking.
     code_language selects a code lexer when mode=code_aware.
+    mask_numbers=True masks code numbers; the default preserves them.
     """
     mask_mode, strat = MaskMode(mode), SurrogateStrategy(strategy)
     if language not in {"auto", "en", "ko"}:
@@ -76,6 +78,7 @@ def mask_text(
             sensitive_terms=set(sensitive_terms or []),
             custom_preserve=set(custom_preserve or []),
             code_language=code_language,
+            mask_numbers=mask_numbers,
         )
         session.mode = mask_mode
         session.total_mask_calls += 1
@@ -121,10 +124,12 @@ def unmask_text(
 @app.tool()
 @_tool_errors
 def mask_code(
-    code: str, session_id: str = "", strategy: str = "bracket", language: str = "auto"
+    code: str, session_id: str = "", strategy: str = "bracket", language: str = "auto",
+    mask_numbers: bool = False
 ) -> str:
     """Mask identifiers/literals. Set language explicitly when auto detection is ambiguous.
 
+    Numbers are preserved by default; mask_numbers=True opts into numeric masking.
     Supported: python, javascript, typescript, go, rust, java, c, cpp, sql.
     Generated code is a review representation; it is not executable anonymization.
     """
@@ -139,6 +144,7 @@ def mask_code(
             session.reverse_store,
             strat,
             language,
+            mask_numbers=mask_numbers,
         )
         session.mode = MaskMode.CODE_AWARE
         session.total_mask_calls += 1

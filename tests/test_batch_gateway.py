@@ -103,13 +103,13 @@ def test_sse_bom_and_all_standard_line_endings(ending):
 
 
 def test_numeric_json_aliases_restore_exactly():
-    session = GatewaySession()
+    session = GatewaySession(mask_numbers=True)
     alias = int(session.mask("42", code=True))
     assert session.values({"amount": alias, "ordinary": 7, "bool": True}, restore=True) == {"amount": 42, "ordinary": 7, "bool": True}
 
 
 def test_numeric_json_alias_rejects_non_json_source_literal():
-    session = GatewaySession()
+    session = GatewaySession(mask_numbers=True)
     alias = int(session.mask("0x2A", code=True))
     with pytest.raises(ValueError):
         session.values(alias, restore=True)
@@ -375,7 +375,7 @@ def test_malformed_request_releases_admission(live_gateway):
 
 
 def test_numeric_scalar_rounded_or_invented_alias_is_refused():
-    session = GatewaySession()
+    session = GatewaySession(mask_numbers=True)
     alias = int(session.mask("42", code=True))
     with pytest.raises(ValueError, match="precision"):
         session.values(float(alias), restore=True)
@@ -409,7 +409,7 @@ def test_api_function_tool_choice_retains_definition_alias(kind):
         assert masked["tool_choice"]["function"]["name"] == masked["tools"][0]["function"]["name"]
 def test_negative_numeric_json_alias_keeps_its_unary_sign():
     from secure_mcp.models import TokenType
-    session = GatewaySession()
+    session = GatewaySession(mask_numbers=True)
     session.mask("private_value=-42", code=True)
     mapping = next(mapping for mapping in session.session.forward_store.values()
                    if mapping.token_type == TokenType.NUMBER)
@@ -444,3 +444,13 @@ def test_masking_engine_rejects_non_text_input(text, method):
                                        session.forward_store, session.reverse_store)
     assert not session.forward_store
     assert not session.reverse_store
+
+@pytest.mark.parametrize('mask_numbers', [False, True])
+def test_gateway_forwards_source_numeric_policy(live_gateway, mask_numbers):
+    gateway, state, request = live_gateway
+    gateway.mask_numbers = mask_numbers
+    payload = {'input': '```python\nprivateLimit = 42\n```'}
+    assert request(payload)[0] == 200
+    forwarded = state.requests[0]['input']
+    assert (' = 42' in forwarded) is (not mask_numbers)
+    assert 'privateLimit' not in forwarded

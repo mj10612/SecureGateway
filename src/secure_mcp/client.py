@@ -27,21 +27,22 @@ class LocalPrivacyClient:
         sensitive_terms: set[str] | None = None,
         language: str = "auto",
         normalize_particles: bool = False,
+        mask_numbers: bool = False,
     ) -> UnmaskResult:
         session = self.vault.create(f"sess_{uuid.uuid4().hex}", mode, strategy)
         try:
             with session.pin():
                 return self._request(session, text, provider, mode, strategy,
-                                     sensitive_terms, language, normalize_particles)
+                                     sensitive_terms, language, normalize_particles, mask_numbers)
         finally:
             self.vault.clear_session(session.session_id)
 
     def _request(self, session, text, provider, mode, strategy,
-                 sensitive_terms, language, normalize_particles):
+                 sensitive_terms, language, normalize_particles, mask_numbers):
         masked = self.engine.mask_text(
             text, session.session_id, session.generator,
             session.forward_store, session.reverse_store, mode=mode,
-            sensitive_terms=sensitive_terms, language=language,
+            sensitive_terms=sensitive_terms, language=language, mask_numbers=mask_numbers,
         )
         response = provider(masked.masked_text)
         return self.engine.unmask(

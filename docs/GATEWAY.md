@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureMCP 0.6.9 provides an experimental authenticated loopback gateway for Claude Code and
+SecureMCP 0.7.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -149,7 +149,8 @@ Do not commit local state or reuse its access token for other services.
 ## Shared aliases and automatic results
 
 A prompt referring to `A` and code containing `def A(...)` use the same identifier alias.
-Function/variable names, literal values, numbers and comments are masked. Filename aliases
+Function/variable names, strings and comments are masked; code numbers are preserved
+by default and masked only with explicit opt-in. Filename aliases
 are restored for native local tools; their results are masked in the next inference request.
 English, Korean and mixed references reuse the multilingual engine.
 
@@ -193,7 +194,7 @@ Recognized public JSON Schema dialect URIs in `$schema` stay unchanged; other
 remain masked, including URI literals in source. `enum`/`const`/`default`/`examples` values
 are treated as data: protocol-named keys such as `id`, `type` or `cache_control` inside
 them are still masked. Operational schema fields and JSON scalar numeric parameters retain
-their types; numbers in source text are masked. Registered numeric aliases returned as JSON
+their types; numbers in source text are preserved unless numeric masking is enabled. Registered numeric aliases returned as JSON
 integers are restored only when their original is a valid JSON numeric literal. Precision-lost
 float aliases and non-JSON originals are rejected. Character literals become opaque identifier
 expressions in the review representation and restore with their original quotes and escapes.
@@ -389,3 +390,13 @@ POST query metadata is forwarded without alteration after validation: `beta=true
 `stream=true|false`, `client_version` with dotted numeric components, and date-shaped
 `api-version` are supported.
 Unknown, duplicate, or private query parameters are rejected before contacting the provider.
+
+### Numeric constants in source code
+
+Source fragments preserve numbers by default so indexes, loop bounds and boundary checks
+retain their values. To mask sensitive numeric literals, set `"mask_numbers": true` in the
+subscription/API gateway JSON configuration or use `gateway run --mask-numbers` /
+`gateway api-run --mask-numbers`. The `--preserve-numbers` flag overrides configuration.
+This setting affects source-code masking only: prose numbers and JSON protocol/control
+fields retain their existing policies. Existing numeric aliases still restore; an actual
+source number colliding with a saved numeric alias requires a new session/conversation.
