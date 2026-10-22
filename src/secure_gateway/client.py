@@ -14,9 +14,13 @@ class LocalPrivacyClient:
     """Keep this object and the restored response outside the provider/model context."""
 
     def __init__(self, max_sessions: int = 1000, mapping_limit: int = 100_000,
-                 max_input_bytes: int = 16 * 1024 * 1024) -> None:
+                 max_input_bytes: int = 16 * 1024 * 1024,
+                 max_restore_input_bytes: int = 16 * 1024 * 1024,
+                 max_restore_output_bytes: int = 16 * 1024 * 1024) -> None:
         self.vault = SessionVault(max_sessions=max_sessions, mapping_limit=mapping_limit)
-        self.engine = MaskingEngine(max_input_bytes=max_input_bytes)
+        self.engine = MaskingEngine(max_input_bytes=max_input_bytes,
+                                    max_restore_input_bytes=max_restore_input_bytes,
+                                    max_restore_output_bytes=max_restore_output_bytes)
 
     def request(
         self,

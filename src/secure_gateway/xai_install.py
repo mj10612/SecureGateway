@@ -10,6 +10,7 @@ from secure_gateway.encrypted_session import session_file_lock
 from secure_gateway.gateway import validate_api_options
 from secure_gateway.gateway_install import (
     apply_settings,
+    installation_path,
     load_config,
     load_installation_manifest,
     _recover_install,
@@ -34,7 +35,7 @@ def install_api(path: Path, model: str, port=38118, grok_dir=None):
     if not 1024 <= port <= 65535:
         raise ValueError("Invalid API gateway port.")
     path = path.resolve()
-    manifest = path.parent / "installation.json"
+    manifest = installation_path(path)
     if manifest.exists():
         load_installation_manifest(manifest)
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -235,11 +235,11 @@ def test_retention_discards_oldest_requests(tmp_path):
     store = AuditStore(tmp_path / "logs.sqlite3")
     with store.connect() as db:
         db.executemany(
-            "INSERT INTO requests(request_id,started_at,agent,provider,subscription,endpoint,destination) "
-            "VALUES (?, '2026-01-01T00:00:00+00:00', 'Codex', 'codex', 'chatgpt_subscription', '/codex/responses', 'fixture')",
+            "INSERT INTO requests(request_id,started_at,agent,provider,subscription,endpoint,destination,status) "
+            "VALUES (?, '2026-01-01T00:00:00+00:00', 'Codex', 'codex', 'chatgpt_subscription', '/codex/responses', 'fixture',200)",
             ((str(index),) for index in range(100001)),
         )
     store.begin("Codex", "codex", "chatgpt_subscription", "/codex/responses", "fixture")
-    assert store.query({})["summary"]["total"] == 100000
+    assert store.query({})["summary"]["total"] == 100001
     with store.connect() as db:
-        assert db.execute("SELECT request_id FROM requests ORDER BY id LIMIT 1").fetchone()[0] == "2"
+        assert db.execute("SELECT request_id FROM requests ORDER BY id LIMIT 1").fetchone()[0] == "1"

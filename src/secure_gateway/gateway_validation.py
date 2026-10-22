@@ -108,6 +108,10 @@ def _message(message, dialect):
         else {"system", "developer", "user", "assistant", "tool"}
     )
     _enum(message.get("role"), roles, "message role")
+    if "phase" in message:
+        if dialect not in {"responses", "codex"} or message.get("role") != "assistant":
+            raise ValueError("Phase is only supported on Responses assistant messages.")
+        _enum(message["phase"], {"commentary", "final_answer"}, "assistant phase")
     if "tool_calls" in message:
         _tool_calls(message["tool_calls"])
     content = message.get("content")

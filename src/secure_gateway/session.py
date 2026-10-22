@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from collections import deque
 import math
 import re
 from threading import TIMEOUT_MAX, Event, RLock, Thread
@@ -26,9 +27,11 @@ class SessionMappings(dict[str, TokenMapping]):
         super().__init__()
         self.generator = generator
         self._original_trie: dict | None = None
+        self._original_automaton: tuple[list[dict[str, int]], list[int], list[str | None], list[int]] | None = None
         self.nonstandard_surrogates: set[str] = set()
 
     def __setitem__(self, key, mapping):
+        self._original_automaton = None
         if key in self:
             self._original_trie = None
             previous = self[key]
@@ -50,25 +53,62 @@ class SessionMappings(dict[str, TokenMapping]):
         node[None] = original
 
     def originals_in(self, text: str) -> set[str]:
-        """Find only existing originals present in text, with an incremental trie."""
-        if self._original_trie is None:
-            self._original_trie = {}
-            for mapping in self.values():
-                if isinstance(mapping, TokenMapping):
-                    self._index_original(mapping.original)
+        """Scan existing originals using cached failure transitions."""
+        if self._original_automaton is None:
+            if self._original_trie is None:
+                self._original_trie = {}
+                for mapping in self.values():
+                    if isinstance(mapping, TokenMapping):
+                        self._index_original(mapping.original)
+            edges: list[dict[str, int]] = [{}]
+            failure = [0]
+            terminal: list[str | None] = [None]
+            output = [0]
+            stack = [(self._original_trie, 0)]
+            while stack:
+                node, state = stack.pop()
+                terminal[state] = node.get(None) or None
+                for char, child in node.items():
+                    if char is None:
+                        continue
+                    index = len(edges)
+                    edges[state][char] = index
+                    edges.append({})
+                    failure.append(0)
+                    terminal.append(None)
+                    output.append(0)
+                    stack.append((child, index))
+            queue = deque(edges[0].values())
+            while queue:
+                state = queue.popleft()
+                for char, child in edges[state].items():
+                    queue.append(child)
+                    fallback = failure[state]
+                    while fallback and char not in edges[fallback]:
+                        fallback = failure[fallback]
+                    failure[child] = edges[fallback].get(char, 0)
+                    target = failure[child]
+                    output[child] = target if terminal[target] is not None else output[target]
+            self._original_automaton = edges, failure, terminal, output
+        edges, failure, terminal, output = self._original_automaton
         found = set()
-        for match in re.finditer(r"(?<!\w)(?=\S)", text):
-            node = self._original_trie
-            for position in range(match.start(), len(text)):
-                child = node.get(text[position])
-                if child is None:
-                    break
-                node = child
-                if None in node:
-                    found.add(node[None])
+        state = 0
+        for position, char in enumerate(text):
+            while state and char not in edges[state]:
+                state = failure[state]
+            state = edges[state].get(char, 0)
+            match = state if terminal[state] is not None else output[state]
+            while match:
+                original = terminal[match]
+                assert original is not None
+                start = position + 1 - len(original)
+                if not text[start].isspace() and (start == 0 or not re.match(r"\w", text[start - 1])):
+                    found.add(original)
+                match = output[match]
         return found
 
     def __delitem__(self, key):
+        self._original_automaton = None
         mapping = self[key]
         super().__delitem__(key)
         if isinstance(mapping, TokenMapping):
@@ -76,6 +116,7 @@ class SessionMappings(dict[str, TokenMapping]):
         self._original_trie = None
 
     def clear(self):
+        self._original_automaton = None
         super().clear()
         self.nonstandard_surrogates.clear()
         self._original_trie = None
@@ -92,6 +133,7 @@ class SessionMappings(dict[str, TokenMapping]):
         return mapping
 
     def popitem(self):
+        self._original_automaton = None
         key, mapping = super().popitem()
         if isinstance(mapping, TokenMapping):
             self.nonstandard_surrogates.discard(mapping.surrogate)
@@ -333,17 +375,20 @@ class SessionVault:
 
     def clear_all(self) -> int:
         with self._lock:
-            count = len(self._sessions)
-            for session in self._sessions.values():
-                session.clear()
+            sessions = tuple(self._sessions.values())
             self._sessions.clear()
-            return count
+        for session in sessions:
+            session.clear()
+        return len(sessions)
 
     def close(self) -> None:
         self._stop.set()
         with self._lock:
             self._closed = True
-            self.clear_all()
+            sessions = tuple(self._sessions.values())
+            self._sessions.clear()
+        for session in sessions:
+            session.clear()
         if self._thread:
             self._thread.join(timeout=2)
 

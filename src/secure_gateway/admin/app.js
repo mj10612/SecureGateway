@@ -38,6 +38,7 @@ function detail(row) {
   }
 }
 function render(data) {
+  const policy = data.retention || {max_records: 100000, max_age_days: null};
   $("stat-total").textContent = num(data.summary.total);
   $("stat-success").textContent = num(data.summary.success);
   $("stat-errors").textContent = num(data.summary.errors);
@@ -65,7 +66,8 @@ function render(data) {
   $("page-info").textContent = data.rows.length ? `${num(data.offset + 1)}–${num(data.offset + data.rows.length)} / ${num(data.summary.total)}건` : `${num(data.summary.total)}건 · 현재 페이지에 내역 없음`;
   $("previous").disabled = data.offset === 0;
   $("next").disabled = data.offset + limit >= data.summary.total;
-  $("updated").textContent = `마지막 갱신 ${new Date().toLocaleTimeString("ko-KR", {hour12: false})} · 최근 100,000건`;
+  $("updated").textContent = `마지막 갱신 ${new Date().toLocaleTimeString("ko-KR", {hour12: false})} · 최근 ${num(policy.max_records)}건`;
+  $("updated").textContent += policy.max_age_days == null ? " | age: unlimited" : ` | age: ${num(policy.max_age_days)} days`;
   $("banner").hidden = data.audit_write_errors === 0;
   $("banner").textContent = `로그 저장 오류 ${num(data.audit_write_errors)}건이 발생했습니다. 일부 요청은 미완료로 남거나 전송 전에 차단됐을 수 있습니다.`;
 }
@@ -83,7 +85,10 @@ async function load() {
     if (!response.ok) throw new Error(response.status === 401 ? "인증 토큰을 확인하세요." : response.status === 400 ? "필터 조건을 확인하세요." : "게이트웨이 또는 로그 저장소에 연결할 수 없습니다.");
     const data = await response.json();
     if (current !== generation) return false;
-    render(data); return true;
+    render(data);
+    $("token").value = ""; $("login-error").textContent = "";
+    $("login").hidden = true; $("dashboard").hidden = false;
+    return true;
   } catch (error) {
     if (current !== generation) return false;
     $("login-error").textContent = error.message;
@@ -92,7 +97,7 @@ async function load() {
   } finally { loading = false; if (pending) { pending = false; setTimeout(load, 0); } }
 }
 $("login-form").addEventListener("submit", async (event) => {
-  event.preventDefault(); token = $("token").value.trim();
+  event.preventDefault(); generation++; token = $("token").value.trim();
   if (await load()) { $("token").value = ""; $("login-error").textContent = ""; $("login").hidden = true; $("dashboard").hidden = false; }
 });
 $("logout").addEventListener("click", () => {

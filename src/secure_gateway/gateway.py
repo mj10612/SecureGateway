@@ -173,6 +173,7 @@ PROTOCOL = {
     "call_id",
     "tool_use_id",
     "tool_call_id",
+    "phase",
     "model",
     "status",
     "stop_reason",
@@ -419,8 +420,8 @@ def validate_api_options(payload, dialect):
 class SharedEngine(MaskingEngine):
     """One alias for an original in prompts, code, paths and tool results."""
 
-    def __init__(self, mapping_limit=100_000):
-        super().__init__()
+    def __init__(self, mapping_limit=100_000, **restore_limits):
+        super().__init__(**restore_limits)
         self.mapping_limit = mapping_limit
 
     def _get_or_create_surrogate(
@@ -471,14 +472,14 @@ class SharedEngine(MaskingEngine):
 
 
 class GatewaySession:
-    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False):
+    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, **restore_limits):
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
         self.mask_numbers = mask_numbers
         self.session = session or PrivacySession(
             "gateway", strategy=SurrogateStrategy.UNICODE, ttl_seconds=86400
         )
-        self.engine = SharedEngine(mapping_limit)
+        self.engine = SharedEngine(mapping_limit, **restore_limits)
         self.lock = RLock()
         self.opaque: set[str] = set()
         self.active_requests = 0
@@ -604,8 +605,8 @@ class GatewaySession:
             return [self.values(item, restore, code) for item in value]
         if isinstance(value, dict):
             return {
-                (key if key in ARGUMENT_KEYS else operation(key)): self.values(
-                    item, restore, code
+                self.schema_name(key, restore): self.values(
+                    item, restore, code and key in {"cmd", "command", "content", "text", "old_string", "new_string", "chars", "input", "patch"}
                 )
                 for key, item in value.items()
             }
@@ -644,13 +645,28 @@ class GatewaySession:
         # redacted_thinking carries opaque `data` ciphertext by design.
         if kind in {"thinking", "redacted_thinking", "reasoning"}:
             key = self._opaque_key(value)
-            if restore:
-                self.opaque.add(key)
-            elif key not in self.opaque:
+            if not restore and key not in self.opaque:
                 raise ValueError(
                     "Unrecognized signed/encrypted reasoning; start a new conversation."
                 )
-            return deepcopy(value)
+            reasoning_result = deepcopy(value)
+            if kind == "reasoning" and "summary" in value:
+                summary = value["summary"]
+                if not isinstance(summary, list) or any(
+                    not isinstance(part, dict)
+                    or part.get("type") != "summary_text"
+                    or not isinstance(part.get("text"), str)
+                    for part in summary
+                ):
+                    raise ValueError("Unsupported public reasoning summary.")
+                reasoning_result["summary"] = [
+                    {**part, "text": self.restore(part["text"]) if restore else self.mask(part["text"])}
+                    for part in summary
+                ]
+            if restore:
+                self.opaque.add(key)
+                self.opaque.add(self._opaque_key(reasoning_result))
+            return reasoning_result
         if (
             kind in BLOCKED_TYPES
             or any(k in value for k in ("image_url", "file_data", "file_id"))
@@ -783,13 +799,7 @@ class GatewaySession:
                 if not isinstance(item, dict):
                     raise ValueError("Schema name maps must be objects.")
                 result[key] = {
-                    (
-                        self.restore(k)
-                        if restore
-                        else k
-                        if k in ARGUMENT_KEYS
-                        else self.mask(k, code=True)
-                    ): (
+                    self.schema_name(k, restore): (
                         [self.schema_name(name, restore) for name in v]
                         if key in {"dependentRequired", "dependencies"}
                         and isinstance(v, list)
@@ -799,15 +809,19 @@ class GatewaySession:
                 }
             elif key == "required":
                 result[key] = [
-                    self.restore(k)
-                    if restore
-                    else k
-                    if k in ARGUMENT_KEYS
-                    else self.mask(k, code=True)
-                    for k in item
+                    self.schema_name(k, restore) for k in item
                 ]
-            elif key == "$ref" and isinstance(item, str):
+            elif key in {"$ref", "$dynamicRef"} and isinstance(item, str):
                 result[key] = self.schema_reference(item, schema_root, restore)
+            elif key == "propertyNames" and isinstance(item, dict):
+                result[key] = self.walk(item, restore, schema_root=schema_root)
+                for constraint in ("enum", "const"):
+                    if constraint in item:
+                        candidate = item[constraint]
+                        result[key][constraint] = (
+                            [self.schema_name(name, restore) for name in candidate]
+                            if constraint == "enum" else self.schema_name(candidate, restore)
+                        )
             elif key in DATA_KEYWORDS:
                 # enum/const/default/examples hold arbitrary JSON data. Protocol
                 # and schema exceptions must not apply inside them, or private
@@ -892,13 +906,17 @@ class GatewaySession:
                 "system", "developer", "user", "assistant", "tool",
             }
         elif key == "id":
-            keep = kind in {"tool_use", "function_call", "custom_tool_call", "message"}
+            keep = kind in {"tool_use", "function_call", "custom_tool_call", "message"} or (kind == "function" and isinstance(envelope.get("function"), dict))
         elif key == "call_id":
             keep = kind in {"function_call", "function_call_output", "custom_tool_call", "custom_tool_call_output"}
         elif key == "tool_use_id":
             keep = kind == "tool_result"
         elif key == "tool_call_id":
             keep = envelope.get("role") == "tool" and "content" in envelope
+        elif key == "phase":
+            keep = envelope.get("role") == "assistant" and "content" in envelope
+            if keep and (not isinstance(item, str) or item not in {"commentary", "final_answer"}):
+                raise ValueError("Unsupported assistant phase.")
         elif key in {"effort", "verbosity", "syntax"}:
             allowed = {
                 "effort": {"none", "minimal", "low", "medium", "high", "xhigh", "max"},
@@ -920,7 +938,7 @@ class GatewaySession:
             if restore
             else name
             if name in ARGUMENT_KEYS
-            else self.mask(name, code=True)
+            else self.mask(name)
         )
 
     def validate_schema(self, schema):
@@ -975,13 +993,7 @@ class GatewaySession:
         if not isinstance(value, dict):
             return value
         return {
-            (
-                self.restore(key)
-                if restore
-                else key
-                if key in ARGUMENT_KEYS
-                else self.mask(key, code=True)
-            ): self.walk_data(item, restore)
+            self.schema_name(key, restore): self.walk_data(item, restore)
             for key, item in value.items()
         }
 
@@ -1260,6 +1272,18 @@ class GatewaySession:
         return result
 
     def response(self, body: bytes, content_type: str, *, dialect=None) -> bytes:
+        if len(body) > self.engine.max_restore_input_bytes:
+            raise ValueError("Restoration input size limit reached.")
+        self.engine._restore_remaining = self.engine.max_restore_output_bytes
+        try:
+            result = self._response(body, content_type, dialect=dialect)
+            if len(result) > self.engine.max_restore_output_bytes:
+                raise ValueError("Restoration output size limit reached.")
+            return result
+        finally:
+            self.engine._restore_remaining = None
+
+    def _response(self, body: bytes, content_type: str, *, dialect=None) -> bytes:
         media_type = content_type.split(";", 1)[0].strip().lower()
         if media_type != "text/event-stream":
             payload = json.loads(body)
@@ -1444,7 +1468,14 @@ class PrivacyGateway(ThreadingHTTPServer):
         max_active_requests=32,
         max_provider_requests=8,
         mask_numbers=False,
+        max_restore_input_bytes=16 * 1024 * 1024,
+        max_restore_output_bytes=16 * 1024 * 1024,
+        audit_max_records=100_000,
+        audit_max_age_days=None,
     ):
+        self.restore_limits = {"max_restore_input_bytes": max_restore_input_bytes,
+                               "max_restore_output_bytes": max_restore_output_bytes}
+        MaskingEngine(**self.restore_limits)
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
         self.mask_numbers = mask_numbers
@@ -1487,7 +1518,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         if state_dir:
             state_dir.mkdir(parents=True, exist_ok=True)
             state_dir.chmod(0o700)
-        self.audit = AuditStore(audit_path) if audit_path is not None else None
+        self.audit = AuditStore(audit_path, audit_max_records, audit_max_age_days) if audit_path is not None else None
         self.audit_write_errors = 0
         super().__init__(address, GatewayHandler)
 
@@ -1563,7 +1594,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                     saved = load_session(path, self.token, "gateway")
                 except SessionExpiredError:
                     saved = None
-            session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers)
+            session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers, **self.restore_limits)
             # Reasoning provenance is only meaningful while the matching alias
             # table is alive. Expired/missing snapshots start fresh, so stale
             # digests must not be loaded into the new table.
@@ -1725,6 +1756,8 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 )
                 with opener.open(request, timeout=30) as upstream:
                     body = upstream.read(LIMIT + 1)
+                    if len(body) <= LIMIT and getattr(upstream, "length", None) not in (None, 0):
+                        raise http.client.IncompleteRead(body)
                     if len(body) > LIMIT:
                         raise ValueError("Catalog size exceeded")
                     self.send_body(200, body)
@@ -1901,6 +1934,8 @@ class GatewayHandler(BaseHTTPRequestHandler):
             if not 0 < length <= LIMIT:
                 raise ValueError("Request size limit exceeded.")
             raw = self.rfile.read(length)
+            if len(raw) != length:
+                raise ValueError("Incomplete request body.")
             if meta is not None:
                 meta["input_bytes"] = len(raw)
             payload = json.loads(raw)
@@ -1978,6 +2013,8 @@ class GatewayHandler(BaseHTTPRequestHandler):
                     self.capture_response_headers(upstream.headers)
                     try:
                         body = upstream.read(LIMIT + 1)
+                        if len(body) <= LIMIT and getattr(upstream, "length", None) not in (None, 0):
+                            raise http.client.IncompleteRead(body)
                     except (OSError, http.client.HTTPException) as exc:
                         reason = getattr(exc, "reason", exc)
                         status = 504 if isinstance(reason, TimeoutError) else 502

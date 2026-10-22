@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 1.0.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 1.1.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -400,3 +400,39 @@ subscription/API gateway JSON configuration or use `gateway run --mask-numbers` 
 This setting affects source-code masking only: prose numbers and JSON protocol/control
 fields retain their existing policies. Existing numeric aliases still restore; an actual
 source number colliding with a saved numeric alias requires a new session/conversation.
+
+## Operational limits and retention (1.1.0)
+
+Restoration now checks UTF-8 input and output limits before returning or assembling
+an expanded result. Defaults are 16 MiB each. `MaskingEngine` and
+`LocalPrivacyClient` accept `max_restore_input_bytes` and `max_restore_output_bytes`.
+The local `unmask` CLI provides `--restore-input-limit` and `--restore-output-limit`.
+Subscription/API gateway JSON accepts the same engine option names. Existing
+aliases and snapshots remain readable within the configured budgets; oversized
+restoration fails with a fixed error rather than returning partial output.
+
+Audit retention defaults to the latest 100,000 **completed** requests, with no age
+limit. In-flight requests are never pruned. Gateway configuration accepts
+`audit_max_records` (positive integer) and optional `audit_max_age_days` (positive
+integer). The daemon applies retention on request start/completion; the authenticated
+admin API and dashboard report the active policy. To inspect candidates locally:
+
+```sh
+secure-gateway gateway audit-gc --config /path/to/config.json
+secure-gateway gateway audit-gc --config /path/to/config.json --apply
+```
+
+The first command is dry-run; only `--apply` deletes completed candidates. Use the
+same configuration file as the running daemon so policy and database agree.
+SQLite DELETE removes logical rows, not a secure wipe. WAL pages may retain old
+bytes until SQLite reuses/checkpoints them. This command does not force VACUUM or
+truncate WAL while the daemon is active; stop the daemon and take a backup before
+performing optional SQLite checkpoint/VACUUM maintenance to reclaim physical space.
+
+Installation ownership and recovery records are scoped to each configuration file.
+The conventional `config.json` keeps `installation.json`; other filenames use
+`<filename>.installation.json`. Nonstandard config filenames also get a separate `<filename>.state` runtime directory
+for snapshots and audit logs. Distinct configurations should use distinct host
+settings and startup registration targets. Old records belonging to nonstandard
+configuration filenames must be reviewed/restored before reinstalling; no automatic
+cross-configuration ownership transfer is performed.

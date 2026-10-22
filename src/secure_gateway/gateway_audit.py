@@ -1,7 +1,7 @@
 """Durable request metadata. Prompts, replies and credentials never enter SQLite."""
 
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from hashlib import sha256
 import hmac
 import os
@@ -11,7 +11,13 @@ from uuid import uuid4
 
 
 class AuditStore:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, max_records=100_000, max_age_days=None):
+        if type(max_records) is not int or max_records < 1:
+            raise ValueError("Audit max_records must be a positive integer.")
+        if max_age_days is not None and (type(max_age_days) is not int or max_age_days < 1):
+            raise ValueError("Audit max_age_days must be a positive integer.")
+        self.max_records = max_records
+        self.max_age_days = max_age_days
         self.path = path
         path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
         if not path.exists():
@@ -68,9 +74,7 @@ class AuditStore:
                 (request_id, datetime.now(timezone.utc).isoformat(), agent,
                  provider, subscription, endpoint, destination),
             )
-            # Bound local storage to the latest 100,000 requests.
-            db.execute("DELETE FROM requests WHERE id <= "
-                       "(SELECT id FROM requests ORDER BY id DESC LIMIT 1 OFFSET 100000)")
+        self.retention(apply=True)
         return request_id
 
     def finish(self, request_id, metadata):
@@ -83,6 +87,22 @@ class AuditStore:
                 + " WHERE request_id=?",
                 tuple(metadata.get(field) for field in fields) + (request_id,),
             )
+        self.retention(apply=True)
+
+    def retention(self, apply=False):
+        """Report candidates by default; only completed requests can be removed."""
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=self.max_age_days)).isoformat() if self.max_age_days else None
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE" if apply else "BEGIN")
+            where = ("status IS NOT NULL AND (id IN (SELECT id FROM requests "
+                     "WHERE status IS NOT NULL ORDER BY id DESC LIMIT -1 OFFSET ?)"
+                     + (" OR started_at < ?" if cutoff else "") + ")")
+            values = [self.max_records] + ([cutoff] if cutoff else [])
+            candidates = db.execute("SELECT COUNT(*) FROM requests WHERE " + where, values).fetchone()[0]
+            if apply:
+                db.execute("DELETE FROM requests WHERE " + where, values)
+        return {"max_records": self.max_records, "max_age_days": self.max_age_days,
+                "candidates": candidates, "removed": candidates if apply else 0, "dry_run": not apply}
 
     def query(self, filters, limit=50, offset=0):
         clauses, values = [], []
@@ -120,7 +140,8 @@ class AuditStore:
                 "SELECT * FROM requests" + where + " ORDER BY id DESC LIMIT ? OFFSET ?",
                 values + [limit, offset],
             )]
-        return {"summary": totals, "rows": rows, "limit": limit, "offset": offset}
+        return {"summary": totals, "rows": rows, "limit": limit, "offset": offset,
+                "retention": self.retention()}
 
 
 def anonymous_ref(token, kind, value):

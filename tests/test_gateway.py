@@ -915,7 +915,7 @@ def test_startup_registration_formats(platform, monkeypatch, tmp_path):
         assert "Terminal=false" in data.decode()
 
 
-def test_windows_hidden_startup_launcher_executes_quoted_command(tmp_path):
+def test_windows_hidden_startup_launcher_executes_quoted_command(tmp_path, monkeypatch):
     import os
     import subprocess
     import sys
@@ -924,7 +924,8 @@ def test_windows_hidden_startup_launcher_executes_quoted_command(tmp_path):
 
     if os.name != "nt":
         pytest.skip("Native Windows startup launcher")
-    marker = tmp_path / "directory with spaces" / "started.txt"
+    monkeypatch.setenv("SECURE_GATEWAY_TEST_EXPAND", "expanded-wrong-path")
+    marker = tmp_path / "directory %SECURE_GATEWAY_TEST_EXPAND% with spaces" / "started.txt"
     marker.parent.mkdir()
     script = tmp_path / "startup.vbs"
     command = (

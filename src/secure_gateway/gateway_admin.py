@@ -61,7 +61,7 @@ def handle_admin(handler):
         filters = {key: values[0] for key, values in params.items()}
         limit = int(filters.pop("limit", "50"))
         offset = int(filters.pop("offset", "0"))
-        if not 1 <= limit <= 200 or not 0 <= offset <= 100000:
+        if not 1 <= limit <= 200 or not 0 <= offset <= 2**63 - 1:
             raise ValueError("Invalid pagination")
         result = handler.server.audit.query(filters, limit, offset)
         result["audit_write_errors"] = handler.server.audit_write_errors

@@ -474,3 +474,29 @@ def test_local_state_io_failure_returns_500_and_releases_slot(live_gateway, monk
         assert gateway.sessions['codex'].active_requests == 0
     monkeypatch.setattr(gateway, method, original)
     assert request()[0] == 200
+
+def test_short_declared_request_is_rejected_before_provider(live_gateway):
+    import socket
+    gateway,state,_=live_gateway
+    body=b'{"input":"hi"}'
+    with socket.create_connection(('127.0.0.1',gateway.server_port),timeout=3) as client:
+        client.sendall((f'POST /codex/responses HTTP/1.0\r\nHost: localhost\r\nX-SecureGateway-Token: fixture-token\r\nAuthorization: Bearer eyJ-fixture\r\nContent-Length: {len(body)+10}\r\n\r\n').encode()+body)
+        client.shutdown(socket.SHUT_WR)
+        response=client.recv(4096)
+    assert b' 400 ' in response
+    assert not state.requests
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests==0,timeout=3)
+
+def test_truncated_upstream_length_returns_502(live_gateway,monkeypatch):
+    gateway,state,request=live_gateway
+    original=BaseHTTPRequestHandler.send_header
+    def declared_too_large(handler,key,value):
+        if handler.server is not gateway and key.lower()=='content-length':
+            value=str(int(value)+10)
+        return original(handler,key,value)
+    monkeypatch.setattr(BaseHTTPRequestHandler,'send_header',declared_too_large)
+    assert request()[0]==502
+    assert len(state.requests)==1
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests==0,timeout=3)

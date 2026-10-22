@@ -185,10 +185,30 @@ def configure(
             state_dir = state_dir.resolve()
             state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
             key = state_dir / "key"
-            if not key.exists():
-                fd = os.open(key, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-                with os.fdopen(fd, "w", encoding="ascii") as stream:
-                    stream.write(secrets.token_urlsafe(32))
+            with session_file_lock(key):
+                if key.exists():
+                    try:
+                        password = key.read_text(encoding="ascii")
+                    except UnicodeError:
+                        raise ValueError("Invalid local encryption key; restore it before reinstalling.") from None
+                    if not password and any(state_dir.glob("*.enc")):
+                        raise ValueError("Missing local encryption key for existing snapshots; restore it before reinstalling.")
+                else:
+                    password = ""
+                    if any(state_dir.glob("*.enc")):
+                        raise ValueError("Missing local encryption key for existing snapshots; restore it before reinstalling.")
+                if not password:
+                    password = secrets.token_urlsafe(32)
+                    fd, temporary = tempfile.mkstemp(prefix=".key-", dir=state_dir)
+                    try:
+                        with os.fdopen(fd, "w", encoding="ascii") as stream:
+                            stream.write(password)
+                            stream.flush()
+                            os.fsync(stream.fileno())
+                        os.replace(temporary, key)
+                    finally:
+                        if os.path.exists(temporary):
+                            os.unlink(temporary)
             args = [
                 sys.executable,
                 "-m",
@@ -243,11 +263,15 @@ def installation_status(
             for h in entry["hooks"]
         )
     ]
+    try:
+        key_valid = bool((state_dir / "key").read_text(encoding="ascii"))
+    except (OSError, UnicodeError):
+        key_valid = False
     return {
         "installed_events": installed,
         "key_present": (state_dir / "key").is_file(),
         "ready": len(installed) == len(AGENT_EVENTS[agent])
-        and (state_dir / "key").is_file(),
+        and key_valid,
         "scope": "tool text only; prompts, attachments and telemetry are not covered",
         "agent": agent,
         "display_restoration": agent == "claude",
@@ -386,10 +410,12 @@ class HookStore:
     def gc(self, dry_run: bool = True) -> dict[str, Any]:
         """Retire only authenticated expired snapshots, revalidating under a lock."""
         report = self.snapshot_diagnostics()
-        report.update(dry_run=dry_run, candidates=report["counts"]["expired"], removed=0)
+        candidates = {item["ref"] for item in report["snapshots"]
+                      if item["status"] == "expired" or item["status"] == "retired"}
+        candidates &= {self._reference(path) for path in self._snapshot_paths() if path.is_file()}
+        report.update(dry_run=dry_run, candidates=len(candidates), removed=0)
         if dry_run:
             return report
-        candidates = {item["ref"] for item in report["snapshots"] if item["status"] == "expired"}
         password = self._diagnostic_password()
         if password is None:
             return report
@@ -399,17 +425,18 @@ class HookStore:
             session = None
             try:
                 with session_file_lock(path):
-                    if self._retired(path).exists() or not path.is_file():
+                    if not path.is_file():
                         continue
                     try:
                         session = load_session(path, password, None)
                     except SessionExpiredError:
                         retired = self._retired(path)
-                        fd = os.open(retired, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-                        with os.fdopen(fd, "wb") as stream:
-                            stream.write(b"SecureGateway-retired-hook-session-v1\n")
-                            stream.flush()
-                            os.fsync(stream.fileno())
+                        if not retired.exists():
+                            fd = os.open(retired, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                            with os.fdopen(fd, "wb") as stream:
+                                stream.write(b"SecureGateway-retired-hook-session-v1\n")
+                                stream.flush()
+                                os.fsync(stream.fileno())
                         path.unlink()
                         report["removed"] += 1
             except (ValueError, OSError):

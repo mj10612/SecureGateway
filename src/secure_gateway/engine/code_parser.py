@@ -210,10 +210,25 @@ def _regex_allowed(tokens: list[tuple[str, TokenType, str]]) -> bool:
                 before = significant[offset - 1][0] if offset else ""
                 if raw == ")":
                     return before in {"if", "while", "for", "with", "switch", "catch"}
-                # Object literals end expressions; statement blocks permit a
-                # following regex statement. Arrow function bodies are blocks.
+                # A function/class body can complete an expression or a declaration.
                 arrow = before == ">" and offset > 1 and significant[offset - 2][0] == "="
-                return arrow or before not in {"=", "(", "[", ",", ":", "return"}
+                if arrow:
+                    return False
+                header = offset - 1
+                if before == ")":
+                    nesting = 1
+                    header -= 1
+                    while header >= 0 and nesting:
+                        nesting += (significant[header][0] == ")") - (significant[header][0] == "(")
+                        header -= 1
+                while header >= 0 and significant[header][0] not in {";", "{", "}", "=", "(", ",", ":", "return", "=>"}:
+                    if significant[header][0] in {"function", "class"}:
+                        preceding = significant[header - 1][0] if header else ""
+                        if preceding == "async" and header > 1:
+                            preceding = significant[header - 2][0]
+                        return preceding not in {"=", "(", "[", ",", ":", "return", "yield"}
+                    header -= 1
+                return before not in {"=", "(", "[", ",", ":", "return"}
         return False
     if kind != "syntax":
         return False
@@ -240,6 +255,66 @@ def _regex_end(code: str, start: int) -> int:
             return i
         i += 1
     raise ValueError("Unterminated regular expression literal")
+
+
+def _line_comment_end(code: str, start: int, language: str) -> int:
+    for match in re.finditer(r"\r\n|[\r\n\u2028\u2029]", code[start:]):
+        position = start + match.start()
+        if match[0] in {"\u2028", "\u2029"} and language not in {"javascript", "typescript"}:
+            continue
+        if language in {"c", "cpp"} and position and code[position - 1] == "\\":
+            continue
+        return position
+    return len(code)
+
+
+def _javascript_contextual_keywords(tokens: list[tuple[str, TokenType, str]], language: str) -> None:
+    significant = [i for i, token in enumerate(tokens) if token[2] not in {"whitespace", "comment"}]
+    words = [tokens[i][0] for i in significant]
+    parens: list[int] = []
+    statement_start = 0
+    for position, index in enumerate(significant):
+        word = words[position]
+        previous = words[position - 1] if position else ""
+        following = words[position + 1] if position + 1 < len(words) else ""
+        after = words[position + 2] if position + 2 < len(words) else ""
+        module_clause = words[statement_start:position]
+        structural = False
+        if word in {"get", "set", "static"}:
+            structural = previous in {"{", "}", ",", ";", "static"} and (
+                (following not in {"(", ":", "=", ";", "}", "", ","} and after == "(")
+                or (word == "static" and following == "{")
+            )
+        elif word == "of":
+            structural = bool(parens) and words[parens[-1] - 1] == "for" and previous not in {".", "const", "let", "var"}
+        elif word in {"from", "as"}:
+            structural = any(value in {"import", "export"} for value in module_clause) and previous not in {".", "const", "let", "var"}
+            if word == "from":
+                structural = structural and following.startswith(("'", '"'))
+            else:
+                structural = structural and previous not in {"{", ","}
+                if language == "typescript" and not structural:
+                    structural = previous not in {"", ".", "{", "(", ",", ";", "const", "let", "var", "function", "="} and following not in {"=", ":", ",", ";", ")", "}"}
+        elif word == "async":
+            structural = following == "function" or (after == "=" and position + 3 < len(words) and words[position + 3] == ">")
+            if following == "(":
+                depth = 0
+                for cursor in range(position + 1, len(words)):
+                    depth += (words[cursor] == "(") - (words[cursor] == ")")
+                    if not depth:
+                        structural = words[cursor + 1:cursor + 3] == ["=", ">"]
+                        break
+            structural = structural or (previous in {"{", "}", ",", ";"} and after == "(" and following != "async")
+        else:
+            structural = tokens[index][2] == "keyword"
+        if word in {"get", "set", "static", "of", "from", "as", "async"}:
+            tokens[index] = (word, TokenType.GRAMMAR if structural else TokenType.IDENTIFIER, "keyword" if structural else "identifier")
+        if word == "(":
+            parens.append(position)
+        elif word == ")" and parens:
+            parens.pop()
+        elif word == ";":
+            statement_start = position + 1
 
 
 def literal_parts(value: str, subkind: str) -> tuple[str, str]:
@@ -345,8 +420,7 @@ class CodeParser:
                         elif language == "rust":
                             depth += 1
                 else:
-                    end = code.find("\n", i)
-                    i = end if end >= 0 else len(code)
+                    i = _line_comment_end(code, i, language)
                 token_type, kind = TokenType.LITERAL, "comment"
             elif c == "/" and language in {"javascript", "typescript"} and _regex_allowed(tokens):
                 i = _regex_end(code, i)
@@ -360,6 +434,20 @@ class CodeParser:
                     raise ValueError("Unterminated raw string literal")
                 i = end + len(suffix)
                 token_type, kind = TokenType.LITERAL, "string"
+            elif language == "sql" and c in {'"', "`", "["}:
+                closing = "]" if c == "[" else c
+                i += 1
+                while i < len(code):
+                    if code[i] == closing:
+                        if i + 1 < len(code) and code[i + 1] == closing:
+                            i += 2
+                            continue
+                        i += 1
+                        break
+                    i += 1
+                else:
+                    raise ValueError("Unterminated quoted identifier")
+                token_type, kind = TokenType.IDENTIFIER, "quoted_identifier"
             elif c == "`":
                 # A whole template is opaque: interpolation also contains private symbols.
                 i = quoted_end(
@@ -429,4 +517,6 @@ class CodeParser:
                 if not directive_match:
                     expect_header = expect_pragma = False
             tokens.append((raw, token_type, kind))
+        if language in {"javascript", "typescript"}:
+            _javascript_contextual_keywords(tokens, language)
         return tokens

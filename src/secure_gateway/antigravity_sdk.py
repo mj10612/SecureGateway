@@ -4,7 +4,7 @@ Only an explicit xAI API gateway is supported. The SDK receives a short-lived
 bearer capability URL, never the provider API key or the gateway header token.
 """
 
-from http.client import HTTPException
+from http.client import HTTPException, IncompleteRead
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import secrets
@@ -128,6 +128,8 @@ def antigravity_endpoint(gateway_origin: str, local_token: str, api_key: str):
                 )
                 with opener.open(request, timeout=65) as response:
                     result = response.read(LIMIT + 1)
+                    if len(result) <= LIMIT and getattr(response, "length", None) not in (None, 0):
+                        raise IncompleteRead(result)
                     content_type = response.headers.get_content_type()
                     if len(result) > LIMIT or content_type not in {
                         "application/json",

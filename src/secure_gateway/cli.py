@@ -17,6 +17,7 @@ from rich.panel import Panel
 from rich.text import Text
 
 from secure_gateway.encrypted_session import load_session, save_session, session_file_lock
+from secure_gateway.engine.masking_engine import MaskingEngine
 from secure_gateway.models import MaskMode, SurrogateStrategy
 from secure_gateway.server import app, engine, vault
 from secure_gateway.session import PrivacySession
@@ -457,6 +458,8 @@ def mask(
 
 @main.command()
 @click.argument("masked_text", required=False)
+@click.option("--restore-input-limit", type=click.IntRange(1), default=16 * 1024 * 1024, show_default=True)
+@click.option("--restore-output-limit", type=click.IntRange(1), default=16 * 1024 * 1024, show_default=True)
 @click.option("--input-file", type=click.Path(dir_okay=False, path_type=Path))
 @click.option("--session-id", default="cli_session")
 @click.option(
@@ -472,6 +475,8 @@ def mask(
 @_file_options
 def unmask(
     masked_text,
+    restore_input_limit,
+    restore_output_limit,
     input_file,
     session_id,
     strategy,
@@ -487,7 +492,9 @@ def unmask(
     with _session(
         session_id, session_file, session_password, strategy=strat
     ) as session:
-        result = engine.unmask(
+        restore_engine = MaskingEngine(max_restore_input_bytes=restore_input_limit,
+                                       max_restore_output_bytes=restore_output_limit)
+        result = restore_engine.unmask(
             masked_text,
             session.session_id,
             session.reverse_store,
@@ -627,13 +634,13 @@ def gateway_ensure(config):
 def gateway_run(config, mapping_limit, mask_numbers):
     """Run the subscription gateway in the foreground (normally auto-started)."""
     from secure_gateway.gateway import PrivacyGateway
-    from secure_gateway.gateway_install import default_config, load_config
+    from secure_gateway.gateway_install import default_config, load_config, runtime_directory
 
     try:
         settings = load_config(config or default_config())
         if settings.get("mode", "subscription") != "subscription":
             raise ValueError("Use gateway api-run for API configuration.")
-        state = (config or default_config()).resolve().parent / "sessions"
+        state = runtime_directory((config or default_config()).resolve()) / "sessions"
         with PrivacyGateway(
             ("127.0.0.1", settings["port"]),
             settings["token"],
@@ -641,10 +648,32 @@ def gateway_run(config, mapping_limit, mask_numbers):
             audit_path=state.parent / "logs.sqlite3",
             mapping_limit=mapping_limit or settings.get("mapping_limit", 100_000),
             mask_numbers=settings.get("mask_numbers", False) if mask_numbers is None else mask_numbers,
+            max_restore_input_bytes=settings.get("max_restore_input_bytes", 16 * 1024 * 1024),
+            max_restore_output_bytes=settings.get("max_restore_output_bytes", 16 * 1024 * 1024),
+            audit_max_records=settings.get("audit_max_records", 100_000),
+            audit_max_age_days=settings.get("audit_max_age_days"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
         ) as server:
             server.serve_forever()
+    except (ValueError, OSError, sqlite3.Error) as exc:
+        raise click.ClickException(str(exc)) from None
+
+
+@gateway.command("audit-gc")
+@click.option("--config", type=click.Path(path_type=Path))
+@click.option("--apply", "apply_cleanup", is_flag=True, help="Delete completed candidates; default is dry-run.")
+def gateway_audit_gc(config, apply_cleanup):
+    """Inspect or apply local audit retention without exposing log contents."""
+    from secure_gateway.gateway_install import default_config, load_config, runtime_directory
+    from secure_gateway.gateway_audit import AuditStore
+    path = config or default_config()
+    try:
+        settings = load_config(path)
+        store = AuditStore(runtime_directory(path.resolve()) / "logs.sqlite3",
+                           max_records=settings.get("audit_max_records", 100_000),
+                           max_age_days=settings.get("audit_max_age_days"))
+        click.echo(json.dumps(store.retention(apply=apply_cleanup)))
     except (ValueError, OSError, sqlite3.Error) as exc:
         raise click.ClickException(str(exc)) from None
 
@@ -809,6 +838,7 @@ def gateway_api_install(provider, model, config, grok_home, port):
 def gateway_api_run(config, mask_numbers):
     """Run the isolated xAI API gateway in the foreground; Ctrl+C stops it."""
     from secure_gateway.gateway import API_UPSTREAMS, PrivacyGateway
+    from secure_gateway.gateway_install import runtime_directory
     from secure_gateway.xai_install import default_api_config, load_api_config
 
     path = config or default_api_config()
@@ -821,10 +851,14 @@ def gateway_api_run(config, mask_numbers):
             api_upstreams={"xai": API_UPSTREAMS["xai"]},
             mapping_limit=settings.get("mapping_limit", 100_000),
             mask_numbers=settings.get("mask_numbers", False) if mask_numbers is None else mask_numbers,
+            max_restore_input_bytes=settings.get("max_restore_input_bytes", 16 * 1024 * 1024),
+            max_restore_output_bytes=settings.get("max_restore_output_bytes", 16 * 1024 * 1024),
+            audit_max_records=settings.get("audit_max_records", 100_000),
+            audit_max_age_days=settings.get("audit_max_age_days"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
-            state_dir=path.resolve().parent / "sessions",
-            audit_path=path.resolve().parent / "logs.sqlite3",
+            state_dir=runtime_directory(path.resolve()) / "sessions",
+            audit_path=runtime_directory(path.resolve()) / "logs.sqlite3",
         ) as server:
             server.serve_forever()
     except (ValueError, OSError, sqlite3.Error) as exc:

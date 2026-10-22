@@ -56,9 +56,17 @@ class NumericLiteralConflict(ValueError):
 
 
 class MaskingEngine:
-    def __init__(self, max_input_bytes: int = 16 * 1024 * 1024) -> None:
+    def __init__(self, max_input_bytes: int = 16 * 1024 * 1024,
+                 max_restore_input_bytes: int = 16 * 1024 * 1024,
+                 max_restore_output_bytes: int = 16 * 1024 * 1024) -> None:
         if type(max_input_bytes) is not int or max_input_bytes < 1:
             raise ValueError("max_input_bytes must be a positive integer.")
+        for limit in (max_restore_input_bytes, max_restore_output_bytes):
+            if type(limit) is not int or limit < 1:
+                raise ValueError("Restoration limits must be positive integers.")
+        self.max_restore_input_bytes = max_restore_input_bytes
+        self.max_restore_output_bytes = max_restore_output_bytes
+        self._restore_remaining: int | None = None
         self.max_input_bytes = max_input_bytes
         self.en_grammar = EnglishGrammarEngine()
         self.ko_grammar = KoreanGrammarEngine()
@@ -112,7 +120,11 @@ class MaskingEngine:
                 )
             terms = sensitive_terms or set()
             preserve = {word.casefold() for word in (custom_preserve or set())}
-            chunks = self._chunks(text, terms)
+            # Source text can itself contain a reserved surrogate spelling. Treat
+            # it as an opaque entity so strict restoration never confuses it
+            # with an earlier allocation (or rejects a literal unknown alias).
+            literal_aliases = {match[0] for match in StrategyGenerator.get_pattern(strategy).finditer(text)}
+            chunks = self._chunks(text, terms | literal_aliases)
             if hasattr(mapping_store, "originals_in"):
                 known = terms | mapping_store.originals_in(text)
             else:
@@ -194,6 +206,7 @@ class MaskingEngine:
                         )
                         + suffix
                     )
+                    known.add(stem)
                     masked += 1
                 else:
                     output.append(word)
@@ -266,6 +279,15 @@ class MaskingEngine:
                 total += 1
                 if token_type == TokenType.GRAMMAR or (token_type == TokenType.NUMBER and not mask_numbers):
                     output.append(raw)
+                elif subkind == "quoted_identifier":
+                    prefix, suffix = raw[0], raw[-1]
+                    content = raw[1:-1].replace(suffix + suffix, suffix)
+                    surrogate = self._get_or_create_surrogate(
+                        content, TokenType.IDENTIFIER, generator, mapping_store,
+                        reverse_store, code=True,
+                    )
+                    output.append(prefix + surrogate + suffix)
+                    masked += 1
                 elif subkind == "character":
                     # A whole character literal is an opaque identifier expression.
                     # Multi-character aliases inside character quotes are invalid.
@@ -367,6 +389,10 @@ class MaskingEngine:
         normalize_particles: bool = False,
         strict: bool = False,
     ) -> UnmaskResult:
+        if not isinstance(masked_text, str):
+            raise ValueError("Restoration input must be text.")
+        if len(masked_text.encode("utf-8")) > self.max_restore_input_bytes:
+            raise ValueError("Restoration input size limit reached.")
         generator = getattr(reverse_store, "generator", None)
         guard = generator.operation() if generator else nullcontext()
         with guard:
@@ -402,10 +428,17 @@ class MaskingEngine:
                     count += 1
                     unique.add(key)
                     suffix = match.groupdict().get("particle") or ""
-                    return mapping.original + (
+                    original = mapping.original
+                    if mapping.context == "code" and mapping.token_type == TokenType.IDENTIFIER:
+                        before = masked_text[match.start() - 1:match.start()] if match.start() else ""
+                        after = masked_text[match.end():match.end() + 1]
+                        if (before, after) in {('"', '"'), ("`", "`"), ("[", "]")}:
+                            original = original.replace(after, after + after)
+                    return original + (
                         normalize_particle(mapping.original, suffix) if suffix else ""
                     )
                 pieces = []
+                piece_bytes = 0
                 for offset in range(0, len(run), NUMERIC_ALIAS_LENGTH):
                     chunk = run[offset : offset + NUMERIC_ALIAS_LENGTH]
                     numeric_mapping = reverse_store.get(chunk)
@@ -416,6 +449,9 @@ class MaskingEngine:
                         count += 1
                         unique.add(chunk)
                         pieces.append(numeric_mapping.original)
+                    piece_bytes += len(pieces[-1].encode("utf-8"))
+                    if piece_bytes > self.max_restore_output_bytes:
+                        raise ValueError("Restoration output size limit reached.")
                 return "".join(pieces)
 
             # Both forms are substituted from the original input in one pass:
@@ -426,7 +462,22 @@ class MaskingEngine:
             pattern += "|(?P<alias>" + "|".join(alternatives + aliases) + ")"
             if normalize_particles:
                 pattern += r"(?P<particle>(?:으로|이랑|이나|은|는|을|를|과|와|이|가|로|랑|나)(?:부터|도|만|는|의)?(?=\s|[.,!?]|$))?"
-            output = re.sub(pattern, restore, masked_text)
+            output_limit = self.max_restore_output_bytes if self._restore_remaining is None else self._restore_remaining
+            parts, cursor, output_bytes = [], 0, 0
+            for match in re.finditer(pattern, masked_text):
+                for part in (masked_text[cursor:match.start()], restore(match)):
+                    output_bytes += len(part.encode("utf-8"))
+                    if output_bytes > output_limit:
+                        raise ValueError("Restoration output size limit reached.")
+                    parts.append(part)
+                cursor = match.end()
+            tail = masked_text[cursor:]
+            if output_bytes + len(tail.encode("utf-8")) > output_limit:
+                raise ValueError("Restoration output size limit reached.")
+            parts.append(tail)
+            output = "".join(parts)
+            if self._restore_remaining is not None:
+                self._restore_remaining -= output_bytes + len(tail.encode("utf-8"))
             candidates = StrategyGenerator.get_pattern(strategy).findall(masked_text)
             unmatched = sorted(
                 {c for c in candidates if c not in reverse_store} | set(glued_unmatched)

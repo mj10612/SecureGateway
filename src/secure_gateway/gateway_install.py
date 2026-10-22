@@ -36,9 +36,27 @@ def _installed(record, data):
     }
 
 
+def installation_path(path: Path, pending=False):
+    """Keep ownership and recovery records scoped to one configuration file."""
+    name = "installation.pending.json" if pending else "installation.json"
+    target = path.parent / (name if path.name == "config.json" else path.name + "." + name)
+    legacy = path.parent / name
+    if path.name != "config.json" and not target.exists() and legacy.exists():
+        # Old custom configs shared the conventional manifest. Never forget an
+        # old ownership record and silently adopt the installed host settings.
+        data = json.loads(legacy.read_text(encoding="utf-8"))
+        if str(path.resolve()) in data.get("files", {}):
+            raise ValueError("Legacy shared installation record belongs to this configuration; restore it before reinstalling.")
+    return target
+
+
+def runtime_directory(path: Path):
+    return path.parent if path.name == "config.json" else path.parent / (path.name + ".state")
+
+
 def _recover_install(path):
     """Roll an interrupted prepare/apply transaction back without losing edits."""
-    journal = path.parent / "installation.pending.json"
+    journal = installation_path(path, pending=True)
     if not journal.exists():
         return
     try:
@@ -302,7 +320,7 @@ def codex_settings_homes(codex_dir: Path | None = None) -> list[Path]:
 
 def changed_installation_files(path: Path) -> list[str] | None:
     """Check installation ownership without exposing settings or credentials."""
-    manifest_path = path.parent / "installation.json"
+    manifest_path = installation_path(path)
     if not manifest_path.exists():
         return None
     manifest = load_installation_manifest(manifest_path)
@@ -322,7 +340,7 @@ def install_gateway(
     startup_path: Path | None = None,
 ):
     path = path.resolve()
-    manifest_path = path.parent / "installation.json"
+    manifest_path = installation_path(path)
     if manifest_path.exists():
         load_installation_manifest(manifest_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -341,7 +359,9 @@ def startup_registration(arguments, startup_path=None):
             / "Microsoft/Windows/Start Menu/Programs/Startup/SecureGateway.vbs"
         )
         command = subprocess.list2cmdline(arguments).replace('"', '""')
-        data = f'CreateObject("WScript.Shell").Run "{command}", 0, False\r\n'.encode(
+        data = ('Set shell = CreateObject("WScript.Shell")\r\n'
+                + 'shell.Environment("PROCESS")("SECURE_GATEWAY_LITERAL_PERCENT") = "%"\r\n'
+                + f'shell.Run "{command.replace("%", "%SECURE_GATEWAY_LITERAL_PERCENT%")}", 0, False\r\n').encode(
             "utf-16"
         )
     elif sys.platform == "darwin":
@@ -382,7 +402,7 @@ def startup_registration(arguments, startup_path=None):
 
 def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_path):
     path = path.resolve()
-    manifest_path = path.parent / "installation.json"
+    manifest_path = installation_path(path)
     previous_manifest = (
         load_installation_manifest(manifest_path) if manifest_path.exists() else None
     )
@@ -484,7 +504,7 @@ def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_pat
 
 def apply_settings(path: Path, config, changes, *, mirrors=None):
     """Back up and transactionally apply settings, shared by subscription/API setup."""
-    manifest_path = path.parent / "installation.json"
+    manifest_path = installation_path(path)
     _recover_install(path)
     previous_config = path.read_bytes() if path.exists() else None
     previous_manifest = manifest_path.read_bytes() if manifest_path.exists() else None
@@ -523,7 +543,7 @@ def apply_settings(path: Path, config, changes, *, mirrors=None):
         for settings in changes
     }
     applied = []
-    journal_path = path.parent / "installation.pending.json"
+    journal_path = installation_path(path, pending=True)
     pending = {
         str(settings.resolve()): {
             "before_hex": original.hex() if original is not None else None,
@@ -576,7 +596,7 @@ def uninstall_gateway(path: Path):
     path = path.resolve()
     if not path.parent.exists():
         return False
-    manifest_path = path.parent / "installation.json"
+    manifest_path = installation_path(path)
     if manifest_path.exists():
         load_installation_manifest(manifest_path)
     with session_file_lock(path):
@@ -585,7 +605,7 @@ def uninstall_gateway(path: Path):
 
 
 def _uninstall_gateway(path: Path):
-    manifest_path = path.parent / "installation.json"
+    manifest_path = installation_path(path)
     if not manifest_path.exists():
         return False
     manifest = load_installation_manifest(manifest_path)
