@@ -156,7 +156,7 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
             mapping = TokenMapping.model_validate(item)
             if version == 1:
                 mapping.format_version = 1
-            key = mapping_key(
+            key = mapping.lookup_key or mapping_key(
                 mapping.original, mapping.token_type, mapping.context == "code"
             )
             if (
@@ -176,10 +176,18 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
                 and session.strategy == SurrogateStrategy.PSEUDOWORD
             ):
                 valid = bool(re.fullmatch(r"[A-Z][A-Za-z0-9_]*", mapping.surrogate))
+            if mapping.identifier_base:
+                from secure_gateway.engine.code_identifiers import valid_identifier_alias
+                valid = valid_identifier_alias(mapping)
             if not valid:
                 raise ValueError("Invalid surrogate format")
             session.forward_store[key] = mapping
             session.reverse_store[mapping.surrogate] = mapping
+            if mapping.identifier_base:
+                assert mapping.identifier_language is not None and mapping.identifier_key is not None
+                group = (mapping.identifier_language, mapping.identifier_key)
+                session.generator._identifier_groups.setdefault(group, []).append(mapping)
+                session.generator.restore_state([mapping.identifier_base])
         session.generator.restore_state(list(session.reverse_store))
         for kind, count in payload.get("counters", {}).items():
             if not isinstance(count, int) or count < 0:

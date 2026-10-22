@@ -4,11 +4,11 @@
 
 Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENAME.md).
 
-**Local English/Korean Masking · Subscription Gateway · Trusted Restoration**
+**Local Multilingual Masking · Subscription Gateway · Trusted Restoration**
 
-*영어·한국어·코드를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
+*17개 자연어·24개 코드 언어를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-1.2.2-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
 [![CI](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml)
@@ -25,7 +25,12 @@ Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENA
 
 ## English Overview
 
-**SecureGateway** masks English/Korean text and code locally, with session-based restoration.
+**SecureGateway** masks text in 17 natural languages and code in 24 language profiles locally,
+with session-based restoration. Version 1.2.0 adds offline language adapters, binding-aware
+identifier aliases, and restart recovery for interrupted audit records. See the
+[language support matrix](docs/LANGUAGES.md) for explicit language tags, syntax scope,
+local model dependencies and verification limits. Language support is lexical;
+it does not promise complete morphology, entity recognition or executable anonymization.
 
 Version 0.5 adds an experimental **local subscription gateway** for Claude Code and Codex.
 Run `secure-gateway gateway install` once, then use `claude` / `codex` normally. Requests are
@@ -56,7 +61,7 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureGateway | **1.1.1** |
+| SecureGateway | **1.2.2** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |
@@ -386,7 +391,11 @@ opt into `normalize_particles=True` (CLI `--normalize-particles`) to choose 이/
 
 ### Code-aware review representations
 
-Code languages: `python`, `javascript`, `typescript`, `go`, `rust`, `java`, `c`, `cpp`, `sql`.
+Code profiles: `python`, `javascript`, `typescript`, `go`, `rust`, `java`, `c`, `cpp`, `sql`,
+`bash`, `csharp`, `powershell`, `php`, `kotlin`, `lua`, `nasm`, `swift`, `ruby`, `dart`,
+`r`, `nix`, `gdscript`, `vbnet`, `vba`. Use explicit `--code-language` for ambiguous source;
+see the [syntax scope and aliases](docs/LANGUAGES.md). SQL identifier comparison can be
+selected with `--sql-dialect standard|postgresql|sqlite`.
 Use explicit `language` in `mask_code` (CLI `--code-language`) for ambiguous snippets.
 Auto detection is best effort. Keywords are language-specific; builtins and shadowed builtin
 names are masked. Unicode identifiers, SQL comments/doubled quotes, backticks, Python f-strings
@@ -517,7 +526,9 @@ Claude Code 2.1.287·Codex 0.160.0의 실제 CLI를 모의 OAuth/로컬 서버�
 두 CLI 모두 기존 구독 로그인으로 영어·한국어 질문 → 실제 파일 읽기 → 코드 마스킹 전송 → 정상 답변·자동 복원까지 검증했습니다. Claude의 식별 블록·치환명 호환 오류를 수정했으며, 기존 429는 구독 한도 소진이 아니었습니다. 이미지·원격 첨부·미지원 요청은 차단하고,
 게이트웨이 밖의 도구 네트워크·텔레메트리까지 보호한다고 주장하지 않습니다.
 
-SecureGateway는 영어·한국어·혼합 문장을 로컬에서 마스킹하고 복원합니다. 클라우드에 요청하기
+SecureGateway는 17개 자연어와 혼합 문장을 로컬에서 마스킹하고 복원합니다.
+`--language`로 언어를 명시할 수 있으며 자동 판별의 범위와 언어별 제약은
+[언어 지원 표](docs/LANGUAGES.md)에 정리했습니다. 클라우드에 요청하기
 **전에** `LocalPrivacyClient` 또는 로컬 API/CLI로 원문을 가리고, 응답은 로컬에서만 복원하세요.
 모델이 호출하는 MCP 도구의 인자는 이미 제공자에게 전달되어 있으므로, Claude Desktop/Cursor에
 서버를 추가하는 것만으로 개인정보가 보호되지는 않습니다. 복원한 원문을 모델 컨텍스트에 다시

@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 1.1.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 1.2.2 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -428,6 +428,12 @@ SQLite DELETE removes logical rows, not a secure wipe. WAL pages may retain old
 bytes until SQLite reuses/checkpoints them. This command does not force VACUUM or
 truncate WAL while the daemon is active; stop the daemon and take a backup before
 performing optional SQLite checkpoint/VACUUM maintenance to reclaim physical space.
+
+Version 1.2 adds interrupted-request recovery and non-mutating retention inspection.
+See the [audit migration and rollback instructions](UPGRADE_1_2.md). The gateway
+JSON accepts `natural_language` (default `auto`) and `sql_dialect` (default
+`sqlite`); see [supported language profiles](LANGUAGES.md). These are local
+masking controls and are not forwarded as provider request fields.
 
 Installation ownership and recovery records are scoped to each configuration file.
 The conventional `config.json` keeps `installation.json`; other filenames use

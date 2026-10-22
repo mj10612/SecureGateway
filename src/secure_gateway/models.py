@@ -52,6 +52,12 @@ class TokenMapping(BaseModel):
     is_all_caps: bool = False
     context: Literal["text", "code"] = "text"
     format_version: int = Field(default=2, ge=1, le=2)
+    identifier_base: str | None = None
+    identifier_language: str | None = None
+    identifier_key: str | None = None
+    identifier_quoted: bool = False
+    lookup_key: str | None = None
+    code_literal: bool = False
 
 
 class MaskResult(BaseModel):

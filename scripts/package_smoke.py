@@ -41,6 +41,20 @@ for name in ('index.html', 'app.js', 'style.css', 'favicon.svg'):
 result = capture_command([sys.executable, '-c', "print('smoke')"],
                          timeout=5, max_output_bytes=128)
 assert result.returncode == 0 and result.stdout.strip() == b'smoke'
+from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.engine.code_parser import LANGUAGE_KEYWORDS
+from secure_gateway.session import PrivacySession
+assert len(LANGUAGE_KEYWORDS) == 24
+for language, text in [('zh', '\\u5f20\\u4f1f\\u5728\\u516c\\u53f8'),
+                       ('ja', '\\u5c71\\u7530\\u306f\\u4f1a\\u793e'),
+                       ('hi', '\\u0938\\u0940\\u092e\\u093e')]:
+    session = PrivacySession('distribution-languages')
+    engine = MaskingEngine()
+    masked = engine.mask_text(text, session.session_id, session.generator,
+                              session.forward_store, session.reverse_store, language=language)
+    assert masked.masked_text != text
+    assert engine.unmask(masked.masked_text, session.session_id, session.reverse_store,
+                         strict=True).unmasked_text == text
 print(__version__)
 """
     for distribution in distributions:

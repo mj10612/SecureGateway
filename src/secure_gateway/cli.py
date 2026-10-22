@@ -121,7 +121,7 @@ def _session(sid, path, password, mode=None, strategy=None):
 @click.group(cls=LiteralArgumentGroup)
 @click.version_option(version=__version__)
 def main():
-    """SecureGateway: local English/Korean masking. Mask BEFORE sending data to a provider."""
+    """SecureGateway: local multilingual masking. Mask BEFORE sending data to a provider."""
 
 
 @main.command()
@@ -405,8 +405,9 @@ def restore_hook_text(agent, state_dir, session_id):
     type=click.Choice([s.value for s in SurrogateStrategy]),
     default="bracket",
 )
-@click.option("--language", type=click.Choice(["auto", "en", "ko"]), default="auto")
+@click.option("--language", default="auto", help="Natural language tag (for example en, ko, es, zh-Hant, pt-BR).")
 @click.option("--code-language", default="auto")
+@click.option("--sql-dialect", type=click.Choice(["standard", "postgresql", "sqlite"]), default="sqlite")
 @click.option("--mask-numbers", is_flag=True, help="Mask numeric literals in code mode (default: preserve).")
 @click.option("--sensitive-term", multiple=True)
 @click.option("--preserve", multiple=True)
@@ -420,6 +421,7 @@ def mask(
     strategy,
     language,
     code_language,
+    sql_dialect,
     mask_numbers,
     sensitive_term,
     preserve,
@@ -442,6 +444,7 @@ def mask(
             mode=mask_mode,
             language=language,
             code_language=code_language,
+            sql_dialect=sql_dialect,
             mask_numbers=mask_numbers,
             sensitive_terms=set(sensitive_term),
             custom_preserve=set(preserve),
@@ -652,6 +655,8 @@ def gateway_run(config, mapping_limit, mask_numbers):
             max_restore_output_bytes=settings.get("max_restore_output_bytes", 16 * 1024 * 1024),
             audit_max_records=settings.get("audit_max_records", 100_000),
             audit_max_age_days=settings.get("audit_max_age_days"),
+            natural_language=settings.get("natural_language", "auto"),
+            sql_dialect=settings.get("sql_dialect", "sqlite"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
         ) as server:
@@ -663,17 +668,28 @@ def gateway_run(config, mapping_limit, mask_numbers):
 @gateway.command("audit-gc")
 @click.option("--config", type=click.Path(path_type=Path))
 @click.option("--apply", "apply_cleanup", is_flag=True, help="Delete completed candidates; default is dry-run.")
-def gateway_audit_gc(config, apply_cleanup):
+@click.option("--recover-incomplete", is_flag=True, help="Inspect interrupted requests from terminated gateway owners; --apply recovers them.")
+@click.option("--include-legacy-incomplete", is_flag=True, help="With --recover-incomplete, include ownerless records after stopping older gateway processes.")
+def gateway_audit_gc(config, apply_cleanup, recover_incomplete, include_legacy_incomplete):
     """Inspect or apply local audit retention without exposing log contents."""
     from secure_gateway.gateway_install import default_config, load_config, runtime_directory
     from secure_gateway.gateway_audit import AuditStore
     path = config or default_config()
     try:
+        if include_legacy_incomplete and not recover_incomplete:
+            raise ValueError("--include-legacy-incomplete requires --recover-incomplete.")
         settings = load_config(path)
         store = AuditStore(runtime_directory(path.resolve()) / "logs.sqlite3",
                            max_records=settings.get("audit_max_records", 100_000),
-                           max_age_days=settings.get("audit_max_age_days"))
-        click.echo(json.dumps(store.retention(apply=apply_cleanup)))
+                           max_age_days=settings.get("audit_max_age_days"), read_only=not apply_cleanup)
+        try:
+            recovery = store.recover_incomplete(apply=apply_cleanup, include_legacy=include_legacy_incomplete) if recover_incomplete else None
+            result = store.retention(apply=apply_cleanup)
+            if recovery is not None:
+                result["recovery"] = recovery
+            click.echo(json.dumps(result))
+        finally:
+            store.close()
     except (ValueError, OSError, sqlite3.Error) as exc:
         raise click.ClickException(str(exc)) from None
 
@@ -855,6 +871,8 @@ def gateway_api_run(config, mask_numbers):
             max_restore_output_bytes=settings.get("max_restore_output_bytes", 16 * 1024 * 1024),
             audit_max_records=settings.get("audit_max_records", 100_000),
             audit_max_age_days=settings.get("audit_max_age_days"),
+            natural_language=settings.get("natural_language", "auto"),
+            sql_dialect=settings.get("sql_dialect", "sqlite"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
             state_dir=runtime_directory(path.resolve()) / "sessions",

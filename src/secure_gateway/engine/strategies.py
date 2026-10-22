@@ -37,6 +37,7 @@ class StrategyGenerator:
         self._type_counters: dict[TokenType, int] = {}
         self._code_index = 0
         self.max_mappings = 100_000
+        self._identifier_groups: dict[tuple[str, str], list] = {}
 
     @contextmanager
     def operation(self) -> Iterator[None]:

@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "secure-gateway"
-version = "1.1.1"
-description = "Local English/Korean masking and automatic Claude/Codex subscription privacy gateway"
+version = "1.2.2"
+description = "Local multilingual masking and automatic Claude/Codex subscription privacy gateway"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
@@ -44,15 +44,21 @@ dependencies = [
     "rich>=13.0.0",
     "cryptography>=41.0.0",
     "tomlkit>=0.13.0",
+    "jieba>=0.42.1",
+    "tinysegmenter>=0.4",
 ]
 
 [project.optional-dependencies]
+native-validation = [
+    "tree-sitter-language-pack==1.22.1",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.24.0",
     "pytest-cov>=4.0",
     "ruff>=0.9",
     "mypy>=1.10",
+    "jsonschema>=4.0",
 ]
 
 [project.scripts]

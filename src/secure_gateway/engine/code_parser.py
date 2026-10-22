@@ -8,6 +8,7 @@ import io
 import tokenize as python_tokenize
 
 from secure_gateway.models import TokenType
+from secure_gateway.engine import extended_code
 
 LANGUAGE_KEYWORDS: dict[str, set[str]] = {
     "python": set(keyword.kwlist),
@@ -51,6 +52,9 @@ ALIASES = {
     "rs": "rust",
     "c++": "cpp",
 }
+LANGUAGE_KEYWORDS.update(extended_code.LANGUAGE_KEYWORDS)
+ALIASES.update(extended_code.ALIASES)
+CODE_KEYWORDS.update(set().union(*extended_code.LANGUAGE_KEYWORDS.values()))
 NUMBER = re.compile(
     r"(?:0[xX][\da-fA-F_'\.]+(?:[pP][+-]?\d+)?|0[bB][01_']+|0[oO][0-7_']+|"
     r"(?:\d[\d_']*(?:\.\d[\d_']*)*|\.\d[\d_']*(?:\.\d[\d_']*)*)"
@@ -71,6 +75,13 @@ def detect_language(code: str, language: str = "auto") -> str:
             raise ValueError(f"Unsupported code language: {language}")
         return language
     checks = [
+        ("bash", r"\A#![^\n]*\b(?:bash|sh)\b"),
+        ("powershell", r"\A#![^\n]*\bpwsh\b"),
+        ("php", r"\A\s*<\?php\b"),
+        ("gdscript", r"(?m)^\s*(?:extends\s+Node\w*|class_name\s+\w+)"),
+        ("csharp", r"(?m)^\s*using\s+System(?:\.|\s*;)"),
+        ("kotlin", r"(?m)^\s*(?:data\s+class|fun\s+main\s*\()"),
+        ("swift", r"(?m)^\s*import\s+(?:Foundation|SwiftUI)\b"),
         ("python", r"(?m)^\s*(?:async\s+def|def\s+\w+|from\s+[\w.]+\s+import)\b"),
         ("sql", r"(?im)^\s*(?:SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\b"),
         ("go", r"\b(?:package\s+\w+|func\s+\w+|var\s+\w+\s*=\s*`)"),
@@ -151,6 +162,10 @@ def _python_soft_positions(code: str) -> set[tuple[int, int]]:
         if not statement or statement[0].string not in {"match", "case", "type"}:
             return
         first = statement[0]
+        # A bare name followed by ':' is an annotated assignment, not a
+        # match subject or case pattern (both require another token).
+        if first.string in {"match", "case"} and len(statement) > 1 and statement[1].string == ":":
+            return
         depth = 0
         guard = False
         wildcards = []
@@ -272,13 +287,12 @@ def _javascript_contextual_keywords(tokens: list[tuple[str, TokenType, str]], la
     significant = [i for i, token in enumerate(tokens) if token[2] not in {"whitespace", "comment"}]
     words = [tokens[i][0] for i in significant]
     parens: list[int] = []
-    statement_start = 0
+    module_clause = False
     for position, index in enumerate(significant):
         word = words[position]
         previous = words[position - 1] if position else ""
         following = words[position + 1] if position + 1 < len(words) else ""
         after = words[position + 2] if position + 2 < len(words) else ""
-        module_clause = words[statement_start:position]
         structural = False
         if word in {"get", "set", "static"}:
             structural = previous in {"{", "}", ",", ";", "static"} and (
@@ -288,7 +302,7 @@ def _javascript_contextual_keywords(tokens: list[tuple[str, TokenType, str]], la
         elif word == "of":
             structural = bool(parens) and words[parens[-1] - 1] == "for" and previous not in {".", "const", "let", "var"}
         elif word in {"from", "as"}:
-            structural = any(value in {"import", "export"} for value in module_clause) and previous not in {".", "const", "let", "var"}
+            structural = module_clause and previous not in {".", "const", "let", "var"}
             if word == "from":
                 structural = structural and following.startswith(("'", '"'))
             else:
@@ -314,10 +328,16 @@ def _javascript_contextual_keywords(tokens: list[tuple[str, TokenType, str]], la
         elif word == ")" and parens:
             parens.pop()
         elif word == ";":
-            statement_start = position + 1
+            module_clause = False
+        elif word in {"import", "export"}:
+            module_clause = True
 
 
 def literal_parts(value: str, subkind: str) -> tuple[str, str]:
+    if subkind.startswith("literal:"):
+        _, prefix_length, suffix_length = subkind.split(":")
+        prefix_size, suffix_size = int(prefix_length), int(suffix_length)
+        return value[:prefix_size], value[len(value) - suffix_size:] if suffix_size else ""
     if subkind == "regex":
         suffix = re.search(r"/[A-Za-z]*$", value)
         assert suffix is not None
@@ -343,10 +363,51 @@ def literal_parts(value: str, subkind: str) -> tuple[str, str]:
     return match[0], match[1]
 
 
+def _javascript_identifier(code: str, start: int) -> tuple[int, str] | None:
+    """Read identifier escapes as part of their name, retaining original spans."""
+    position = start
+    decoded: list[str] = []
+    while position < len(code):
+        character = code[position]
+        end = position + 1
+        if code.startswith("\\u", position):
+            escape = re.match(r"\\u(?:([0-9a-fA-F]{4})|\{([0-9a-fA-F]{1,6})\})", code[position:])
+            if escape is None:
+                raise ValueError("Invalid JavaScript identifier escape")
+            number = int(escape[1] or escape[2], 16)
+            if number > 0x10FFFF:
+                raise ValueError("Invalid JavaScript identifier escape")
+            character = chr(number)
+            end = position + len(escape[0])
+        valid = character in {"$", "_"} or (
+            character.isidentifier() if not decoded else
+            ("a" + character).isidentifier() or character in {"\u200c", "\u200d"}
+        )
+        if not valid:
+            if code.startswith("\\u", position):
+                raise ValueError("Invalid JavaScript identifier character")
+            break
+        decoded.append(character)
+        position = end
+    return (position, "".join(decoded)) if decoded else None
+
+
+def _identifier_end(code: str, start: int) -> int:
+    """Include Unicode combining continuations omitted by regex word classes."""
+    if start >= len(code) or not code[start].isidentifier():
+        return start
+    end = start + 1
+    while end < len(code) and ("a" + code[end]).isidentifier():
+        end += 1
+    return end
+
+
 class CodeParser:
     @staticmethod
     def tokenize(code: str, language: str = "auto") -> list[tuple[str, TokenType, str]]:
         language = detect_language(code, language)
+        if language in extended_code.LANGUAGE_KEYWORDS:
+            return extended_code.tokenize(code, language)
         tokens: list[tuple[str, TokenType, str]] = []
         i = 0
         directive = None
@@ -478,10 +539,26 @@ class CodeParser:
                 i = number.end()
                 token_type, kind = TokenType.NUMBER, "number"
             else:
+                javascript_identifier = (
+                    _javascript_identifier(code, i)
+                    if language in {"javascript", "typescript"} else None
+                )
+                raw_rust = (
+                    IDENTIFIER.match(code, i + 2)
+                    if language == "rust" and code.startswith("r#", i) else None
+                )
                 identifier = IDENTIFIER.match(code, i)
-                if identifier:
-                    i = identifier.end()
-                    word = identifier[0]
+                if javascript_identifier or raw_rust:
+                    i = javascript_identifier[0] if javascript_identifier else _identifier_end(code, start + 2)
+                    word = javascript_identifier[1] if javascript_identifier else code[start:i]
+                    reserved = word in LANGUAGE_KEYWORDS[language] and not raw_rust
+                    token_type, kind = (
+                        (TokenType.GRAMMAR, "keyword") if reserved else
+                        (TokenType.IDENTIFIER, "identifier")
+                    )
+                elif identifier:
+                    i = _identifier_end(code, start) if language in {"python", "rust"} else identifier.end()
+                    word = code[start:i]
                     reserved = (
                         word.lower() in LANGUAGE_KEYWORDS[language]
                         if language == "sql"

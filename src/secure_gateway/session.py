@@ -209,6 +209,8 @@ class PrivacySession:
             self.reverse_store.clear()
             self.generator.used_surrogates.clear()
             self.generator._type_counters.clear()
+            if hasattr(self.generator, "_identifier_groups"):
+                self.generator._identifier_groups.clear()
             self.generator.salt = ""
 
     def get_stats(self) -> SessionStats:

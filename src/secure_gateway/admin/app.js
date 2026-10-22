@@ -2,7 +2,7 @@
 const $ = (id) => document.getElementById(id);
 const providers = {claude: "Anthropic", codex: "OpenAI", xai: "xAI"};
 const subscriptions = {claude_subscription: "Claude 구독", chatgpt_subscription: "ChatGPT 구독", api_key: "xAI API 키"};
-const outcomes = {blocked: "전송 전 차단", completed: "완료", upstream_rejected: "제공자 거절", transport_error: "연결 오류", restore_error: "복원 오류", incomplete: "진행 중 / 미완료"};
+const outcomes = {blocked: "전송 전 차단", completed: "완료", upstream_rejected: "제공자 거절", transport_error: "연결 오류", restore_error: "복원 오류", incomplete: "진행 중 / 미완료", interrupted: "프로세스 중단"};
 let token = "", offset = 0, generation = 0, loading = false, pending = false;
 const limit = 50;
 const num = (v) => Number(v || 0).toLocaleString("ko-KR");

@@ -12,6 +12,8 @@ from mcp.server.mcpserver.exceptions import ToolError
 
 from secure_gateway import __version__
 from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.engine.natural_languages import canonical_language, SUPPORTED_LANGUAGES
+from secure_gateway.engine.code_parser import LANGUAGE_KEYWORDS
 from secure_gateway.models import MaskMode, SurrogateStrategy
 from secure_gateway.session import SessionVault
 
@@ -52,18 +54,18 @@ def mask_text(
     custom_preserve: list[str] | None = None,
     code_language: str = "auto",
     mask_numbers: bool = False,
+    sql_dialect: str = "sqlite",
 ) -> str:
     """Mask text. Tool arguments are provider-visible; pre-mask confidential data locally.
 
     mode: content_words, entities_only, code_aware, aggressive.
-    strategy: bracket, unicode, pseudoword, hash. language: auto, en, ko.
+    strategy: bracket, unicode, pseudoword, hash. language: auto or a supported natural-language tag.
     sensitive_terms forces explicit words/phrases; custom_preserve opts terms out of masking.
     code_language selects a code lexer when mode=code_aware.
     mask_numbers=True masks code numbers; the default preserves them.
     """
     mask_mode, strat = MaskMode(mode), SurrogateStrategy(strategy)
-    if language not in {"auto", "en", "ko"}:
-        raise ValueError("language must be auto, en, or ko")
+    language = canonical_language(language)
     session = vault.get_or_create(session_id, mask_mode, strat)
     with session.operation():
         result = engine.mask_text(
@@ -79,6 +81,7 @@ def mask_text(
             custom_preserve=set(custom_preserve or []),
             code_language=code_language,
             mask_numbers=mask_numbers,
+            sql_dialect=sql_dialect,
         )
         session.mode = mask_mode
         session.total_mask_calls += 1
@@ -125,12 +128,13 @@ def unmask_text(
 @_tool_errors
 def mask_code(
     code: str, session_id: str = "", strategy: str = "bracket", language: str = "auto",
-    mask_numbers: bool = False
+    mask_numbers: bool = False, sql_dialect: str = "sqlite"
 ) -> str:
     """Mask identifiers/literals. Set language explicitly when auto detection is ambiguous.
 
     Numbers are preserved by default; mask_numbers=True opts into numeric masking.
-    Supported: python, javascript, typescript, go, rust, java, c, cpp, sql.
+    Supported language profiles are listed in privacy://policies and docs/LANGUAGES.md.
+    SQL dialect: standard (lowercase folding), postgresql, sqlite.
     Generated code is a review representation; it is not executable anonymization.
     """
     strat = SurrogateStrategy(strategy)
@@ -145,6 +149,7 @@ def mask_code(
             strat,
             language,
             mask_numbers=mask_numbers,
+            sql_dialect=sql_dialect,
         )
         session.mode = MaskMode.CODE_AWARE
         session.total_mask_calls += 1
@@ -236,7 +241,8 @@ def get_privacy_policies() -> str:
         {
             "modes": [m.value for m in MaskMode],
             "strategies": [s.value for s in SurrogateStrategy],
-            "languages": ["en", "ko", "auto"],
+            "languages": sorted(SUPPORTED_LANGUAGES),
+            "code_languages": sorted(LANGUAGE_KEYWORDS),
             "confidentiality": "Only pre-provider client-side masking protects against the provider.",
             "detection": "Heuristic; use sensitive_terms or aggressive for unrecognized data.",
             "metrics": "masked_ratio is an occurrence ratio, not entropy or proof of privacy.",

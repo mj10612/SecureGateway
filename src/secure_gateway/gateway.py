@@ -27,6 +27,8 @@ import urllib.parse
 
 from secure_gateway.engine.masking_engine import MaskingEngine, NumericLiteralConflict
 from secure_gateway.engine.strategies import mapping_key
+from secure_gateway.engine.natural_languages import canonical_language
+from secure_gateway.engine.code_parser import LANGUAGE_KEYWORDS, ALIASES
 from secure_gateway.encrypted_session import (
     SessionExpiredError,
     SnapshotEncryption,
@@ -432,6 +434,7 @@ class SharedEngine(MaskingEngine):
         mapping_store,
         reverse_store,
         code=False,
+        lookup_key=None,
     ):
         with generator.operation():
             kind = (
@@ -439,11 +442,13 @@ class SharedEngine(MaskingEngine):
                 if token_type == TokenType.NUMBER
                 else TokenType.IDENTIFIER
             )
-            key = mapping_key(original_token, kind, code=True)
+            key = lookup_key or mapping_key(original_token, kind, code=True)
             if key in mapping_store:
                 if kind == TokenType.NUMBER and mapping_store[key].surrogate == original_token:
                     raise NumericLiteralConflict("Numeric literal conflicts with a preserved number; use a new session.")
                 mapping_store[key].occurrence_count += 1
+                if code and token_type == TokenType.LITERAL:
+                    mapping_store[key].code_literal = True
                 return mapping_store[key].surrogate
             if len(mapping_store) >= self.mapping_limit:
                 raise ValueError(
@@ -465,6 +470,8 @@ class SharedEngine(MaskingEngine):
                 surrogate=surrogate,
                 token_type=kind,
                 context="code",
+                lookup_key=lookup_key,
+                code_literal=code and token_type == TokenType.LITERAL,
             )
             mapping_store[key] = mapping
             reverse_store[surrogate] = mapping
@@ -472,10 +479,14 @@ class SharedEngine(MaskingEngine):
 
 
 class GatewaySession:
-    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, **restore_limits):
+    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, natural_language="auto", sql_dialect="sqlite", **restore_limits):
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
         self.mask_numbers = mask_numbers
+        self.natural_language = canonical_language(natural_language)
+        if sql_dialect not in {"standard", "postgresql", "sqlite"}:
+            raise ValueError("Unsupported SQL dialect.")
+        self.sql_dialect = sql_dialect
         self.session = session or PrivacySession(
             "gateway", strategy=SurrogateStrategy.UNICODE, ttl_seconds=86400
         )
@@ -515,6 +526,7 @@ class GatewaySession:
             sensitive_terms=terms,
             # Code fragments keep the "no identifier preservation" rule.
             custom_preserve=TASK_WORDS if preserve_task_words else None,
+            language=self.natural_language,
         ).masked_text
 
     def _mask_source(self, text: str, language: str = "auto") -> str:
@@ -536,6 +548,7 @@ class GatewaySession:
                 s.reverse_store,
                 language=language,
                 mask_numbers=self.mask_numbers,
+                sql_dialect=self.sql_dialect,
             ).masked_text
         except NumericLiteralConflict:
             raise
@@ -561,23 +574,7 @@ class GatewaySession:
                 continue
             if part.startswith("```") and "\n" in part and part.endswith("```"):
                 header, body = part.split("\n", 1)
-                if header[3:].strip().lower() not in {
-                    "python",
-                    "py",
-                    "javascript",
-                    "js",
-                    "typescript",
-                    "ts",
-                    "go",
-                    "rust",
-                    "rs",
-                    "java",
-                    "c",
-                    "cpp",
-                    "c++",
-                    "sql",
-                    "",
-                }:
+                if header[3:].strip().lower() not in set(LANGUAGE_KEYWORDS) | set(ALIASES) | {""}:
                     header = "```"
                 output.append(
                     header
@@ -629,15 +626,34 @@ class GatewaySession:
             self.restore(str(value))
         return value
 
-    def walk(self, value, restore=False, code=False, schema_root=None):
+    def walk(self, value, restore=False, code=False, schema_root=None,
+             property_names=False, schema_refs=()):
         if schema_root is None:
             schema_root = value
         if isinstance(value, str):
             return self.restore(value) if restore else self.mask(value, code)
         if isinstance(value, list):
-            return [self.walk(item, restore, code, schema_root) for item in value]
+            return [self.walk(item, restore, code, schema_root,
+                              property_names, schema_refs) for item in value]
         if not isinstance(value, dict):
             return value
+        reference_key = "$ref" if "$ref" in value else "$dynamicRef"
+        if property_names and reference_key in value:
+            reference = value[reference_key]
+            if not isinstance(reference, str):
+                raise ValueError("Schema references must be text.")
+            if reference in schema_refs or len(schema_refs) >= 64:
+                raise ValueError("Recursive propertyNames references are unsupported.")
+            target = self.schema_reference(reference, schema_root, restore, resolve=True)
+            # A definition can serve both property names and ordinary values.
+            # Specialize a copy here, rather than changing the shared definition.
+            specialized = self.walk(target, restore, code, schema_root, True,
+                                    schema_refs + (reference,))
+            siblings = {key: item for key, item in value.items() if key != reference_key}
+            if not siblings:
+                return specialized
+            return {"allOf": [specialized, self.walk(
+                siblings, restore, code, schema_root, True, schema_refs)]}
         kind = value.get("type", "")
         if not isinstance(kind, str):
             kind = ""
@@ -814,14 +830,14 @@ class GatewaySession:
             elif key in {"$ref", "$dynamicRef"} and isinstance(item, str):
                 result[key] = self.schema_reference(item, schema_root, restore)
             elif key == "propertyNames" and isinstance(item, dict):
-                result[key] = self.walk(item, restore, schema_root=schema_root)
-                for constraint in ("enum", "const"):
-                    if constraint in item:
-                        candidate = item[constraint]
-                        result[key][constraint] = (
-                            [self.schema_name(name, restore) for name in candidate]
-                            if constraint == "enum" else self.schema_name(candidate, restore)
-                        )
+                result[key] = self.walk(item, restore, schema_root=schema_root,
+                                        property_names=True, schema_refs=schema_refs)
+            elif property_names and key in {"enum", "const"}:
+                def name_value(candidate):
+                    return (self.schema_name(candidate, restore)
+                            if isinstance(candidate, str) else self.walk_data(candidate, restore))
+                result[key] = ([name_value(candidate) for candidate in item]
+                               if key == "enum" else name_value(item))
             elif key in DATA_KEYWORDS:
                 # enum/const/default/examples hold arbitrary JSON data. Protocol
                 # and schema exceptions must not apply inside them, or private
@@ -832,12 +848,13 @@ class GatewaySession:
                     or "role" in value) and key not in {"content", "tool_calls"}:
                     result[key] = self.walk_data(item, restore)
                 else:
-                    result[key] = self.walk(item, restore, code, schema_root)
+                    result[key] = self.walk(item, restore, code, schema_root,
+                                            property_names, schema_refs)
         return result
 
-    def schema_reference(self, reference, root, restore=False):
+    def schema_reference(self, reference, root, restore=False, resolve=False):
         if reference == "#":
-            return reference
+            return root if resolve else reference
         if not reference.startswith("#") or re.search(r"%(?![0-9A-Fa-f]{2})", reference):
             raise ValueError("Remote schema references or malformed pointers are unsupported.")
         pointer = urllib.parse.unquote(reference[1:], errors="strict")
@@ -850,7 +867,7 @@ class GatewaySession:
             if re.search(r"~(?![01])", segment):
                 raise ValueError("Malformed schema pointer.")
             original = segment.replace("~1", "/").replace("~0", "~")
-            decoded = self.schema_name(original, restore) if name_map else original
+            decoded = self.schema_name(original, restore) if name_map and not resolve else original
             transformed.append(decoded.replace("~", "~0").replace("/", "~1"))
             next_name_map = not name_map and isinstance(node, dict) and original in SCHEMA_NAME_KEYWORDS
             try:
@@ -858,7 +875,7 @@ class GatewaySession:
             except (KeyError, IndexError, TypeError, ValueError):
                 raise ValueError("Schema reference does not resolve.") from None
             name_map = next_name_map
-        return "#" + urllib.parse.quote("/" + "/".join(transformed), safe="/~$")
+        return node if resolve else "#" + urllib.parse.quote("/" + "/".join(transformed), safe="/~$")
 
     def tool_output(self, value, restore=False):
         """Content blocks have public envelopes; their extra payloads are data."""
@@ -1472,6 +1489,8 @@ class PrivacyGateway(ThreadingHTTPServer):
         max_restore_output_bytes=16 * 1024 * 1024,
         audit_max_records=100_000,
         audit_max_age_days=None,
+        natural_language="auto",
+        sql_dialect="sqlite",
     ):
         self.restore_limits = {"max_restore_input_bytes": max_restore_input_bytes,
                                "max_restore_output_bytes": max_restore_output_bytes}
@@ -1512,6 +1531,10 @@ class PrivacyGateway(ThreadingHTTPServer):
                 raise ValueError("API upstream must be a fixed HTTPS origin.")
             self.upstreams[agent] = origin
         self.sessions: dict[str, GatewaySession] = {}
+        self.natural_language = canonical_language(natural_language)
+        if sql_dialect not in {"standard", "postgresql", "sqlite"}:
+            raise ValueError("Unsupported SQL dialect.")
+        self.sql_dialect = sql_dialect
         self.sessions_lock = RLock()
         self.provider_locks = {agent: RLock() for agent in self.upstreams}
         self.state_dir = state_dir
@@ -1520,7 +1543,15 @@ class PrivacyGateway(ThreadingHTTPServer):
             state_dir.chmod(0o700)
         self.audit = AuditStore(audit_path, audit_max_records, audit_max_age_days) if audit_path is not None else None
         self.audit_write_errors = 0
-        super().__init__(address, GatewayHandler)
+        try:
+            if self.audit is not None:
+                self.audit.recover_incomplete(apply=True)
+                self.audit.retention(apply=True)
+            super().__init__(address, GatewayHandler)
+        except BaseException:
+            if self.audit is not None:
+                self.audit.close()
+            raise
 
     def try_admit(self, agent):
         """Reserve an inference slot without waiting or reading the body."""
@@ -1594,7 +1625,9 @@ class PrivacyGateway(ThreadingHTTPServer):
                     saved = load_session(path, self.token, "gateway")
                 except SessionExpiredError:
                     saved = None
-            session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers, **self.restore_limits)
+            session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers,
+                                     natural_language=self.natural_language, sql_dialect=self.sql_dialect,
+                                     **self.restore_limits)
             # Reasoning provenance is only meaningful while the matching alias
             # table is alive. Expired/missing snapshots start fresh, so stale
             # digests must not be loaded into the new table.
@@ -1669,6 +1702,8 @@ class PrivacyGateway(ThreadingHTTPServer):
                 session.opaque.clear()
                 session.encryption = None
         self.sessions.clear()
+        if self.audit is not None:
+            self.audit.close()
 
 
 class GatewayHandler(BaseHTTPRequestHandler):
