@@ -11,23 +11,43 @@ from uuid import uuid4
 
 
 class AuditStore:
-    def __init__(self, path: Path, max_records=100_000, max_age_days=None):
+    def __init__(self, path: Path, max_records=100_000, max_age_days=None, *, read_only=False):
         if type(max_records) is not int or max_records < 1:
             raise ValueError("Audit max_records must be a positive integer.")
         if max_age_days is not None and (type(max_age_days) is not int or max_age_days < 1):
             raise ValueError("Audit max_age_days must be a positive integer.")
+        if max_age_days is not None:
+            try:
+                datetime.now(timezone.utc) - timedelta(days=max_age_days)
+            except OverflowError as exc:
+                raise ValueError("Audit max_age_days exceeds the supported date range.") from exc
         self.max_records = max_records
         self.max_age_days = max_age_days
         self.path = path
+        self.read_only = read_only
+        self.owner = uuid4().hex
+        self._owner_file = None
+        if read_only:
+            if path.exists():
+                with path.open("rb") as handle:
+                    header = handle.read(20)
+                if len(header) >= 20 and header[18:20] != b"\x01\x01":
+                    raise ValueError("Read-only audit maintenance requires rollback journal mode; "
+                                     "open the gateway normally once to migrate a legacy WAL database.")
+            return
         path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
         if not path.exists():
-            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-            os.close(fd)
+            try:
+                fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            except FileExistsError:
+                pass  # Another gateway created the same database concurrently.
+            else:
+                os.close(fd)
         with self.connect() as db:
             version = db.execute("PRAGMA user_version").fetchone()[0]
-            if version not in {0, 1}:
+            if version not in {0, 1, 2}:
                 raise ValueError("Unsupported gateway audit database version.")
-            db.execute("PRAGMA journal_mode=WAL")
+            db.execute("PRAGMA journal_mode=DELETE")
             db.executescript("""
                 CREATE TABLE IF NOT EXISTS requests (
                     id INTEGER PRIMARY KEY,
@@ -51,13 +71,88 @@ class AuditStore:
                     new_aliases INTEGER NOT NULL DEFAULT 0
                 );
                 CREATE INDEX IF NOT EXISTS requests_started ON requests(started_at);
-                PRAGMA user_version=1;
             """)
+            db.execute("BEGIN IMMEDIATE")
+            columns = {row[1] for row in db.execute("PRAGMA table_info(requests)")}
+            if "owner" not in columns:
+                db.execute("ALTER TABLE requests ADD COLUMN owner TEXT")
+            db.execute("PRAGMA user_version=2")
         path.chmod(0o600)
+        owners = self.path.with_name(self.path.name + ".owners")
+        owners.mkdir(mode=0o700, exist_ok=True)
+        self._owner_path = owners / self.owner
+        self._owner_file = self._owner_path.open("w+b")
+        self._owner_file.write(b"1")
+        self._owner_file.flush()
+        self._lock(self._owner_file)
+
+    @staticmethod
+    def _lock(handle):
+        handle.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)  # type: ignore[attr-defined]
+
+    def close(self):
+        handle = getattr(self, "_owner_file", None)
+        if handle is not None:
+            handle.close()
+            self._owner_file = None
+            try:
+                self._owner_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+    def __del__(self):
+        self.close()
+
+    def _alive(self, owner):
+        if not owner:
+            return True  # A legacy writer may still own this request.
+        if owner == self.owner and self._owner_file is not None:
+            return True
+        # Only UUIDs written by this store may select a lock file.
+        if len(owner) != 32 or any(c not in "0123456789abcdef" for c in owner):
+            return True
+        path = self.path.with_name(self.path.name + ".owners") / owner
+        try:
+            with path.open("rb") as handle:
+                try:
+                    self._lock(handle)
+                except OSError:
+                    return True
+            return False
+        except FileNotFoundError:
+            return False
+        except OSError:
+            return True  # Uncertain ownership must protect the request.
+
+    def recover_incomplete(self, apply=False, *, include_legacy=False):
+        if apply and self.read_only:
+            raise ValueError("Audit store is read-only.")
+        if not self.path.exists():
+            return {"candidates": 0, "recovered": 0, "dry_run": not apply}
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE" if apply else "BEGIN")
+            columns = {row[1] for row in db.execute("PRAGMA table_info(requests)")}
+            owner_field = "owner" if "owner" in columns else "NULL AS owner"
+            rows = db.execute("SELECT request_id, " + owner_field +
+                              " FROM requests WHERE status IS NULL AND outcome='incomplete'").fetchall()
+            orphaned = [row["request_id"] for row in rows
+                        if (include_legacy and not row["owner"]) or not self._alive(row["owner"])]
+            if apply:
+                db.executemany("UPDATE requests SET outcome='interrupted' WHERE request_id=? "
+                               "AND status IS NULL AND outcome='incomplete'", [(value,) for value in orphaned])
+        return {"candidates": len(orphaned), "recovered": len(orphaned) if apply else 0,
+                "dry_run": not apply}
 
     @contextmanager
     def connect(self):
-        db = sqlite3.connect(self.path, timeout=5)
+        target = self.path.resolve().as_uri() + "?mode=ro" if self.read_only else self.path
+        db = sqlite3.connect(target, timeout=5, uri=self.read_only)
         db.row_factory = sqlite3.Row
         try:
             with db:
@@ -66,18 +161,22 @@ class AuditStore:
             db.close()
 
     def begin(self, agent, provider, subscription, endpoint, destination):
+        if self.read_only or self._owner_file is None:
+            raise ValueError("Audit store is read-only or closed.")
         request_id = uuid4().hex
         with self.connect() as db:
             db.execute(
                 "INSERT INTO requests(request_id, started_at, agent, provider, "
-                "subscription, endpoint, destination) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "subscription, endpoint, destination, owner) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (request_id, datetime.now(timezone.utc).isoformat(), agent,
-                 provider, subscription, endpoint, destination),
+                 provider, subscription, endpoint, destination, self.owner),
             )
         self.retention(apply=True)
         return request_id
 
     def finish(self, request_id, metadata):
+        if self.read_only:
+            raise ValueError("Audit store is read-only.")
         fields = ("agent", "account_ref", "credential_ref", "model", "status",
                   "outcome", "upstream_attempted", "duration_ms", "input_bytes",
                   "masked_bytes", "output_bytes", "new_aliases")
@@ -92,10 +191,17 @@ class AuditStore:
     def retention(self, apply=False):
         """Report candidates by default; only completed requests can be removed."""
         cutoff = (datetime.now(timezone.utc) - timedelta(days=self.max_age_days)).isoformat() if self.max_age_days else None
+        if apply and self.read_only:
+            raise ValueError("Audit store is read-only.")
+        result = {"max_records": self.max_records, "max_age_days": self.max_age_days,
+                  "candidates": 0, "removed": 0, "dry_run": not apply}
+        if not self.path.exists():
+            return result
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE" if apply else "BEGIN")
-            where = ("status IS NOT NULL AND (id IN (SELECT id FROM requests "
-                     "WHERE status IS NOT NULL ORDER BY id DESC LIMIT -1 OFFSET ?)"
+            completed = "(status IS NOT NULL OR outcome='interrupted')"
+            where = (completed + " AND (id IN (SELECT id FROM requests "
+                     "WHERE " + completed + " ORDER BY id DESC LIMIT -1 OFFSET ?)"
                      + (" OR started_at < ?" if cutoff else "") + ")")
             values = [self.max_records] + ([cutoff] if cutoff else [])
             candidates = db.execute("SELECT COUNT(*) FROM requests WHERE " + where, values).fetchone()[0]
@@ -116,7 +222,9 @@ class AuditStore:
         elif result == "error":
             clauses.append("status >= 400")
         elif result == "incomplete":
-            clauses.append("status IS NULL")
+            clauses.append("status IS NULL AND outcome != 'interrupted'")
+        elif result == "interrupted":
+            clauses.append("outcome='interrupted'")
         elif result:
             raise ValueError("Invalid result filter.")
         for field, op in (("since", ">="), ("until", "<=")):

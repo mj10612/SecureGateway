@@ -6,6 +6,7 @@ from contextlib import nullcontext
 import re
 
 from secure_gateway.engine.code_parser import CodeParser, detect_language, literal_parts
+from secure_gateway.engine.code_identifiers import ascii_lower, equivalent_alias, identifier_key
 from secure_gateway.engine.grammar_en import EnglishGrammarEngine
 from secure_gateway.engine.grammar_ko import (
     KOREAN_COPULA_LIST,
@@ -17,6 +18,7 @@ from secure_gateway.engine.grammar_ko import (
 )
 from secure_gateway.engine.strategies import StrategyGenerator, mapping_key
 from secure_gateway.engine.tokenizer import MultilingualTokenizer, TextChunk
+from secure_gateway.engine import natural_languages
 from secure_gateway.models import (
     MaskMode,
     MaskResult,
@@ -101,11 +103,12 @@ class MaskingEngine:
         sensitive_terms: set[str] | None = None,
         code_language: str = "auto",
         mask_numbers: bool = False,
+        sql_dialect: str = "sqlite",
     ) -> MaskResult:
         strategy = self._strategy(generator, strategy)
         self._check_input(text)
-        if language not in {"auto", "en", "ko"}:
-            raise ValueError("language must be auto, en, or ko")
+        language = natural_languages.canonical_language(language)
+        selected_language = natural_languages.detect_natural_language(text) if language == "auto" else language
         with generator.operation():
             if mode == MaskMode.CODE_AWARE:
                 return self.mask_code(
@@ -117,6 +120,7 @@ class MaskingEngine:
                     strategy,
                     language=code_language,
                     mask_numbers=mask_numbers,
+                    sql_dialect=sql_dialect,
                 )
             terms = sensitive_terms or set()
             preserve = {word.casefold() for word in (custom_preserve or set())}
@@ -124,7 +128,7 @@ class MaskingEngine:
             # it as an opaque entity so strict restoration never confuses it
             # with an earlier allocation (or rejects a literal unknown alias).
             literal_aliases = {match[0] for match in StrategyGenerator.get_pattern(strategy).finditer(text)}
-            chunks = self._chunks(text, terms | literal_aliases)
+            chunks = self._chunks(text, terms | literal_aliases, selected_language)
             if hasattr(mapping_store, "originals_in"):
                 known = terms | mapping_store.originals_in(text)
             else:
@@ -174,6 +178,10 @@ class MaskingEngine:
                             TokenType.NOUN,
                             True,
                         )
+                elif not force and selected_language not in {"en", "ko"}:
+                    token_type, should_mask = natural_languages.classify_token(word, selected_language)
+                    if mode == MaskMode.ENTITIES_ONLY and should_mask:
+                        token_type = TokenType.ENTITY
                 elif not force:
                     token_type, should_mask = self.en_grammar.classify_token(word)
                     if (
@@ -217,12 +225,13 @@ class MaskingEngine:
                 masked,
                 strategy,
                 mode,
-                "ko" if is_hangul_string(text) else "en",
+                selected_language,
             )
 
-    def _chunks(self, text: str, terms: set[str]) -> list[TextChunk]:
+    def _chunks(self, text: str, terms: set[str], language: str = "en") -> list[TextChunk]:
+        tokenize = self.tokenizer.tokenize if language in {"en", "ko"} else lambda value: natural_languages.tokenize(value, language)
         if not terms:
-            return self.tokenizer.tokenize(text)
+            return tokenize(text)
         if "" in terms:
             raise ValueError("Sensitive terms must be nonempty.")
         suffixes = set(KOREAN_JOSA_LIST) | set(KOREAN_COPULA_LIST)
@@ -237,12 +246,12 @@ class MaskingEngine:
         output: list[TextChunk] = []
         cursor = 0
         for match in pattern.finditer(text):
-            output.extend(self.tokenizer.tokenize(text[cursor : match.start()]))
+            output.extend(tokenize(text[cursor : match.start()]))
             output.append(TextChunk(match["entity"], "ENTITY"))
             if match["particle"]:
                 output.append(TextChunk(match["particle"], "PARTICLE"))
             cursor = match.end()
-        output.extend(self.tokenizer.tokenize(text[cursor:]))
+        output.extend(tokenize(text[cursor:]))
         return output
 
     def mask_code(
@@ -255,12 +264,16 @@ class MaskingEngine:
         strategy: SurrogateStrategy | None = None,
         language: str = "auto",
         mask_numbers: bool = False,
+        sql_dialect: str = "sqlite",
     ) -> MaskResult:
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
         strategy = self._strategy(generator, strategy)
         self._check_input(code)
         language = detect_language(code, language)
+        if sql_dialect not in {"standard", "postgresql", "sqlite"}:
+            raise ValueError("Unsupported SQL dialect.")
+        identifier_language = "sql:" + sql_dialect if language == "sql" else language
         with generator.operation():
             tokens = self.code_parser.tokenize(code, language)
             if not mask_numbers:
@@ -282,11 +295,17 @@ class MaskingEngine:
                 elif subkind == "quoted_identifier":
                     prefix, suffix = raw[0], raw[-1]
                     content = raw[1:-1].replace(suffix + suffix, suffix)
-                    surrogate = self._get_or_create_surrogate(
-                        content, TokenType.IDENTIFIER, generator, mapping_store,
-                        reverse_store, code=True,
+                    surrogate = self._code_identifier(
+                        content, identifier_language, generator, mapping_store,
+                        reverse_store, quoted=True,
                     )
                     output.append(prefix + surrogate + suffix)
+                    masked += 1
+                elif token_type == TokenType.IDENTIFIER:
+                    output.append(self._code_identifier(
+                        raw, "nasm:macro" if subkind == "case_insensitive_identifier" else identifier_language,
+                        generator, mapping_store, reverse_store,
+                    ))
                     masked += 1
                 elif subkind == "character":
                     # A whole character literal is an opaque identifier expression.
@@ -335,6 +354,73 @@ class MaskingEngine:
             )
             result.code_language = language
             return result
+
+    def _code_identifier(self, raw, language, generator, mapping_store, reverse_store, quoted=False):
+        semantic = identifier_key(raw, language, quoted=quoted)
+        quoted_sql = quoted and language.startswith("sql:") and language != "sql:sqlite"
+        # SQL quoted names follow the selected dialect. In the standard profile,
+        # a quoted lowercase spelling can refer to an unquoted folded name.
+        group = (language, semantic)
+        cache = getattr(generator, "_identifier_groups", None)
+        if cache is None:
+            cache = {}
+            generator._identifier_groups = cache
+        variants = cache.setdefault(group, [])
+        if not variants:
+            seed = mapping_store.get(mapping_key(semantic, TokenType.IDENTIFIER, code=True))
+            if seed is not None and seed.identifier_base and seed.identifier_language != language:
+                variants.append(seed)
+        existing = next((mapping for mapping in variants if mapping.original == raw
+                         and (not language.startswith("sql:") or mapping.identifier_quoted == quoted)), None)
+        if existing is not None:
+            existing.occurrence_count += 1
+            return existing.surrogate
+        if variants:
+            base = variants[0].identifier_base
+            variant = len(variants)
+            candidate = ascii_lower(base) if quoted_sql else equivalent_alias(base, language, variant)
+            while not quoted_sql and (candidate in generator.used_surrogates or candidate == raw
+                                      or (language.startswith("sql:") and candidate == ascii_lower(base))):
+                variant += 1
+                candidate = equivalent_alias(base, language, variant)
+        else:
+            base = candidate = None
+        previous = mapping_store.get(mapping_key(raw, TokenType.IDENTIFIER, code=True))
+        lookup_key = None
+        if language.startswith("sql:") and quoted:
+            lookup_key = f"binding:{language}:quoted:{raw}"
+        elif previous is not None and previous.identifier_language == language and previous.identifier_key != semantic:
+            lookup_key = f"binding:{language}:{semantic}:{raw}"
+        elif previous is not None and variants and identifier_key(previous.surrogate, language) != identifier_key(base, language):
+            lookup_key = f"binding:{language}:{semantic}:{raw}"
+        allocated = self._get_or_create_surrogate(
+            raw, TokenType.IDENTIFIER, generator, mapping_store, reverse_store,
+            code=True, lookup_key=lookup_key,
+        )
+        mapping = reverse_store[allocated]
+        if not variants and language.startswith("sql:") and language != "sql:sqlite":
+            base = allocated
+            candidate = ascii_lower(base) if quoted_sql else allocated
+            if not quoted_sql and candidate == ascii_lower(base):
+                candidate = equivalent_alias(base, language, 1)
+        # Ordinary languages have no alternate semantic spellings; their raw
+        # allocation remains unchanged. Distinct languages share existing raw
+        # aliases where the Gateway's cross-representation contract requires it.
+        if mapping.identifier_language and mapping.identifier_language != language:
+            if mapping not in variants:
+                variants.append(mapping)
+            return allocated
+        if candidate is not None and allocated != candidate:
+            del reverse_store[allocated]
+            mapping.surrogate = candidate
+            reverse_store[candidate] = mapping
+            generator.used_surrogates.add(candidate)
+        mapping.identifier_base = base or allocated
+        mapping.identifier_language = language
+        mapping.identifier_key = semantic
+        mapping.identifier_quoted = quoted
+        variants.append(mapping)
+        return mapping.surrogate
 
     def _preserve_number(self, raw, generator, mapping_store, reverse_store):
         # Identity entries disambiguate literal numbers in the reserved alias range
@@ -429,7 +515,8 @@ class MaskingEngine:
                     unique.add(key)
                     suffix = match.groupdict().get("particle") or ""
                     original = mapping.original
-                    if mapping.context == "code" and mapping.token_type == TokenType.IDENTIFIER:
+                    if (mapping.context == "code" and mapping.token_type == TokenType.IDENTIFIER
+                        and (mapping.identifier_quoted or (not mapping.identifier_base and not mapping.code_literal))):
                         before = masked_text[match.start() - 1:match.start()] if match.start() else ""
                         after = masked_text[match.end():match.end() + 1]
                         if (before, after) in {('"', '"'), ("`", "`"), ("[", "]")}:
@@ -464,7 +551,7 @@ class MaskingEngine:
                 pattern += r"(?P<particle>(?:으로|이랑|이나|은|는|을|를|과|와|이|가|로|랑|나)(?:부터|도|만|는|의)?(?=\s|[.,!?]|$))?"
             output_limit = self.max_restore_output_bytes if self._restore_remaining is None else self._restore_remaining
             parts, cursor, output_bytes = [], 0, 0
-            for match in re.finditer(pattern, masked_text):
+            for match in re.finditer(pattern, masked_text, re.IGNORECASE):
                 for part in (masked_text[cursor:match.start()], restore(match)):
                     output_bytes += len(part.encode("utf-8"))
                     if output_bytes > output_limit:
@@ -502,9 +589,10 @@ class MaskingEngine:
         mapping_store: dict[str, TokenMapping],
         reverse_store: dict[str, TokenMapping],
         code: bool = False,
+        lookup_key: str | None = None,
     ) -> str:
         with generator.operation():
-            key = mapping_key(original_token, token_type, code)
+            key = lookup_key or mapping_key(original_token, token_type, code)
             if key in mapping_store:
                 if code and token_type == TokenType.NUMBER and mapping_store[key].surrogate == original_token:
                     raise NumericLiteralConflict("Numeric literal conflicts with a preserved number; use a new session.")
@@ -518,6 +606,8 @@ class MaskingEngine:
                 surrogate=surrogate,
                 token_type=token_type,
                 context="code" if code else "text",
+                lookup_key=lookup_key,
+                code_literal=code and token_type == TokenType.LITERAL,
                 is_capitalized=original_token.istitle(),
                 is_all_caps=original_token.isupper() and len(original_token) > 1,
             )

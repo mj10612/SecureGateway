@@ -28,6 +28,8 @@ def fetch_catalog(origin: str, auth: str) -> bytes:
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
     with opener.open(request, timeout=30) as upstream:
         body = upstream.read(LIMIT + 1)
+        if getattr(upstream, "length", None) not in {None, 0}:
+            raise ValueError("Incomplete upstream catalog response.")
         if len(body) > LIMIT:
             raise ValueError("Catalog size limit exceeded.")
         if upstream.headers.get_content_type() != "application/json":

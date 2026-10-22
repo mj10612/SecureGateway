@@ -479,7 +479,8 @@ class HookStore:
         end = 0
         for match in StrategyGenerator.get_pattern(session.strategy).finditer(text):
             pieces.append(self._mask_piece(text[end : match.start()], session))
-            pieces.append(match.group())
+            pieces.append(match.group() if match.group() in session.reverse_store
+                          else self._mask_piece(match.group(), session))
             end = match.end()
         pieces.append(self._mask_piece(text[end:], session))
         session.total_mask_calls += 1
