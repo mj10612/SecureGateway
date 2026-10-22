@@ -51,7 +51,9 @@ def _segmenter(language: str):
             warnings.filterwarnings("ignore", message="invalid escape sequence",
                                     category=SyntaxWarning)
             warnings.filterwarnings("ignore", message="pkg_resources is deprecated as an API.*",
-                                    category=UserWarning)
+                                    category=Warning)
+            warnings.filterwarnings("ignore", message="Deprecated call to .*pkg_resources.declare_namespace.*",
+                                    category=DeprecationWarning)
             import jieba
         return jieba.Tokenizer()
     from tinysegmenter import TinySegmenter
