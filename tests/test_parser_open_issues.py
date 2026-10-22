@@ -116,12 +116,13 @@ def test_literal_text_alias_in_prose_is_not_double_restored(strategy):
 @pytest.mark.parametrize("quote,end", [('"', '"'), ("`", "`"), ("[", "]")])
 def test_sql_quoted_and_unquoted_names_share_mapping(strategy, quote, end):
     import sqlite3
+    from contextlib import closing
 
     session = PrivacySession("sql-quoted", strategy=strategy)
     engine = MaskingEngine()
     source = f"CREATE TABLE {quote}privateTable{end} ({quote}privateColumn{end} INTEGER); INSERT INTO privateTable (privateColumn) VALUES (1); SELECT privateColumn FROM privateTable;"
     result = engine.mask_code(source, session.session_id, session.generator, session.forward_store, session.reverse_store, language="sql")
-    with sqlite3.connect(":memory:") as connection:
+    with closing(sqlite3.connect(":memory:")) as connection:
         connection.executescript(result.masked_text)
     assert engine.unmask(result.masked_text, session.session_id, session.reverse_store, strategy, strict=True).unmasked_text == source
 
