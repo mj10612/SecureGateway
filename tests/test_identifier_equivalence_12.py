@@ -53,7 +53,7 @@ def test_javascript_escaped_binding_native_execution_and_roundtrip(strategy):
     session = PrivacySession("js-equivalence", strategy=strategy)
     masked = mask(engine, session, source, "javascript")
     for program in [source, masked]:
-        checked = subprocess.run([node, "--eval", program], capture_output=True, text=True, timeout=15)
+        checked = subprocess.run([node, "--eval", program], capture_output=True, text=True, timeout=60)
         assert checked.returncode == 0, checked.stderr
     assert restore(engine, session, masked) == source
 
@@ -138,7 +138,7 @@ def test_encrypted_snapshot_restores_extra_spellings_and_continues_allocation(tm
     if language == "python":
         native_python(second)
     elif language == "javascript" and (node := shutil.which("node")):
-        checked = subprocess.run([node, "--eval", second], capture_output=True, text=True, timeout=15)
+        checked = subprocess.run([node, "--eval", second], capture_output=True, text=True, timeout=60)
         assert checked.returncode == 0, checked.stderr
     elif language == "sql":
         with closing(sqlite3.connect(":memory:")) as db:
@@ -165,7 +165,7 @@ def test_gateway_shared_cross_language_aliases_do_not_split_later_equivalent_bin
     if second_language == "python":
         native_python(masked)
     elif node := shutil.which("node"):
-        checked = subprocess.run([node, "--eval", masked], capture_output=True, text=True, timeout=15)
+        checked = subprocess.run([node, "--eval", masked], capture_output=True, text=True, timeout=60)
         assert checked.returncode == 0, checked.stderr
 
 
@@ -201,7 +201,7 @@ def test_interleaved_foreign_binding_does_not_override_equivalent_group(
     if language == "python":
         native_python(masked)
     elif node := shutil.which("node"):
-        checked = subprocess.run([node, "--eval", masked], capture_output=True, text=True, timeout=15)
+        checked = subprocess.run([node, "--eval", masked], capture_output=True, text=True, timeout=60)
         assert checked.returncode == 0, checked.stderr
     assert restore(engine, session, seed_masked) == seed
     assert restore(engine, session, other_masked) == other

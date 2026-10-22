@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 from hashlib import sha256
 import hmac
 import os
+import sys
 from pathlib import Path
 import sqlite3
 from uuid import uuid4
@@ -89,7 +90,7 @@ class AuditStore:
     @staticmethod
     def _lock(handle):
         handle.seek(0)
-        if os.name == "nt":
+        if sys.platform == "win32":
             import msvcrt
             msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
         else:

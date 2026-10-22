@@ -46,9 +46,9 @@ def _segmenter(language: str):
         # jieba 0.42.1 uses legacy escaped regex literals. Keep strict warning
         # runs usable on a cold bytecode cache without hiding other warnings.
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", message="invalid escape sequence",
+            warnings.filterwarnings("ignore", message=".*invalid escape sequence.*",
                                     category=DeprecationWarning)
-            warnings.filterwarnings("ignore", message="invalid escape sequence",
+            warnings.filterwarnings("ignore", message=".*invalid escape sequence.*",
                                     category=SyntaxWarning)
             warnings.filterwarnings("ignore", message="pkg_resources is deprecated as an API.*",
                                     category=Warning)

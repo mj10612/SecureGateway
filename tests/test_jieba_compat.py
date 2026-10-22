@@ -8,12 +8,17 @@ import pytest
 from secure_gateway.engine import natural_languages
 
 
-@pytest.mark.parametrize('category', [DeprecationWarning, UserWarning])
-def test_jieba_optional_pkg_resources_warning_is_scoped_and_category_independent(monkeypatch, category):
+@pytest.mark.parametrize('category,message', [
+    (DeprecationWarning, 'pkg_resources is deprecated as an API. See setuptools documentation'),
+    (UserWarning, 'pkg_resources is deprecated as an API. See setuptools documentation'),
+    (DeprecationWarning, r"invalid escape sequence '\.'"),
+    (SyntaxWarning, r'"\." is an invalid escape sequence. Did you mean "\\."?'),
+])
+def test_jieba_optional_legacy_warning_is_scoped_and_category_independent(monkeypatch, category, message):
     real_import = builtins.__import__
     def legacy_import(name, *args, **kwargs):
         if name == 'jieba':
-            warnings.warn('pkg_resources is deprecated as an API. See setuptools documentation', category)
+            warnings.warn(message, category)
         return real_import(name, *args, **kwargs)
     monkeypatch.setattr(builtins, '__import__', legacy_import)
     natural_languages._segmenter.cache_clear()
