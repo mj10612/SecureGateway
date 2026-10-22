@@ -454,3 +454,23 @@ def test_gateway_forwards_source_numeric_policy(live_gateway, mask_numbers):
     forwarded = state.requests[0]['input']
     assert (' = 42' in forwarded) is (not mask_numbers)
     assert 'privateLimit' not in forwarded
+
+@pytest.mark.parametrize('stage', ['load', 'save'])
+def test_local_state_io_failure_returns_500_and_releases_slot(live_gateway, monkeypatch, stage):
+    gateway, state, request = live_gateway
+    method = 'get_session' if stage == 'load' else 'save'
+    original = getattr(gateway, method)
+    def fail(*args):
+        raise OSError('SecretCustomer private disk path')
+    monkeypatch.setattr(gateway, method, fail)
+    status, body, _ = request()
+    assert status == 500
+    assert b'SecretCustomer' not in body
+    assert b'private disk path' not in body
+    assert len(state.requests) == (0 if stage == 'load' else 1)
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.admitted_requests == 0, timeout=3)
+    if stage == 'save':
+        assert gateway.sessions['codex'].active_requests == 0
+    monkeypatch.setattr(gateway, method, original)
+    assert request()[0] == 200

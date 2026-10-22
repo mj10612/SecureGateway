@@ -2012,11 +2012,14 @@ class GatewayHandler(BaseHTTPRequestHandler):
             self.capture_response_headers(exc.headers)
             status, body = sanitized_upstream_error(exc)
             self.send_body(status, body)
+        except OSError:
+            if meta is not None:
+                meta["outcome"] = "local_io_error"
+            self.send_body(500, b'{"error":"Privacy gateway local I/O failed; request could not be completed"}')
         except (
             ValueError,
             TypeError,
             KeyError,
-            OSError,
             RecursionError,
             http.client.HTTPException,
         ):
