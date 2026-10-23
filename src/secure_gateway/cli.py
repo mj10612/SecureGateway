@@ -670,7 +670,8 @@ def gateway_run(config, mapping_limit, mask_numbers):
 @click.option("--apply", "apply_cleanup", is_flag=True, help="Delete completed candidates; default is dry-run.")
 @click.option("--recover-incomplete", is_flag=True, help="Inspect interrupted requests from terminated gateway owners; --apply recovers them.")
 @click.option("--include-legacy-incomplete", is_flag=True, help="With --recover-incomplete, include ownerless records after stopping older gateway processes.")
-def gateway_audit_gc(config, apply_cleanup, recover_incomplete, include_legacy_incomplete):
+@click.option("--cleanup-owners", is_flag=True, help="Inspect unlocked, unreferenced owner UUID files; --apply removes them.")
+def gateway_audit_gc(config, apply_cleanup, recover_incomplete, include_legacy_incomplete, cleanup_owners):
     """Inspect or apply local audit retention without exposing log contents."""
     from secure_gateway.gateway_install import default_config, load_config, runtime_directory
     from secure_gateway.gateway_audit import AuditStore
@@ -687,6 +688,8 @@ def gateway_audit_gc(config, apply_cleanup, recover_incomplete, include_legacy_i
             result = store.retention(apply=apply_cleanup)
             if recovery is not None:
                 result["recovery"] = recovery
+            if cleanup_owners:
+                result["owners"] = store.cleanup_owners(apply=apply_cleanup)
             click.echo(json.dumps(result))
         finally:
             store.close()

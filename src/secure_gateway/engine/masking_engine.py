@@ -236,12 +236,18 @@ class MaskingEngine:
             raise ValueError("Sensitive terms must be nonempty.")
         suffixes = set(KOREAN_JOSA_LIST) | set(KOREAN_COPULA_LIST)
         suffixes.update(KOREAN_PLURAL + particle for particle in KOREAN_JOSA_LIST)
+        # Chinese/Japanese words need not have spaces between them. Keep Latin
+        # word boundaries (ABC must not match ABCdef), but permit an explicit
+        # term next to Han/kana. The original spelling remains untouched.
+        boundary = r"\w"
+        if language in {"zh", "ja"}:
+            boundary = r"[^\W\u3040-\u30ff\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\U00020000-\U000323af]"
         pattern = re.compile(
-            r"(?<!\w)(?P<entity>"
+            rf"(?<!{boundary})(?P<entity>"
             + "|".join(re.escape(s) for s in sorted(terms, key=len, reverse=True))
             + r")(?P<particle>"
             + "|".join(re.escape(s) for s in sorted(suffixes, key=len, reverse=True))
-            + r")?(?!\w)"
+            + rf")?(?!{boundary})"
         )
         output: list[TextChunk] = []
         cursor = 0
@@ -368,7 +374,9 @@ class MaskingEngine:
         variants = cache.setdefault(group, [])
         if not variants:
             seed = mapping_store.get(mapping_key(semantic, TokenType.IDENTIFIER, code=True))
-            if seed is not None and seed.identifier_base and seed.identifier_language != language:
+            if (seed is not None and seed.identifier_base and seed.identifier_language != language
+                    and identifier_key(seed.surrogate, language, quoted=quoted)
+                    == identifier_key(seed.identifier_base, language, quoted=quoted)):
                 variants.append(seed)
         existing = next((mapping for mapping in variants if mapping.original == raw
                          and (not language.startswith("sql:") or mapping.identifier_quoted == quoted)), None)
@@ -389,6 +397,11 @@ class MaskingEngine:
         lookup_key = None
         if language.startswith("sql:") and quoted:
             lookup_key = f"binding:{language}:quoted:{raw}"
+        elif (previous is not None and previous.identifier_language
+              and previous.identifier_language != language
+              and identifier_key(previous.surrogate, language, quoted=quoted)
+              != identifier_key(previous.identifier_base, language, quoted=quoted)):
+            lookup_key = f"binding:{language}:{semantic}:{raw}"
         elif previous is not None and previous.identifier_language == language and previous.identifier_key != semantic:
             lookup_key = f"binding:{language}:{semantic}:{raw}"
         elif previous is not None and variants and identifier_key(previous.surrogate, language) != identifier_key(base, language):

@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 1.2.2 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 1.3.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -413,7 +413,7 @@ restoration fails with a fixed error rather than returning partial output.
 
 Audit retention defaults to the latest 100,000 **completed** requests, with no age
 limit. In-flight requests are never pruned. Gateway configuration accepts
-`audit_max_records` (positive integer) and optional `audit_max_age_days` (positive
+`audit_max_records` (integer from 1 through 9223372036854775807) and optional `audit_max_age_days` (positive
 integer). The daemon applies retention on request start/completion; the authenticated
 admin API and dashboard report the active policy. To inspect candidates locally:
 
@@ -424,6 +424,14 @@ secure-gateway gateway audit-gc --config /path/to/config.json --apply
 
 The first command is dry-run; only `--apply` deletes completed candidates. Use the
 same configuration file as the running daemon so policy and database agree.
+Add `--cleanup-owners` to inspect stale owner lock files, and `--apply` to remove
+them. Only valid UUID files with an obtainable OS lock and no remaining database
+references are eligible. Live owners, uncertain files, symlinks and legacy
+ownerless requests are protected. Recovery alone does not remove referenced owner
+files: retention must first remove those requests. Inspection creates, modifies
+and deletes no files; repeated cleanup is safe. New writers use exclusively
+created UUID files, and applying cleanup serializes with request insertion and
+recovery through SQLite's write transaction.
 SQLite DELETE removes logical rows, not a secure wipe. WAL pages may retain old
 bytes until SQLite reuses/checkpoints them. This command does not force VACUUM or
 truncate WAL while the daemon is active; stop the daemon and take a backup before
