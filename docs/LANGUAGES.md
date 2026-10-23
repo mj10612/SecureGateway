@@ -40,6 +40,8 @@ conservatively. In `entities_only`, unknown content words are also masked becaus
 there is no reliable local proper-name cue for every script. This deliberately
 favors masking over named-entity precision. `sensitive_terms` forces matching
 terms to be masked even if grammar/custom-preserve rules would preserve them.
+In Chinese/Japanese, explicit terms can match next to Han/kana without spaces;
+Latin word boundaries still prevent a term such as `ABC` matching `ABCdef`.
 Do not rely on a short grammar vocabulary to identify every confidential name.
 
 Token boundaries include combining marks, vowel signs, variation selectors and
@@ -146,6 +148,11 @@ that setting. In the local API, use `GatewaySession(natural_language="pt-BR")`.
 Source fences and code APIs continue to select their own source language.
 `LocalPrivacyClient.request(..., language="fr")` chooses a prose adapter before
 the provided callback receives the masked payload.
+For source code, select its profile separately with
+`client.request(source, provider, mode=MaskMode.CODE_AWARE,
+code_language="vbnet")`. SQL also accepts `sql_dialect="sqlite"` (default),
+`"standard"` or `"postgresql"` together with `code_language="sql"`.
+The natural-language `language` option does not select a code lexer.
 
 ## Offline segmentation dependencies
 

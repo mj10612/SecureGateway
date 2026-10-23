@@ -8,13 +8,14 @@ import os
 import sys
 from pathlib import Path
 import sqlite3
+import stat
 from uuid import uuid4
 
 
 class AuditStore:
     def __init__(self, path: Path, max_records=100_000, max_age_days=None, *, read_only=False):
-        if type(max_records) is not int or max_records < 1:
-            raise ValueError("Audit max_records must be a positive integer.")
+        if type(max_records) is not int or not 1 <= max_records <= 2**63 - 1:
+            raise ValueError("Audit max_records must be an integer between 1 and 9223372036854775807.")
         if max_age_days is not None and (type(max_age_days) is not int or max_age_days < 1):
             raise ValueError("Audit max_age_days must be a positive integer.")
         if max_age_days is not None:
@@ -82,10 +83,16 @@ class AuditStore:
         owners = self.path.with_name(self.path.name + ".owners")
         owners.mkdir(mode=0o700, exist_ok=True)
         self._owner_path = owners / self.owner
-        self._owner_file = self._owner_path.open("w+b")
-        self._owner_file.write(b"1")
-        self._owner_file.flush()
-        self._lock(self._owner_file)
+        # Never reuse a published owner path: cleanup can safely remove an unlocked
+        # UUID while new writers always create their own, exclusive UUID file.
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            self._owner_file = self._owner_path.open("x+b")
+            # Empty files are ineligible for cleanup: acquire ownership before
+            # publishing the marker so even read-only inspection cannot race it.
+            self._lock(self._owner_file)
+            self._owner_file.write(b"1")
+            self._owner_file.flush()
 
     @staticmethod
     def _lock(handle):
@@ -149,6 +156,55 @@ class AuditStore:
                                "AND status IS NULL AND outcome='incomplete'", [(value,) for value in orphaned])
         return {"candidates": len(orphaned), "recovered": len(orphaned) if apply else 0,
                 "dry_run": not apply}
+
+    def cleanup_owners(self, apply=False):
+        """Remove only unlocked UUID files no longer referenced by any request."""
+        if apply and self.read_only:
+            raise ValueError("Audit store is read-only.")
+        result = {"candidates": 0, "removed": 0, "dry_run": not apply}
+        owners = self.path.with_name(self.path.name + ".owners")
+        if not self.path.exists() or not owners.exists() or owners.is_symlink():
+            return result
+        # Serialize with request insertion, retention and recovery. UUID paths
+        # cannot be reused by a new writer, even after its old owner exits.
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE" if apply else "BEGIN")
+            columns = {row[1] for row in db.execute("PRAGMA table_info(requests)")}
+            if "owner" not in columns:
+                return result  # Legacy ownership cannot be established safely.
+            referenced = {row[0] for row in db.execute("SELECT DISTINCT owner FROM requests")}
+            if None in referenced or "" in referenced:
+                return result  # Legacy requests may belong to an unknown writer.
+            for path in owners.iterdir():
+                name = path.name
+                if len(name) != 32 or any(c not in "0123456789abcdef" for c in name):
+                    continue
+                if name in referenced or name == self.owner:
+                    continue
+                try:
+                    before = path.lstat()
+                    if not stat.S_ISREG(before.st_mode) or before.st_size < 1:
+                        continue
+                    with path.open("rb") as handle:
+                        opened = os.fstat(handle.fileno())
+                        if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
+                            continue
+                        self._lock(handle)
+                        result["candidates"] += 1
+                        if apply and sys.platform != "win32":
+                            path.unlink()
+                            result["removed"] += 1
+                    if apply and sys.platform == "win32":
+                        # Windows requires our lock handle closed before unlink.
+                        # Database serialization and exclusive UUID creation
+                        # prevent legitimate writers/recovery from reusing it.
+                        current = path.lstat()
+                        if (current.st_dev, current.st_ino) == (opened.st_dev, opened.st_ino):
+                            path.unlink()
+                            result["removed"] += 1
+                except OSError:
+                    continue  # Live, disappeared or uncertain files are protected.
+        return result
 
     @contextmanager
     def connect(self):

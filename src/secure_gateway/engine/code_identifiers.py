@@ -24,8 +24,9 @@ def identifier_key(raw: str, language: str, *, quoted: bool = False) -> str:
     if language == 'rust':
         return unicodedata.normalize('NFC', raw.removeprefix('r#'))
     if language == 'csharp':
-        return re.sub(r'\\(?:u([0-9a-fA-F]{4})|U([0-9a-fA-F]{8}))',
-                      lambda match: chr(int(match[1] or match[2], 16)), raw.removeprefix('@'))
+        decoded = re.sub(r'\\(?:u([0-9a-fA-F]{4})|U([0-9a-fA-F]{8}))',
+                         lambda match: chr(int(match[1] or match[2], 16)), raw.removeprefix('@'))
+        return ''.join(char for char in decoded if unicodedata.category(char) != 'Cf')
     if language in {'kotlin', 'swift', 'r'} and raw.startswith('`') and raw.endswith('`'):
         return raw[1:-1]
     if language.startswith('sql:'):

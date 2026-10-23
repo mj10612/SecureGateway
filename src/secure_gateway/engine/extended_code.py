@@ -83,6 +83,7 @@ def _identifier_end(code: str, start: int, language: str) -> int:
         valid |= language == "r" and character == "."
         valid |= language == "php" and ord(character) >= 128
         valid |= language == "swift" and unicodedata.category(character) in {"So", "Sk"}
+        valid |= language == "csharp" and end > start and unicodedata.category(character) == "Cf"
         valid |= language in {"powershell", "nix"} and end > start and character in "-'"
         if not valid:
             break
@@ -445,7 +446,7 @@ def _contextual_keywords(tokens: list[Token], language: str) -> None:
             if word == "var":
                 structural = bool(following) and tokens[significant[offset + 1]][1] == TokenType.IDENTIFIER
             elif word in {"get", "set", "init", "add", "remove"}:
-                structural = previous in {"{", "}", ";"} and following in {"{", ";", "="}
+                structural = previous in {"{", "}", ";", "private", "protected", "internal", "public"} and following in {"{", ";", "="}
             elif word == "from":
                 structural = bool(following) and after == "in"
                 query |= structural
@@ -471,6 +472,65 @@ def _contextual_keywords(tokens: list[Token], language: str) -> None:
                 structural = previous == "extern"
         tokens[index] = (word, TokenType.GRAMMAR if structural else TokenType.IDENTIFIER,
                          "keyword" if structural else "identifier")
+
+
+def _csharp_accessor_values(tokens: list[Token]) -> None:
+    """Preserve the implicit parameter only inside writable accessor bodies."""
+    from secure_gateway.engine.code_identifiers import identifier_key
+
+    significant = [i for i, token in enumerate(tokens)
+                   if token[2] != "whitespace" and token[1] != TokenType.LITERAL]
+    depth = 0
+    active_depth: int | None = None
+    expression_depth: int | None = None
+    initializer_depths: set[int] = set()
+    constructing = False
+    parentheses = 0
+    construction_parentheses = 0
+    pending = False
+    previous = ""
+    for offset, i in enumerate(significant):
+        raw, kind, subkind = tokens[i]
+        following = tokens[significant[offset + 1]][0] if offset + 1 < len(significant) else ""
+        if raw == "{":
+            depth += 1
+            if constructing:
+                initializer_depths.add(depth)
+                constructing = False
+            if pending:
+                active_depth = depth
+                pending = False
+        elif raw == "}":
+            initializer_depths.discard(depth)
+            if active_depth == depth:
+                active_depth = None
+            depth -= 1
+        elif raw == "=" and pending:
+            expression_depth = depth
+            pending = False
+        elif raw == ";":
+            constructing = False
+            if expression_depth == depth:
+                expression_depth = None
+            pending = False
+        elif raw == "(":
+            parentheses += 1
+        elif raw == ")":
+            parentheses -= 1
+            if constructing and parentheses <= construction_parentheses and following != "{":
+                constructing = False
+        elif kind == TokenType.GRAMMAR and raw in {"set", "init", "add", "remove"}:
+            pending = True
+        elif kind == TokenType.GRAMMAR and raw == "new":
+            constructing = True
+            construction_parentheses = parentheses
+        elif (kind == TokenType.IDENTIFIER and identifier_key(raw, "csharp") == "value"
+              and (active_depth is not None or expression_depth is not None)
+              and previous != "."
+              and not (depth in initializer_depths and previous in {"{", ","} and following == "=")
+              and not (following == ":" and previous in {"(", ",", "{"})):
+            tokens[i] = (raw, TokenType.GRAMMAR, "keyword")
+        previous = raw
 
 
 def _xml_name(name: str) -> list[Token]:
@@ -873,4 +933,6 @@ def tokenize(code: str, language: str) -> list[Token]:
         result.append(_grammar(character))
         position += 1
     _contextual_keywords(result, language)
+    if language == "csharp":
+        _csharp_accessor_values(result)
     return result
