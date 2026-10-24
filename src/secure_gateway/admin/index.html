@@ -43,15 +43,17 @@
           <label>구독 / 인증<select name="subscription"><option value="">전체 인증</option><option value="claude_subscription">Claude 구독</option><option value="chatgpt_subscription">ChatGPT 구독</option><option value="api_key">xAI API 키</option></select></label>
           <label>결과<select name="result"><option value="">모든 결과</option><option value="success">성공</option><option value="error">실패</option><option value="incomplete">진행 중 / 미완료</option><option value="interrupted">프로세스 중단</option></select></label>
           <label>시작 일시<input name="since" type="datetime-local"></label>
+          <label>종료 일시<input name="until" type="datetime-local"></label>
           <label>계정 ID<input name="account_ref" placeholder="익명 계정 ID" maxlength="16"></label>
           <label>자격 증명 ID<input name="credential_ref" placeholder="익명 자격 증명 ID" maxlength="16"></label>
           <button type="reset" class="quiet reset">초기화</button>
+          <button id="export" type="button" class="secondary">JSON 내보내기</button>
         </form>
         <div class="table-scroll"><table><thead><tr><th>처리 일시</th><th>에이전트 / 모델</th><th>제공자 / 구독</th><th>익명 계정</th><th>결과</th><th>소요 시간</th><th><span class="sr-only">상세</span></th></tr></thead><tbody id="rows"></tbody></table></div>
         <div id="empty" class="empty" hidden><span>◈</span><h3>아직 처리 내역이 없습니다</h3><p>게이트웨이를 통한 요청이 발생하면 여기에 표시됩니다.<br>필터를 설정했다면 조건을 변경해 보세요.</p></div>
         <footer class="pagination"><span id="page-info">0건</span><div><button id="previous" class="secondary" disabled>← 이전</button><button id="next" class="secondary" disabled>다음 →</button></div></footer>
       </section>
-      <p class="fine footer-note">전송 시도는 업스트림 연결 시도를 뜻합니다. 구독 요금제는 확인하지 않으며, 계정 ID가 제공되지 않은 요청은 자격 증명 ID로 구분할 수 있습니다. 원문과 인증 정보는 기록하지 않습니다.</p>
+      <p class="fine footer-note">전송 시도는 업스트림 연결 시도를 뜻합니다. JSON 내보내기는 시작·종료 일시가 모두 필요하며 최대 31일, 1,000건으로 제한됩니다. 원문, 응답, 인증 정보, 계정·자격 증명 식별자와 전송 목적지는 내보내지 않습니다.</p>
     </main>
   </div>
   <dialog id="details"><div class="detail-heading"><h2>요청 상세</h2><button id="close-details" class="quiet" aria-label="닫기">✕</button></div><dl id="detail-fields"></dl><p class="fine">계정 ID는 전달된 식별자를 익명화한 값입니다. 자격 증명 ID는 토큰이 갱신되면 변경될 수 있으며, 구독 요금제나 결제 계정을 증명하지 않습니다.</p></dialog>

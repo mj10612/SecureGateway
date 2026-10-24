@@ -77,7 +77,7 @@ async function load() {
   loading = true;
   const current = generation, params = new URLSearchParams({limit, offset});
   for (const [key, value] of new FormData($("filters"))) {
-    if (value) params.set(key, key === "since" ? new Date(value).toISOString() : value);
+    if (value) params.set(key, key === "since" || key === "until" ? new Date(value).toISOString() : value);
   }
   try {
     const response = await fetch(`/admin/api/logs?${params}`, {headers: {"X-SecureGateway-Token": token}, cache: "no-store"});
@@ -105,6 +105,22 @@ $("logout").addEventListener("click", () => {
   $("details").close(); $("dashboard").hidden = true; $("login").hidden = false; $("token").focus();
 });
 $("refresh").addEventListener("click", load);
+$("export").addEventListener("click", async () => {
+  if (!token) return;
+  const params = new URLSearchParams();
+  try {
+    for (const [key, value] of new FormData($("filters"))) {
+      if (value) params.set(key, key === "since" || key === "until" ? new Date(value).toISOString() : value);
+    }
+    if (!params.has("since") || !params.has("until")) throw new Error("시작·종료 일시를 모두 선택하세요.");
+    const response = await fetch(`/admin/api/logs/export?${params}`, {headers: {"X-SecureGateway-Token": token}, cache: "no-store"});
+    if (!response.ok) throw new Error(response.status === 400 ? "기간과 필터 조건을 확인하세요." : "내보내기에 실패했습니다.");
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a"); link.href = url; link.download = "secure-gateway-audit.json";
+    link.click(); setTimeout(() => URL.revokeObjectURL(url), 0);
+    $("banner").hidden = true;
+  } catch (error) { $("banner").textContent = error.message; $("banner").hidden = false; }
+});
 $("filters").addEventListener("submit", (event) => event.preventDefault());
 $("filters").addEventListener("change", () => { offset = 0; load(); });
 $("filters").addEventListener("reset", () => { offset = 0; setTimeout(load, 0); });

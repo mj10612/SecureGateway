@@ -267,10 +267,8 @@ class AuditStore:
         return {"max_records": self.max_records, "max_age_days": self.max_age_days,
                 "candidates": candidates, "removed": candidates if apply else 0, "dry_run": not apply}
 
-    def query(self, filters, limit=50, offset=0):
-        if (type(limit) is not int or not 1 <= limit <= 200
-                or type(offset) is not int or not 0 <= offset <= 2**63 - 1):
-            raise ValueError("Invalid audit pagination.")
+    @staticmethod
+    def _query_conditions(filters):
         clauses, values = [], []
         for field in ("agent", "provider", "subscription", "account_ref", "credential_ref"):
             if filters.get(field):
@@ -294,7 +292,13 @@ class AuditStore:
                     raise ValueError("Time filters require a timezone.")
                 clauses.append(f"started_at {op} ?")
                 values.append(value.astimezone(timezone.utc).isoformat())
-        where = " WHERE " + " AND ".join(clauses) if clauses else ""
+        return (" WHERE " + " AND ".join(clauses) if clauses else ""), values
+
+    def query(self, filters, limit=50, offset=0):
+        if (type(limit) is not int or not 1 <= limit <= 200
+                or type(offset) is not int or not 0 <= offset <= 2**63 - 1):
+            raise ValueError("Invalid audit pagination.")
+        where, values = self._query_conditions(filters)
         with self.connect() as db:
             db.execute("BEGIN")  # Totals and page rows share one read snapshot.
             totals = dict(db.execute(
@@ -310,6 +314,26 @@ class AuditStore:
             )]
         return {"summary": totals, "rows": rows, "limit": limit, "offset": offset,
                 "retention": self.retention()}
+
+    def export_metadata(self, filters, max_rows=1000):
+        """Return a fixed-size, allowlisted snapshot for offline audit review."""
+        if type(max_rows) is not int or not 1 <= max_rows <= 1000:
+            raise ValueError("Invalid audit export limit.")
+        where, values = self._query_conditions(filters)
+        fields = ("request_id", "started_at", "agent", "provider", "subscription",
+                  "endpoint", "model", "status", "outcome", "upstream_attempted",
+                  "duration_ms", "input_bytes", "masked_bytes", "output_bytes", "new_aliases")
+        with self.connect() as db:
+            db.execute("BEGIN")
+            cursor = db.execute(
+                "SELECT " + ", ".join(fields) + " FROM requests" + where
+                + " ORDER BY id DESC LIMIT ?", values + [max_rows + 1],
+            )
+            rows = []
+            while page := cursor.fetchmany(200):
+                rows.extend(dict(row) for row in page)
+        return {"rows": rows[:max_rows], "count": min(len(rows), max_rows),
+                "limit": max_rows, "truncated": len(rows) > max_rows}
 
 
 def anonymous_ref(token, kind, value):

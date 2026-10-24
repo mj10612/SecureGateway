@@ -150,6 +150,31 @@ def test_dashboard_auth_origin_assets_and_filters(admin_gateway):
     assert json.loads(call(gateway, "/admin/api/logs?offset=1")[1])["rows"] == []
 
 
+def test_bounded_admin_export_excludes_sensitive_metadata(admin_gateway):
+    gateway, _ = admin_gateway
+    base = "/admin/api/logs/export?since=2026-01-01T00%3A00%3A00Z&until=2026-01-02T00%3A00%3A00Z"
+    assert call(gateway, base, headers={})[0] == 401
+    assert call(gateway, "/admin/api/logs/export")[0] == 400
+    assert call(gateway, base.replace("2026-01-02", "2026-02-02"))[0] == 400
+    assert call(gateway, base + "&limit=2000")[0] == 400
+    with gateway.audit.connect() as db:
+        db.executemany(
+            "INSERT INTO requests(request_id,started_at,agent,provider,subscription,endpoint,"
+            "destination,account_ref,credential_ref,status) VALUES (?, ?, 'Codex', 'codex',"
+            "'chatgpt_subscription', '/codex/responses', 'private-destination',"
+            "'private-account', 'private-credential', 200)",
+            ((str(index), "2026-01-01T12:00:00+00:00") for index in range(1001)),
+        )
+    status, body, headers = call(gateway, base + "&provider=codex")
+    data = json.loads(body)
+    assert status == 200 and headers["Content-Disposition"].startswith("attachment;")
+    assert data["count"] == data["limit"] == 1000 and data["truncated"] is True
+    assert len(data["rows"]) == 1000
+    for value in (b"private-destination", b"private-account", b"private-credential"):
+        assert value not in body
+    assert json.loads(call(gateway, base + "&provider=claude")[1])["rows"] == []
+
+
 def test_logging_failure_refuses_forwarding(admin_gateway, monkeypatch):
     gateway, upstream = admin_gateway
     def fail(*args):
