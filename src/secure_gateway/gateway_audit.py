@@ -268,6 +268,9 @@ class AuditStore:
                 "candidates": candidates, "removed": candidates if apply else 0, "dry_run": not apply}
 
     def query(self, filters, limit=50, offset=0):
+        if (type(limit) is not int or not 1 <= limit <= 200
+                or type(offset) is not int or not 0 <= offset <= 2**63 - 1):
+            raise ValueError("Invalid audit pagination.")
         clauses, values = [], []
         for field in ("agent", "provider", "subscription", "account_ref", "credential_ref"):
             if filters.get(field):

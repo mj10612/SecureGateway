@@ -231,6 +231,21 @@ def test_time_filters_normalize_timezones_and_preserve_incomplete_records(tmp_pa
     assert store.query({"until": "2000-01-01T00:00:00Z"})["rows"] == []
 
 
+@pytest.mark.parametrize("limit,offset", [(-1, 0), (0, 0), (201, 0), (True, 0),
+                                           (1, -1), (1, True), (1, 2**63)])
+def test_audit_store_query_rejects_invalid_pagination(tmp_path, limit, offset):
+    store = AuditStore(tmp_path / "logs.sqlite3")
+    with pytest.raises(ValueError, match="Invalid audit pagination"):
+        store.query({}, limit=limit, offset=offset)
+    store.close()
+
+
+def test_audit_store_query_accepts_pagination_boundaries(tmp_path):
+    store = AuditStore(tmp_path / "logs.sqlite3")
+    assert store.query({}, limit=200, offset=2**63 - 1)["rows"] == []
+    store.close()
+
+
 def test_retention_discards_oldest_requests(tmp_path):
     store = AuditStore(tmp_path / "logs.sqlite3")
     with store.connect() as db:
