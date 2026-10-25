@@ -329,7 +329,7 @@ class AuditStore:
                 "SELECT " + ", ".join(fields) + " FROM requests" + where
                 + " ORDER BY id DESC LIMIT ?", values + [max_rows + 1],
             )
-            rows = []
+            rows: list[dict[str, object]] = []
             while page := cursor.fetchmany(200):
                 rows.extend(dict(row) for row in page)
         return {"rows": rows[:max_rows], "count": min(len(rows), max_rows),
