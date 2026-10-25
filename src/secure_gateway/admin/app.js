@@ -55,8 +55,10 @@ function render(data) {
     const agent = element("td", row.agent); agent.append(element("small", row.model || "모델 미제공"));
     const route = element("td", providers[row.provider] || row.provider); route.append(element("small", subscriptions[row.subscription]));
     const account = element("td"); account.append(element("code", row.account_ref || "계정 미제공"));
-    const result = element("td"), kind = row.status == null ? "pending" : row.status < 400 ? "success" : "error";
-    result.append(element("span", row.status == null ? "미완료" : `${row.status} ${kind === "success" ? "성공" : "실패"}`, `status ${kind}`), element("small", outcomes[row.outcome] || row.outcome));
+    const result = element("td");
+    const kind = row.status == null ? "pending" : row.status >= 200 && row.status < 300 ? "success" : row.status >= 300 && row.status < 400 ? "redirect" : row.status >= 400 ? "error" : "other";
+    const labels = {pending: "미완료", success: "성공", redirect: "리디렉션", error: "실패", other: "기타"};
+    result.append(element("span", row.status == null ? labels.pending : `${row.status} ${labels[kind]}`, `status ${kind}`), element("small", outcomes[row.outcome] || row.outcome));
     const latency = element("td", row.duration_ms == null ? "—" : `${num(Math.round(row.duration_ms))} ms`);
     const action = element("td"), button = element("button", "상세 ↗", "quiet detail-button");
     button.addEventListener("click", () => detail(row)); action.append(button);
