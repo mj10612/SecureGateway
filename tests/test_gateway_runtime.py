@@ -2,6 +2,7 @@
 
 from io import BytesIO
 import json
+import socket
 from threading import Event, Thread
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import urllib.request
@@ -89,6 +90,32 @@ def test_mapping_limit_reuse_and_authenticated_reset(tmp_path):
         assert server.get_session("claude").mask("privateBeta", code=True)
         server.shutdown()
         worker.join(2)
+
+
+def test_incomplete_reset_body_preserves_session():
+    with PrivacyGateway(
+        ("127.0.0.1", 0), "secret", upstreams={"claude": "unused"}
+    ) as server:
+        session = server.get_session("claude")
+        worker = Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        try:
+            body = b'{"agent":"claude"}'
+            request = (
+                f"POST /reset HTTP/1.0\r\nHost: 127.0.0.1\r\n"
+                f"X-SecureGateway-Token: secret\r\n"
+                f"Content-Length: {len(body) + 8}\r\n\r\n"
+            ).encode() + body
+            with socket.create_connection(("127.0.0.1", server.server_port), timeout=3) as conn:
+                conn.sendall(request)
+                conn.shutdown(socket.SHUT_WR)
+                response = conn.recv(1024)
+            assert response.startswith(b"HTTP/1.0 409 ")
+            assert server.get_session("claude") is session
+            assert not session.session.generator.closed
+        finally:
+            server.shutdown()
+            worker.join(2)
 
 
 def test_gateway_does_not_hold_alias_lock_while_provider_waits():

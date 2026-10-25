@@ -1881,7 +1881,10 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 length = int(self.headers.get("Content-Length", "0"))
                 if not 0 < length <= 1024:
                     raise ValueError("Invalid reset request.")
-                payload = json.loads(self.rfile.read(length))
+                raw = self.rfile.read(length)
+                if len(raw) != length:
+                    raise ValueError("Incomplete reset request body.")
+                payload = json.loads(raw)
                 if not isinstance(payload, dict) or set(payload) - {"agent"}:
                     raise ValueError("Invalid reset request.")
                 agent = payload.get("agent", "all")
