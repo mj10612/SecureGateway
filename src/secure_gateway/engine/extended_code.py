@@ -62,7 +62,7 @@ def _payload(raw: str) -> list[Token]:
     while position < len(raw):
         start = position
         if raw[position] in {"\\", "`"} and position + 1 < len(raw):
-            escape = re.match(r"\\(?:u\{[0-9a-fA-F]+\}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|x[0-9a-fA-F]{1,4}|.)|`.", raw[position:], re.DOTALL)
+            escape = re.compile(r"\\(?:u\{[0-9a-fA-F]+\}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|x[0-9a-fA-F]{1,4}|.)|`.", re.DOTALL).match(raw, position)
             assert escape is not None
             position += len(escape[0])
             chunks.append(_grammar(raw[start:position]))
@@ -77,9 +77,15 @@ def _payload(raw: str) -> list[Token]:
 
 def _identifier_end(code: str, start: int, language: str) -> int:
     end = start
+    initial = True
     while end < len(code):
+        if language == "bash" and code.startswith("\\\n", end):
+            # Shell line continuations are removed before recognizing a name,
+            # including inside $name expansions. Keep the raw source span.
+            end += 2
+            continue
         character = code[end]
-        valid = character == "_" or (character.isidentifier() if end == start else ("a" + character).isidentifier())
+        valid = character == "_" or (character.isidentifier() if initial else ("a" + character).isidentifier())
         valid |= language == "r" and character == "."
         valid |= language == "php" and ord(character) >= 128
         valid |= language == "swift" and unicodedata.category(character) in {"So", "Sk"}
@@ -88,6 +94,9 @@ def _identifier_end(code: str, start: int, language: str) -> int:
         if not valid:
             break
         end += 1
+        initial = False
+    if initial:
+        return start
     if language == "ruby" and end > start and end < len(code) and code[end] in "!?":
         end += 1
     return end
@@ -100,7 +109,7 @@ def _csharp_escaped_identifier(code: str, start: int) -> int:
         character = code[position]
         end = position + 1
         if character == "\\":
-            escape = re.match(r"\\(?:u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})", code[position:])
+            escape = re.compile(r"\\(?:u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})").match(code, position)
             if escape is None:
                 break
             number = int(escape[0][2:], 16)
@@ -133,12 +142,16 @@ def _variable(code: str, start: int, language: str) -> tuple[list[Token], int] |
     if language == "bash" and braced and code[position:position + 1] in {"#", "!"}:
         chunks.append(_grammar(code[position]))
         position += 1
-    if language == "powershell" and (scope := re.match(r"(?i:script|global|local|private|using|env):", code[position:])):
+    scope = None
+    if language == "powershell" and (scope := re.compile(r"(?i:script|global|local|private|using|env):").match(code, position)):
         chunks.append(_grammar(scope[0]))
         position += len(scope[0])
     name_start = position
-    while position < len(code) and (code[position] == "_" or (code[position].isidentifier() if position == name_start else ("a" + code[position]).isidentifier())):
-        position += 1
+    if language == "bash":
+        position = _identifier_end(code, position, language)
+    else:
+        while position < len(code) and (code[position] == "_" or (code[position].isidentifier() if position == name_start else ("a" + code[position]).isidentifier())):
+            position += 1
     if position == name_start:
         return None
     chunks.append((code[name_start:position], TokenType.IDENTIFIER, "identifier"))
@@ -161,6 +174,12 @@ def _variable(code: str, start: int, language: str) -> tuple[list[Token], int] |
                 raise ValueError("Unsupported shell parameter expansion")
         chunks.append(_grammar("}"))
         position = end + 1
+    if language == "powershell" and (scope is None or scope[0].lower() != "env:"):
+        # These are language constants, not variables named after private data.
+        # Variable scopes retain them; environment entries are ordinary names.
+        for index, (raw, kind, _) in enumerate(chunks):
+            if kind == TokenType.IDENTIFIER and raw.lower() in {"true", "false", "null"}:
+                chunks[index] = _grammar(raw, "keyword")
     return chunks, position
 
 
@@ -317,7 +336,7 @@ def _interpolated_body(body: str, language: str, interpolate: bool) -> list[Toke
 def _heredoc(code: str, start: int, language: str) -> tuple[list[Token], int] | None:
     """Recognize shell/PHP heredoc headers and retain the matching delimiters."""
     if language == "bash":
-        match = re.match(r"<<(-?)[ \t]*(['\"]?)([A-Za-z_]\w*)\2[ \t]*\r?\n", code[start:])
+        match = re.compile(r"<<(-?)[ \t]*(['\"]?)([A-Za-z_]\w*)\2[ \t]*\r?\n").match(code, start)
         if not match:
             return None
         name = match[3]
@@ -325,7 +344,7 @@ def _heredoc(code: str, start: int, language: str) -> tuple[list[Token], int] | 
         terminator = re.compile(rf"(?m)^{tab}{re.escape(name)}\r?$")
         quoted = bool(match[2])
     else:
-        match = re.match(r"<<<[ \t]*(['\"]?)([A-Za-z_]\w*)\1[ \t]*\r?\n", code[start:])
+        match = re.compile(r"<<<[ \t]*(['\"]?)([A-Za-z_]\w*)\1[ \t]*\r?\n").match(code, start)
         if not match:
             return None
         name = match[2]
@@ -340,7 +359,7 @@ def _heredoc(code: str, start: int, language: str) -> tuple[list[Token], int] | 
 
 
 def _ruby_percent(code: str, start: int) -> tuple[list[Token], int] | None:
-    match = re.match(r"%([qQwWiIrxs]?)([^\w\s])", code[start:])
+    match = re.compile(r"%([qQwWiIrxs]?)([^\w\s])").match(code, start)
     if match is None:
         return None
     opening = match[2]
@@ -434,7 +453,9 @@ def _contextual_keywords(tokens: list[Token], language: str) -> None:
             continue
         structural = False
         if language == "kotlin":
-            if word == "by":
+            if previous == "@" and following == ":" and word in {"get", "set", "field"}:
+                structural = True
+            elif word == "by":
                 structural = previous not in {"", "val", "var", ".", "fun", "(", ","} and following not in {"=", ":", ",", ")", ";", "}"}
             elif word in {"get", "set"}:
                 gap = "".join(token[0] for token in tokens[significant[offset - 1] + 1:index]) if offset else ""
@@ -468,6 +489,12 @@ def _contextual_keywords(tokens: list[Token], language: str) -> None:
                 structural = following in {"(", "{"} and previous not in {".", "="}
             elif word in {"and", "or", "not"}:
                 structural = previous not in {"", ".", "=", ";", "(", "{"} and following not in {"=", ";", "}", ")"}
+                if word == "not" and previous == "(":
+                    cursor = offset - 1
+                    while cursor >= 0 and words[cursor] == "(":
+                        cursor -= 1
+                    structural = (cursor >= 0 and words[cursor] in {"is", "case", "not", "and", "or"}
+                                  and tokens[significant[cursor]][1] == TokenType.GRAMMAR)
             elif word == "alias":
                 structural = previous == "extern"
         tokens[index] = (word, TokenType.GRAMMAR if structural else TokenType.IDENTIFIER,
@@ -531,6 +558,103 @@ def _csharp_accessor_values(tokens: list[Token]) -> None:
               and not (following == ":" and previous in {"(", ",", "{"})):
             tokens[i] = (raw, TokenType.GRAMMAR, "keyword")
         previous = raw
+    _csharp_inferred_accessor_members(tokens)
+
+
+def _csharp_inferred_accessor_members(tokens: list[Token]) -> None:
+    """Track local receivers whose anonymous projection retains implicit value.
+
+    This changes no source text: both the inferred name and its established
+    local receiver's member reference remain ``value``. Other members continue
+    through normal identifier masking. Reassignment and lexical shadowing
+    invalidate that receiver rather than preserving every member named value.
+    """
+    from secure_gateway.engine.code_identifiers import identifier_key
+
+    significant = [i for i, token in enumerate(tokens)
+                   if token[2] != "whitespace" and token[1] != TokenType.LITERAL]
+    words = [tokens[i][0] for i in significant]
+    delimiters: list[int] = []
+    closing: dict[int, int] = {}
+    for position, word in enumerate(words):
+        if word in {"(", "[", "{"}:
+            delimiters.append(position)
+        elif word in {")", "]", "}"} and delimiters:
+            opening = delimiters.pop()
+            closing[opening] = position
+    anonymous: dict[int, tuple[int, bool]] = {}
+    for position, word in enumerate(words):
+        if word != "new" or position + 1 >= len(words) or words[position + 1] != "{":
+            continue
+        end = closing.get(position + 1)
+        if end is None:
+            continue
+        cursor = position + 2
+        entry = cursor
+        implicit = False
+        while cursor <= end:
+            current = words[cursor]
+            if current in {"(", "[", "{"} and cursor in closing:
+                cursor = closing[cursor] + 1
+                continue
+            if current == "," or cursor == end:
+                if cursor == entry + 1:
+                    token = tokens[significant[entry]]
+                    implicit |= (identifier_key(token[0], "csharp") == "value"
+                                 and token[1] == TokenType.GRAMMAR)
+                entry = cursor + 1
+            cursor += 1
+        anonymous[position] = (end, implicit)
+
+    scopes: list[dict[str, bool]] = [{}]
+    openings = {end: start for start, end in closing.items()}
+
+    def inferred_expression(start: int, end: int) -> bool:
+        while start < end and words[start] == "(" and closing.get(start) == end - 1:
+            start += 1
+            end -= 1
+        projection = anonymous.get(start)
+        if projection is not None and projection[0] == end - 1:
+            return projection[1]
+        if (end == start + 1 and tokens[significant[start]][1] == TokenType.IDENTIFIER
+                and (start == 0 or words[start - 1] != ".")):
+            key = identifier_key(words[start], "csharp")
+            return next((scope[key] for scope in reversed(scopes) if key in scope), False)
+        return False
+
+    for position, index in enumerate(significant):
+        raw, kind, _ = tokens[index]
+        previous = words[position - 1] if position else ""
+        following = words[position + 1] if position + 1 < len(words) else ""
+        if raw == "{":
+            scopes.append({})
+        elif raw == "}" and len(scopes) > 1:
+            scopes.pop()
+        elif kind == TokenType.IDENTIFIER and following == "=" and previous != ".":
+            key = identifier_key(raw, "csharp")
+            projection = anonymous.get(position + 2)
+            inferred = bool(projection and projection[1])
+            rhs = position + 2
+            if projection is None and rhs < len(words):
+                rhs_end = closing.get(rhs, rhs) + 1
+                if rhs_end == len(words) or words[rhs_end] in {";", ",", ")"}:
+                    inferred = inferred_expression(rhs, rhs_end)
+            declaration = previous == "var" or (position > 0 and tokens[significant[position - 1]][1] == TokenType.IDENTIFIER)
+            target = scopes[-1]
+            if not declaration:
+                target = next((scope for scope in reversed(scopes) if key in scope), target)
+            target[key] = inferred
+        elif (kind == TokenType.IDENTIFIER and identifier_key(raw, "csharp") == "value"
+              and previous == "." and position >= 2):
+            end = position - 1
+            start = end - 1
+            if words[start] == ")":
+                start = openings.get(start, start)
+            elif words[start] == "}":
+                start = openings.get(start, start) - 1
+            inferred = start >= 0 and inferred_expression(start, end)
+            if inferred:
+                tokens[index] = (raw, TokenType.GRAMMAR, "keyword")
 
 
 def _xml_name(name: str) -> list[Token]:
@@ -662,6 +786,10 @@ def tokenize(code: str, language: str) -> list[Token]:
     position = 0
     nasm_macros: set[str] = set()
     nasm_insensitive_macros: set[str] = set()
+    bash_declaration = False
+    bash_command_start = True
+    bash_binding_next = False
+    bash_arithmetic_depth = 0
     if language == "nasm":
         for definition in re.finditer(r"(?im)^[ \t]*%(macro|imacro|define|idefine|xdefine|ixdefine)[ \t]+([A-Za-z_][\w.]*)", code):
             if definition[1].lower().startswith("i"):
@@ -671,6 +799,22 @@ def tokenize(code: str, language: str) -> list[Token]:
     while position < len(code):
         start = position
         character = code[position]
+        if language == "bash":
+            if not bash_arithmetic_depth and code.startswith("((", position):
+                bash_arithmetic_depth = 1
+            elif bash_arithmetic_depth:
+                if character == "(":
+                    bash_arithmetic_depth += 1
+                elif character == ")":
+                    bash_arithmetic_depth -= 1
+            if code.startswith("\\\n", position):
+                result.append(_grammar("\\\n"))
+                position += 2
+                continue
+            if character in "\n;|&(){}":
+                bash_declaration = False
+                bash_command_start = True
+                bash_binding_next = False
         if language == "ruby" and code.startswith("__END__", position) and (position == 0 or code[position - 1] == "\n") and code[position + 7:position + 8] in {"", "\r", "\n"}:
             newline = code.find("\n", position)
             if newline < 0:
@@ -684,7 +828,7 @@ def tokenize(code: str, language: str) -> list[Token]:
                 position += 1
             result.append(_grammar(code[start:position], "whitespace"))
             continue
-        if language == "vbnet" and character == "<" and re.match(r"<[^\W\d]", code[position:]) and next((token[0] for token in reversed(result) if token[2] != "whitespace"), "") in {"=", "(", ",", "return", "Return"}:
+        if language == "vbnet" and character == "<" and re.compile(r"<[^\W\d]").match(code, position) and next((token[0] for token in reversed(result) if token[2] != "whitespace"), "") in {"=", "(", ",", "return", "Return"}:
             chunks, position = _xml_literal(code, position)
             result.extend(chunks)
             continue
@@ -716,18 +860,18 @@ def tokenize(code: str, language: str) -> list[Token]:
                 raise ValueError("Unsupported shell heredoc syntax")
         if language == "powershell" and code.startswith(("@'", '@"'), position):
             opener = code[position:position + 2]
-            here_header = re.match(r"@['\"][ \t]*\r?\n", code[position:])
+            here_header = re.compile(r"@['\"][ \t]*\r?\n").match(code, position)
             if not here_header:
                 raise ValueError("Invalid PowerShell here-string header")
-            ending = re.search(rf"(?m)^{re.escape(opener[1])}@(?=\r?$)", code[position + len(here_header[0]):])
+            ending = re.compile(rf"(?m)^{re.escape(opener[1])}@(?=\r?$)").search(code, position + len(here_header[0]))
             if ending is None:
                 raise ValueError("Unterminated PowerShell here-string")
-            end = position + len(here_header[0]) + ending.end()
+            end = ending.end()
             body = code[position + len(here_header[0]):end - 2]
             result.extend([_grammar(here_header[0]), *_interpolated_body(body, language, opener == '@"'), _grammar(opener[1] + "@")])
             position = end
             continue
-        if language == "lua" and (long := re.match(r"(?:--)?\[(=*)\[", code[position:])):
+        if language == "lua" and (long := re.compile(r"(?:--)?\[(=*)\[").match(code, position)):
             lua_ending = "]" + long[1] + "]"
             end = code.find(lua_ending, position + len(long[0]))
             if end < 0:
@@ -746,18 +890,18 @@ def tokenize(code: str, language: str) -> list[Token]:
                 chunks, position = percent
                 result.extend(chunks)
                 continue
-        if language == "ruby" and (heredoc_ruby := re.match(r"<<([-~]?)(['\"`]?)([A-Za-z_]\w*)\2[ \t]*\r?\n", code[position:])):
+        if language == "ruby" and (heredoc_ruby := re.compile(r"<<([-~]?)(['\"`]?)([A-Za-z_]\w*)\2[ \t]*\r?\n").match(code, position)):
             whitespace = "[ \\t]*" if heredoc_ruby[1] else ""
-            ending = re.search(rf"(?m)^{whitespace}{re.escape(heredoc_ruby[3])}\r?$", code[position + len(heredoc_ruby[0]):])
+            ending = re.compile(rf"(?m)^{whitespace}{re.escape(heredoc_ruby[3])}\r?$").search(code, position + len(heredoc_ruby[0]))
             if ending is None:
                 raise ValueError("Unterminated Ruby heredoc")
             content_start = position + len(heredoc_ruby[0])
-            content_end = content_start + ending.start()
-            end = content_start + ending.end()
+            content_end = ending.start()
+            end = ending.end()
             result.extend([_grammar(heredoc_ruby[0]), *_interpolated_body(code[content_start:content_end], language, heredoc_ruby[2] != "'"), _grammar(ending[0])])
             position = end
             continue
-        if language == "r" and (raw_r := re.match(r'[rR](["\'])(-*)([([{])', code[position:])):
+        if language == "r" and (raw_r := re.compile(r'[rR](["\'])(-*)([([{])').match(code, position)):
             closer = {"(": ")", "[": "]", "{": "}"}[raw_r[3]] + raw_r[2] + raw_r[1]
             end = code.find(closer, position + len(raw_r[0]))
             if end < 0:
@@ -775,7 +919,7 @@ def tokenize(code: str, language: str) -> list[Token]:
             position = _block_end(code, position, *block)
             result.append(_literal(code[start:position], len(block[0]), len(block[1])))
             continue
-        if language == "nasm" and character == "%" and (directive := re.match(r"%(?:define|xdefine|idefine|ixdefine|undef|assign|iassign|macro|imacro|endmacro|rep|endrep|if|ifdef|ifndef|ifidn|ifnidn|ifnum|elif|else|endif|include|push|pop|repl|rotate|error|warning|line|pragma|unmacro|exitmacro)\b", code[position:], re.IGNORECASE)):
+        if language == "nasm" and character == "%" and (directive := re.compile(r"%(?:define|xdefine|idefine|ixdefine|undef|assign|iassign|macro|imacro|endmacro|rep|endrep|if|ifdef|ifndef|ifidn|ifnidn|ifnum|elif|else|endif|include|push|pop|repl|rotate|error|warning|line|pragma|unmacro|exitmacro)\b", re.IGNORECASE).match(code, position)):
             result.append(_grammar(directive[0], "keyword"))
             position += len(directive[0])
             continue
@@ -789,7 +933,7 @@ def tokenize(code: str, language: str) -> list[Token]:
         if language == "ruby" and character == "/" and ruby_previous in {"", "=", "(", "[", ",", ":", "return", "~", "!", "and", "or", "when"}:
             chunks, position = _quoted(code, position, "/", language, True, interpolation_marker="#{")
             result.extend(chunks)
-            flags = re.match(r"[imxounes]+", code[position:])
+            flags = re.compile(r"[imxounes]+").match(code, position)
             if flags:
                 result.append(_grammar(flags[0]))
                 position += len(flags[0])
@@ -801,7 +945,7 @@ def tokenize(code: str, language: str) -> list[Token]:
             or (language == "lua" and code.startswith("--", position))
             or (language in {"csharp", "php", "kotlin", "swift", "dart"} and code.startswith("//", position))
             or (language == "php" and character == "#" and not code.startswith("#[", position))
-            or (language in {"vbnet", "vba"} and re.match(r"(?i:rem)(?:\s|$)", code[position:]) and (position == 0 or code[position - 1] in "\r\n:"))
+            or (language in {"vbnet", "vba"} and re.compile(r"(?i:rem)(?:\s|$)").match(code, position) and (position == 0 or code[position - 1] in "\r\n:"))
         )
         if line_comment:
             end = code.find("\n", position)
@@ -809,21 +953,21 @@ def tokenize(code: str, language: str) -> list[Token]:
             prefix = 2 if code.startswith(("//", "--"), start) else (3 if code[start:start + 3].lower() == "rem" else 1)
             result.append(_literal(code[start:position], prefix))
             continue
-        if language == "csharp" and (raw_match := re.match(r'\$*("{3,})', code[position:])):
+        if language == "csharp" and (raw_match := re.compile(r'\$*("{3,})').match(code, position)):
             delimiter = raw_match[1]
             dollars = len(raw_match[0]) - len(delimiter)
             chunks, position = _quoted(code, start, delimiter, language, bool(dollars), raw=True,
                                        prefix_length=dollars, interpolation_marker="{" * dollars if dollars else None)
             result.extend(chunks)
             continue
-        if language == "swift" and (swift_raw := re.match(r'(#+)("""|")', code[position:])):
+        if language == "swift" and (swift_raw := re.compile(r'(#+)("""|")').match(code, position)):
             chunks, position = _quoted(code, start, swift_raw[2], language, True, raw=True,
                                        prefix_length=len(swift_raw[1]), closing=swift_raw[2] + swift_raw[1],
                                        interpolation_marker="\\" + swift_raw[1] + "(")
             result.extend(chunks)
             continue
         prefix_length = 0
-        if language == "csharp" and (string_prefix := re.match(r'(?:\$@|@\$|\$|@)(?=")', code[position:])):
+        if language == "csharp" and (string_prefix := re.compile(r'(?:\$@|@\$|\$|@)(?=")').match(code, position)):
             prefix_length = len(string_prefix[0])
         elif language == "vbnet" and code.startswith('$"', position):
             prefix_length = 1
@@ -880,15 +1024,15 @@ def tokenize(code: str, language: str) -> list[Token]:
             variable_chunks, position = variable
             result.extend(variable_chunks)
             continue
-        if language == "powershell" and character == "-" and (operator := re.match(r"-(?:eq|ne|gt|ge|lt|le|like|notlike|match|notmatch|contains|notcontains|in|notin|is|isnot|as|and|or|xor|not|band|bor|bxor|bnot|shl|shr|replace|split|join|f)\b", code[position:], re.IGNORECASE)):
+        if language == "powershell" and character == "-" and (operator := re.compile(r"-(?:eq|ne|gt|ge|lt|le|like|notlike|match|notmatch|contains|notcontains|in|notin|is|isnot|as|and|or|xor|not|band|bor|bxor|bnot|shl|shr|replace|split|join|f)\b", re.IGNORECASE).match(code, position)):
             result.append(_grammar(operator[0], "keyword"))
             position += len(operator[0])
             continue
-        if language in {"vbnet", "vba"} and (vb_number := re.match(r"&(?:[hH][0-9a-fA-F]+|[oO][0-7]+|[bB][01]+)[%&^]?", code[position:])):
+        if language in {"vbnet", "vba"} and (vb_number := re.compile(r"&(?:[hH][0-9a-fA-F]+|[oO][0-7]+|[bB][01]+)[%&^]?").match(code, position)):
             result.append((vb_number[0], TokenType.NUMBER, "number"))
             position += len(vb_number[0])
             continue
-        if language in {"vbnet", "vba"} and character == "#" and (date := re.match(r"#[^#\r\n]+#", code[position:])):
+        if language in {"vbnet", "vba"} and character == "#" and (date := re.compile(r"#[^#\r\n]+#").match(code, position)):
             result.append((date[0], TokenType.NUMBER, "number"))
             position += len(date[0])
             continue
@@ -904,10 +1048,23 @@ def tokenize(code: str, language: str) -> list[Token]:
         if end > position:
             raw = code[position:end]
             key = raw.lower() if language in _CASE_INSENSITIVE else raw
+            if language == "bash":
+                key = raw.replace("\\\n", "")
             reserved = key in LANGUAGE_KEYWORDS[language]
+            if language == "bash":
+                assignment = code.startswith(("=", "+="), end)
+                # A reserved word immediately followed by '[' is part of an
+                # array word/lvalue, never a stand-alone control keyword.
+                if assignment or code.startswith("[", end) or bash_declaration or bash_binding_next or bash_arithmetic_depth:
+                    reserved = False
+                bash_binding_next = reserved and key in {"for", "select"}
+                if bash_command_start and not assignment:
+                    bash_declaration = key in {"local", "export", "readonly", "declare", "typeset"}
+                if not assignment:
+                    bash_command_start = reserved and key in {"if", "then", "elif", "else", "do", "while", "until", "time", "coproc"}
             if position and code[position - 1] == "$" and language in {"php", "powershell", "bash"}:
                 reserved = False
-            if language in {"vbnet", "vba"} and raw == "_" and re.match(r"[ \t]*\r?\n", code[end:]):
+            if language in {"vbnet", "vba"} and raw == "_" and re.compile(r"[ \t]*\r?\n").match(code, end):
                 reserved = True
             if language == "nasm" and re.fullmatch(r"(?:r(?:[8-9]|1[0-5])(?:[bwd])?|[xyz]mm\d+|[cdefgs]s|[cd]r\d+)", raw, re.IGNORECASE):
                 reserved = True
@@ -918,11 +1075,16 @@ def tokenize(code: str, language: str) -> list[Token]:
                 reserved = False
             if language == "nasm" and not reserved and not nasm_macro:
                 line_start = code.rfind("\n", 0, position) + 1
-                preceding = code[line_start:position]
-                operand = re.match(r"[ \t]+([A-Za-z][A-Za-z0-9]*)\s*(?:,|$)", code[end:code.find("\n", end) if "\n" in code[end:] else len(code)])
+                line_end = code.find("\n", end)
+                if line_end < 0:
+                    line_end = len(code)
+                indentation = re.compile(r"[ \t]*").match(code, line_start)
+                assert indentation is not None
+                at_instruction = indentation.end() == position
+                operand = re.compile(r"[ \t]+([A-Za-z][A-Za-z0-9]*)\s*(?:,|$)").match(code, end, line_end)
                 # An explicit instruction field followed by a register operand
                 # is unambiguous even for newer ISA mnemonics absent our table.
-                if not preceding.strip() and operand and (operand[1].lower() in LANGUAGE_KEYWORDS["nasm"] or re.fullmatch(r"(?:[xyz]mm|r|st|mm|k)\d+", operand[1], re.IGNORECASE)):
+                if at_instruction and operand and (operand[1].lower() in LANGUAGE_KEYWORDS["nasm"] or re.fullmatch(r"(?:[xyz]mm|r|st|mm|k)\d+", operand[1], re.IGNORECASE)):
                     reserved = True
             if language == "gdscript" and position and code[position - 1] == "@" and raw in _GDSCRIPT_ANNOTATIONS:
                 reserved = True

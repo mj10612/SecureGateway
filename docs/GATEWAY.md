@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 1.4.4 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 1.5.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -38,6 +38,33 @@ request ID, agent, provider, authentication mode, model, destination, HTTP statu
 processing outcome, upstream connection attempt, duration, byte counts and new
 alias count. It excludes request/response bodies, query strings, error text,
 raw headers, OAuth tokens and API keys. Model names are bounded metadata.
+
+### Bounded audit export
+
+Choose both start and end times (at most 31 days), then select **JSON 내보내기**.
+Each file contains at most 1,000 allowlisted metadata rows. If more rows remain,
+**다음 파일** downloads the next bounded page; the status shows the file number
+and whether another page remains. Changing filters starts a new export.
+Logout or another login discards pending export responses before they can
+download a file or update the current dashboard.
+
+The authenticated `GET /admin/api/logs/export` endpoint accepts the same filters
+as log export, including mandatory timezone-aware `since` and `until`. Responses
+include `rows`, `count`, `limit`, `truncated` and `next_cursor`. To continue, send
+the exact same filters plus the URL-encoded `cursor=next_cursor`; stop when
+`next_cursor` is null. Authentication and all range/field limits apply to every
+page. Cursor tokens are signed and bound to the filters, page limit and current
+gateway process. Invalid, changed-filter or expired cursors return HTTP 400;
+restart the export after a gateway restart.
+
+Pages traverse descending row IDs below a watermark established by the first
+page, so concurrent insertions do not enter that export and identical timestamps
+do not cause skipped or duplicate rows. This is an insertion watermark, not a
+database backup: row metadata is read when each page is fetched, and retention
+can remove rows that have not yet been downloaded. If the watermark row itself
+is removed, the cursor is rejected instead of risking row-ID reuse. Use a
+SQLite backup if an immutable historical snapshot is required. Export never
+includes payloads, account/credential references or destination URLs.
 
 `Claude Code → Anthropic → Claude subscription`, `Codex → OpenAI → ChatGPT
 subscription`, and explicit `xAI → API key` paths are distinct. New Grok Build
@@ -259,6 +286,11 @@ replay; start a fresh conversation/reset state rather than bypass masking. POSIX
 modes are applied; Windows uses inherited user ACLs. The key/local token resides alongside
 snapshots, so this does not protect against another process with access to that user's files.
 
+New snapshots also preserve the session's positive integer mapping limit and
+reject payloads containing more mappings than that limit. Legacy snapshots
+without a saved limit use 100,000; legacy payloads exceeding that default are
+rejected. Gateway configuration can impose a smaller active budget as before.
+
 Version 0.5.1 uses `<agent>-symbols-v2.enc` with a matching hash-only `.opaque.json` file.
 Old `<agent>.enc` snapshots remain untouched for rollback; the snapshot reader still supports
 legacy aliases. After upgrading from 0.5.0, start new Claude/Codex conversations once so
@@ -407,6 +439,8 @@ Restoration now checks UTF-8 input and output limits before returning or assembl
 an expanded result. Defaults are 16 MiB each. `MaskingEngine` and
 `LocalPrivacyClient` accept `max_restore_input_bytes` and `max_restore_output_bytes`.
 The local `unmask` CLI provides `--restore-input-limit` and `--restore-output-limit`.
+The selected input budget applies while reading both UTF-8 files and stdin;
+it is independent of the masking input budget.
 Subscription/API gateway JSON accepts the same engine option names. Existing
 aliases and snapshots remain readable within the configured budgets; oversized
 restoration fails with a fixed error rather than returning partial output.

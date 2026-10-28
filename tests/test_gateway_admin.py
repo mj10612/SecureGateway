@@ -201,6 +201,20 @@ def test_bounded_admin_export_excludes_sensitive_metadata(admin_gateway):
     assert len(data["rows"]) == 1000
     for value in (b"private-destination", b"private-account", b"private-credential"):
         assert value not in body
+    cursor = data["next_cursor"]
+    assert isinstance(cursor, str) and cursor
+    from urllib.parse import urlencode
+    following = base + "&" + urlencode({"provider": "codex", "cursor": cursor})
+    assert call(gateway, following, headers={})[0] == 401
+    assert call(gateway, following.replace("provider=codex", "provider=claude"))[0] == 400
+    assert call(gateway, base + "&cursor=invalid")[0] == 400
+    assert call(gateway, base + "&cursor=")[0] == 400
+    status, body, _ = call(gateway, following)
+    second = json.loads(body)
+    assert status == 200 and second["count"] == 1 and second["next_cursor"] is None
+    assert second["truncated"] is False
+    assert set(row["request_id"] for row in data["rows"]).isdisjoint(
+        row["request_id"] for row in second["rows"])
     assert json.loads(call(gateway, base + "&provider=claude")[1])["rows"] == []
 
 

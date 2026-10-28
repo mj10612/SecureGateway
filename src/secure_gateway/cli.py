@@ -51,7 +51,23 @@ def _file_options(command):
     )(command)
 
 
-def _text_input(text, input_file):
+def _read_input_bytes(stream, limit):
+    parts = []
+    remaining = limit + 1
+    while remaining:
+        chunk = stream.read(min(remaining, 64 * 1024))
+        if not chunk:
+            break
+        if isinstance(chunk, str):
+            chunk = chunk.encode("utf-8")
+        chunk = chunk[:remaining]
+        parts.append(chunk)
+        remaining -= len(chunk)
+    return b"".join(parts)
+
+
+def _text_input(text, input_file, *, max_input_bytes=None):
+    limit = engine.max_input_bytes if max_input_bytes is None else max_input_bytes
     if text is not None and input_file is not None:
         raise click.UsageError("Choose text, --input-file, or stdin, not multiple inputs.")
     if text is not None:
@@ -59,13 +75,12 @@ def _text_input(text, input_file):
     try:
         if input_file is not None:
             with input_file.open("rb") as stream:
-                raw = stream.read(engine.max_input_bytes + 1)
+                raw = _read_input_bytes(stream, limit)
         else:
             if sys.stdin.isatty():
                 raise click.UsageError("Provide text, --input-file, or UTF-8 stdin.")
-            raw = (sys.stdin.buffer.read(engine.max_input_bytes + 1)
-                   if hasattr(sys.stdin, "buffer") else sys.stdin.read().encode("utf-8"))
-        if len(raw) > engine.max_input_bytes:
+            raw = _read_input_bytes(sys.stdin.buffer if hasattr(sys.stdin, "buffer") else sys.stdin, limit)
+        if len(raw) > limit:
             raise click.ClickException("Input size limit reached.")
         return raw.decode("utf-8")
     except UnicodeError:
@@ -490,7 +505,7 @@ def unmask(
     session_password,
 ):
     """Restore for local display. Never send this output back into the model context."""
-    masked_text = _text_input(masked_text, input_file)
+    masked_text = _text_input(masked_text, input_file, max_input_bytes=restore_input_limit)
     strat = SurrogateStrategy(strategy) if strategy is not None else None
     with _session(
         session_id, session_file, session_password, strategy=strat

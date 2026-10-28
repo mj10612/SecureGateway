@@ -101,6 +101,20 @@ def structural_words(language: str) -> frozenset[str]:
     return CLOSED_CLASS_WORDS.get(canonical_language(language), frozenset())
 
 
+# Aggressive mode retains only a minimal connective skeleton. Unlike the
+# broader content_words vocabulary, this does not preserve auxiliaries or
+# pronouns just because an adapter recognizes them as grammar.
+AGGRESSIVE_STRUCTURAL_WORDS = {
+    language: frozenset(words.split()) for language, words in {
+        "es": "y o", "fr": "et ou", "pt": "e ou", "de": "und oder",
+        "id": "dan atau", "tr": "ve veya", "ru": "и или",
+        "hi": "और या", "mr": "आणि किंवा", "bn": "এবং অথবা",
+        "ur": "اور یا", "ar": "و أو", "te": "మరియు లేదా",
+        "zh": "和 或", "ja": "と か",
+    }.items()
+}
+
+
 def grammar_key(word: str, language: str) -> str:
     """Comparison key only; never use this spelling in restoration mappings."""
     key = unicodedata.normalize("NFC", word)

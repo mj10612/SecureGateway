@@ -35,14 +35,21 @@ separators. A regional tag does **not** select a separate regional dictionary,
 translate text, or convert its spelling. Unsupported base tags raise an error.
 This is base-language selection, not a complete BCP 47 validation service.
 
-The 15 new adapters preserve reviewed closed-class words and mask unknown words
-conservatively. In `entities_only`, unknown content words are also masked because
+In `content_words`, the 15 new adapters preserve reviewed closed-class words and
+mask unknown words conservatively. In `entities_only`, unknown content words are also masked because
 there is no reliable local proper-name cue for every script. This deliberately
 favors masking over named-entity precision. `sensitive_terms` forces matching
 terms to be masked even if grammar/custom-preserve rules would preserve them.
 In Chinese/Japanese, explicit terms can match next to Han/kana without spaces;
 Latin word boundaries still prevent a term such as `ABC` matching `ABCdef`.
 Do not rely on a short grammar vocabulary to identify every confidential name.
+
+In `aggressive`, these adapters retain only a minimal pair of conjunctions per
+language (for example `dan/atau`, `et/ou`, `和/或` and `と/か`). Other recognized
+grammar words, including auxiliaries and pronouns, are masked as well. This is
+a stronger lexical policy, not a morphological or named-entity model.
+`custom_preserve` still preserves explicitly selected words, and
+`sensitive_terms` takes precedence over both structural and custom preservation.
 
 Token boundaries include combining marks, vowel signs, variation selectors and
 joining controls. Input is not normalized for storage or restoration. Grammar

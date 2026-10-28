@@ -16,6 +16,8 @@ def ascii_lower(value: str) -> str:
 
 
 def identifier_key(raw: str, language: str, *, quoted: bool = False) -> str:
+    if language == 'bash':
+        return raw.replace('\\\n', '')
     if language == 'python':
         return unicodedata.normalize('NFKC', raw)
     if language in {'javascript', 'typescript'}:
@@ -47,6 +49,13 @@ when it is exhausted. Allocation limits still bound total session state.
 """
     if not variant:
         return base
+    if language == 'bash':
+        # Each optional continuation retains the same shell identifier while
+        # distinguishing raw spellings for exact, single-pass restoration.
+        if variant >= 1 << (len(base) - 1):
+            raise ValueError('Equivalent identifier spelling capacity reached; use a new session.')
+        return ''.join(char + ('\\\n' if variant & (1 << i) else '')
+                       for i, char in enumerate(base))
     def transform(char):
         if language == 'python':
             return chr(ord(char) + 0xFEE0)

@@ -1,9 +1,11 @@
 """Durable request metadata. Prompts, replies and credentials never enter SQLite."""
 
 from contextlib import contextmanager
+import base64
 from datetime import datetime, timezone, timedelta
 from hashlib import sha256
 import hmac
+import json
 import os
 import sys
 from pathlib import Path
@@ -29,6 +31,7 @@ class AuditStore:
         self.read_only = read_only
         self.owner = uuid4().hex
         self._owner_file = None
+        self._export_key = os.urandom(32)
         if read_only:
             if path.exists():
                 with path.open("rb") as handle:
@@ -315,25 +318,75 @@ class AuditStore:
         return {"summary": totals, "rows": rows, "limit": limit, "offset": offset,
                 "retention": self.retention()}
 
-    def export_metadata(self, filters, max_rows=1000):
-        """Return a fixed-size, allowlisted snapshot for offline audit review."""
+    def _export_cursor(self, payload):
+        data = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+        signed = data + hmac.digest(self._export_key, data, "sha256")
+        return base64.urlsafe_b64encode(signed).decode().rstrip("=")
+
+    def _read_export_cursor(self, cursor, fingerprint, max_rows):
+        try:
+            if (not isinstance(cursor, str) or not 1 <= len(cursor) <= 1024
+                    or any(c not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_" for c in cursor)):
+                raise ValueError("Invalid export cursor.")
+            signed = base64.b64decode(cursor + "=" * (-len(cursor) % 4), altchars=b"-_", validate=True)
+            data, signature = signed[:-32], signed[-32:]
+            if not hmac.compare_digest(signature, hmac.digest(self._export_key, data, "sha256")):
+                raise ValueError("Invalid export cursor.")
+            payload = json.loads(data)
+            if (not isinstance(payload, dict) or set(payload) != {"v", "f", "u", "a", "r", "n"}
+                    or type(payload["v"]) is not int or payload["v"] != 1
+                    or payload["f"] != fingerprint or type(payload["n"]) is not int or payload["n"] != max_rows
+                    or type(payload["u"]) is not int or type(payload["a"]) is not int
+                    or not 1 <= payload["a"] <= payload["u"] <= 2**63 - 1
+                    or not isinstance(payload["r"], str)):
+                raise ValueError("Invalid export cursor.")
+            return payload
+        except (ValueError, TypeError, KeyError) as exc:
+            raise ValueError("Invalid export cursor; restart the export.") from exc
+
+    def export_metadata(self, filters, max_rows=1000, *, cursor=None):
+        """Return a bounded keyset page with a fixed insertion watermark."""
         if type(max_rows) is not int or not 1 <= max_rows <= 1000:
             raise ValueError("Invalid audit export limit.")
         where, values = self._query_conditions(filters)
+        fingerprint = sha256(json.dumps(filters, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        state = self._read_export_cursor(cursor, fingerprint, max_rows) if cursor is not None else None
         fields = ("request_id", "started_at", "agent", "provider", "subscription",
                   "endpoint", "model", "status", "outcome", "upstream_attempted",
                   "duration_ms", "input_bytes", "masked_bytes", "output_bytes", "new_aliases")
         with self.connect() as db:
             db.execute("BEGIN")
-            cursor = db.execute(
-                "SELECT " + ", ".join(fields) + " FROM requests" + where
-                + " ORDER BY id DESC LIMIT ?", values + [max_rows + 1],
+            if state is None:
+                anchor = db.execute("SELECT id, request_id FROM requests" + where
+                                    + " ORDER BY id DESC LIMIT 1", values).fetchone()
+                upper, request_id = (anchor[0], anchor[1]) if anchor else (0, "")
+                after = upper
+            else:
+                upper, after, request_id = state["u"], state["a"], state["r"]
+                anchor = db.execute("SELECT request_id FROM requests WHERE id=?", (upper,)).fetchone()
+                if anchor is None or anchor[0] != request_id:
+                    raise ValueError("Export watermark expired; restart the export.")
+            page_where = where + (" AND " if where else " WHERE ") + "id <= ?"
+            page_values = values + [upper]
+            if state is not None:
+                page_where += " AND id < ?"
+                page_values.append(after)
+            query = db.execute(
+                "SELECT id, " + ", ".join(fields) + " FROM requests" + page_where
+                + " ORDER BY id DESC LIMIT ?", page_values + [max_rows + 1],
             )
             rows: list[dict[str, object]] = []
-            while page := cursor.fetchmany(200):
+            while page := query.fetchmany(200):
                 rows.extend(dict(row) for row in page)
-        return {"rows": rows[:max_rows], "count": min(len(rows), max_rows),
-                "limit": max_rows, "truncated": len(rows) > max_rows}
+        truncated = len(rows) > max_rows
+        rows = rows[:max_rows]
+        next_cursor = self._export_cursor({"v": 1, "f": fingerprint, "u": upper,
+                                          "a": rows[-1]["id"], "r": request_id,
+                                          "n": max_rows}) if truncated else None
+        for row in rows:
+            del row["id"]
+        return {"rows": rows, "count": len(rows), "limit": max_rows,
+                "truncated": truncated, "next_cursor": next_cursor}
 
 
 def anonymous_ref(token, kind, value):

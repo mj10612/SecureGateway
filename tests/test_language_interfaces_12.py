@@ -45,7 +45,11 @@ def test_all_languages_strategies_modes_have_exact_roundtrip_and_repeated_names(
     result, session = _mask(text, language, strategy, mode)
     assert result.detected_language == language
     assert name not in result.masked_text
-    assert grammar in result.masked_text
+    # The broader lexical grammar is preserved by the ordinary modes.
+    # Aggressive now deliberately masks it except for minimal connectives;
+    # independent mode-difference fixtures live in test_remaining_aggressive.
+    if mode != MaskMode.AGGRESSIVE:
+        assert grammar in result.masked_text
     mappings = [m for m in session.forward_store.values() if m.original == name]
     assert len(mappings) == 1
     assert result.masked_text.count(mappings[0].surrogate) == 2

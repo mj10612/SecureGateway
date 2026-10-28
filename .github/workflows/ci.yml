@@ -63,7 +63,7 @@ jobs:
       - name: Compare original and masked source with independent parsers
         env:
           SECURE_GATEWAY_NATIVE_PARSERS: "1"
-        run: python -m pytest tests/test_extended_code.py -q -W error
+        run: python -m pytest tests/test_extended_code.py tests/test_contextual_remaining_issues.py -q -W error
 
   package:
     name: Distribution smoke (${{ matrix.os }})

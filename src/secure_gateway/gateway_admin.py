@@ -60,10 +60,13 @@ def handle_admin(handler):
                    "since", "until"}
         if not export:
             allowed.update({"limit", "offset"})
+        else:
+            allowed.add("cursor")
         if set(params) - allowed or any(len(v) != 1 for v in params.values()):
             raise ValueError("Invalid filters")
         filters = {key: values[0] for key, values in params.items()}
         if export:
+            cursor = filters.pop("cursor", None)
             if not filters.get("since") or not filters.get("until"):
                 raise ValueError("Export requires a date range")
             since = datetime.fromisoformat(filters["since"].replace("Z", "+00:00"))
@@ -73,7 +76,7 @@ def handle_admin(handler):
             span = until.astimezone(timezone.utc) - since.astimezone(timezone.utc)
             if not timedelta(0) <= span <= timedelta(days=31):
                 raise ValueError("Export date range exceeds 31 days")
-            result = handler.server.audit.export_metadata(filters)
+            result = handler.server.audit.export_metadata(filters, cursor=cursor)
             handler.response_headers["Content-Disposition"] = 'attachment; filename="secure-gateway-audit.json"'
             handler.send_body(200, json.dumps(result, allow_nan=False).encode())
             return True

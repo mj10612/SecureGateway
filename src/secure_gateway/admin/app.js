@@ -5,6 +5,12 @@ const subscriptions = {claude_subscription: "Claude 구독", chatgpt_subscriptio
 const outcomes = {blocked: "전송 전 차단", completed: "완료", upstream_rejected: "제공자 거절", transport_error: "연결 오류", restore_error: "복원 오류", incomplete: "진행 중 / 미완료", interrupted: "프로세스 중단"};
 let token = "", offset = 0, generation = 0, loading = false, pending = false;
 const limit = 50;
+let exportEpoch = 0, exportCursor = "", exportFilters = null, exportNumber = 0, exporting = false;
+function resetExport() {
+  exportEpoch++; exportCursor = ""; exportFilters = null; exportNumber = 0; exporting = false;
+  $("export").disabled = false; $("export-next").disabled = true;
+  $("export-status").textContent = "";
+}
 const num = (v) => Number(v || 0).toLocaleString("ko-KR");
 const time = (v) => new Date(v).toLocaleString("ko-KR", {hour12: false});
 function element(tag, text, className) {
@@ -31,7 +37,7 @@ function detail(row) {
     const filterButton = element("button", "이 자격 증명의 요청 보기", "secondary");
     filterButton.addEventListener("click", () => {
       $("filters").elements.namedItem("credential_ref").value = row.credential_ref;
-      offset = 0; $("details").close(); load();
+      offset = 0; resetExport(); $("details").close(); load();
     });
     const action = element("dd"); action.append(filterButton);
     $("detail-fields").append(element("dt", "요청 필터"), action);
@@ -99,33 +105,57 @@ async function load() {
   } finally { loading = false; if (pending) { pending = false; setTimeout(load, 0); } }
 }
 $("login-form").addEventListener("submit", async (event) => {
-  event.preventDefault(); generation++; token = $("token").value.trim();
+  event.preventDefault(); generation++; resetExport(); token = $("token").value.trim();
   if (await load()) { $("token").value = ""; $("login-error").textContent = ""; $("login").hidden = true; $("dashboard").hidden = false; }
 });
 $("logout").addEventListener("click", () => {
-  token = ""; generation++; offset = 0; $("rows").replaceChildren(); $("detail-fields").replaceChildren();
+  token = ""; generation++; resetExport(); offset = 0; $("rows").replaceChildren(); $("detail-fields").replaceChildren();
   $("details").close(); $("dashboard").hidden = true; $("login").hidden = false; $("token").focus();
 });
 $("refresh").addEventListener("click", load);
-$("export").addEventListener("click", async () => {
-  if (!token) return;
-  const params = new URLSearchParams();
+async function exportLogs(next = false) {
+  if (!token || exporting || (next && !exportCursor)) return;
+  if (!next) resetExport();
+  const current = generation, epoch = exportEpoch;
+  const isCurrent = () => current === generation && epoch === exportEpoch;
+  const params = next ? new URLSearchParams(exportFilters) : new URLSearchParams();
+  exporting = true; $("export").disabled = true; $("export-next").disabled = true;
   try {
-    for (const [key, value] of new FormData($("filters"))) {
-      if (value) params.set(key, key === "since" || key === "until" ? new Date(value).toISOString() : value);
+    if (!next) {
+      for (const [key, value] of new FormData($("filters"))) {
+        if (value) params.set(key, key === "since" || key === "until" ? new Date(value).toISOString() : value);
+      }
     }
     if (!params.has("since") || !params.has("until")) throw new Error("시작·종료 일시를 모두 선택하세요.");
+    if (next) params.set("cursor", exportCursor);
     const response = await fetch(`/admin/api/logs/export?${params}`, {headers: {"X-SecureGateway-Token": token}, cache: "no-store"});
-    if (!response.ok) throw new Error(response.status === 400 ? "기간과 필터 조건을 확인하세요." : "내보내기에 실패했습니다.");
-    const url = URL.createObjectURL(await response.blob());
-    const link = document.createElement("a"); link.href = url; link.download = "secure-gateway-audit.json";
+    if (!isCurrent()) return;
+    if (!response.ok) throw new Error(response.status === 400 ? "기간·필터 또는 페이지가 유효하지 않습니다. 내보내기를 다시 시작하세요." : "내보내기에 실패했습니다.");
+    const blob = await response.blob();
+    if (!isCurrent()) return;
+    const data = JSON.parse(await blob.text());
+    if (!isCurrent()) return;
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a"); link.href = url; link.download = `secure-gateway-audit-${exportNumber + 1}.json`;
     link.click(); setTimeout(() => URL.revokeObjectURL(url), 0);
+    exportNumber++; exportCursor = data.next_cursor || "";
+    params.delete("cursor"); exportFilters = params.toString();
+    $("export-status").textContent = `파일 ${exportNumber} · ${num(data.count)}건 · ${exportCursor ? "다음 파일 있음" : "완료"}`;
     $("banner").hidden = true;
-  } catch (error) { $("banner").textContent = error.message; $("banner").hidden = false; }
-});
+  } catch (error) {
+    if (!isCurrent()) return;
+    $("banner").textContent = error.message; $("banner").hidden = false;
+  } finally {
+    if (isCurrent()) {
+      exporting = false; $("export").disabled = false; $("export-next").disabled = !exportCursor;
+    }
+  }
+}
+$("export").addEventListener("click", () => exportLogs());
+$("export-next").addEventListener("click", () => exportLogs(true));
 $("filters").addEventListener("submit", (event) => event.preventDefault());
-$("filters").addEventListener("change", () => { offset = 0; load(); });
-$("filters").addEventListener("reset", () => { offset = 0; setTimeout(load, 0); });
+$("filters").addEventListener("change", () => { offset = 0; resetExport(); load(); });
+$("filters").addEventListener("reset", () => { offset = 0; resetExport(); setTimeout(load, 0); });
 $("previous").addEventListener("click", () => { offset = Math.max(0, offset - limit); load(); });
 $("next").addEventListener("click", () => { offset += limit; load(); });
 $("close-details").addEventListener("click", () => $("details").close());

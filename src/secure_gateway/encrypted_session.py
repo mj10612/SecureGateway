@@ -78,6 +78,7 @@ def save_session(
             "total_mask_calls": session.total_mask_calls,
             "total_unmask_calls": session.total_unmask_calls,
             "salt": session.generator.salt,
+            "mapping_limit": session.generator.max_mappings,
             "counters": {
                 t.value: n for t, n in session.generator._type_counters.items()
             },
@@ -131,6 +132,7 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
             SurrogateStrategy(payload["strategy"]),
             payload["ttl_seconds"],
             payload["salt"],
+            mapping_limit=payload.get("mapping_limit", 100_000),
         )
         session.created_at = payload["created_at"]
         session.last_accessed = payload["last_accessed"]
@@ -152,6 +154,8 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
             payload.get("counters", {}), dict
         ):
             raise ValueError("Invalid allocation state")
+        if len(payload["mappings"]) > session.generator.max_mappings:
+            raise ValueError("Mapping limit exceeded")
         for item in payload["mappings"]:
             mapping = TokenMapping.model_validate(item)
             if version == 1:

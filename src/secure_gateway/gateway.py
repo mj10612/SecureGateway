@@ -450,7 +450,7 @@ class SharedEngine(MaskingEngine):
                 if code and token_type == TokenType.LITERAL:
                     mapping_store[key].code_literal = True
                 return mapping_store[key].surrogate
-            if len(mapping_store) >= self.mapping_limit:
+            if len(mapping_store) >= min(self.mapping_limit, generator.max_mappings):
                 raise ValueError(
                     "Mapping limit reached; reset the gateway and start a new conversation."
                 )
@@ -484,11 +484,12 @@ class GatewaySession:
             raise ValueError("mask_numbers must be a boolean.")
         self.mask_numbers = mask_numbers
         self.natural_language = canonical_language(natural_language)
-        if sql_dialect not in {"standard", "postgresql", "sqlite"}:
+        if not isinstance(sql_dialect, str) or sql_dialect not in {"standard", "postgresql", "sqlite"}:
             raise ValueError("Unsupported SQL dialect.")
         self.sql_dialect = sql_dialect
         self.session = session or PrivacySession(
-            "gateway", strategy=SurrogateStrategy.UNICODE, ttl_seconds=86400
+            "gateway", strategy=SurrogateStrategy.UNICODE, ttl_seconds=86400,
+            mapping_limit=mapping_limit,
         )
         self.engine = SharedEngine(mapping_limit, **restore_limits)
         self.lock = RLock()
@@ -1532,7 +1533,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             self.upstreams[agent] = origin
         self.sessions: dict[str, GatewaySession] = {}
         self.natural_language = canonical_language(natural_language)
-        if sql_dialect not in {"standard", "postgresql", "sqlite"}:
+        if not isinstance(sql_dialect, str) or sql_dialect not in {"standard", "postgresql", "sqlite"}:
             raise ValueError("Unsupported SQL dialect.")
         self.sql_dialect = sql_dialect
         self.sessions_lock = RLock()

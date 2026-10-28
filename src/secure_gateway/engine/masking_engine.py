@@ -182,6 +182,10 @@ class MaskingEngine:
                     token_type, should_mask = natural_languages.classify_token(word, selected_language)
                     if mode == MaskMode.ENTITIES_ONLY and should_mask:
                         token_type = TokenType.ENTITY
+                    if (mode == MaskMode.AGGRESSIVE and
+                        natural_languages.grammar_key(word, selected_language) not in
+                            natural_languages.AGGRESSIVE_STRUCTURAL_WORDS[selected_language]):
+                        token_type, should_mask = TokenType.NOUN, True
                 elif not force:
                     token_type, should_mask = self.en_grammar.classify_token(word)
                     if (
@@ -277,7 +281,7 @@ class MaskingEngine:
         strategy = self._strategy(generator, strategy)
         self._check_input(code)
         language = detect_language(code, language)
-        if sql_dialect not in {"standard", "postgresql", "sqlite"}:
+        if not isinstance(sql_dialect, str) or sql_dialect not in {"standard", "postgresql", "sqlite"}:
             raise ValueError("Unsupported SQL dialect.")
         identifier_language = "sql:" + sql_dialect if language == "sql" else language
         with generator.operation():

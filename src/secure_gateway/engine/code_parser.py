@@ -298,6 +298,8 @@ def _javascript_contextual_keywords(tokens: list[tuple[str, TokenType, str]], la
             structural = previous in {"{", "}", ",", ";", "static"} and (
                 (following not in {"(", ":", "=", ";", "}", "", ","} and after == "(")
                 or (word == "static" and following == "{")
+                or (word == "static" and following == "async" and after == "*"
+                    and _javascript_generator_method(words, position + 3))
             )
         elif word == "of":
             structural = bool(parens) and words[parens[-1] - 1] == "for" and previous not in {".", "const", "let", "var"}
@@ -319,6 +321,10 @@ def _javascript_contextual_keywords(tokens: list[tuple[str, TokenType, str]], la
                         structural = words[cursor + 1:cursor + 3] == ["=", ">"]
                         break
             structural = structural or (previous in {"{", "}", ",", ";"} and after == "(" and following != "async")
+            if following == "*" and previous in {"{", "}", ",", ";", "static"}:
+                gap = "".join(token[0] for token in tokens[index + 1:significant[position + 1]])
+                structural = (not any(char in gap for char in "\r\n\u2028\u2029")
+                              and _javascript_generator_method(words, position + 2))
         else:
             structural = tokens[index][2] == "keyword"
         if word in {"get", "set", "static", "of", "from", "as", "async"}:
@@ -331,6 +337,31 @@ def _javascript_contextual_keywords(tokens: list[tuple[str, TokenType, str]], la
             module_clause = False
         elif word in {"import", "export"}:
             module_clause = True
+
+
+def _javascript_generator_method(words: list[str], start: int) -> bool:
+    """Recognize a generator method name, parameters and opening body brace."""
+    cursor = start
+    if cursor >= len(words):
+        return False
+    if words[cursor] == "[":
+        depth = 1
+        cursor += 1
+        while cursor < len(words) and depth:
+            depth += (words[cursor] == "[") - (words[cursor] == "]")
+            cursor += 1
+    else:
+        if words[cursor] == "#":
+            cursor += 1
+        cursor += 1
+    if cursor >= len(words) or words[cursor] != "(":
+        return False
+    depth = 1
+    cursor += 1
+    while cursor < len(words) and depth:
+        depth += (words[cursor] == "(") - (words[cursor] == ")")
+        cursor += 1
+    return cursor < len(words) and words[cursor] == "{"
 
 
 def literal_parts(value: str, subkind: str) -> tuple[str, str]:
