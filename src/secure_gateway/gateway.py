@@ -36,7 +36,7 @@ from secure_gateway.encrypted_session import (
     save_session,
 )
 from secure_gateway.hooks import _atomic_json
-from secure_gateway.gateway_validation import validate_request
+from secure_gateway.gateway_validation import MODEL_ID_PATTERN, validate_request
 from secure_gateway.gateway_validation import validate_cache_control
 from secure_gateway.engine.grammar_en import CLOSED_CLASS_WORDS
 from secure_gateway.gateway_source import looks_like_source
@@ -369,7 +369,7 @@ def validate_api_options(payload, dialect):
             raise ValueError("Unsupported API control enum.")
     if "model" in payload and (
         not isinstance(payload["model"], str)
-        or not re.fullmatch(r"[A-Za-z0-9_./:-]{1,200}", payload["model"])
+        or not MODEL_ID_PATTERN.fullmatch(payload["model"])
     ):
         raise ValueError("Invalid model ID.")
     if "reasoning" in payload:
@@ -1981,7 +1981,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 raise ValueError("Request must be a JSON object.")
             if meta is not None and isinstance(payload.get("model"), str):
                 model = payload["model"]
-                if re.fullmatch(r"[A-Za-z0-9_.:/-]{1,128}", model):
+                if MODEL_ID_PATTERN.fullmatch(model):
                     meta["model"] = model
             # Refresh stays CLI-owned; changing bearer tokens must not change aliases.
             session = self.server.get_session(agent)

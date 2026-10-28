@@ -118,6 +118,35 @@ def test_failures_identify_before_and_after_upstream(admin_gateway):
     assert not ledger(gateway, 3)["rows"][0]["upstream_attempted"]
 
 
+@pytest.mark.parametrize("path,field,credential", [
+    ("/claude/v1/messages", "messages", "sk-ant-oat-synthetic"),
+    ("/codex/responses", "input", "eyJ-synthetic"),
+    ("/xai/v1/responses", "input", "xai-synthetic"),
+])
+def test_audit_model_matches_accepted_request_ids(admin_gateway, path, field, credential):
+    gateway, upstream = admin_gateway
+    headers = {"X-SecureGateway-Token": gateway.token, "Authorization": "Bearer " + credential}
+    accepted = ["m", "m" * 128, "m" * 129, "m" * 200, "namespace/model_v1.2:revision-3"]
+    count = 0
+    for model in accepted:
+        payload = json.dumps({"model": model, field: []}).encode()
+        assert call(gateway, path, payload, headers)[0] == 200
+        count += 1
+        row = ledger(gateway, count)["rows"][0]
+        assert json.loads(upstream.received[-1])["model"] == model
+        assert row["model"] == model
+        assert row["upstream_attempted"] == 1
+
+    for model in ["m" * 201, "private model phrase", "model\n", None, []]:
+        payload = json.dumps({"model": model, field: []}).encode()
+        assert call(gateway, path, payload, headers)[0] == 400
+        count += 1
+        row = ledger(gateway, count)["rows"][0]
+        assert row["model"] is None
+        assert row["upstream_attempted"] == 0
+        assert len(upstream.received) == len(accepted)
+
+
 def test_dashboard_auth_origin_assets_and_filters(admin_gateway):
     gateway, _ = admin_gateway
     for path in ("/admin", "/admin/", "/admin/app.js", "/admin/style.css", "/admin/favicon.svg"):

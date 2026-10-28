@@ -4,6 +4,9 @@ import math
 import re
 
 
+MODEL_ID_PATTERN = re.compile(r"[A-Za-z0-9_./:-]{1,200}")
+
+
 def validate_cache_control(value):
     if (
         not isinstance(value, dict)
@@ -177,7 +180,7 @@ def validate_request(payload, dialect):
             _response_format(payload["response_format"])
     if "model" in payload and (
         not isinstance(payload["model"], str)
-        or not re.fullmatch(r"[A-Za-z0-9_./:-]{1,200}", payload["model"])
+        or not MODEL_ID_PATTERN.fullmatch(payload["model"])
     ):
         raise ValueError("Invalid model ID.")
     for key in {
