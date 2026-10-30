@@ -55,7 +55,7 @@ jobs:
           python-version: "3.11"
       - uses: astral-sh/setup-uv@v2
       - name: Install development grammar validators
-        run: uv pip install --system -e ".[dev,native-validation]"
+        run: uv pip install --system -e ".[dev,native-validation]" lupa==2.8
       - name: Install the NASM syntax validator
         run: |
           sudo apt-get update
@@ -63,7 +63,7 @@ jobs:
       - name: Compare original and masked source with independent parsers
         env:
           SECURE_GATEWAY_NATIVE_PARSERS: "1"
-        run: python -m pytest tests/test_extended_code.py tests/test_contextual_remaining_issues.py -q -W error
+        run: python -m pytest tests/test_extended_code.py tests/test_contextual_remaining_issues.py tests/test_ruby_constant_aliases.py tests/test_runtime_bindings_16.py -q -W error
 
   package:
     name: Distribution smoke (${{ matrix.os }})

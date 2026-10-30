@@ -15,6 +15,13 @@ def ascii_lower(value: str) -> str:
     return value.translate(str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))
 
 
+def ruby_constant_alias(base: str, raw: str, language: str) -> str:
+    """Ruby constants must retain an uppercase initial in every reference."""
+    if language == 'ruby' and raw and raw[0].isupper():
+        return base[0].upper() + base[1:]
+    return base
+
+
 def identifier_key(raw: str, language: str, *, quoted: bool = False) -> str:
     if language == 'bash':
         return raw.replace('\\\n', '')
@@ -91,7 +98,9 @@ def valid_identifier_alias(mapping) -> bool:
     supported = (set(LANGUAGE_KEYWORDS) - {'sql'}) | {'sql:standard', 'sql:postgresql', 'sql:sqlite', 'nasm:macro'}
     return bool(base and language in supported and mapping.identifier_key is not None
                 and mapping.context == 'code' and mapping.token_type.value == 'identifier'
-                and re.fullmatch(r'(?:smcp_ID|private_symbol)_\d+', base)
+                and (re.fullmatch(r'(?:smcp_ID|private_symbol)_\d+', base)
+                     or (language == 'ruby' and mapping.original[:1].isupper()
+                         and re.fullmatch(r'(?:Smcp_ID|Private_symbol)_\d+', base)))
                 and identifier_key(mapping.surrogate, language, quoted=mapping.identifier_quoted)
                 == identifier_key(base, language)
                 and identifier_key(mapping.original, language, quoted=mapping.identifier_quoted)

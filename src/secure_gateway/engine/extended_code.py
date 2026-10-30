@@ -38,6 +38,9 @@ ALIASES = {
     "asm-nasm": "nasm", "rb": "ruby", "rscript": "r",
     "gd": "gdscript", "vb": "vbnet", "vb.net": "vbnet", "bas": "vba",
 }
+# Automatic variables are populated by the runtime, so renaming breaks their
+# implicit bindings. Environment-provider names remain ordinary private data.
+_POWERSHELL_AUTOMATIC = set("_ psitem args input this error event eventargs eventsubscriber enabledexperimentalfeatures executioncontext false true null foreach home host iscoreclr islinux ismacos iswindows lastexitcode matches myinvocation nestedpromptlevel pid profile psboundparameters pscmdlet pscommandpath psculture psdebugcontext psedition pshome psscriptroot psstyle pssenderinfo psuiculture psversiontable pwd sender shellid stacktrace switch".split())
 _CASE_INSENSITIVE = {"powershell", "nasm", "vbnet", "vba"}
 _NUMBER = re.compile(r"(?:0[xX](?:[0-9a-fA-F_]+(?:\.[0-9a-fA-F_]*)?|\.[0-9a-fA-F_]+)(?:[pP][+-]?\d[\d_]*)?|0[bB][01_]+|0[oO][0-7_]+|(?:\d[\d_]*(?:\.\d[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?)[a-zA-Z0-9_]*")
 _ESCAPE = {"powershell": "`", "vbnet": "", "vba": "", "nix": "\\"}
@@ -175,10 +178,10 @@ def _variable(code: str, start: int, language: str) -> tuple[list[Token], int] |
         chunks.append(_grammar("}"))
         position = end + 1
     if language == "powershell" and (scope is None or scope[0].lower() != "env:"):
-        # These are language constants, not variables named after private data.
+        # These names have runtime-provided bindings, not private identifiers.
         # Variable scopes retain them; environment entries are ordinary names.
         for index, (raw, kind, _) in enumerate(chunks):
-            if kind == TokenType.IDENTIFIER and raw.lower() in {"true", "false", "null"}:
+            if kind == TokenType.IDENTIFIER and raw.lower() in _POWERSHELL_AUTOMATIC:
                 chunks[index] = _grammar(raw, "keyword")
     return chunks, position
 
@@ -773,6 +776,31 @@ def _xml_literal(code: str, start: int) -> tuple[list[Token], int]:
     raise ValueError("Unterminated XML literal")
 
 
+def _lua_attributes(tokens: list[Token]) -> None:
+    """Preserve attributes only in a local variable declaration's name list."""
+    significant = [i for i, (raw, _, _) in enumerate(tokens)
+                   if not raw.isspace() and not raw.startswith("--")]
+    position = 0
+    while position < len(significant):
+        if tokens[significant[position]][0] != "local":
+            position += 1
+            continue
+        position += 1
+        while position < len(significant):
+            if tokens[significant[position]][1] != TokenType.IDENTIFIER:
+                break
+            position += 1
+            if position + 2 < len(significant):
+                opening, attribute, closing = significant[position:position + 3]
+                if (tokens[opening][0] == "<" and tokens[closing][0] == ">"
+                        and tokens[attribute][0] in {"const", "close"}):
+                    tokens[attribute] = _grammar(tokens[attribute][0], "keyword")
+                    position += 3
+            if position >= len(significant) or tokens[significant[position]][0] != ",":
+                break
+            position += 1
+
+
 def tokenize(code: str, language: str) -> list[Token]:
     """Tokenize a supported language without executing any input."""
     language = ALIASES.get(language.lower(), language.lower())
@@ -1094,6 +1122,8 @@ def tokenize(code: str, language: str) -> list[Token]:
             continue
         result.append(_grammar(character))
         position += 1
+    if language == "lua":
+        _lua_attributes(result)
     _contextual_keywords(result, language)
     if language == "csharp":
         _csharp_accessor_values(result)

@@ -7,6 +7,19 @@ import sqlite3
 from urllib.parse import parse_qs, urlsplit
 
 
+def validate_export_dates(filters):
+    """Shared bounded, timezone-aware date range for HTTP and offline export."""
+    if not filters.get("since") or not filters.get("until"):
+        raise ValueError("Export requires a date range")
+    since = datetime.fromisoformat(filters["since"].replace("Z", "+00:00"))
+    until = datetime.fromisoformat(filters["until"].replace("Z", "+00:00"))
+    if since.tzinfo is None or until.tzinfo is None:
+        raise ValueError("Export dates require a timezone")
+    span = until.astimezone(timezone.utc) - since.astimezone(timezone.utc)
+    if not timedelta(0) <= span <= timedelta(days=31):
+        raise ValueError("Export date range exceeds 31 days")
+
+
 def handle_admin(handler):
     url = urlsplit(handler.path)
     if url.path != "/admin" and not url.path.startswith("/admin/"):
@@ -67,15 +80,7 @@ def handle_admin(handler):
         filters = {key: values[0] for key, values in params.items()}
         if export:
             cursor = filters.pop("cursor", None)
-            if not filters.get("since") or not filters.get("until"):
-                raise ValueError("Export requires a date range")
-            since = datetime.fromisoformat(filters["since"].replace("Z", "+00:00"))
-            until = datetime.fromisoformat(filters["until"].replace("Z", "+00:00"))
-            if since.tzinfo is None or until.tzinfo is None:
-                raise ValueError("Export dates require a timezone")
-            span = until.astimezone(timezone.utc) - since.astimezone(timezone.utc)
-            if not timedelta(0) <= span <= timedelta(days=31):
-                raise ValueError("Export date range exceeds 31 days")
+            validate_export_dates(filters)
             result = handler.server.audit.export_metadata(filters, cursor=cursor)
             handler.response_headers["Content-Disposition"] = 'attachment; filename="secure-gateway-audit.json"'
             handler.send_body(200, json.dumps(result, allow_nan=False).encode())

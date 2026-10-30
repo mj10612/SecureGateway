@@ -34,6 +34,7 @@ class LocalPrivacyClient:
         mask_numbers: bool = False,
         code_language: str = "auto",
         sql_dialect: str = "sqlite",
+        common_vocabulary: set[str] | None = None,
     ) -> UnmaskResult:
         """Mask locally before invoking the provider and restore its response.
 
@@ -45,18 +46,18 @@ class LocalPrivacyClient:
             with session.pin():
                 return self._request(session, text, provider, mode, strategy,
                                      sensitive_terms, language, normalize_particles, mask_numbers,
-                                     code_language, sql_dialect)
+                                     code_language, sql_dialect, common_vocabulary)
         finally:
             self.vault.clear_session(session.session_id)
 
     def _request(self, session, text, provider, mode, strategy,
                  sensitive_terms, language, normalize_particles, mask_numbers,
-                 code_language, sql_dialect):
+                 code_language, sql_dialect, common_vocabulary):
         masked = self.engine.mask_text(
             text, session.session_id, session.generator,
             session.forward_store, session.reverse_store, mode=mode,
             sensitive_terms=sensitive_terms, language=language, mask_numbers=mask_numbers,
-            code_language=code_language, sql_dialect=sql_dialect,
+            code_language=code_language, sql_dialect=sql_dialect, common_vocabulary=common_vocabulary,
         )
         response = provider(masked.masked_text)
         return self.engine.unmask(

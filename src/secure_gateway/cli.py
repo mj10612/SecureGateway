@@ -424,6 +424,7 @@ def restore_hook_text(agent, state_dir, session_id):
 @click.option("--code-language", default="auto")
 @click.option("--sql-dialect", type=click.Choice(["standard", "postgresql", "sqlite"]), default="sqlite")
 @click.option("--mask-numbers", is_flag=True, help="Mask numeric literals in code mode (default: preserve).")
+@click.option("--common-word", multiple=True, help="Additional ordinary vocabulary for uncommon_words mode.")
 @click.option("--sensitive-term", multiple=True)
 @click.option("--preserve", multiple=True)
 @click.option("--json-output", is_flag=True)
@@ -439,6 +440,7 @@ def mask(
     sql_dialect,
     mask_numbers,
     sensitive_term,
+    common_word,
     preserve,
     json_output,
     session_file,
@@ -462,6 +464,7 @@ def mask(
             sql_dialect=sql_dialect,
             mask_numbers=mask_numbers,
             sensitive_terms=set(sensitive_term),
+            common_vocabulary=set(common_word),
             custom_preserve=set(preserve),
         )
         session.mode = mask_mode
@@ -671,6 +674,8 @@ def gateway_run(config, mapping_limit, mask_numbers):
             audit_max_records=settings.get("audit_max_records", 100_000),
             audit_max_age_days=settings.get("audit_max_age_days"),
             natural_language=settings.get("natural_language", "auto"),
+            prose_mode=settings.get("prose_mode", "content_words"),
+            common_words=settings.get("common_words", []),
             sql_dialect=settings.get("sql_dialect", "sqlite"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
@@ -710,6 +715,89 @@ def gateway_audit_gc(config, apply_cleanup, recover_incomplete, include_legacy_i
             store.close()
     except (ValueError, OSError, sqlite3.Error) as exc:
         raise click.ClickException(str(exc)) from None
+
+
+@gateway.command("audit-export")
+@click.option("--config", type=click.Path(path_type=Path))
+@click.option("--since", required=True, help="ISO timestamp including timezone.")
+@click.option("--until", required=True, help="ISO timestamp including timezone; at most 31 days after --since.")
+@click.option("--output", required=True, type=click.Path(dir_okay=False, path_type=Path))
+@click.option("--agent")
+@click.option("--provider")
+@click.option("--subscription")
+@click.option("--account-ref")
+@click.option("--credential-ref")
+@click.option("--result", type=click.Choice(["success", "error", "incomplete", "interrupted"]))
+@click.option("--max-rows", type=click.IntRange(1, 1_000_000), default=100_000, show_default=True)
+@click.option("--max-bytes", type=click.IntRange(1, 1024**3), default=64 * 1024**2, show_default=True)
+def gateway_audit_export(config, since, until, output, agent, provider, subscription,
+                         account_ref, credential_ref, result, max_rows, max_bytes):
+    """Export metadata from a stopped or running gateway without starting it.
+
+    Writes one bounded JSON file atomically; existing files are never replaced.
+    Errors before publication leave no output file.
+    """
+    import tempfile
+    from secure_gateway.gateway_install import default_config, load_config, runtime_directory
+    from secure_gateway.gateway_audit import AuditStore
+    from secure_gateway.gateway_admin import validate_export_dates
+
+    temporary = None
+    store = None
+    try:
+        filters = {key: value for key, value in {
+            "since": since, "until": until, "agent": agent, "provider": provider,
+            "subscription": subscription, "account_ref": account_ref,
+            "credential_ref": credential_ref, "result": result,
+        }.items() if value is not None}
+        if any(len(value) > 2048 for value in filters.values()):
+            raise ValueError("Export filter too long.")
+        validate_export_dates(filters)
+        path = config or default_config()
+        load_config(path)
+        if output.exists() or output.is_symlink():
+            raise ValueError("Output already exists; choose a new file.")
+        database = runtime_directory(path.resolve()) / "logs.sqlite3"
+        if not database.is_file():
+            raise ValueError("Audit database does not exist.")
+        store = AuditStore(database, read_only=True)
+        fd, name = tempfile.mkstemp(prefix=".securegateway-export-", suffix=".tmp", dir=output.parent)
+        temporary = Path(name)
+        count = written = 0
+        with os.fdopen(fd, "wb") as handle:
+            def write(data):
+                nonlocal written
+                encoded = data.encode("utf-8")
+                if written + len(encoded) > max_bytes:
+                    raise ValueError("Export exceeds --max-bytes; narrow the date range or increase the limit.")
+                handle.write(encoded)
+                written += len(encoded)
+
+            write('{"rows":[')
+            cursor = None
+            while True:
+                page = store.export_metadata(filters, cursor=cursor)
+                for row in page["rows"]:
+                    if count == max_rows:
+                        raise ValueError("Export exceeds --max-rows; narrow the date range or increase the limit.")
+                    write(("," if count else "") + json.dumps(row, ensure_ascii=False, allow_nan=False))
+                    count += 1
+                cursor = page["next_cursor"]
+                if cursor is None:
+                    break
+            write('],"count":' + str(count) + '}\n')
+            handle.flush()
+            os.fsync(handle.fileno())
+        # Link publishes a complete file exclusively, including against races.
+        os.link(temporary, output)
+        click.echo(json.dumps({"output": str(output), "count": count, "bytes": written}))
+    except (ValueError, OverflowError, OSError, sqlite3.Error) as exc:
+        raise click.ClickException(str(exc)) from None
+    finally:
+        if store is not None:
+            store.close()
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 @gateway.command("admin")
@@ -890,6 +978,8 @@ def gateway_api_run(config, mask_numbers):
             audit_max_records=settings.get("audit_max_records", 100_000),
             audit_max_age_days=settings.get("audit_max_age_days"),
             natural_language=settings.get("natural_language", "auto"),
+            prose_mode=settings.get("prose_mode", "content_words"),
+            common_words=settings.get("common_words", []),
             sql_dialect=settings.get("sql_dialect", "sqlite"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),

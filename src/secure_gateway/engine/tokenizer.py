@@ -78,7 +78,15 @@ class TextChunk:
 class MultilingualTokenizer:
     @staticmethod
     def tokenize(text: str) -> list[TextChunk]:
-        return [
-            TextChunk(m[0], m.lastgroup or "OTHER")
-            for m in TOKEN_SPLIT_REGEX.finditer(text)
-        ]
+        chunks: list[TextChunk] = []
+        for match in TOKEN_SPLIT_REGEX.finditer(text):
+            chunk = TextChunk(match[0], match.lastgroup or "OTHER")
+            if chunks and chunks[-1].kind in {"WORD", "HANGUL_WORD"} and (
+                unicodedata.category(chunk.text[0])[0] == "M"
+                or (unicodedata.category(chunks[-1].text[-1])[0] == "M"
+                    and chunk.kind in {"WORD", "HANGUL_WORD"})
+            ):
+                chunks[-1].text += chunk.text
+            else:
+                chunks.append(chunk)
+        return chunks

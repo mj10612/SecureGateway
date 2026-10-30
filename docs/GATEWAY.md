@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 1.5.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 1.6.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -484,3 +484,45 @@ for snapshots and audit logs. Distinct configurations should use distinct host
 settings and startup registration targets. Old records belonging to nonstandard
 configuration filenames must be reviewed/restored before reinstalling; no automatic
 cross-configuration ownership transfer is performed.
+
+## Offline metadata export (1.6.0)
+
+The gateway need not be running. This command opens the existing audit database
+read-only and never creates an input database or modifies owner files:
+
+```sh
+secure-gateway gateway audit-export --config /path/to/config.json \
+  --since 2026-01-01T00:00:00Z --until 2026-01-02T00:00:00Z \
+  --output audit.json
+```
+
+Dates require timezones and an interval of at most 31 days. Filters include
+`--agent`, `--provider`, `--subscription`, `--account-ref`, `--credential-ref`,
+and `--result`. Output is `{ "rows": [...], "count": N }` with the same metadata
+allowlist as the admin export; it excludes payload, account/credential references
+and destination. Pages contain at most 1,000 rows and are walked in one process.
+Concurrent inserts after the first page are excluded; retention may remove unseen
+rows. No cross-process cursor resume is provided.
+
+Defaults are `--max-rows 100000` and `--max-bytes 67108864`; hard ceilings are
+1,000,000 rows and 1 GiB. If a limit or another error occurs before publication, no partial output is
+published. An existing output is never overwritten. Publication uses an exclusive
+hard link in the output directory; filesystems without hard-link support fail
+without publishing a partial file. Narrow the date range or use a supported local
+filesystem. Temporary files are cleaned on normal exceptions and interruption.
+
+## Selective ordinary vocabulary (1.6.0)
+
+The default prose policy remains `content_words`. To preserve a small local
+ordinary vocabulary while masking unknown content, set these gateway JSON keys
+and restart the gateway:
+
+```json
+{"prose_mode": "uncommon_words", "common_words": ["teamvocabulary"]}
+```
+
+`common_words` allows at most 10,000 nonempty strings of at most 256 characters.
+`natural_language` still chooses the local prose language. This is a masking
+control, never a provider protocol field. Source code continues to use its lexer
+and default numeric preservation. See [plain-text policy](PLAIN_TEXT.md) for
+vocabulary provenance, precedence and limitations.

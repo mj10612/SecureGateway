@@ -55,6 +55,15 @@ for language, text in [('zh', '\\u5f20\\u4f1f\\u5728\\u516c\\u53f8'),
     assert masked.masked_text != text
     assert engine.unmask(masked.masked_text, session.session_id, session.reverse_store,
                          strict=True).unmasked_text == text
+from secure_gateway.models import MaskMode
+session = PrivacySession('distribution-uncommon')
+engine = MaskingEngine()
+masked = engine.mask_text('the meeting uses zorblyx', session.session_id,
+                          session.generator, session.forward_store, session.reverse_store,
+                          mode=MaskMode.UNCOMMON_WORDS)
+assert 'meeting' in masked.masked_text and 'zorblyx' not in masked.masked_text
+assert engine.unmask(masked.masked_text, session.session_id, session.reverse_store,
+                     strict=True).unmasked_text == 'the meeting uses zorblyx'
 print(__version__)
 """
     for distribution in distributions:

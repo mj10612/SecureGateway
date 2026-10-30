@@ -55,12 +55,14 @@ def mask_text(
     code_language: str = "auto",
     mask_numbers: bool = False,
     sql_dialect: str = "sqlite",
+    common_vocabulary: list[str] | None = None,
 ) -> str:
     """Mask text. Tool arguments are provider-visible; pre-mask confidential data locally.
 
-    mode: content_words, entities_only, code_aware, aggressive.
+    mode: content_words, entities_only, code_aware, aggressive, uncommon_words.
     strategy: bracket, unicode, pseudoword, hash. language: auto or a supported natural-language tag.
     sensitive_terms forces explicit words/phrases; custom_preserve opts terms out of masking.
+    common_vocabulary extends the local ordinary-word list in uncommon_words mode.
     code_language selects a code lexer when mode=code_aware.
     mask_numbers=True masks code numbers; the default preserves them.
     """
@@ -79,6 +81,7 @@ def mask_text(
             language=language,
             sensitive_terms=set(sensitive_terms or []),
             custom_preserve=set(custom_preserve or []),
+            common_vocabulary=set(common_vocabulary or []),
             code_language=code_language,
             mask_numbers=mask_numbers,
             sql_dialect=sql_dialect,

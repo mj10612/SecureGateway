@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from contextlib import nullcontext
 import re
+import unicodedata
 
 from secure_gateway.engine.code_parser import CodeParser, detect_language, literal_parts
-from secure_gateway.engine.code_identifiers import ascii_lower, equivalent_alias, identifier_key
+from secure_gateway.engine.code_identifiers import ascii_lower, equivalent_alias, identifier_key, ruby_constant_alias
 from secure_gateway.engine.grammar_en import EnglishGrammarEngine
 from secure_gateway.engine.grammar_ko import (
     KOREAN_COPULA_LIST,
@@ -18,7 +19,7 @@ from secure_gateway.engine.grammar_ko import (
 )
 from secure_gateway.engine.strategies import StrategyGenerator, mapping_key
 from secure_gateway.engine.tokenizer import MultilingualTokenizer, TextChunk
-from secure_gateway.engine import natural_languages
+from secure_gateway.engine import natural_languages, common_words
 from secure_gateway.models import (
     MaskMode,
     MaskResult,
@@ -104,11 +105,17 @@ class MaskingEngine:
         code_language: str = "auto",
         mask_numbers: bool = False,
         sql_dialect: str = "sqlite",
+        common_vocabulary: set[str] | None = None,
     ) -> MaskResult:
         strategy = self._strategy(generator, strategy)
         self._check_input(text)
         language = natural_languages.canonical_language(language)
         selected_language = natural_languages.detect_natural_language(text) if language == "auto" else language
+        if common_vocabulary is not None and (not isinstance(common_vocabulary, (set, frozenset))
+                or len(common_vocabulary) > 10000
+                or any(not isinstance(word, str) or not word.strip() or len(word) > 256 for word in common_vocabulary)):
+            raise ValueError("Common vocabulary must be a set of at most 10000 nonempty words of at most 256 characters.")
+        common_vocabulary = {common_words.vocabulary_key(word) for word in (common_vocabulary or ())}
         with generator.operation():
             if mode == MaskMode.CODE_AWARE:
                 return self.mask_code(
@@ -128,11 +135,14 @@ class MaskingEngine:
             # it as an opaque entity so strict restoration never confuses it
             # with an earlier allocation (or rejects a literal unknown alias).
             literal_aliases = {match[0] for match in StrategyGenerator.get_pattern(strategy).finditer(text)}
-            chunks = self._chunks(text, terms | literal_aliases, selected_language)
+            chunks = self._chunks(text, terms, selected_language, literal_aliases)
             if hasattr(mapping_store, "originals_in"):
                 known = terms | mapping_store.originals_in(text)
             else:
                 known = terms | {m.original for m in mapping_store.values()}
+            if mode == MaskMode.UNCOMMON_WORDS:
+                known.update(common_words.COMMON_WORDS.get(selected_language, ()))
+                known.update(common_vocabulary or ())
             output: list[str] = []
             total = masked = 0
             for chunk in chunks:
@@ -187,9 +197,9 @@ class MaskingEngine:
                             natural_languages.AGGRESSIVE_STRUCTURAL_WORDS[selected_language]):
                         token_type, should_mask = TokenType.NOUN, True
                 elif not force:
-                    token_type, should_mask = self.en_grammar.classify_token(word)
+                    token_type, should_mask = self.en_grammar.classify_token(unicodedata.normalize("NFC", word))
                     if (
-                        any(ord(c) > 127 and c.isalpha() for c in word)
+                        any(ord(c) > 127 and (c.isalpha() or unicodedata.category(c)[0] == "M") for c in word)
                         and not word.isascii()
                     ):
                         if (
@@ -209,6 +219,15 @@ class MaskingEngine:
                         should_mask = True
                     if should_mask and word.endswith(("'s", "’s")):
                         stem, suffix = word[:-2], word[-2:]
+                if mode == MaskMode.UNCOMMON_WORDS and not force and not chunk.is_number:
+                    # Proper-name cues and existing forced entities win over
+                    # ordinary vocabulary; unsupported languages mask content.
+                    if token_type != TokenType.GRAMMAR and any(char.isupper() for char in word):
+                        token_type, should_mask = TokenType.ENTITY, True
+                    if token_type != TokenType.ENTITY and common_words.is_common(
+                        stem, selected_language, common_vocabulary
+                    ):
+                        should_mask = False
                 if word.casefold() in preserve and not force:
                     should_mask = False
                 if should_mask:
@@ -232,8 +251,44 @@ class MaskingEngine:
                 selected_language,
             )
 
-    def _chunks(self, text: str, terms: set[str], language: str = "en") -> list[TextChunk]:
+    def _chunks(self, text: str, terms: set[str], language: str = "en",
+                literal_aliases: set[str] | None = None) -> list[TextChunk]:
         tokenize = self.tokenizer.tokenize if language in {"en", "ko"} else lambda value: natural_languages.tokenize(value, language)
+        # Literal aliases have no word boundary. Preserve opaque lexical spans
+        # containing one (URL/email/code), rather than exposing their fragments.
+        if literal_aliases:
+            pattern = re.compile("|".join(re.escape(alias) for alias in
+                                          sorted(literal_aliases, key=len, reverse=True)))
+            opaque: list[tuple[int, int]] = []
+            offset = 0
+            for chunk in self._chunks(text, terms, language):
+                end = offset + len(chunk.text)
+                if chunk.kind in {"URL", "EMAIL", "CODE_BLOCK", "SECRET", "UUID", "IP", "PHONE", "ENTITY"}:
+                    opaque.append((offset, end))
+                offset = end
+            spans: list[tuple[int, int]] = []
+            opaque_index = 0
+            for match in pattern.finditer(text):
+                start, end = match.span()
+                while opaque_index < len(opaque) and opaque[opaque_index][1] <= start:
+                    opaque_index += 1
+                index = opaque_index
+                while index < len(opaque) and opaque[index][0] < end:
+                    left, right = opaque[index]
+                    start, end = min(start, left), max(end, right)
+                    index += 1
+                if spans and start <= spans[-1][1]:
+                    spans[-1] = (spans[-1][0], max(end, spans[-1][1]))
+                else:
+                    spans.append((start, end))
+            alias_chunks: list[TextChunk] = []
+            cursor = 0
+            for start, end in spans:
+                alias_chunks.extend(self._chunks(text[cursor:start], terms, language))
+                alias_chunks.append(TextChunk(text[start:end], "ENTITY"))
+                cursor = end
+            alias_chunks.extend(self._chunks(text[cursor:], terms, language))
+            return alias_chunks
         if not terms:
             return tokenize(text)
         if "" in terms:
@@ -375,10 +430,11 @@ class MaskingEngine:
         if cache is None:
             cache = {}
             generator._identifier_groups = cache
-        variants = cache.setdefault(group, [])
+        variants = cache.get(group, [])
         if not variants:
             seed = mapping_store.get(mapping_key(semantic, TokenType.IDENTIFIER, code=True))
             if (seed is not None and seed.identifier_base and seed.identifier_language != language
+                    and ruby_constant_alias(seed.surrogate, raw, language) == seed.surrogate
                     and identifier_key(seed.surrogate, language, quoted=quoted)
                     == identifier_key(seed.identifier_base, language, quoted=quoted)):
                 variants.append(seed)
@@ -410,11 +466,19 @@ class MaskingEngine:
             lookup_key = f"binding:{language}:{semantic}:{raw}"
         elif previous is not None and variants and identifier_key(previous.surrogate, language) != identifier_key(base, language):
             lookup_key = f"binding:{language}:{semantic}:{raw}"
+        if (language == "ruby" and raw[:1].isupper() and previous is not None
+                and previous.identifier_language != "ruby"):
+            lookup_key = f"binding:{language}:{semantic}:{raw}"
         allocated = self._get_or_create_surrogate(
             raw, TokenType.IDENTIFIER, generator, mapping_store, reverse_store,
             code=True, lookup_key=lookup_key,
         )
         mapping = reverse_store[allocated]
+        if not variants and language == "ruby" and raw[:1].isupper():
+            base = candidate = ruby_constant_alias(allocated, raw, language)
+            while candidate == raw or (candidate != allocated and candidate in generator.used_surrogates):
+                fresh = generator.generate(TokenType.IDENTIFIER, raw, code=True)
+                base = candidate = ruby_constant_alias(fresh, raw, language)
         if not variants and language.startswith("sql:") and language != "sql:sqlite":
             base = allocated
             candidate = ascii_lower(base) if quoted_sql else allocated
@@ -426,6 +490,7 @@ class MaskingEngine:
         if mapping.identifier_language and mapping.identifier_language != language:
             if mapping not in variants:
                 variants.append(mapping)
+            cache[group] = variants
             return allocated
         if candidate is not None and allocated != candidate:
             del reverse_store[allocated]
@@ -437,6 +502,7 @@ class MaskingEngine:
         mapping.identifier_key = semantic
         mapping.identifier_quoted = quoted
         variants.append(mapping)
+        cache[group] = variants
         return mapping.surrogate
 
     def _preserve_number(self, raw, generator, mapping_store, reverse_store):

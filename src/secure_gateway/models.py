@@ -12,6 +12,7 @@ class MaskMode(str, Enum):
 
     CONTENT_WORDS = "content_words"  # Preserves grammar & syntax; masks nouns, content terms, numbers, entities
     ENTITIES_ONLY = "entities_only"  # Masks only recognized entities (PII, names, emails, IPs, numbers)
+    UNCOMMON_WORDS = "uncommon_words"  # Preserves reviewed common vocabulary; masks unknown content
     CODE_AWARE = "code_aware"  # Preserves language syntax/keywords; masks identifiers, literals, secrets
     AGGRESSIVE = (
         "aggressive"  # Obfuscates all tokens except essential structural function words

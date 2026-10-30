@@ -79,15 +79,22 @@ function render(data) {
   $("banner").hidden = data.audit_write_errors === 0;
   $("banner").textContent = `로그 저장 오류 ${num(data.audit_write_errors)}건이 발생했습니다. 일부 요청은 미완료로 남거나 전송 전에 차단됐을 수 있습니다.`;
 }
+function filterDate(value) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime()) || date.getUTCFullYear() < 1 || date.getUTCFullYear() > 9999) {
+    throw new Error("Dates must be valid and within years 0001 through 9999.");
+  }
+  return date.toISOString();
+}
 async function load() {
   if (!token) return false;
   if (loading) { pending = true; return false; }
   loading = true;
   const current = generation, params = new URLSearchParams({limit, offset});
-  for (const [key, value] of new FormData($("filters"))) {
-    if (value) params.set(key, key === "since" || key === "until" ? new Date(value).toISOString() : value);
-  }
   try {
+    for (const [key, value] of new FormData($("filters"))) {
+      if (value) params.set(key, key === "since" || key === "until" ? filterDate(value) : value);
+    }
     const response = await fetch(`/admin/api/logs?${params}`, {headers: {"X-SecureGateway-Token": token}, cache: "no-store"});
     if (current !== generation) return false;
     if (!response.ok) throw new Error(response.status === 401 ? "인증 토큰을 확인하세요." : response.status === 400 ? "필터 조건을 확인하세요." : "게이트웨이 또는 로그 저장소에 연결할 수 없습니다.");
@@ -123,7 +130,7 @@ async function exportLogs(next = false) {
   try {
     if (!next) {
       for (const [key, value] of new FormData($("filters"))) {
-        if (value) params.set(key, key === "since" || key === "until" ? new Date(value).toISOString() : value);
+        if (value) params.set(key, key === "since" || key === "until" ? filterDate(value) : value);
       }
     }
     if (!params.has("since") || !params.has("until")) throw new Error("시작·종료 일시를 모두 선택하세요.");

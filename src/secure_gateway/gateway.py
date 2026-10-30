@@ -478,11 +478,26 @@ class SharedEngine(MaskingEngine):
             return surrogate
 
 
+def _prose_policy(prose_mode, common_words):
+    mode = MaskMode(prose_mode)
+    if mode == MaskMode.CODE_AWARE:
+        raise ValueError("prose_mode must be a text masking mode.")
+    if common_words is None:
+        common_words = []
+    if (not isinstance(common_words, (list, tuple, set, frozenset))
+            or len(common_words) > 10000
+            or any(not isinstance(word, str) or not word.strip() or len(word) > 256
+                   for word in common_words)):
+        raise ValueError("common_words must contain at most 10000 nonempty words of at most 256 characters.")
+    return mode, frozenset(common_words)
+
+
 class GatewaySession:
-    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, natural_language="auto", sql_dialect="sqlite", **restore_limits):
+    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, natural_language="auto", sql_dialect="sqlite", prose_mode="content_words", common_words=None, **restore_limits):
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
         self.mask_numbers = mask_numbers
+        self.prose_mode, self.common_words = _prose_policy(prose_mode, common_words)
         self.natural_language = canonical_language(natural_language)
         if not isinstance(sql_dialect, str) or sql_dialect not in {"standard", "postgresql", "sqlite"}:
             raise ValueError("Unsupported SQL dialect.")
@@ -523,7 +538,8 @@ class GatewaySession:
             s.generator,
             s.forward_store,
             s.reverse_store,
-            mode=MaskMode.CONTENT_WORDS,
+            mode=self.prose_mode,
+            common_vocabulary=self.common_words,
             sensitive_terms=terms,
             # Code fragments keep the "no identifier preservation" rule.
             custom_preserve=TASK_WORDS if preserve_task_words else None,
@@ -1492,6 +1508,8 @@ class PrivacyGateway(ThreadingHTTPServer):
         audit_max_age_days=None,
         natural_language="auto",
         sql_dialect="sqlite",
+        prose_mode="content_words",
+        common_words=None,
     ):
         self.restore_limits = {"max_restore_input_bytes": max_restore_input_bytes,
                                "max_restore_output_bytes": max_restore_output_bytes}
@@ -1532,6 +1550,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                 raise ValueError("API upstream must be a fixed HTTPS origin.")
             self.upstreams[agent] = origin
         self.sessions: dict[str, GatewaySession] = {}
+        self.prose_mode, self.common_words = _prose_policy(prose_mode, common_words)
         self.natural_language = canonical_language(natural_language)
         if not isinstance(sql_dialect, str) or sql_dialect not in {"standard", "postgresql", "sqlite"}:
             raise ValueError("Unsupported SQL dialect.")
@@ -1628,6 +1647,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                     saved = None
             session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers,
                                      natural_language=self.natural_language, sql_dialect=self.sql_dialect,
+                                     prose_mode=self.prose_mode, common_words=self.common_words,
                                      **self.restore_limits)
             # Reasoning provenance is only meaningful while the matching alias
             # table is alive. Expired/missing snapshots start fresh, so stale

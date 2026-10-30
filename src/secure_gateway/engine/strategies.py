@@ -86,7 +86,7 @@ class StrategyGenerator:
         """Reserve persisted values without regenerating them."""
         self.used_surrogates.update(surrogates)
         for value in surrogates:
-            match = re.fullmatch(r"(?:smcp_(?:ID|NUM|LIT)|private_symbol)_(\d+)", value)
+            match = re.fullmatch(r"(?:[sS]mcp_(?:ID|NUM|LIT)|[pP]rivate_symbol)_(\d+)", value)
             if match:
                 self._code_index = max(self._code_index, int(match[1]))
 
