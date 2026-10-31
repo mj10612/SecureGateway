@@ -3,7 +3,7 @@ const $ = (id) => document.getElementById(id);
 const providers = {claude: "Anthropic", codex: "OpenAI", xai: "xAI"};
 const subscriptions = {claude_subscription: "Claude 구독", chatgpt_subscription: "ChatGPT 구독", api_key: "xAI API 키"};
 const outcomes = {blocked: "전송 전 차단", completed: "완료", upstream_rejected: "제공자 거절", transport_error: "연결 오류", restore_error: "복원 오류", incomplete: "진행 중 / 미완료", interrupted: "프로세스 중단"};
-let token = "", offset = 0, generation = 0, loading = false, pending = false;
+let token = "", offset = 0, generation = 0, loading = false, pending = false, auditWriteErrors = 0;
 const limit = 50;
 let exportEpoch = 0, exportCursor = "", exportFilters = null, exportNumber = 0, exporting = false;
 function resetExport() {
@@ -43,6 +43,10 @@ function detail(row) {
     $("detail-fields").append(element("dt", "요청 필터"), action);
   }
 }
+function restoreAuditWarning() {
+  $("banner").hidden = auditWriteErrors === 0;
+  if (auditWriteErrors) $("banner").textContent = `로그 저장 오류 ${num(auditWriteErrors)}건이 발생했습니다. 일부 요청은 미완료로 남거나 전송 전에 차단됐을 수 있습니다.`;
+}
 function render(data) {
   const policy = data.retention || {max_records: 100000, max_age_days: null};
   $("stat-total").textContent = num(data.summary.total);
@@ -76,8 +80,8 @@ function render(data) {
   $("next").disabled = data.offset + limit >= data.summary.total;
   $("updated").textContent = `마지막 갱신 ${new Date().toLocaleTimeString("ko-KR", {hour12: false})} · 최근 ${num(policy.max_records)}건`;
   $("updated").textContent += policy.max_age_days == null ? " | age: unlimited" : ` | age: ${num(policy.max_age_days)} days`;
-  $("banner").hidden = data.audit_write_errors === 0;
-  $("banner").textContent = `로그 저장 오류 ${num(data.audit_write_errors)}건이 발생했습니다. 일부 요청은 미완료로 남거나 전송 전에 차단됐을 수 있습니다.`;
+  auditWriteErrors = Number(data.audit_write_errors || 0);
+  restoreAuditWarning();
 }
 function filterDate(value) {
   const date = new Date(value);
@@ -148,7 +152,7 @@ async function exportLogs(next = false) {
     exportNumber++; exportCursor = data.next_cursor || "";
     params.delete("cursor"); exportFilters = params.toString();
     $("export-status").textContent = `파일 ${exportNumber} · ${num(data.count)}건 · ${exportCursor ? "다음 파일 있음" : "완료"}`;
-    $("banner").hidden = true;
+    restoreAuditWarning();
   } catch (error) {
     if (!isCurrent()) return;
     $("banner").textContent = error.message; $("banner").hidden = false;

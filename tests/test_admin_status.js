@@ -43,3 +43,8 @@ assert.deepEqual(results.map((span) => [span.textContent, span.className]), [
   ["101 기타", "status other"],
 ]);
 assert.equal(elements.get("stat-success").textContent, "1");
+
+context.data.audit_write_errors = 2;
+vm.runInContext("render(data); bannerBefore = document.getElementById('banner').textContent; restoreAuditWarning()", context);
+assert.equal(elements.get("banner").hidden, false);
+assert.match(context.bannerBefore, /로그 저장 오류 2건/);
