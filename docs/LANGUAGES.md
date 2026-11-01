@@ -198,3 +198,13 @@ grammar packages; missing grammars then fail the gate. Check the actual run
 report before claiming a grammar has passed. VB grammar compatibility checks
 are not a substitute for native Office VBA compilation. Syntax checks establish
 only the tested fixture's syntax, not source behavior or runtime equivalence.
+
+### Encoded text inside interpolation (1.6.2)
+
+Unicode, hexadecimal and octal character escapes carry literal data and are
+protected locally. When a quoted interpolated string contains these escapes,
+the lexer masks its complete body as one opaque literal, including embedded
+expressions. This conservative representation retains the original source for
+exact restoration; it does not preserve interpolation behavior for execution.
+Here-document payloads receive the same protection. Ordinary structural escapes
+such as `\n` and `\t` keep their existing handling.

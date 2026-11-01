@@ -58,8 +58,16 @@ def _literal(raw: str, prefix: int = 0, suffix: int = 0) -> Token:
     return raw, TokenType.LITERAL, f"literal:{prefix}:{suffix}"
 
 
+# Character escapes carry source data, even when their spelling resembles syntax.
+_ENCODED_CHARACTER = re.compile(r"\\(?:u\{[0-9a-fA-F]+\}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|x[0-9a-fA-F]{1,4}|[0-7]{1,3})|`u\{[0-9a-fA-F]+\}")
+
+
 def _payload(raw: str) -> list[Token]:
     """Keep punctuation boundaries between content aliases and expansions."""
+    if _ENCODED_CHARACTER.search(raw):
+        # Keep the complete span opaque: separate aliases for adjacent escapes
+        # would merge into a single alias and break exact restoration.
+        return [_literal(raw)]
     chunks: list[Token] = []
     position = 0
     while position < len(raw):
@@ -253,7 +261,9 @@ def _quoted(code: str, start: int, delimiter: str, language: str, interpolate: b
                 position += len(delimiter) * 2
                 continue
             end = position + len(closing)
-            if not chunks:
+            if not chunks or _ENCODED_CHARACTER.search(code[start:end]):
+                # An opaque body also avoids joining a new literal alias to a
+                # preceding shorthand interpolation such as $name\u0041.
                 return [_literal(code[start:end], prefix_length + len(delimiter), len(closing))], end
             if position > content_start:
                 chunks.extend(_payload(code[content_start:position]))
