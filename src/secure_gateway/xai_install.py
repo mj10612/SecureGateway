@@ -10,6 +10,7 @@ from secure_gateway.encrypted_session import session_file_lock
 from secure_gateway.gateway import validate_api_options
 from secure_gateway.gateway_install import (
     apply_settings,
+    _ensure_state_directory,
     installation_path,
     load_config,
     load_installation_manifest,
@@ -38,8 +39,7 @@ def install_api(path: Path, model: str, port=38118, grok_dir=None):
     manifest = installation_path(path)
     if manifest.exists():
         load_installation_manifest(manifest)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.parent.chmod(0o700)
+    _ensure_state_directory(path)
     with session_file_lock(path):
         _recover_install(path)
         config = (

@@ -110,6 +110,14 @@ def default_config() -> Path:
     return Path.home() / ".secure-gateway" / "gateway" / "config.json"
 
 
+def _ensure_state_directory(path: Path) -> None:
+    """Create a private state directory without changing an existing directory."""
+    existed = path.parent.exists()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not existed:
+        path.parent.chmod(0o700)
+
+
 def atomic_bytes(path: Path, data: bytes):
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(prefix=".secure-gateway-", dir=path.parent)
@@ -343,7 +351,7 @@ def install_gateway(
     manifest_path = installation_path(path)
     if manifest_path.exists():
         load_installation_manifest(manifest_path)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    _ensure_state_directory(path)
     with session_file_lock(path):
         _recover_install(path)
         return _install_gateway(path, agent, port, claude_dir, codex_dir, startup_path)
@@ -406,8 +414,6 @@ def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_pat
     previous_manifest = (
         load_installation_manifest(manifest_path) if manifest_path.exists() else None
     )
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.parent.chmod(0o700)
     config = (
         load_config(path)
         if path.exists()
