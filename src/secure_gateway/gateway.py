@@ -1328,7 +1328,12 @@ class GatewaySession:
             ).encode()
         events: list[tuple[list[str], dict[str, Any] | None]] = []
         stream = body.decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
-        for frame in stream.split("\n\n"):
+        frames = stream.split("\n\n")
+        if frames and frames[-1]:
+            # SSE dispatches an event only after a blank line.  An HTTP body may
+            # end cleanly while its final SSE frame is still incomplete.
+            frames.pop()
+        for frame in frames:
             # SSE line endings do not include Unicode separators inside JSON strings.
             lines = frame.replace("\r\n", "\n").split("\n")
             data = "\n".join(

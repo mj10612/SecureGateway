@@ -501,6 +501,43 @@ def test_sse_media_type_is_case_insensitive_with_valid_prefixes(content_type, pr
     assert b'"response.completed"' in restored
 
 
+@pytest.mark.parametrize("line_ending", [b"\n", b"\r\n", b"\r"])
+@pytest.mark.parametrize("final_line_ending", [False, True])
+def test_sse_discards_unterminated_final_frame(line_ending, final_line_ending):
+    completed = b'data: {"type":"response.completed","response":{"output":[]}}'
+    body = completed + (line_ending if final_line_ending else b"")
+    assert GatewaySession().response(body, "text/event-stream") == b""
+
+
+@pytest.mark.parametrize("tail", [
+    b'data: {"type":"response.completed"}',
+    b'data: {"type":"response.completed"',
+])
+def test_sse_keeps_complete_frames_before_unterminated_tail(tail):
+    complete = b'data: {"type":"response.output_text.delta","delta":"safe"}\n\n'
+    restored = GatewaySession().response(complete + tail, "text/event-stream")
+    events = parse_sse(restored)
+    assert events == [{"type": "response.output_text.delta", "delta": "safe"}]
+
+
+def test_sse_does_not_restore_alias_from_unterminated_tail():
+    session = GatewaySession()
+    alias = session.mask("privateValue", code=True)
+    first = json.dumps({
+        "type": "response.output_text.delta",
+        "item_id": "m1",
+        "delta": alias[:4],
+    }).encode()
+    tail = json.dumps({
+        "type": "response.output_text.delta",
+        "item_id": "m1",
+        "delta": alias[4:],
+    }).encode()
+    restored = session.response(b"data: " + first + b"\n\ndata: " + tail, "text/event-stream")
+    assert b"privateValue" not in restored
+    assert parse_sse(restored)[0]["delta"] == alias[:4]
+
+
 def test_non_sse_media_type_does_not_select_stream_parser():
     body = b'data: {"type":"response.completed"}\n\n'
     with pytest.raises(ValueError):
