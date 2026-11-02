@@ -47,6 +47,36 @@ from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, Tok
 from secure_gateway.session import PrivacySession
 
 LIMIT = 16 * 1024 * 1024
+
+
+def _reject_json_constant(value: str) -> None:
+    raise ValueError(f"Non-finite JSON number: {value}")
+
+
+def _validate_finite_json_numbers(value: Any) -> Any:
+    if isinstance(value, float) and not math.isfinite(value):
+        raise ValueError("JSON numbers must be finite.")
+    if isinstance(value, dict):
+        for item in value.values():
+            _validate_finite_json_numbers(item)
+    elif isinstance(value, list):
+        for item in value:
+            _validate_finite_json_numbers(item)
+    return value
+
+
+def strict_json_loads(data: str | bytes) -> Any:
+    """Load interoperable JSON, rejecting constants and float overflow."""
+    return _validate_finite_json_numbers(
+        json.loads(data, parse_constant=_reject_json_constant)
+    )
+
+
+def strict_json_dumps(value: Any, **kwargs: Any) -> str:
+    """Serialize JSON without emitting JavaScript-only numeric constants."""
+    return json.dumps(value, allow_nan=False, **kwargs)
+
+
 JSON_SCHEMA_DIALECTS = {
     "https://json-schema.org/draft/2020-12/schema",
     "https://json-schema.org/draft/2019-09/schema",
@@ -1320,10 +1350,10 @@ class GatewaySession:
     def _response(self, body: bytes, content_type: str, *, dialect=None) -> bytes:
         media_type = content_type.split(";", 1)[0].strip().lower()
         if media_type != "text/event-stream":
-            payload = json.loads(body)
+            payload = strict_json_loads(body)
             if not isinstance(payload, dict):
                 raise ValueError("Upstream response must be a JSON object.")
-            return json.dumps(
+            return strict_json_dumps(
                 self.walk(payload, restore=True), ensure_ascii=False
             ).encode()
         events: list[tuple[list[str], dict[str, Any] | None]] = []
@@ -1342,7 +1372,7 @@ class GatewaySession:
             if not data or data == "[DONE]":
                 events.append((lines, None))
             else:
-                event = json.loads(data)
+                event = strict_json_loads(data)
                 if not isinstance(event, dict):
                     raise ValueError("SSE events must be JSON objects.")
                 events.append((lines, event))
@@ -1486,7 +1516,7 @@ class GatewaySession:
                 event = self.walk(event, restore=True)
             headers = [line for line in lines if not line.startswith("data:")]
             output.append(
-                "\n".join(headers + ["data: " + json.dumps(event, ensure_ascii=False)])
+                "\n".join(headers + ["data: " + strict_json_dumps(event, ensure_ascii=False)])
                 + "\n\n"
             )
         return "".join(output).encode()
@@ -2002,7 +2032,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 raise ValueError("Incomplete request body.")
             if meta is not None:
                 meta["input_bytes"] = len(raw)
-            payload = json.loads(raw)
+            payload = strict_json_loads(raw)
             if not isinstance(payload, dict):
                 raise ValueError("Request must be a JSON object.")
             if meta is not None and isinstance(payload.get("model"), str):
@@ -2049,7 +2079,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 ):
                     if self.headers.get(key):
                         headers[key] = self.headers[key]
-                masked_data = json.dumps(masked, ensure_ascii=False).encode()
+                masked_data = strict_json_dumps(masked, ensure_ascii=False).encode()
                 if meta is not None:
                     meta["masked_bytes"] = len(masked_data)
                 request = urllib.request.Request(
