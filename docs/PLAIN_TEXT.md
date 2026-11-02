@@ -80,3 +80,12 @@ All three restored the original text exactly. In this sentence the new mode
 retains the ordinary words and protects the two unusual words; punctuation,
 spacing and word order are retained. Times include tracing overhead, are a
 single local observation and are not throughput or semantic-quality guarantees.
+
+### Sensitive terms inside protected spans (1.6.3)
+
+Adding `sensitive_terms` preserves the complete protection of an existing URL,
+email, code block, secret, UUID, IP address or phone token. A term that overlaps
+one of these spans forces the complete span to be masked, rather than splitting
+it and exposing the remaining text. Overlapping forced spans are merged.
+Ordinary word boundaries and Korean particle handling remain in effect outside
+these opaque spans. All surrogate strategies retain exact source restoration.

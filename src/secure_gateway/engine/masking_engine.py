@@ -308,14 +308,42 @@ class MaskingEngine:
             + "|".join(re.escape(s) for s in sorted(suffixes, key=len, reverse=True))
             + rf")?(?!{boundary})"
         )
+        # Resolve forced spans against the original lexical boundaries before
+        # slicing: a term inside a URL/secret/code span must not expose its tail.
+        forced_opaque: list[tuple[int, int]] = []
+        offset = 0
+        for chunk in tokenize(text):
+            end = offset + len(chunk.text)
+            if chunk.kind in {"URL", "EMAIL", "CODE_BLOCK", "SECRET", "UUID", "IP", "PHONE", "ENTITY"}:
+                forced_opaque.append((offset, end))
+            offset = end
+        forced_spans: list[tuple[int, int, int]] = []
+        opaque_index = 0
+        for match in pattern.finditer(text):
+            start, end = match.span()
+            entity_end = match.end("entity")
+            while opaque_index < len(forced_opaque) and forced_opaque[opaque_index][1] <= start:
+                opaque_index += 1
+            index = opaque_index
+            while index < len(forced_opaque) and forced_opaque[index][0] < end:
+                left, right = forced_opaque[index]
+                start, end = min(start, left), max(end, right)
+                entity_end = end
+                index += 1
+            if forced_spans and start < forced_spans[-1][1]:
+                left, right, _ = forced_spans[-1]
+                end = max(right, end)
+                forced_spans[-1] = (left, end, end)
+            else:
+                forced_spans.append((start, end, entity_end))
         output: list[TextChunk] = []
         cursor = 0
-        for match in pattern.finditer(text):
-            output.extend(tokenize(text[cursor : match.start()]))
-            output.append(TextChunk(match["entity"], "ENTITY"))
-            if match["particle"]:
-                output.append(TextChunk(match["particle"], "PARTICLE"))
-            cursor = match.end()
+        for start, end, entity_end in forced_spans:
+            output.extend(tokenize(text[cursor:start]))
+            output.append(TextChunk(text[start:entity_end], "ENTITY"))
+            if entity_end < end:
+                output.append(TextChunk(text[entity_end:end], "PARTICLE"))
+            cursor = end
         output.extend(tokenize(text[cursor:]))
         return output
 
