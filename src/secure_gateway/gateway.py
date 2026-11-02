@@ -1645,7 +1645,9 @@ class PrivacyGateway(ThreadingHTTPServer):
                         "ttl_seconds": None, "expires_at": None, "expired": False}
                 if session is not None:
                     with session.lock:
-                        item.update(mapping_count=len(session.session.forward_store),
+                        item.update(mapping_limit=min(session.engine.mapping_limit,
+                                                      session.session.generator.max_mappings),
+                                    mapping_count=len(session.session.forward_store),
                                     ttl_seconds=session.session.ttl_seconds,
                                     expires_at=session.session.last_accessed + session.session.ttl_seconds,
                                     expired=session.session.is_expired())

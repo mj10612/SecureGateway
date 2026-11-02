@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 1.6.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 1.6.5 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -526,3 +526,8 @@ and restart the gateway:
 control, never a provider protocol field. Source code continues to use its lexer
 and default numeric preservation. See [plain-text policy](PLAIN_TEXT.md) for
 vocabulary provenance, precedence and limitations.
+
+Session diagnostics report the effective `mapping_limit`: the smaller of the
+configured allocator limit and the policy retained by a restored encrypted
+snapshot. An unloaded provider reports the configured limit for a new session.
+Reset or expiry starts a fresh session with the current configured policy.
