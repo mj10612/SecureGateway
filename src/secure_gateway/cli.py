@@ -995,20 +995,26 @@ def gateway_api_run(config, mask_numbers):
 @click.option("--config", type=click.Path(path_type=Path))
 def gateway_api_uninstall(config):
     """Stop API mode and restore the backed-up Grok settings, preserving logins."""
-    from secure_gateway.gateway_install import uninstall_gateway
+    from secure_gateway.gateway_install import installation_path, uninstall_gateway
     from secure_gateway.xai_install import default_api_config, load_api_config
 
-    path = config or default_api_config()
-    if not path.exists() and not (path.parent / "installation.json").exists():
-        click.echo("No active gateway installation found.")
-        return
     try:
-        if path.exists():
+        path = (config or default_api_config()).resolve()
+        has_config = path.exists()
+        if not has_config and not installation_path(path).exists():
+            click.echo("No active gateway installation found.")
+            return
+        if has_config:
             load_api_config(path)
         changed = uninstall_gateway(path)
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from None
-    click.echo("Grok settings restored. API gateway stopped." if changed else "No active gateway installation found.")
+    if not changed:
+        click.echo("No active gateway installation found.")
+    elif has_config:
+        click.echo("Grok settings restored. API gateway stopped.")
+    else:
+        click.echo("Grok settings restored. Configuration is missing; stop any remaining API gateway manually.")
 
 
 if __name__ == "__main__":

@@ -83,3 +83,9 @@ and bounds JSON size. It returns public model IDs and bounded public metadata; a
 provider descriptions are omitted. This enables catalog discovery for compatibility probes;
 it does not certify Cursor/Cline or other untested hosts, and no generic `/v1/models`
 subscription route or credential fallback is enabled.
+
+`gateway api-uninstall --config PATH` also restores the installation manifest
+when the configuration file has been deleted, including custom config filenames.
+It preserves later edits to host settings by refusing to overwrite them. Without
+the configuration credentials, it cannot verify daemon shutdown; stop any
+remaining API gateway process manually after restoring the settings.
