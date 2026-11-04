@@ -8,7 +8,7 @@ Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENA
 
 *17개 자연어·24개 코드 언어를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-1.7.1-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-1.7.2-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
 [![CI](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml)
@@ -18,6 +18,8 @@ Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENA
 ---
 
 [English](#english-overview) · [한국어 안내](#한국어-안내-korean-overview) · [Supported Versions](#supported-versions) · [Quick Start](#quick-start) · [설치·운영 가이드](#설치실행관리자-페이지종료삭제) · [Features](#features) · [Architecture](#system-architecture) · [Documentation](#documentation)
+
+**Language guides / 언어별 안내:** [English](docs/i18n/README.en.md) · [한국어](docs/i18n/README.ko.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [Português](docs/i18n/README.pt.md) · [Deutsch](docs/i18n/README.de.md) · [Bahasa Indonesia](docs/i18n/README.id.md) · [Türkçe](docs/i18n/README.tr.md) · [Русский](docs/i18n/README.ru.md) · [हिन्दी](docs/i18n/README.hi.md) · [मराठी](docs/i18n/README.mr.md) · [বাংলা](docs/i18n/README.bn.md) · [اردو](docs/i18n/README.ur.md) · [العربية](docs/i18n/README.ar.md) · [తెలుగు](docs/i18n/README.te.md) · [简体中文](docs/i18n/README.zh.md) · [日本語](docs/i18n/README.ja.md)
 
 ---
 
@@ -61,14 +63,14 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureGateway | **1.7.1** |
+| SecureGateway | **1.7.2** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |
 | Codex gateway | **CLI 0.160.0 / gpt-6.1-sol** native fixtures and live ChatGPT subscription file-read/masking/restoration verified in English and Korean |
 | MCP transport | Local **stdio**; CLI HTTP/SSE transports are disabled |
-| Natural languages | **English · 한국어 · mixed input** |
-| Code languages | Python · JavaScript · TypeScript · Go · Rust · Java · C · C++ · SQL |
+| Natural languages | **17 natural-language profiles**; [localized guides](docs/i18n/README.en.md) and [language matrix](docs/LANGUAGES.md) |
+| Code languages | **24 code-language profiles**; [syntax scope and verification limits](docs/LANGUAGES.md) |
 
 The [CI matrix](.github/workflows/ci.yml) covers 15 Python/OS combinations. Code-language
 support describes lexer modes, not compatibility with every language release or compiler.
