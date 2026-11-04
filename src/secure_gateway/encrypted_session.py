@@ -20,6 +20,7 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, MAX_SNAPSHOT_FILE_BYTES, mapping_size
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
 from secure_gateway.session import PrivacySession
 from secure_gateway.engine.strategies import mapping_key, StrategyGenerator
@@ -67,6 +68,11 @@ def save_session(
 ) -> None:
     """Atomically write an authenticated, password-encrypted session snapshot."""
     with session.operation():
+        # Public TokenMapping objects can be edited by local callers; validate
+        # their current originals before producing a reloadable snapshot.
+        usage = sum(mapping_size(key, mapping) for key, mapping in session.forward_store.items())
+        if usage > session.generator.max_mapping_bytes:
+            raise ValueError("Mapping byte limit reached; use a new session.")
         payload = {
             "version": 2,
             "session_id": session.session_id,
@@ -79,6 +85,8 @@ def save_session(
             "total_unmask_calls": session.total_unmask_calls,
             "salt": session.generator.salt,
             "mapping_limit": session.generator.max_mappings,
+            "max_mapping_bytes": session.generator.max_mapping_bytes,
+            "max_snapshot_bytes": session.max_snapshot_bytes,
             "counters": {
                 t.value: n for t, n in session.generator._type_counters.items()
             },
@@ -88,9 +96,12 @@ def save_session(
         }
     # The opt-in context owns the encryption key; ordinary CLI snapshots keep
     # their existing independent salt/key derivation per write.
-    encrypted = (encryption or SnapshotEncryption(password)).encrypt(
-        json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    )
+    data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    if len(data) > session.max_snapshot_bytes:
+        raise ValueError("Session snapshot payload limit reached.")
+    encrypted = (encryption or SnapshotEncryption(password)).encrypt(data)
+    if len(encrypted) > MAX_SNAPSHOT_FILE_BYTES:
+        raise ValueError("Session snapshot file limit reached.")
     fd, temporary = tempfile.mkstemp(prefix=".secure-gateway-", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as stream:
@@ -105,15 +116,19 @@ def save_session(
 
 def load_session(path: Path, password: str, session_id: str | None = None) -> PrivacySession:
     """Decrypt and validate a snapshot, rejecting expired or mismatched sessions."""
-    data = path.read_bytes()
+    with path.open("rb") as stream:
+        data = stream.read(MAX_SNAPSHOT_FILE_BYTES + 1)
+    if len(data) > MAX_SNAPSHOT_FILE_BYTES:
+        raise ValueError("Session snapshot file limit reached.")
     if not data.startswith(_MAGIC) or len(data) <= len(_MAGIC) + _SALT_SIZE:
         raise ValueError("Invalid encrypted session file.")
     start = len(_MAGIC)
     salt = data[start : start + _SALT_SIZE]
     try:
-        payload = json.loads(
-            _cipher(password, salt).decrypt(data[start + _SALT_SIZE :])
-        )
+        plaintext = _cipher(password, salt).decrypt(data[start + _SALT_SIZE :])
+        if len(plaintext) > DEFAULT_SNAPSHOT_BYTES:
+            raise ValueError("Session snapshot payload limit reached.")
+        payload = json.loads(plaintext)
     except (InvalidToken, ValueError):
         raise ValueError(
             "Incorrect session password or damaged session file."
@@ -133,7 +148,11 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
             payload["ttl_seconds"],
             payload["salt"],
             mapping_limit=payload.get("mapping_limit", 100_000),
+            max_mapping_bytes=payload.get("max_mapping_bytes", DEFAULT_MAPPING_BYTES),
+            max_snapshot_bytes=payload.get("max_snapshot_bytes", DEFAULT_SNAPSHOT_BYTES),
         )
+        if len(plaintext) > session.max_snapshot_bytes:
+            raise ValueError("Session snapshot payload limit reached.")
         session.created_at = payload["created_at"]
         session.last_accessed = payload["last_accessed"]
         session.total_mask_calls = payload["total_mask_calls"]

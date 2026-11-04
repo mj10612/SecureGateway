@@ -12,6 +12,7 @@ import uuid
 import weakref
 
 from secure_gateway.engine.strategies import StrategyGenerator
+from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, mapping_size, positive_budget, snapshot_budget
 from secure_gateway.models import MaskMode, SessionStats, SurrogateStrategy, TokenMapping
 
 
@@ -23,14 +24,24 @@ def validate_ttl(ttl: float) -> None:
 class SessionMappings(dict[str, TokenMapping]):
     """Public stores must be accessed inside session.operation() when mutated."""
 
-    def __init__(self, generator: StrategyGenerator):
+    def __init__(self, generator: StrategyGenerator, account_bytes=False):
         super().__init__()
         self.generator = generator
+        self.account_bytes = account_bytes
+        self.mapping_bytes = 0
+        self._entry_bytes: dict[str, int] = {}
         self._original_trie: dict | None = None
         self._original_automaton: tuple[list[dict[str, int]], list[int], list[str | None], list[int]] | None = None
         self.nonstandard_surrogates: set[str] = set()
 
     def __setitem__(self, key, mapping):
+        if self.account_bytes and isinstance(mapping, TokenMapping):
+            cost = mapping_size(key, mapping)
+            total = self.mapping_bytes - self._entry_bytes.get(key, 0) + cost
+            if total > self.generator.max_mapping_bytes:
+                raise ValueError("Mapping byte limit reached; use a new session.")
+            self.mapping_bytes = total
+            self._entry_bytes[key] = cost
         self._original_automaton = None
         if key in self:
             self._original_trie = None
@@ -108,6 +119,8 @@ class SessionMappings(dict[str, TokenMapping]):
         return found
 
     def __delitem__(self, key):
+        if key in self._entry_bytes:
+            self.mapping_bytes -= self._entry_bytes.pop(key)
         self._original_automaton = None
         mapping = self[key]
         super().__delitem__(key)
@@ -116,6 +129,8 @@ class SessionMappings(dict[str, TokenMapping]):
         self._original_trie = None
 
     def clear(self):
+        self.mapping_bytes = 0
+        self._entry_bytes.clear()
         self._original_automaton = None
         super().clear()
         self.nonstandard_surrogates.clear()
@@ -135,6 +150,7 @@ class SessionMappings(dict[str, TokenMapping]):
     def popitem(self):
         self._original_automaton = None
         key, mapping = super().popitem()
+        self.mapping_bytes -= self._entry_bytes.pop(key, 0)
         if isinstance(mapping, TokenMapping):
             self.nonstandard_surrogates.discard(mapping.surrogate)
         self._original_trie = None
@@ -160,6 +176,8 @@ class PrivacySession:
         ttl_seconds: float = 3600,
         salt: str = "",
         mapping_limit: int = 100_000,
+        max_mapping_bytes: int = DEFAULT_MAPPING_BYTES,
+        max_snapshot_bytes: int = DEFAULT_SNAPSHOT_BYTES,
     ):
         validate_ttl(ttl_seconds)
         if type(mapping_limit) is not int or mapping_limit < 1:
@@ -172,8 +190,10 @@ class PrivacySession:
         self.total_mask_calls = self.total_unmask_calls = 0
         self.generator = StrategyGenerator(strategy=strategy, salt=salt)
         self.generator.max_mappings = mapping_limit
+        self.generator.max_mapping_bytes = positive_budget(max_mapping_bytes, "max_mapping_bytes")
+        self.max_snapshot_bytes = snapshot_budget(max_snapshot_bytes)
         self.active_pins = 0
-        self.forward_store = SessionMappings(self.generator)
+        self.forward_store = SessionMappings(self.generator, account_bytes=True)
         self.reverse_store = SessionMappings(self.generator)
 
     def operation(self):
@@ -224,6 +244,9 @@ class PrivacySession:
                 created_at=self.created_at,
                 last_accessed=self.last_accessed,
                 total_unique_mappings=len(self.forward_store),
+                mapping_bytes=self.forward_store.mapping_bytes,
+                max_mapping_bytes=self.generator.max_mapping_bytes,
+                max_snapshot_bytes=self.max_snapshot_bytes,
                 total_mask_calls=self.total_mask_calls,
                 total_unmask_calls=self.total_unmask_calls,
                 mode=self.mode,
@@ -238,6 +261,8 @@ class SessionVault:
     def __init__(
         self, default_ttl: float = 3600, cleanup_interval: float | None = None,
         max_sessions: int = 1000, mapping_limit: int = 100_000,
+        max_mapping_bytes: int = DEFAULT_MAPPING_BYTES,
+        max_snapshot_bytes: int = DEFAULT_SNAPSHOT_BYTES,
     ):
         validate_ttl(default_ttl)
         for name, value in (("max_sessions", max_sessions), ("mapping_limit", mapping_limit)):
@@ -245,6 +270,8 @@ class SessionVault:
                 raise ValueError(f"{name} must be a positive integer.")
         self.max_sessions = max_sessions
         self.mapping_limit = mapping_limit
+        self.max_mapping_bytes = positive_budget(max_mapping_bytes, "max_mapping_bytes")
+        self.max_snapshot_bytes = snapshot_budget(max_snapshot_bytes)
         self.default_ttl = default_ttl
         self.default_session_id = f"sess_{uuid.uuid4().hex}"
         self._sessions: dict[str, PrivacySession] = {}
@@ -343,7 +370,8 @@ class SessionVault:
                 )
             if len(self._sessions) >= self.max_sessions:
                 raise ValueError("Session limit reached; clear an idle session before creating another.")
-            session = PrivacySession(sid, mode, strategy, ttl, mapping_limit=self.mapping_limit)
+            session = PrivacySession(sid, mode, strategy, ttl, mapping_limit=self.mapping_limit,
+                                     max_mapping_bytes=self.max_mapping_bytes, max_snapshot_bytes=self.max_snapshot_bytes)
             self._sessions[sid] = session
             self._start_cleanup_locked()
             return session

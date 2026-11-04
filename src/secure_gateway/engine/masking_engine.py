@@ -20,6 +20,7 @@ from secure_gateway.engine.grammar_ko import (
 from secure_gateway.engine.strategies import StrategyGenerator, mapping_key
 from secure_gateway.engine.tokenizer import MultilingualTokenizer, TextChunk
 from secure_gateway.engine import natural_languages, common_words
+from secure_gateway.mapping_budget import check_mapping_budget, mapping_transaction, record_mapping
 from secure_gateway.models import (
     MaskMode,
     MaskResult,
@@ -116,7 +117,7 @@ class MaskingEngine:
                 or any(not isinstance(word, str) or not word.strip() or len(word) > 256 for word in common_vocabulary)):
             raise ValueError("Common vocabulary must be a set of at most 10000 nonempty words of at most 256 characters.")
         common_vocabulary = {common_words.vocabulary_key(word) for word in (common_vocabulary or ())}
-        with generator.operation():
+        with generator.operation(), mapping_transaction(generator):
             if mode == MaskMode.CODE_AWARE:
                 return self.mask_code(
                     text,
@@ -367,7 +368,7 @@ class MaskingEngine:
         if not isinstance(sql_dialect, str) or sql_dialect not in {"standard", "postgresql", "sqlite"}:
             raise ValueError("Unsupported SQL dialect.")
         identifier_language = "sql:" + sql_dialect if language == "sql" else language
-        with generator.operation():
+        with generator.operation(), mapping_transaction(generator):
             tokens = self.code_parser.tokenize(code, language)
             if not mask_numbers:
                 for raw, token_type, _ in tokens:
@@ -549,10 +550,12 @@ class MaskingEngine:
                     limit = min(generator.max_mappings, getattr(self, "mapping_limit", generator.max_mappings))
                     if len(mapping_store) >= limit:
                         raise ValueError("Mapping limit reached; use a new session.")
+                    check_mapping_budget(mapping_store, generator, key, number)
                     mapping = TokenMapping(original=number, surrogate=number,
                                            token_type=TokenType.NUMBER, context="code")
                     mapping_store[key] = mapping
                     reverse_store[number] = mapping
+                    record_mapping(generator, mapping_store, reverse_store, key, mapping)
                 generator.used_surrogates.add(number)
 
     @staticmethod
@@ -711,6 +714,7 @@ class MaskingEngine:
                 return mapping_store[key].surrogate
             if len(mapping_store) >= generator.max_mappings:
                 raise ValueError("Mapping limit reached; clear the session or use a new one.")
+            check_mapping_budget(mapping_store, generator, key, original_token)
             surrogate = generator.generate(token_type, original_token, code=code)
             mapping = TokenMapping(
                 original=original_token,
@@ -724,4 +728,5 @@ class MaskingEngine:
             )
             mapping_store[key] = mapping
             reverse_store[surrogate] = mapping
+            record_mapping(generator, mapping_store, reverse_store, key, mapping)
             return surrogate

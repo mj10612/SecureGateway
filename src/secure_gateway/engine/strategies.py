@@ -8,6 +8,7 @@ import secrets
 from threading import RLock
 from typing import Iterator
 
+from secure_gateway.mapping_budget import ReservedAliases
 from secure_gateway.models import SurrogateStrategy, TokenType
 
 PREFIXES = {
@@ -33,10 +34,11 @@ class StrategyGenerator:
         self.salt = salt or secrets.token_hex(32)
         self.lock = RLock()
         self.closed = False
-        self.used_surrogates: set[str] = set()
+        self.used_surrogates = ReservedAliases()
         self._type_counters: dict[TokenType, int] = {}
         self._code_index = 0
         self.max_mappings = 100_000
+        self.max_mapping_bytes = 64 * 1024 * 1024
         self._identifier_groups: dict[tuple[str, str], list] = {}
 
     @contextmanager

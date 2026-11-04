@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 1.6.7 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 1.7.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -531,3 +531,41 @@ Session diagnostics report the effective `mapping_limit`: the smaller of the
 configured allocator limit and the policy retained by a restored encrypted
 snapshot. An unloaded provider reports the configured limit for a new session.
 Reset or expiry starts a fresh session with the current configured policy.
+
+## Mapping and snapshot budgets (1.7.0)
+
+Each session defaults to a **64 MiB logical mapping budget** in addition to the
+mapping-count limit. For every forward mapping, the charge is UTF-8 bytes of the
+original plus UTF-8 bytes of its forward lookup key plus 1,024 bytes of policy
+overhead. A reused entry is charged once. This is a predictable logical budget,
+not a Python heap/RSS limit or exact alias-size measurement. Public mapping
+originals should not be mutated in place; saving revalidates their current size.
+
+Snapshot plaintext defaults to at most **128 MiB**; configuration may lower this
+limit, but cannot raise it. Encrypted snapshot reads and writes have a fixed
+**192 MiB** ceiling. The loader reads at most that ceiling plus one byte before
+rejecting an oversized file. Authentication/decryption still requires bounded
+whole-buffer memory; this is not streaming decryption.
+
+Gateway subscription/API JSON accepts `max_mapping_bytes` and
+`max_snapshot_bytes`. `PrivacySession`, `SessionVault`, and `LocalPrivacyClient`
+accept the same names. The local `mask` CLI can lower them with
+`--max-mapping-bytes` / `--max-snapshot-bytes`; MCP `serve` accepts those flags
+and `SECURE_GATEWAY_MAX_MAPPING_BYTES` / `SECURE_GATEWAY_MAX_SNAPSHOT_BYTES`.
+MCP session stats and Gateway diagnostics expose only aggregate usage/policy.
+
+Policies are saved as optional encrypted v2 payload fields. Older v1/v2 files
+without them use the defaults and must fit them; oversized legacy files are
+rejected rather than silently lifting limits. Gateway restart applies the smaller
+of saved and current byte budgets. Existing aliases remain restorable within
+input/output budgets. Use a fresh session/conversation if allocation is full.
+On mapping-byte exhaustion, mappings and alias reservations newly allocated by
+that text/code operation are rolled back; previous entries remain restorable.
+Occurrence statistics on reused entries may count attempted operations. Snapshot
+save failures preserve the previous file and publish no partial state.
+
+Direct host-settings symlinks are rejected before settings transactions. Use
+regular settings files for subscription and xAI installation; the installer does
+not replace dotfile links. Recovery/uninstall also refuse a settings path changed
+into a symlink. A symlinked parent directory is supported when resolved ownership
+and actual writes refer to the same target.

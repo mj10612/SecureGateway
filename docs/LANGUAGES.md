@@ -208,3 +208,23 @@ expressions. This conservative representation retains the original source for
 exact restoration; it does not preserve interpolation behavior for execution.
 Here-document payloads receive the same protection. Ordinary structural escapes
 such as `\n` and `\t` keep their existing handling.
+
+### Binding and grammar corrections (1.7.0)
+
+Java translates eligible Unicode identifier and keyword escapes before tokenizing,
+while retaining raw source boundaries for exact restoration. Repeated `u` escapes
+and escaped/plain references share bindings. Unicode escapes producing structural
+characters (quotes, newlines, comment delimiters or surrogate code units) are
+conservatively rejected before allocation; this profile is not a complete Java
+compiler preprocessing implementation.
+
+Kotlin property accessors are recognized on the same line and following lines,
+including typed, expression and block getters/setters. Ordinary `get` function
+names still mask. Bash distinguishes word-internal/escaped `#` from comments and
+preserves command-position `exit`, including the following command sequence.
+User variables named `exit` remain private.
+
+SQL profiles preserve CTE `WITH`/`RECURSIVE`, `DEFAULT` and `RETURNING` grammar.
+`KEY` is structural after `PRIMARY`/`FOREIGN`; ordinary column `key` is an
+identifier with consistent quoted/unquoted aliases. SQLite execution fixtures
+verify these cases; not every SQL dialect/compiler extension is covered.

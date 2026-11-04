@@ -43,6 +43,7 @@ from secure_gateway.gateway_source import looks_like_source
 from secure_gateway.gateway_catalog import fetch_catalog
 from secure_gateway.gateway_audit import AuditStore, anonymous_ref
 from secure_gateway.gateway_admin import handle_admin
+from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, check_mapping_budget, positive_budget, snapshot_budget, record_mapping
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
 from secure_gateway.session import PrivacySession
 
@@ -484,6 +485,7 @@ class SharedEngine(MaskingEngine):
                 raise ValueError(
                     "Mapping limit reached; reset the gateway and start a new conversation."
                 )
+            check_mapping_budget(mapping_store, generator, key, original_token)
             while True:
                 surrogate = generator.generate(kind, original_token, code=True)
                 if kind == TokenType.NUMBER:
@@ -505,6 +507,7 @@ class SharedEngine(MaskingEngine):
             )
             mapping_store[key] = mapping
             reverse_store[surrogate] = mapping
+            record_mapping(generator, mapping_store, reverse_store, key, mapping)
             return surrogate
 
 
@@ -523,7 +526,8 @@ def _prose_policy(prose_mode, common_words):
 
 
 class GatewaySession:
-    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, natural_language="auto", sql_dialect="sqlite", prose_mode="content_words", common_words=None, **restore_limits):
+    def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, natural_language="auto", sql_dialect="sqlite", prose_mode="content_words", common_words=None, max_mapping_bytes=DEFAULT_MAPPING_BYTES,
+                 max_snapshot_bytes=DEFAULT_SNAPSHOT_BYTES, **restore_limits):
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
         self.mask_numbers = mask_numbers
@@ -534,8 +538,16 @@ class GatewaySession:
         self.sql_dialect = sql_dialect
         self.session = session or PrivacySession(
             "gateway", strategy=SurrogateStrategy.UNICODE, ttl_seconds=86400,
-            mapping_limit=mapping_limit,
+            mapping_limit=mapping_limit, max_mapping_bytes=max_mapping_bytes,
+            max_snapshot_bytes=max_snapshot_bytes,
         )
+        effective_mapping = min(self.session.generator.max_mapping_bytes,
+                                positive_budget(max_mapping_bytes, "max_mapping_bytes"))
+        effective_snapshot = min(self.session.max_snapshot_bytes, snapshot_budget(max_snapshot_bytes))
+        if self.session.forward_store.mapping_bytes > effective_mapping:
+            raise ValueError("Restored session exceeds mapping byte limit; reset the gateway.")
+        self.session.generator.max_mapping_bytes = effective_mapping
+        self.session.max_snapshot_bytes = effective_snapshot
         self.engine = SharedEngine(mapping_limit, **restore_limits)
         self.lock = RLock()
         self.opaque: set[str] = set()
@@ -1533,6 +1545,8 @@ class PrivacyGateway(ThreadingHTTPServer):
         state_dir: Path | None = None,
         api_upstreams=None,
         mapping_limit=100_000,
+        max_mapping_bytes=DEFAULT_MAPPING_BYTES,
+        max_snapshot_bytes=DEFAULT_SNAPSHOT_BYTES,
         audit_path: Path | None = None,
         max_active_requests=32,
         max_provider_requests=8,
@@ -1561,6 +1575,8 @@ class PrivacyGateway(ThreadingHTTPServer):
         ):
             raise ValueError("Mapping limit must be a positive integer.")
         self.mapping_limit = mapping_limit
+        self.max_mapping_bytes = positive_budget(max_mapping_bytes, "max_mapping_bytes")
+        self.max_snapshot_bytes = snapshot_budget(max_snapshot_bytes)
         for limit in (max_active_requests, max_provider_requests):
             if type(limit) is not int or limit < 1:
                 raise ValueError("Request admission limits must be positive integers.")
@@ -1642,12 +1658,17 @@ class PrivacyGateway(ThreadingHTTPServer):
                 session = self.sessions.get(agent)
                 item: dict[str, Any] = {"active_requests": admitted.get(agent, 0),
                         "mapping_limit": self.mapping_limit, "mapping_count": 0,
+                        "max_mapping_bytes": self.max_mapping_bytes, "mapping_bytes": 0,
+                        "max_snapshot_bytes": self.max_snapshot_bytes,
                         "ttl_seconds": None, "expires_at": None, "expired": False}
                 if session is not None:
                     with session.lock:
                         item.update(mapping_limit=min(session.engine.mapping_limit,
                                                       session.session.generator.max_mappings),
                                     mapping_count=len(session.session.forward_store),
+                                    max_mapping_bytes=session.session.generator.max_mapping_bytes,
+                                    mapping_bytes=session.session.forward_store.mapping_bytes,
+                                    max_snapshot_bytes=session.session.max_snapshot_bytes,
                                     ttl_seconds=session.session.ttl_seconds,
                                     expires_at=session.session.last_accessed + session.session.ttl_seconds,
                                     expired=session.session.is_expired())
@@ -1684,6 +1705,8 @@ class PrivacyGateway(ThreadingHTTPServer):
                     saved = None
             session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers,
                                      natural_language=self.natural_language, sql_dialect=self.sql_dialect,
+                                     max_mapping_bytes=self.max_mapping_bytes,
+                                     max_snapshot_bytes=self.max_snapshot_bytes,
                                      prose_mode=self.prose_mode, common_words=self.common_words,
                                      **self.restore_limits)
             # Reasoning provenance is only meaningful while the matching alias

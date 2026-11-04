@@ -441,6 +441,34 @@ def _queued_heredocs(code: str, start: int, language: str) -> tuple[list[Token],
     return chunks, cursor
 
 
+def _kotlin_accessor(words: list[str], offset: int, accessor_started: bool) -> bool:
+    """Recognize an accessor header, not an initializer/function call."""
+    if not offset or words[offset - 1] in {
+        "=", ".", "?.", "(", "[", "{", ",", ":", "return", "val", "var",
+        "+", "-", "*", "/", "?", "!", "&", "|",
+    }:
+        return False
+    if words[offset - 1] == ";" and not accessor_started:
+        return False
+    if offset + 1 >= len(words) or words[offset + 1] != "(":
+        return False
+    end = offset + 2
+    depth = 1
+    while end < len(words) and depth:
+        depth += (words[end] == "(") - (words[end] == ")")
+        end += 1
+    if depth:
+        return False
+    if words[offset] == "get" and end != offset + 3:
+        return False  # Getters have no parameters.
+    if end < len(words) and words[end] == ":":
+        # Explicit getter return types end at their expression/block body.
+        end += 1
+        while end < len(words) and words[end] not in {"=", "{", ";", "}"}:
+            end += 1
+    return end < len(words) and words[end] in {"=", "{"}
+
+
 def _contextual_keywords(tokens: list[Token], language: str) -> None:
     contextual = _CONTEXTUAL.get(language)
     if not contextual:
@@ -471,8 +499,7 @@ def _contextual_keywords(tokens: list[Token], language: str) -> None:
             elif word == "by":
                 structural = previous not in {"", "val", "var", ".", "fun", "(", ","} and following not in {"=", ":", ",", ")", ";", "}"}
             elif word in {"get", "set"}:
-                gap = "".join(token[0] for token in tokens[significant[offset - 1] + 1:index]) if offset else ""
-                structural = property_declared and following == "(" and "\n" in gap
+                structural = property_declared and _kotlin_accessor(words, offset, accessor)
                 accessor |= structural
             elif word == "field":
                 structural = accessor and previous != "."
@@ -811,6 +838,30 @@ def _lua_attributes(tokens: list[Token]) -> None:
             position += 1
 
 
+def _bash_comment_start(code: str, position: int) -> bool:
+    """An unquoted # starts a comment only at the beginning of a shell word."""
+    previous = position - 1
+    # A backslash-newline pair is removed before shell words are recognized.
+    while previous > 0 and code[previous] == "\n":
+        cursor = previous - 1
+        while cursor >= 0 and code[cursor] == "\\":
+            cursor -= 1
+        if (previous - 1 - cursor) % 2 == 0:
+            break
+        previous -= 2
+    if previous < 0:
+        return True
+    character = code[previous]
+    if character not in " \t\r\n|&;()<>":
+        return False
+    escapes = 0
+    cursor = previous - 1
+    while cursor >= 0 and code[cursor] == "\\":
+        escapes += 1
+        cursor -= 1
+    return escapes % 2 == 0
+
+
 def tokenize(code: str, language: str) -> list[Token]:
     """Tokenize a supported language without executing any input."""
     language = ALIASES.get(language.lower(), language.lower())
@@ -977,7 +1028,8 @@ def tokenize(code: str, language: str) -> list[Token]:
                 position += len(flags[0])
             continue
         line_comment = (
-            (character == "#" and language in {"bash", "powershell", "ruby", "r", "nix", "gdscript"})
+            (character == "#" and language in {"powershell", "ruby", "r", "nix", "gdscript"})
+            or (character == "#" and language == "bash" and _bash_comment_start(code, position))
             or (language in {"vbnet", "vba"} and character == "'")
             or (language == "nasm" and character == ";")
             or (language == "lua" and code.startswith("--", position))
@@ -1091,6 +1143,8 @@ def tokenize(code: str, language: str) -> list[Token]:
             reserved = key in LANGUAGE_KEYWORDS[language]
             if language == "bash":
                 assignment = code.startswith(("=", "+="), end)
+                if key == "exit" and bash_command_start:
+                    reserved = True
                 # A reserved word immediately followed by '[' is part of an
                 # array word/lvalue, never a stand-alone control keyword.
                 if assignment or code.startswith("[", end) or bash_declaration or bash_binding_next or bash_arithmetic_depth:

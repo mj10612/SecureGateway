@@ -83,7 +83,7 @@ def _recover_install(path):
                 else None
             )
             current = target.read_bytes() if target.is_file() else None
-            if (target.exists() and not target.is_file()) or (
+            if target.is_symlink() or (target.exists() and not target.is_file()) or (
                 current != original
                 and (
                     current is None
@@ -504,6 +504,11 @@ def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_pat
 
 def apply_settings(path: Path, config, changes, *, mirrors=None):
     """Back up and transactionally apply settings, shared by subscription/API setup."""
+    # Replacing a symlink would detach the dotfile while the manifest points
+    # to its resolved target. Reject before recovery or any transaction writes.
+    for settings in changes:
+        if settings.is_symlink():
+            raise ValueError("Host settings must not be a symbolic link; use a regular file.")
     manifest_path = installation_path(path)
     _recover_install(path)
     previous_config = path.read_bytes() if path.exists() else None
@@ -626,7 +631,7 @@ def _uninstall_gateway(path: Path):
             and current == original
             and (current is not None or not settings.exists())
         )
-        if not installed and not restored:
+        if settings.is_symlink() or (not installed and not restored):
             raise ValueError(
                 "Host settings changed; refusing to overwrite them. Restore/merge installation.json manually."
             )

@@ -113,6 +113,9 @@ class SessionStats(BaseModel):
     created_at: float
     last_accessed: float
     total_unique_mappings: int
+    mapping_bytes: int = 0
+    max_mapping_bytes: int = 64 * 1024 * 1024
+    max_snapshot_bytes: int = 128 * 1024 * 1024
     total_mask_calls: int
     total_unmask_calls: int
     mode: MaskMode

@@ -15,7 +15,6 @@ import shlex
 import subprocess
 import sys
 import tempfile
-import time
 from typing import Any, Callable, Iterator
 
 from secure_gateway.encrypted_session import (
@@ -237,10 +236,11 @@ def configure(
                 )
         backup = None
         if settings.exists():
-            backup = settings.with_name(
-                settings.name + f".secure-gateway-{time.time_ns()}.bak"
+            fd, name = tempfile.mkstemp(
+                prefix=settings.name + ".secure-gateway-", suffix=".bak",
+                dir=settings.parent,
             )
-            fd = os.open(backup, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            backup = Path(name)
             with os.fdopen(fd, "wb") as stream:
                 stream.write(settings.read_bytes())
         _atomic_json(settings, config)
@@ -474,18 +474,16 @@ class HookStore:
                     session.clear()
 
     def mask(self, text: str, session: PrivacySession) -> str:
-        # Tool output can echo values the model already saw. Never nest placeholders.
-        pieces = []
-        end = 0
-        for match in StrategyGenerator.get_pattern(session.strategy).finditer(text):
-            pieces.append(self._mask_piece(text[end : match.start()], session))
-            pieces.append(match.group() if match.group() in session.reverse_store
-                          else self._mask_piece(match.group(), session))
-            end = match.end()
-        pieces.append(self._mask_piece(text[end:], session))
+        # Expand registered echoes once, locally, before tokenizing the whole
+        # result. Splitting first would expose surrounding URL/code fragments.
+        expanded = self.engine.unmask(
+            text, session.session_id, session.reverse_store,
+            session.strategy, strict=False,
+        ).unmasked_text
+        masked = self._mask_piece(expanded, session)
         session.total_mask_calls += 1
         session.touch()
-        return "".join(pieces)
+        return masked
 
     def _mask_piece(self, text: str, session: PrivacySession) -> str:
         return self.engine.mask_text(
@@ -544,9 +542,26 @@ def _walk(
     return value
 
 
+MAX_HOOK_NESTING = 128
+
+
+def _validate_hook_depth(payload: Any) -> None:
+    """Bound recursive transforms before allocating or persisting session state."""
+    stack = [(payload, 0)]
+    while stack:
+        value, depth = stack.pop()
+        if not isinstance(value, (dict, list)):
+            continue
+        if depth > MAX_HOOK_NESTING:
+            raise ValueError("Hook nesting limit exceeded.")
+        children = value.values() if isinstance(value, dict) else value
+        stack.extend((item, depth + 1) for item in children)
+
+
 def handle_hook(
     payload: dict[str, Any], state_dir: Path, agent: str = "claude"
 ) -> dict[str, Any]:
+    _validate_hook_depth(payload)
     event = payload.get("hook_event_name")
     if agent not in AGENT_EVENTS or event not in AGENT_EVENTS[agent]:
         raise ValueError("Unsupported hook event.")

@@ -6,6 +6,7 @@ from typing import Callable
 import uuid
 
 from secure_gateway.engine.masking_engine import MaskingEngine
+from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES
 from secure_gateway.models import MaskMode, SurrogateStrategy, UnmaskResult
 from secure_gateway.session import SessionVault
 
@@ -16,8 +17,11 @@ class LocalPrivacyClient:
     def __init__(self, max_sessions: int = 1000, mapping_limit: int = 100_000,
                  max_input_bytes: int = 16 * 1024 * 1024,
                  max_restore_input_bytes: int = 16 * 1024 * 1024,
-                 max_restore_output_bytes: int = 16 * 1024 * 1024) -> None:
-        self.vault = SessionVault(max_sessions=max_sessions, mapping_limit=mapping_limit)
+                 max_restore_output_bytes: int = 16 * 1024 * 1024,
+                 max_mapping_bytes: int = DEFAULT_MAPPING_BYTES,
+                 max_snapshot_bytes: int = DEFAULT_SNAPSHOT_BYTES) -> None:
+        self.vault = SessionVault(max_sessions=max_sessions, mapping_limit=mapping_limit,
+                                  max_mapping_bytes=max_mapping_bytes, max_snapshot_bytes=max_snapshot_bytes)
         self.engine = MaskingEngine(max_input_bytes=max_input_bytes,
                                     max_restore_input_bytes=max_restore_input_bytes,
                                     max_restore_output_bytes=max_restore_output_bytes)

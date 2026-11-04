@@ -241,3 +241,17 @@ Codex는 도구 결과를 마스킹한 피드백으로 교체하고 `Bash`·`app
 삭제하며, 비정상 종료 후 남은 파일과 백업은 사용자가 정리해야 합니다. 알 수 없는 치환값,
 만료·손상된 상태 또는 동시 쓰기가 발생하면 실행 인자 복원을 거부합니다. 원격 도구에는 원문을
 복원해 전달하지 않습니다. 실제 Claude Code 버전에서 민감하지 않은 테스트 자료로 동작을 먼저 확인하세요.
+
+## Hook boundaries in 1.7.0
+
+Known alias echoes are expanded once in the trusted local process before masking
+the whole tool text again. This keeps URL/code token boundaries intact and avoids
+exposing surrounding fragments. Unknown alias-shaped source text retains opaque
+literal handling; restoration stays local and strict.
+
+Hook payload containers support at most 128 nested levels. An iterative preflight
+checks depth before opening session state. Parsed over-depth inputs use the
+existing controlled PreToolUse denial / Codex PostToolUse feedback policy;
+JSON parser recursion errors use a fixed error instead of a traceback. This limit
+is independent of input bytes. Hooks still cover selected tool text rather than
+all requests; Gateway is the complete supported-request route.

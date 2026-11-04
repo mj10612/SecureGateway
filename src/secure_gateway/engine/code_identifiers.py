@@ -15,6 +15,35 @@ def ascii_lower(value: str) -> str:
     return value.translate(str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))
 
 
+def java_unicode_source(source: str) -> tuple[str, list[int]]:
+    """Translate eligible Java Unicode identifier escapes with raw boundaries.
+
+    Java translates Unicode escapes before lexical analysis. Structural escapes
+    (quotes, comments, newlines and surrogates) are deliberately rejected rather
+    than being silently lexed with the wrong boundaries.
+    """
+    decoded: list[str] = []
+    offsets = [0]
+    index = 0
+    backslashes = 0
+    while index < len(source):
+        char = source[index]
+        end = index + 1
+        if char == "\\" and backslashes % 2 == 0 and source.startswith("u", end):
+            match = re.compile(r"\\u+([0-9a-fA-F]{4})").match(source, index)
+            if match is None:
+                raise ValueError("Invalid Java Unicode escape")
+            char = chr(int(match[1], 16))
+            if not (char in {"$", "_"} or ("a" + char).isidentifier()):
+                raise ValueError("Unsupported structural Java Unicode escape")
+            end = match.end()
+        decoded.append(char)
+        offsets.append(end)
+        backslashes = backslashes + 1 if char == "\\" else 0
+        index = end
+    return "".join(decoded), offsets
+
+
 def ruby_constant_alias(base: str, raw: str, language: str) -> str:
     """Ruby constants must retain an uppercase initial in every reference."""
     if language == 'ruby' and raw and raw[0].isupper():
@@ -25,6 +54,8 @@ def ruby_constant_alias(base: str, raw: str, language: str) -> str:
 def identifier_key(raw: str, language: str, *, quoted: bool = False) -> str:
     if language == 'bash':
         return raw.replace('\\\n', '')
+    if language == 'java':
+        return java_unicode_source(raw)[0] if '\\u' in raw else raw
     if language == 'python':
         return unicodedata.normalize('NFKC', raw)
     if language in {'javascript', 'typescript'}:
@@ -66,13 +97,13 @@ when it is exhausted. Allocation limits still bound total session state.
     def transform(char):
         if language == 'python':
             return chr(ord(char) + 0xFEE0)
-        if language in {'javascript', 'typescript', 'csharp'}:
+        if language in {'javascript', 'typescript', 'csharp', 'java'}:
             return '\\u' + f'{ord(char):04x}'
         return char.swapcase()
     letters = [i for i, char in enumerate(base) if char.isascii() and char.isalpha()]
     if language == 'python':
         positions = [i for i, char in enumerate(base) if char.isascii() and char.isalnum()]
-    elif language in {'javascript', 'typescript', 'csharp'}:
+    elif language in {'javascript', 'typescript', 'csharp', 'java'}:
         positions = letters
     elif language.startswith('sql:') or language in {'powershell', 'vbnet', 'vba', 'nasm:macro'}:
         positions = letters

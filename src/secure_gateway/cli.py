@@ -95,7 +95,7 @@ def _check_strategy(session, strategy):
 
 
 @contextmanager
-def _session(sid, path, password, mode=None, strategy=None):
+def _session(sid, path, password, mode=None, strategy=None, max_mapping_bytes=None, max_snapshot_bytes=None):
     try:
         session: PrivacySession | None
         with session_file_lock(path) if path else nullcontext():
@@ -123,6 +123,13 @@ def _session(sid, path, password, mode=None, strategy=None):
                 _check_strategy(session, strategy)
             try:
                 with session.operation():
+                    if max_mapping_bytes is not None:
+                        effective = min(session.generator.max_mapping_bytes, max_mapping_bytes)
+                        if session.forward_store.mapping_bytes > effective:
+                            raise ValueError("Session exceeds mapping byte limit; use a new session.")
+                        session.generator.max_mapping_bytes = effective
+                    if max_snapshot_bytes is not None:
+                        session.max_snapshot_bytes = min(session.max_snapshot_bytes, max_snapshot_bytes)
                     yield session
                     if path:
                         save_session(path, session, password)
@@ -147,11 +154,17 @@ def main():
               envvar="SECURE_GATEWAY_MAPPING_LIMIT")
 @click.option("--input-limit", type=click.IntRange(1), default=16 * 1024 * 1024,
               envvar="SECURE_GATEWAY_INPUT_LIMIT")
-def serve(transport, max_sessions, mapping_limit, input_limit):
+@click.option("--max-mapping-bytes", type=click.IntRange(1), default=64 * 1024 * 1024,
+              envvar="SECURE_GATEWAY_MAX_MAPPING_BYTES")
+@click.option("--max-snapshot-bytes", type=click.IntRange(1, 128 * 1024 * 1024), default=128 * 1024 * 1024,
+              envvar="SECURE_GATEWAY_MAX_SNAPSHOT_BYTES")
+def serve(transport, max_sessions, mapping_limit, input_limit, max_mapping_bytes, max_snapshot_bytes):
     """Run local MCP utilities. Network transports are disabled without authentication."""
     try:
         vault.max_sessions = max_sessions
         vault.mapping_limit = mapping_limit
+        vault.max_mapping_bytes = max_mapping_bytes
+        vault.max_snapshot_bytes = max_snapshot_bytes
         engine.max_input_bytes = input_limit
         app.run(transport=transport)
     finally:
@@ -317,7 +330,7 @@ def hook(agent, state_dir):
             raise ValueError("Expected a hook object.")
         result = handle_hook(payload, state_dir, agent)
         click.echo(json.dumps(result, ensure_ascii=False))
-    except (ValueError, OSError, TypeError, AssertionError):
+    except (ValueError, OSError, TypeError, AssertionError, RecursionError):
         # Do not echo raw payloads or exception messages containing secret candidates.
         if isinstance(payload, dict) and payload.get("hook_event_name") == "PreToolUse":
             click.echo(
@@ -424,6 +437,10 @@ def restore_hook_text(agent, state_dir, session_id):
 @click.option("--code-language", default="auto")
 @click.option("--sql-dialect", type=click.Choice(["standard", "postgresql", "sqlite"]), default="sqlite")
 @click.option("--mask-numbers", is_flag=True, help="Mask numeric literals in code mode (default: preserve).")
+@click.option("--max-mapping-bytes", type=click.IntRange(1), default=None,
+              help="Lower the session logical mapping byte budget.")
+@click.option("--max-snapshot-bytes", type=click.IntRange(1, 128 * 1024 * 1024), default=None,
+              help="Lower the encrypted session plaintext snapshot budget.")
 @click.option("--common-word", multiple=True, help="Additional ordinary vocabulary for uncommon_words mode.")
 @click.option("--sensitive-term", multiple=True)
 @click.option("--preserve", multiple=True)
@@ -441,6 +458,8 @@ def mask(
     mask_numbers,
     sensitive_term,
     common_word,
+    max_mapping_bytes,
+    max_snapshot_bytes,
     preserve,
     json_output,
     session_file,
@@ -450,7 +469,8 @@ def mask(
     text = _text_input(text, input_file)
     mask_mode, strat = MaskMode(mode), SurrogateStrategy(strategy)
     with _session(
-        session_id, session_file, session_password, mask_mode, strat
+        session_id, session_file, session_password, mask_mode, strat,
+        max_mapping_bytes=max_mapping_bytes, max_snapshot_bytes=max_snapshot_bytes,
     ) as session:
         result = engine.mask_text(
             text,
@@ -669,6 +689,8 @@ def gateway_run(config, mapping_limit, mask_numbers):
             audit_path=state.parent / "logs.sqlite3",
             mapping_limit=mapping_limit or settings.get("mapping_limit", 100_000),
             mask_numbers=settings.get("mask_numbers", False) if mask_numbers is None else mask_numbers,
+            max_mapping_bytes=settings.get("max_mapping_bytes", 64 * 1024 * 1024),
+            max_snapshot_bytes=settings.get("max_snapshot_bytes", 128 * 1024 * 1024),
             max_restore_input_bytes=settings.get("max_restore_input_bytes", 16 * 1024 * 1024),
             max_restore_output_bytes=settings.get("max_restore_output_bytes", 16 * 1024 * 1024),
             audit_max_records=settings.get("audit_max_records", 100_000),
@@ -973,6 +995,8 @@ def gateway_api_run(config, mask_numbers):
             api_upstreams={"xai": API_UPSTREAMS["xai"]},
             mapping_limit=settings.get("mapping_limit", 100_000),
             mask_numbers=settings.get("mask_numbers", False) if mask_numbers is None else mask_numbers,
+            max_mapping_bytes=settings.get("max_mapping_bytes", 64 * 1024 * 1024),
+            max_snapshot_bytes=settings.get("max_snapshot_bytes", 128 * 1024 * 1024),
             max_restore_input_bytes=settings.get("max_restore_input_bytes", 16 * 1024 * 1024),
             max_restore_output_bytes=settings.get("max_restore_output_bytes", 16 * 1024 * 1024),
             audit_max_records=settings.get("audit_max_records", 100_000),

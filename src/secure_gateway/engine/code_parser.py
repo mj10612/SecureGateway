@@ -9,6 +9,7 @@ import tokenize as python_tokenize
 
 from secure_gateway.models import TokenType
 from secure_gateway.engine import extended_code
+from secure_gateway.engine.code_identifiers import java_unicode_source
 
 LANGUAGE_KEYWORDS: dict[str, set[str]] = {
     "python": set(keyword.kwlist),
@@ -31,7 +32,7 @@ LANGUAGE_KEYWORDS: dict[str, set[str]] = {
         "and and_eq bitand bitor compl not not_eq or or_eq xor xor_eq alignas alignof asm auto bool break case catch char class concept const consteval constexpr constinit continue co_await co_return co_yield decltype default delete do double else enum explicit export extern false float for friend goto if inline int long mutable namespace new noexcept nullptr operator private protected public register reinterpret_cast requires return short signed sizeof static static_assert static_cast struct switch template this thread_local throw true try typedef typeid typename union unsigned using virtual void volatile wchar_t while".split()
     ),
     "sql": set(
-        "select from where join left right inner outer on insert into values update set delete group by order having limit offset create table drop alter index as union and or not null is primary key foreign references distinct asc desc case when then else end exists in like between".split()
+        "select from where join left right inner outer on insert into values update set delete group by order having limit offset create table drop alter index as union and or not null is primary key foreign references distinct asc desc case when then else end exists in like between with recursive default returning".split()
     ),
 }
 LANGUAGE_KEYWORDS["typescript"] |= LANGUAGE_KEYWORDS["javascript"]
@@ -439,6 +440,10 @@ class CodeParser:
         language = detect_language(code, language)
         if language in extended_code.LANGUAGE_KEYWORDS:
             return extended_code.tokenize(code, language)
+        raw_source = code
+        java_offsets = None
+        if language == "java" and "\\u" in code:
+            code, java_offsets = java_unicode_source(code)
         tokens: list[tuple[str, TokenType, str]] = []
         i = 0
         directive = None
@@ -572,7 +577,7 @@ class CodeParser:
             else:
                 javascript_identifier = (
                     _javascript_identifier(code, i)
-                    if language in {"javascript", "typescript"} else None
+                    if language in {"javascript", "typescript", "java"} else None
                 )
                 raw_rust = (
                     IDENTIFIER.match(code, i + 2)
@@ -608,7 +613,8 @@ class CodeParser:
                     )
                 else:
                     i += 1
-            raw = code[start:i]
+            raw = (raw_source[java_offsets[start]:java_offsets[i]]
+                   if java_offsets is not None else code[start:i])
             # Only whitespace/comments can precede a directive on a logical
             # line. Preserve continuation context across escaped newlines.
             for newline_match in re.finditer("\n", raw):
@@ -627,4 +633,14 @@ class CodeParser:
             tokens.append((raw, token_type, kind))
         if language in {"javascript", "typescript"}:
             _javascript_contextual_keywords(tokens, language)
+        if language == "sql":
+            significant = [index for index, (_, _, kind) in enumerate(tokens)
+                           if kind not in {"whitespace", "comment"}]
+            for position, index in enumerate(significant):
+                raw, token_type, kind = tokens[index]
+                if raw.lower() != "key" or kind != "keyword":
+                    continue
+                previous_word = tokens[significant[position - 1]][0].lower() if position else ""
+                if previous_word not in {"primary", "foreign"}:
+                    tokens[index] = (raw, TokenType.IDENTIFIER, "identifier")
         return tokens
