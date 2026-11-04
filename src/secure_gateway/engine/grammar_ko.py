@@ -299,7 +299,10 @@ class KoreanGrammarEngine:
         if cls.is_function_word(clean):
             return clean, "", TokenType.GRAMMAR
 
-        known = KNOWN_STEMS | (known_stems or set())
+        # Keep membership live without copying every supplied stem per word.
+        known_word = clean in KNOWN_STEMS or (
+            known_stems is not None and clean in known_stems
+        )
 
         # Numbers with Korean units (e.g. 100만, 500원, 30개)
         num_match = re.match(
@@ -318,7 +321,7 @@ class KoreanGrammarEngine:
         best_suffix = ""
 
         # Check copula endings first (e.g. 병원입니다 -> 병원 + 입니다)
-        for copula in KOREAN_COPULA_LIST if clean not in known else []:
+        for copula in KOREAN_COPULA_LIST if not known_word else []:
             if clean.endswith(copula) and len(clean) > len(copula):
                 stem_candidate = clean[: -len(copula)]
                 # Ensure stem is substantive
@@ -343,8 +346,8 @@ class KoreanGrammarEngine:
                 if clean.endswith(josa) and len(clean) > len(josa):
                     candidate = clean[: -len(josa)]
                     # Heuristic: Avoid stripping if stem is empty or single jamo
-                    if clean not in known and cls._supported_stem(
-                        candidate, josa, known
+                    if not known_word and cls._supported_stem(
+                        candidate, josa, known_stems
                     ):
                         best_stem = candidate
                         best_suffix = josa
@@ -375,13 +378,14 @@ class KoreanGrammarEngine:
         return best_stem, best_suffix, token_type
 
     @staticmethod
-    def _supported_stem(stem: str, suffix: str, known: Set[str]) -> bool:
+    def _supported_stem(stem: str, suffix: str, known: Set[str] | None) -> bool:
         if not stem:
             return False
         # Foreign names/acronyms have unknown pronunciation; retain their written particle.
         if not is_hangul_char(stem[-1]):
             return stem[-1].isalnum()
-        if stem not in known and len(suffix) <= 2:
+        if (stem not in KNOWN_STEMS and (known is None or stem not in known)
+                and len(suffix) <= 2):
             return False
         pairs = {
             "은": True,
