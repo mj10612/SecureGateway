@@ -1,4 +1,5 @@
 """Native compiler/SQLite proof for Java escapes and SQL grammar bindings."""
+from contextlib import closing
 from pathlib import Path
 import shutil
 import sqlite3
@@ -68,7 +69,7 @@ def test_sql_native_grammar_and_binding(strategy, source, tmp_path):
     s = PrivacySession("sql", strategy=strategy)
     masked = mask(e, s, source, "sql")
     def run(code):
-        with sqlite3.connect(":memory:") as db:
+        with closing(sqlite3.connect(":memory:")) as db:
             rows = []
             for statement in code.split(";"):
                 if statement.strip():
@@ -109,7 +110,7 @@ def test_gateway_fenced_sql_uses_fixed_keyword_context():
     source = "CREATE TABLE privateTable(key); INSERT INTO privateTable(key) VALUES(7); SELECT [key] FROM privateTable;"
     session = GatewaySession()
     masked = session.mask("```sql\n" + source + "\n```")
-    with sqlite3.connect(":memory:") as db:
+    with closing(sqlite3.connect(":memory:")) as db:
         for statement in masked.split("\n", 1)[1][:-3].split(";"):
             if statement.strip():
                 rows = db.execute(statement).fetchall()

@@ -78,8 +78,13 @@ def test_depth_guard_accepts_boundary_and_mixed_containers(tmp_path):
     assert "Alice" not in json.dumps(result)
 
 
-def test_json_parser_recursion_has_fixed_cli_failure(tmp_path):
-    raw = '{"hook_event_name":"PostToolUse","session_id":"review","tool_response":' + '[' * 2000 + '"synthetic-private"' + ']' * 2000 + '}'
+def test_json_parser_recursion_has_fixed_cli_failure(tmp_path, monkeypatch):
+    # Parser nesting limits vary by Python build and pytest configuration.
+    # Force this specific parser failure; parsed depth is tested separately.
+    def fail_parse(_stream):
+        raise RecursionError("synthetic-private")
+    monkeypatch.setattr("secure_gateway.cli.json.load", fail_parse)
+    raw = '{"hook_event_name":"PostToolUse","session_id":"review"}'
     result = CliRunner().invoke(main, ["hook","--agent","codex","--state-dir",str(tmp_path)], input=raw)
     assert result.exit_code == 1
     assert "synthetic-private" not in result.output
