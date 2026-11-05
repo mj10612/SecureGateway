@@ -3,12 +3,65 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from hashlib import sha256
 import json
+import os
 from threading import Thread
 
 import pytest
 
 from secure_gateway import gateway_install
 from secure_gateway.xai_install import install_api
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX directory mode semantics")
+@pytest.mark.parametrize("mode", ["subscription", "api"])
+def test_install_preserves_existing_state_directory_permissions(tmp_path, mode):
+    state = tmp_path / "shared-state"
+    state.mkdir(mode=0o755)
+    os.chmod(state, 0o755)
+    config = state / "config.json"
+    if mode == "subscription":
+        gateway_install.install_gateway(
+            config,
+            agent="claude",
+            claude_dir=tmp_path / "claude",
+            startup_path=tmp_path / "startup",
+        )
+    else:
+        grok = tmp_path / "grok"
+        grok.mkdir()
+        install_api(config, "grok-fixture", grok_dir=grok)
+    assert state.stat().st_mode & 0o777 == 0o755
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX directory mode semantics")
+@pytest.mark.parametrize("mode", ["subscription", "api"])
+def test_install_makes_new_state_directory_private(tmp_path, mode):
+    config = tmp_path / "new-state" / "config.json"
+    if mode == "subscription":
+        gateway_install.install_gateway(
+            config,
+            agent="claude",
+            claude_dir=tmp_path / "claude",
+            startup_path=tmp_path / "startup",
+        )
+    else:
+        grok = tmp_path / "grok"
+        grok.mkdir()
+        install_api(config, "grok-fixture", grok_dir=grok)
+    assert config.parent.stat().st_mode & 0o777 == 0o700
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX directory mode semantics")
+def test_invalid_api_install_preserves_existing_state_directory_permissions(tmp_path):
+    state = tmp_path / "shared-state"
+    state.mkdir(mode=0o755)
+    os.chmod(state, 0o755)
+    grok = tmp_path / "grok"
+    grok.mkdir()
+    (grok / "config.toml").write_text("broken = [")
+    with pytest.raises(Exception):
+        install_api(state / "config.json", "grok-fixture", grok_dir=grok)
+    assert state.stat().st_mode & 0o777 == 0o755
 
 
 def test_absent_stop_and_uninstall_are_idempotent(tmp_path):
