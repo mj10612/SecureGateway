@@ -434,6 +434,129 @@ def _identifier_end(code: str, start: int) -> int:
     return end
 
 
+_SQL_TYPE_WORDS = frozenset("int integer tinyint smallint mediumint bigint int2 int8 unsigned "
+                            "big serial bigserial smallserial real double precision float "
+                            "numeric decimal boolean bool date datetime time timestamp zone "
+                            "with without char character varchar varying nchar native nvarchar "
+                            "text clob blob binary varbinary bit long uuid money".split())
+
+
+def _sql_contextual_keywords(tokens: list[tuple[str, TokenType, str]]) -> None:
+    """Preserve CAST/type syntax only at recognized SQL structural positions."""
+    significant = [i for i, (_, _, kind) in enumerate(tokens)
+                   if kind not in {"whitespace", "comment"}]
+    raw = [tokens[i][0] for i in significant]
+    words = [value.lower() if tokens[i][2] in {"keyword", "identifier"} else ""
+             for i, value in zip(significant, raw)]
+    closing = {}
+    stack = []
+    for position, value in enumerate(raw):
+        if value == "(":
+            stack.append(position)
+        elif value == ")" and stack:
+            closing[stack.pop()] = position
+
+    def preserve(position):
+        index = significant[position]
+        tokens[index] = (tokens[index][0], TokenType.GRAMMAR, "keyword")
+
+    def builtin_type(position):
+        value = raw[position]
+        if tokens[significant[position]][2] in {"quoted_identifier", "string"}:
+            value = value[1:-1]
+        parts = value.lower().split()
+        return bool(parts) and all(part in _SQL_TYPE_WORDS for part in parts)
+
+    def type_words(start, end):
+        position = start
+        saw_type = False
+        while position < end:
+            if builtin_type(position):
+                preserve(position)
+                saw_type = True
+                position += 1
+            elif saw_type and raw[position] == "(" and position in closing:
+                position = closing[position] + 1
+            else:
+                break
+        return position
+
+    # Find AS at CAST's own parenthesis depth, skipping nested expressions.
+    for position, word in enumerate(words):
+        if word != "cast" or position + 1 not in closing:
+            continue
+        opening = position + 1
+        if raw[opening] != "(" or (position and raw[position - 1] == "."):
+            continue
+        end = closing[opening]
+        cursor = opening + 1
+        while cursor < end:
+            if raw[cursor] == "(" and cursor in closing:
+                cursor = closing[cursor] + 1
+                continue
+            if words[cursor] == "as":
+                preserve(position)
+                type_words(cursor + 1, end)
+                break
+            cursor += 1
+
+    # CREATE [TEMP] TABLE [IF NOT EXISTS] [schema.]name(column type, ...).
+    for position, word in enumerate(words):
+        if word != "create":
+            continue
+        cursor = position + 1
+        if cursor < len(raw) and words[cursor] in {"temp", "temporary"}:
+            preserve(cursor)
+            cursor += 1
+        if cursor >= len(raw) or words[cursor] != "table":
+            continue
+        cursor += 1
+        if words[cursor:cursor + 3] == ["if", "not", "exists"]:
+            preserve(cursor)
+            cursor += 3
+        if cursor >= len(raw):
+            continue
+        cursor += 1  # Table name, including quoted identifiers.
+        while cursor + 1 < len(raw) and raw[cursor] == ".":
+            cursor += 2
+        if cursor not in closing or raw[cursor] != "(":
+            continue  # CREATE TABLE ... AS SELECT has no column type positions.
+        end = closing[cursor]
+        entry = cursor + 1
+        cursor = entry
+        entries = []
+        while cursor < end:
+            if raw[cursor] == "(" and cursor in closing:
+                cursor = closing[cursor] + 1
+                continue
+            if raw[cursor] == ",":
+                entries.append((entry, cursor))
+                entry = cursor + 1
+            cursor += 1
+        entries.append((entry, end))
+        for first, last in entries:
+            if first >= last:
+                continue
+            constraint = words[first] in {"constraint", "primary", "foreign", "unique", "check"}
+            cursor = first if constraint else type_words(first + 1, last)
+            while cursor < last:
+                if raw[cursor] == "(" and cursor in closing:
+                    cursor = closing[cursor] + 1
+                    continue
+                if words[cursor] in {"constraint", "unique", "check", "autoincrement"}:
+                    preserve(cursor)
+                    if words[cursor] == "constraint":
+                        cursor += 1  # Its following name remains an identifier.
+                cursor += 1
+
+    for position, word in enumerate(words):
+        index = significant[position]
+        if word == "key" and tokens[index][2] == "keyword":
+            previous = words[position - 1] if position else ""
+            if previous not in {"primary", "foreign"}:
+                tokens[index] = (raw[position], TokenType.IDENTIFIER, "identifier")
+
+
 class CodeParser:
     @staticmethod
     def tokenize(code: str, language: str = "auto") -> list[tuple[str, TokenType, str]]:
@@ -634,13 +757,5 @@ class CodeParser:
         if language in {"javascript", "typescript"}:
             _javascript_contextual_keywords(tokens, language)
         if language == "sql":
-            significant = [index for index, (_, _, kind) in enumerate(tokens)
-                           if kind not in {"whitespace", "comment"}]
-            for position, index in enumerate(significant):
-                raw, token_type, kind = tokens[index]
-                if raw.lower() != "key" or kind != "keyword":
-                    continue
-                previous_word = tokens[significant[position - 1]][0].lower() if position else ""
-                if previous_word not in {"primary", "foreign"}:
-                    tokens[index] = (raw, TokenType.IDENTIFIER, "identifier")
+            _sql_contextual_keywords(tokens)
         return tokens

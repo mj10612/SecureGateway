@@ -4,6 +4,7 @@ const providers = {claude: "Anthropic", codex: "OpenAI", xai: "xAI"};
 const subscriptions = {claude_subscription: "Claude 구독", chatgpt_subscription: "ChatGPT 구독", api_key: "xAI API 키"};
 const outcomes = {blocked: "전송 전 차단", completed: "완료", upstream_rejected: "제공자 거절", transport_error: "연결 오류", restore_error: "복원 오류", incomplete: "진행 중 / 미완료", interrupted: "프로세스 중단"};
 let token = "", offset = 0, generation = 0, loading = false, pending = false, auditWriteErrors = 0;
+let auditErrorCounts = null, completionRetries = {};
 const limit = 50;
 let exportEpoch = 0, exportCursor = "", exportFilters = null, exportNumber = 0, exporting = false;
 function resetExport() {
@@ -44,8 +45,17 @@ function detail(row) {
   }
 }
 function restoreAuditWarning() {
-  $("banner").hidden = auditWriteErrors === 0;
-  if (auditWriteErrors) $("banner").textContent = `로그 저장 오류 ${num(auditWriteErrors)}건이 발생했습니다. 일부 요청은 미완료로 남거나 전송 전에 차단됐을 수 있습니다.`;
+  const messages = [];
+  if (auditErrorCounts) {
+    if (auditErrorCounts.admission) messages.push(`요청 시작 기록 실패 ${num(auditErrorCounts.admission)}건: 해당 요청은 전송 전에 차단됐습니다.`);
+    if (auditErrorCounts.completion) messages.push(`완료 기록 실패 ${num(auditErrorCounts.completion)}건: 현재 재시도 대기 ${num(completionRetries.pending)}건, 누적 복구 ${num(completionRetries.recovered)}건, 포기 ${num(completionRetries.dropped)}건입니다.`);
+  } else if (auditWriteErrors) {
+    messages.push(`로그 저장 오류 ${num(auditWriteErrors)}건이 발생했습니다. 일부 요청은 미완료로 남거나 전송 전에 차단됐을 수 있습니다.`);
+  }
+  const maintenance = Math.max(Number(auditErrorCounts?.maintenance || 0), Number(completionRetries.maintenance_errors || 0));
+  if (maintenance) messages.push(`보존 정리 지연 ${num(maintenance)}건: 완료 기록 저장 실패와 구분되는 유지보수 경고입니다. 다음 요청 처리에서 정리를 다시 시도합니다.`);
+  $("banner").hidden = messages.length === 0;
+  $("banner").textContent = messages.join(" ");
 }
 function render(data) {
   const policy = data.retention || {max_records: 100000, max_age_days: null};
@@ -81,6 +91,8 @@ function render(data) {
   $("updated").textContent = `마지막 갱신 ${new Date().toLocaleTimeString("ko-KR", {hour12: false})} · 최근 ${num(policy.max_records)}건`;
   $("updated").textContent += policy.max_age_days == null ? " | age: unlimited" : ` | age: ${num(policy.max_age_days)} days`;
   auditWriteErrors = Number(data.audit_write_errors || 0);
+  auditErrorCounts = data.audit_error_counts || null;
+  completionRetries = data.audit_completion_retries || {};
   restoreAuditWarning();
 }
 function filterDate(value) {

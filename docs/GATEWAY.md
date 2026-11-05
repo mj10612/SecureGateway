@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.1.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.1.1 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -626,3 +626,50 @@ dropped. Over-budget, exhausted, and abandoned entries also increment `dropped`.
 The queue is not persisted: process termination can lose pending completion
 metadata. Existing next-start crash recovery marks remaining orphaned requests
 interrupted; it cannot reconstruct their original completion status.
+
+
+### SQL type contexts and audit diagnostics (2.1.1)
+
+The SQL lexer preserves CAST syntax and recognized built-in types at CAST and
+CREATE TABLE type positions. Ordinary columns named integer, text, or cast remain
+identifiers. Native SQLite tests compare execution results as well as exact
+restoration, including INTEGER PRIMARY KEY rowid behavior. This is a contextual
+lexer, not a complete SQL parser or a guarantee for external/user-defined types.
+
+`audit_write_errors` remains the legacy aggregate of initial audit handler errors.
+The new `audit_error_counts` fields distinguish `admission` (forwarding refused),
+`completion` (record write failed; retries may recover), and `maintenance` (the
+record is committed but bounded retention was deferred). The dashboard uses these
+categories and queue diagnostics to show separate warnings. Background retry
+maintenance errors are counted in `audit_completion_retries.maintenance_errors`;
+that count must not simply be subtracted from the legacy aggregate. Older API
+responses without categories retain the existing generic warning.
+
+
+The 2.1.1 native protocol regressions also cover Claude mid-conversation system
+messages with validated inline output effort, and Codex Responses reasoning
+context, additional-tools namespaces, tool-call status, and replay item IDs.
+Their contents and descriptions still pass through privacy transformation;
+unknown control values remain rejected. The opt-in live-test wrappers now pass
+through current method arguments instead of rejecting new keyword parameters.
+
+
+### Windows readiness verification (2026-11-06, 2.1.1)
+
+Claude Code 2.1.318 and Codex CLI 0.166.0 completed actual subscription fixture
+round trips in English and Korean using process-local routing overrides, native
+file reads, masked provider-bound source, and restored final function names and
+email addresses. Fixture files stayed unchanged. No persistent user settings were
+installed during those live tests. This checks small conversations, not arbitrary
+long sessions, all tools, or all future client/model versions.
+
+For UTF-8 source containing Korean identifiers, Windows PowerShell file reads
+must select UTF-8 explicitly (`Get-Content -Encoding UTF8`). A host tool that
+already decoded the source incorrectly sends damaged text into the gateway;
+masking/restoration cannot recover bytes that the host tool discarded.
+
+SSE responses are buffered until complete before local restoration, so users may
+see a silent wait instead of live token output. Unsupported images/attachments
+and unsupported protocol fields still fail closed. Lexical source masking can
+remove semantic information needed for some analysis; a successful round trip is
+not a guarantee that the model's code analysis is correct.

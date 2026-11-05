@@ -17,6 +17,10 @@ from secure_gateway.audit_retry import CompletionRetries
 from uuid import uuid4
 
 
+class AuditMaintenanceError(sqlite3.OperationalError):
+    """Completion is committed; bounded post-completion maintenance was deferred."""
+
+
 class AuditStore:
     def __init__(self, path: Path, max_records=100_000, max_age_days=None, *, read_only=False):
         if type(max_records) is not int or not 1 <= max_records <= 2**63 - 1:
@@ -262,7 +266,7 @@ class AuditStore:
             self._completion_maintenance(time.monotonic() + 0.05)
         except sqlite3.Error:
             self.completion_retries.maintenance_failed()
-            raise
+            raise AuditMaintenanceError("Audit maintenance deferred.") from None
 
     def _write_completion(self, db, request_id, metadata, *, retry=False):
         fields = self._COMPLETION_FIELDS

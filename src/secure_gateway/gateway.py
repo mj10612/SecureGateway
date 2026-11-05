@@ -41,7 +41,7 @@ from secure_gateway.gateway_validation import validate_cache_control
 from secure_gateway.engine.grammar_en import CLOSED_CLASS_WORDS
 from secure_gateway.gateway_source import looks_like_source
 from secure_gateway.gateway_catalog import fetch_catalog
-from secure_gateway.gateway_audit import AuditStore, anonymous_ref
+from secure_gateway.gateway_audit import AuditMaintenanceError, AuditStore, anonymous_ref
 from secure_gateway.gateway_admin import handle_admin
 from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, check_mapping_budget, positive_budget, snapshot_budget, record_mapping
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
@@ -409,6 +409,8 @@ def validate_api_options(payload, dialect):
             "effort": {"none", "minimal", "low", "medium", "high", "xhigh"},
             "summary": {"auto", "concise", "detailed"},
         }
+        if dialect == "responses":
+            enums["context"] = {"auto", "current_turn", "all_turns"}
         if (
             not isinstance(reasoning, dict)
             or set(reasoning) - enums.keys()
@@ -846,6 +848,12 @@ class GatewaySession:
                     ensure_ascii=False,
                     separators=(",", ":"),
                 )
+            elif key == "output_config" and value.get("role") == "system":
+                from secure_gateway.gateway_validation import _public_options
+                _public_options(item, {"effort": {"low", "medium", "high", "max"}}, "inline output")
+                result[key] = deepcopy(item)
+            elif key == "tools" and kind == "additional_tools":
+                result[key] = self.walk(item, restore)
             elif key == "input" and kind == "custom_tool_call":
                 result[key] = self.walk(item, restore, code=True)
             elif key == "input" and kind == "tool_use":
@@ -969,7 +977,7 @@ class GatewaySession:
         kinds = {
             "text", "input_text", "output_text", "refusal", "message",
             "tool_use", "tool_result", "function_call", "function_call_output",
-            "custom_tool_call", "custom_tool_call_output", "tool_namespace",
+            "custom_tool_call", "custom_tool_call_output", "tool_namespace", "additional_tools", "namespace",
             "tool_reference", "function", "custom", "json_schema", "json_object",
         } | SCHEMA_TYPES
         if key == "type" and isinstance(item, list) and all(
@@ -978,11 +986,15 @@ class GatewaySession:
             return deepcopy(item)
         keep = key == "type" and isinstance(item, str) and item in kinds
         if key == "role":
-            keep = "content" in envelope and isinstance(item, str) and item in {
+            keep = ("content" in envelope or kind == "additional_tools") and isinstance(item, str) and item in {
                 "system", "developer", "user", "assistant", "tool",
             }
         elif key == "id":
-            keep = kind in {"tool_use", "function_call", "custom_tool_call", "message"} or (kind == "function" and isinstance(envelope.get("function"), dict))
+            keep = kind in {"tool_use", "function_call", "custom_tool_call", "custom_tool_call_output", "function_call_output", "message", "additional_tools"} or (kind == "function" and isinstance(envelope.get("function"), dict))
+        elif key == "status" and kind in {"function_call", "custom_tool_call", "message"}:
+            if not isinstance(item, str) or item not in {"in_progress", "completed", "incomplete"}:
+                raise ValueError("Unsupported input item status.")
+            keep = True
         elif key == "call_id":
             keep = kind in {"function_call", "function_call_output", "custom_tool_call", "custom_tool_call_output"}
         elif key == "tool_use_id":
@@ -1615,6 +1627,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             state_dir.chmod(0o700)
         self.audit = AuditStore(audit_path, audit_max_records, audit_max_age_days) if audit_path is not None else None
         self.audit_write_errors = 0
+        self.audit_error_counts = {"admission": 0, "completion": 0, "maintenance": 0}
         try:
             if self.audit is not None:
                 self.audit.recover_incomplete(apply=True)
@@ -1624,6 +1637,15 @@ class PrivacyGateway(ThreadingHTTPServer):
             if self.audit is not None:
                 self.audit.close()
             raise
+
+    def record_audit_error(self, phase):
+        with self.admission:
+            self.audit_write_errors += 1  # Retain the legacy aggregate contract.
+            self.audit_error_counts[phase] += 1
+
+    def audit_error_diagnostics(self):
+        with self.admission:
+            return dict(self.audit_error_counts)
 
     def try_admit(self, agent):
         """Reserve an inference slot without waiting or reading the body."""
@@ -1677,6 +1699,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         return {"active_requests": active, "max_active_requests": self.max_active_requests,
                 "max_provider_requests": self.max_provider_requests, "providers": providers,
                 "audit_write_errors": self.audit_write_errors,
+                "audit_error_counts": self.audit_error_diagnostics(),
                 "audit_completion_retries": self.audit.completion_retries.diagnostics() if self.audit else None}
 
     def get_session(self, agent):
@@ -1971,7 +1994,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 agent, provider, subscription, request_path, destination,
             )
         except sqlite3.Error:
-            self.server.audit_write_errors += 1
+            self.server.record_audit_error("admission")
             self.send_body(503, b'{"error":"Audit storage unavailable; no request forwarded"}')
             return
         self.audit_metadata = {
@@ -1992,8 +2015,10 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 meta["outcome"] = "completed"
             try:
                 audit.finish(request_id, meta)
+            except AuditMaintenanceError:
+                self.server.record_audit_error("maintenance")
             except sqlite3.Error:
-                self.server.audit_write_errors += 1
+                self.server.record_audit_error("completion")
 
     def _do_POST(self):
         if not self.authorized():

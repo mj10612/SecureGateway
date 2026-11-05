@@ -38,12 +38,14 @@ def test_live_subscription_read_mask_and_restore(
         if language == "english"
         else f"파일 `{filename}` 읽어줘. 함수 `{function}` 코드를 보여줘."
     )
+    if agent == "codex":
+        prompt += " Read the file as UTF-8. On Windows PowerShell use Get-Content -Encoding UTF8."
     captured = []
     errors = []
     reasoning = []
     walk = GatewaySession.walk
 
-    def record_reasoning(session, value, restore=False, code=False):
+    def record_reasoning(session, value, restore=False, code=False, *args, **kwargs):
         if isinstance(value, dict) and value.get("type") == "reasoning":
             reasoning.append(
                 (
@@ -60,14 +62,14 @@ def test_live_subscription_read_mask_and_restore(
                     },
                 )
             )
-        return walk(session, value, restore, code)
+        return walk(session, value, restore, code, *args, **kwargs)
 
     monkeypatch.setattr(GatewaySession, "walk", record_reasoning)
     original = GatewaySession.request
 
-    def capture(session, payload):
+    def capture(session, payload, *args, **kwargs):
         try:
-            masked = original(session, payload)
+            masked = original(session, payload, *args, **kwargs)
         except Exception as exc:
             errors.append(("request", type(exc).__name__, str(exc)))
             raise
@@ -77,9 +79,9 @@ def test_live_subscription_read_mask_and_restore(
     monkeypatch.setattr(GatewaySession, "request", capture)
     original_response = GatewaySession.response
 
-    def capture_response(session, body, content_type):
+    def capture_response(session, body, content_type, *args, **kwargs):
         try:
-            return original_response(session, body, content_type)
+            return original_response(session, body, content_type, *args, **kwargs)
         except Exception as exc:
             errors.append(("response", type(exc).__name__, str(exc)))
             raise
@@ -198,6 +200,11 @@ def test_live_subscription_read_mask_and_restore(
             timeout=120,
         )
         if result.returncode:
+            try:
+                summary = json.loads(result.stdout)
+                print(json.dumps({"client_result": summary.get("result"), "client_subtype": summary.get("subtype")}))
+            except ValueError:
+                pass
             print(json.dumps({"errors": errors, "reasoning_shapes": reasoning}))
         assert result.returncode == 0, (
             errors + reasoning,
@@ -215,23 +222,30 @@ def test_live_subscription_read_mask_and_restore(
             and "private comment" not in payload
             for payload in captured
         )
-        # Restore the captured read result using the live mapping table, not a provider stub.
-        assert any(
-            all(
-                marker in gateway.sessions[agent].restore(payload)
-                for marker in [function, parameter, email]
-            )
-            for payload in captured
-        ), (
-            "The actual file content did not reach a masked follow-up request",
-            [
-                {
-                    "markers": [marker in gateway.sessions[agent].restore(payload) for marker in [function, parameter, email]],
-                    "fixture": gateway.sessions[agent].restore(payload)[max(0, gateway.sessions[agent].restore(payload).find(email) - 250):gateway.sessions[agent].restore(payload).find(email) + 100] if email in gateway.sessions[agent].restore(payload) else "",
-                }
-                for payload in captured
-            ],
-        )
+        # Tool output can contain nested JSON strings with Unicode escapes.
+        # Inspect decoded string values as well as their wire representation.
+        def decoded_strings(value, depth=0):
+            if depth > 8:
+                return []
+            if isinstance(value, dict):
+                return [text for item in value.values() for text in decoded_strings(item, depth + 1)]
+            if isinstance(value, list):
+                return [text for item in value for text in decoded_strings(item, depth + 1)]
+            if isinstance(value, str):
+                texts = [value]
+                try:
+                    parsed = json.loads(value)
+                except ValueError:
+                    return texts
+                if parsed != value:
+                    texts.extend(decoded_strings(parsed, depth + 1))
+                return texts
+            return []
+
+        restored_payloads = ["\n".join(decoded_strings(gateway.sessions[agent].restore(payload)))
+                             for payload in captured]
+        assert any(all(marker in payload for marker in [function, parameter, email])
+                   for payload in restored_payloads), "Actual file content did not reach a masked follow-up request"
         assert (tmp_path / filename).read_text(encoding="utf-8") == source
     finally:
         gateway.shutdown()

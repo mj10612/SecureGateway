@@ -106,7 +106,7 @@ def _tool_calls(value):
 
 def _message(message, dialect):
     roles = (
-        {"user", "assistant"}
+        {"user", "assistant", "system"}
         if dialect == "claude"
         else {"system", "developer", "user", "assistant", "tool"}
     )
@@ -117,6 +117,10 @@ def _message(message, dialect):
         _enum(message["phase"], {"commentary", "final_answer"}, "assistant phase")
     if "tool_calls" in message:
         _tool_calls(message["tool_calls"])
+    if "output_config" in message:
+        if dialect != "claude" or message.get("role") != "system":
+            raise ValueError("Inline output controls require a Claude system message.")
+        _public_options(message["output_config"], {"effort": {"low", "medium", "high", "max"}}, "inline output")
     content = message.get("content")
     if (
         content is None
@@ -138,7 +142,12 @@ def _input(value, dialect):
         kind = item.get("type")
         if kind is not None and not isinstance(kind, str):
             raise ValueError("Input items require a public type.")
-        if "role" in item or kind == "message":
+        if kind == "additional_tools":
+            if dialect != "codex" or item.get("role") != "developer" or not isinstance(item.get("tools"), list):
+                raise ValueError("Invalid additional tools envelope.")
+            if any(not isinstance(tool, dict) for tool in item["tools"]):
+                raise ValueError("Additional tools must be objects.")
+        elif "role" in item or kind == "message":
             _message(item, dialect)
         elif kind in {"function_call", "custom_tool_call"}:
             field = "arguments" if kind == "function_call" else "input"
@@ -215,14 +224,13 @@ def validate_request(payload, dialect):
         if key in payload:
             _enum(payload[key], allowed, key)
     if "reasoning" in payload:
-        _public_options(
-            payload["reasoning"],
-            {
-                "effort": {"none", "minimal", "low", "medium", "high", "xhigh"},
-                "summary": {"auto", "concise", "detailed"},
-            },
-            "reasoning",
-        )
+        reasoning_options = {
+            "effort": {"none", "minimal", "low", "medium", "high", "xhigh"},
+            "summary": {"auto", "concise", "detailed"},
+        }
+        if dialect in {"codex", "responses"}:
+            reasoning_options["context"] = {"auto", "current_turn", "all_turns"}
+        _public_options(payload["reasoning"], reasoning_options, "reasoning")
     if "thinking" in payload:
         _public_options(
             payload["thinking"],

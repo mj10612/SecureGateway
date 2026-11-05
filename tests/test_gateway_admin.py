@@ -227,6 +227,7 @@ def test_logging_failure_refuses_forwarding(admin_gateway, monkeypatch):
     status, body, _ = call(gateway, "/codex/responses", b'{"input":[]}', headers)
     assert status == 503 and b"private-database-path" not in body
     assert upstream.received == [] and gateway.audit_write_errors == 1
+    assert gateway.audit_error_diagnostics() == {"admission": 1, "completion": 0, "maintenance": 0}
 
 
 def test_completion_write_failure_stays_visible(admin_gateway, monkeypatch):
@@ -242,6 +243,7 @@ def test_completion_write_failure_stays_visible(admin_gateway, monkeypatch):
     assert gateway.audit_write_errors == 1
     data = json.loads(call(gateway, "/admin/api/logs")[1])
     assert data["audit_write_errors"] == 1 and data["rows"][0]["status"] is None
+    assert data["audit_error_counts"] == {"admission": 0, "completion": 1, "maintenance": 0}
 
 
 def test_concurrent_requests_are_durable_and_separately_attributed(admin_gateway):
@@ -338,6 +340,7 @@ def test_retention_failure_refuses_forwarding_without_orphan_and_can_retry(admin
         status, body, _ = call(gateway, "/codex/responses", b'{"input":[]}', headers)
     assert status == 503 and b"private-maintenance-path" not in body
     assert upstream.received == [] and gateway.audit_write_errors == 1
+    assert gateway.audit_error_diagnostics() == {"admission": 1, "completion": 0, "maintenance": 0}
     with gateway.audit.connect() as db:
         assert db.execute("SELECT COUNT(*) FROM requests").fetchone()[0] == 0
     assert call(gateway, "/codex/responses", b'{"input":[]}', headers)[0] == 200
@@ -373,3 +376,37 @@ def test_completion_retry_restores_log_without_replaying_inference(admin_gateway
     assert result.exit_code == 0, result.output
     assert json.loads(result.output)["audit_completion_retries"]["recovered"] == 1
     assert "private-completion-path" not in result.output
+
+
+def test_maintenance_budget_error_is_separate_from_completion_write_failure(admin_gateway, monkeypatch):
+    gateway, upstream = admin_gateway
+    def interrupt(deadline):
+        with gateway.audit.connect() as db:
+            db.set_progress_handler(lambda: 1, 1)
+            db.execute("SELECT COUNT(*) FROM requests")
+    monkeypatch.setattr(gateway.audit, "_completion_maintenance", interrupt)
+    headers = {"X-SecureGateway-Token": gateway.token, "Authorization": "Bearer eyJ-test"}
+    assert call(gateway, "/codex/responses", b'{"input":[]}', headers)[0] == 200
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.active_audit_handlers == 0, timeout=3)
+    status, body, _ = call(gateway, "/admin/api/logs")
+    data = json.loads(body)
+    assert status == 200 and data["rows"][0]["status"] == 200
+    assert data["audit_write_errors"] == 1  # The legacy aggregate remains compatible.
+    assert data["audit_error_counts"] == {"admission": 0, "completion": 0, "maintenance": 1}
+    assert data["audit_completion_retries"]["pending"] == 0
+    assert data["audit_completion_retries"]["maintenance_errors"] == 1
+    assert len(upstream.received) == 1
+    sessions = json.loads(call(gateway, "/admin/api/sessions")[1])
+    assert sessions["audit_error_counts"] == data["audit_error_counts"]
+
+
+def test_dashboard_audit_error_phases():
+    from pathlib import Path
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node.js required for dashboard DOM contract")
+    subprocess.run([node, str(Path(__file__).with_name("test_admin_audit_phases.js"))],
+                   check=True, capture_output=True, text=True, timeout=15)

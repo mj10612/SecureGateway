@@ -91,6 +91,7 @@ def handle_admin(handler):
             raise ValueError("Invalid pagination")
         result = handler.server.audit.query(filters, limit, offset)
         result["audit_write_errors"] = handler.server.audit_write_errors
+        result["audit_error_counts"] = handler.server.audit_error_diagnostics()
         result["audit_completion_retries"] = handler.server.audit.completion_retries.diagnostics()
         result["routes"] = [
             {"provider": name, "mode": "api_key" if name in handler.server.api_upstreams
