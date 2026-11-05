@@ -223,6 +223,9 @@ class AuditStore:
     def begin(self, agent, provider, subscription, endpoint, destination):
         if self.read_only or self._owner_file is None:
             raise ValueError("Audit store is read-only or closed.")
+        # Maintenance can fail independently. Complete it before publishing a
+        # request ID so admission failure cannot strand an unreachable live row.
+        self.retention(apply=True)
         request_id = uuid4().hex
         with self.connect() as db:
             db.execute(
@@ -231,7 +234,6 @@ class AuditStore:
                 (request_id, datetime.now(timezone.utc).isoformat(), agent,
                  provider, subscription, endpoint, destination, self.owner),
             )
-        self.retention(apply=True)
         return request_id
 
     def finish(self, request_id, metadata):

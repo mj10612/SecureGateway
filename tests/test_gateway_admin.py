@@ -326,3 +326,19 @@ def test_retention_discards_oldest_requests(tmp_path):
     assert store.query({})["summary"]["total"] == 100001
     with store.connect() as db:
         assert db.execute("SELECT request_id FROM requests ORDER BY id LIMIT 1").fetchone()[0] == "1"
+
+
+def test_retention_failure_refuses_forwarding_without_orphan_and_can_retry(admin_gateway, monkeypatch):
+    gateway, upstream = admin_gateway
+    def fail(*args, **kwargs):
+        raise sqlite3.OperationalError("private-maintenance-path")
+    headers = {"X-SecureGateway-Token": gateway.token, "Authorization": "Bearer eyJ-test"}
+    with monkeypatch.context() as patch:
+        patch.setattr(gateway.audit, "retention", fail)
+        status, body, _ = call(gateway, "/codex/responses", b'{"input":[]}', headers)
+    assert status == 503 and b"private-maintenance-path" not in body
+    assert upstream.received == [] and gateway.audit_write_errors == 1
+    with gateway.audit.connect() as db:
+        assert db.execute("SELECT COUNT(*) FROM requests").fetchone()[0] == 0
+    assert call(gateway, "/codex/responses", b'{"input":[]}', headers)[0] == 200
+    assert len(upstream.received) == 1

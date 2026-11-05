@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.0.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.0.1 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -581,3 +581,12 @@ mutable for normal usage tracking. This is a breaking change for SDK callers tha
 mutated identity fields directly; create a new session for different bindings.
 Allocator-private initialization methods are internal, not SDK mutation APIs.
 Snapshot schemas and CLI commands remain compatible with earlier releases.
+
+
+### Audit request admission (2.0.1)
+
+Audit retention runs before inserting a new request. If maintenance or insertion
+fails, the gateway refuses forwarding with HTTP 503 and increments its audit
+write-error counter; it does not leave an unreachable request marked in progress.
+Retrying admission after the storage failure clears creates one new request.
+Existing live requests remain protected from retention and crash recovery.
