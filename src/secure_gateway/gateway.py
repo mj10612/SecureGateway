@@ -1584,6 +1584,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         self.max_provider_requests = max_provider_requests
         self.admission = Condition(RLock())
         self.admitted_requests = 0
+        self.active_audit_handlers = 0
         self.provider_admitted: dict[str, int] = {}
         self.closing = False
         self.token = token
@@ -1644,7 +1645,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         """Keep health available until all admitted inference has finished."""
         with self.admission:
             self.closing = True
-            self.admission.wait_for(lambda: self.admitted_requests == 0)
+            self.admission.wait_for(lambda: self.admitted_requests == 0 and self.active_audit_handlers == 0)
         self.shutdown()
 
     def session_diagnostics(self):
@@ -1674,7 +1675,9 @@ class PrivacyGateway(ThreadingHTTPServer):
                                     expired=session.session.is_expired())
                 providers[agent] = item
         return {"active_requests": active, "max_active_requests": self.max_active_requests,
-                "max_provider_requests": self.max_provider_requests, "providers": providers}
+                "max_provider_requests": self.max_provider_requests, "providers": providers,
+                "audit_write_errors": self.audit_write_errors,
+                "audit_completion_retries": self.audit.completion_retries.diagnostics() if self.audit else None}
 
     def get_session(self, agent):
         with self.provider_locks[agent]:
@@ -1776,7 +1779,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             self.closing = True
         super().server_close()
         with self.admission:
-            self.admission.wait_for(lambda: self.admitted_requests == 0)
+            self.admission.wait_for(lambda: self.admitted_requests == 0 and self.active_audit_handlers == 0)
         for session in self.sessions.values():
             with session.lock:
                 session.session.clear()
@@ -1939,13 +1942,32 @@ class GatewayHandler(BaseHTTPRequestHandler):
         if provider is None or self.server.audit is None:
             self._do_POST()
             return
+        # Audit work outlives inference admission and also covers rejected
+        # requests. Keep its owner alive until completion or retry enqueue ends.
+        with self.server.admission:
+            reserved = not self.server.closing
+            if reserved:
+                self.server.active_audit_handlers += 1
+        if not reserved:
+            self.send_body(503, b'{"error":"Gateway shutting down; no request forwarded"}')
+            return
+        try:
+            self._audited_POST(provider, request_path)
+        finally:
+            with self.server.admission:
+                self.server.active_audit_handlers -= 1
+                self.server.admission.notify_all()
+
+    def _audited_POST(self, provider, request_path):
+        audit = self.server.audit
+        assert audit is not None
         agent = {"claude": "Claude Code", "codex": "Codex", "xai": "xAI client"}[provider]
         subscription = {"claude": "claude_subscription", "codex": "chatgpt_subscription",
                         "xai": "api_key"}[provider]
         origin = urllib.parse.urlsplit(self.server.upstreams.get(provider, ""))
         destination = origin.scheme + "://" + origin.netloc.split("@")[-1] + origin.path
         try:
-            request_id = self.server.audit.begin(
+            request_id = audit.begin(
                 agent, provider, subscription, request_path, destination,
             )
         except sqlite3.Error:
@@ -1969,7 +1991,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             elif meta["status"] == 200:
                 meta["outcome"] = "completed"
             try:
-                self.server.audit.finish(request_id, meta)
+                audit.finish(request_id, meta)
             except sqlite3.Error:
                 self.server.audit_write_errors += 1
 

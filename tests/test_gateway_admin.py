@@ -39,7 +39,7 @@ def admin_gateway(tmp_path):
     worker.start()
     origin = f"http://127.0.0.1:{upstream.server_port}"
     gateway = PrivacyGateway(
-        ("127.0.0.1", 0), "local-private-token", upstreams={"claude": origin, "codex": origin},
+        ("127.0.0.1", 0), "local-private-token-for-test-only", upstreams={"claude": origin, "codex": origin},
         api_upstreams={"xai": origin}, audit_path=tmp_path / "logs.sqlite3",
     )
     thread = Thread(target=gateway.serve_forever, daemon=True)
@@ -342,3 +342,34 @@ def test_retention_failure_refuses_forwarding_without_orphan_and_can_retry(admin
         assert db.execute("SELECT COUNT(*) FROM requests").fetchone()[0] == 0
     assert call(gateway, "/codex/responses", b'{"input":[]}', headers)[0] == 200
     assert len(upstream.received) == 1
+
+
+def test_completion_retry_restores_log_without_replaying_inference(admin_gateway, monkeypatch, tmp_path):
+    gateway, upstream = admin_gateway
+    write = gateway.audit._write_completion
+    def fail_initial(db, request_id, metadata, *, retry=False):
+        if not retry:
+            raise sqlite3.OperationalError("private-completion-path")
+        return write(db, request_id, metadata, retry=retry)
+    monkeypatch.setattr(gateway.audit, "_write_completion", fail_initial)
+    headers = {"X-SecureGateway-Token": gateway.token, "Authorization": "Bearer eyJ-test"}
+    assert call(gateway, "/codex/responses", b'{"input":[]}', headers)[0] == 200
+    ledger(gateway, 1)
+    deadline = time.monotonic() + 3
+    while gateway.audit.completion_retries.diagnostics()["pending"]:
+        assert time.monotonic() < deadline
+        time.sleep(.01)
+    status, body, _ = call(gateway, "/admin/api/logs")
+    report = json.loads(body)
+    assert status == 200 and report["rows"][0]["status"] == 200
+    assert report["audit_write_errors"] == 1
+    assert report["audit_completion_retries"]["recovered"] == 1
+    assert len(upstream.received) == 1
+    status, body, _ = call(gateway, "/admin/api/sessions")
+    assert status == 200 and json.loads(body)["audit_completion_retries"]["recovered"] == 1
+    config = tmp_path / "diagnostics.json"
+    config.write_text(json.dumps({"port": gateway.server_port, "token": gateway.token}))
+    result = CliRunner().invoke(main, ["gateway", "diagnostics", "--config", str(config)])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["audit_completion_retries"]["recovered"] == 1
+    assert "private-completion-path" not in result.output

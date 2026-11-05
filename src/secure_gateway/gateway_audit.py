@@ -11,6 +11,9 @@ import sys
 from pathlib import Path
 import sqlite3
 import stat
+import time
+
+from secure_gateway.audit_retry import CompletionRetries
 from uuid import uuid4
 
 
@@ -32,6 +35,7 @@ class AuditStore:
         self.owner = uuid4().hex
         self._owner_file = None
         self._export_key = os.urandom(32)
+        self.completion_retries = CompletionRetries(self._retry_completion)
         if read_only:
             if path.exists():
                 with path.open("rb") as handle:
@@ -108,6 +112,9 @@ class AuditStore:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)  # type: ignore[attr-defined]
 
     def close(self):
+        retries = getattr(self, "completion_retries", None)
+        if retries is not None:
+            retries.close()
         handle = getattr(self, "_owner_file", None)
         if handle is not None:
             handle.close()
@@ -210,9 +217,9 @@ class AuditStore:
         return result
 
     @contextmanager
-    def connect(self):
+    def connect(self, *, timeout=5):
         target = self.path.resolve().as_uri() + "?mode=ro" if self.read_only else self.path
-        db = sqlite3.connect(target, timeout=5, uri=self.read_only)
+        db = sqlite3.connect(target, timeout=timeout, uri=self.read_only)
         db.row_factory = sqlite3.Row
         try:
             with db:
@@ -236,39 +243,81 @@ class AuditStore:
             )
         return request_id
 
+    _COMPLETION_FIELDS = ("agent", "account_ref", "credential_ref", "model", "status",
+                          "outcome", "upstream_attempted", "duration_ms", "input_bytes",
+                          "masked_bytes", "output_bytes", "new_aliases")
+
     def finish(self, request_id, metadata):
-        if self.read_only:
-            raise ValueError("Audit store is read-only.")
-        fields = ("agent", "account_ref", "credential_ref", "model", "status",
-                  "outcome", "upstream_attempted", "duration_ms", "input_bytes",
-                  "masked_bytes", "output_bytes", "new_aliases")
-        with self.connect() as db:
-            db.execute(
-                "UPDATE requests SET " + ", ".join(f"{field}=?" for field in fields)
-                + " WHERE request_id=?",
-                tuple(metadata.get(field) for field in fields) + (request_id,),
-            )
-        self.retention(apply=True)
+        if self.read_only or self._owner_file is None:
+            raise ValueError("Audit store is read-only or closed.")
+        # Keep only the ledger's fixed metadata fields, never the caller's extras.
+        completion = {field: metadata.get(field) for field in self._COMPLETION_FIELDS}
+        try:
+            with self.connect(timeout=0.05) as db:
+                self._write_completion(db, request_id, completion)
+        except sqlite3.Error:
+            self.completion_retries.enqueue(request_id, completion)
+            raise  # Preserve the existing visible failure counter at the caller.
+        try:
+            self._completion_maintenance(time.monotonic() + 0.05)
+        except sqlite3.Error:
+            self.completion_retries.maintenance_failed()
+            raise
+
+    def _write_completion(self, db, request_id, metadata, *, retry=False):
+        fields = self._COMPLETION_FIELDS
+        condition = " AND owner=? AND status IS NULL AND outcome='incomplete'" if retry else ""
+        return db.execute(
+            "UPDATE requests SET " + ", ".join(f"{field}=?" for field in fields)
+            + " WHERE request_id=?" + condition,
+            tuple(metadata.get(field) for field in fields) + (request_id,)
+            + ((self.owner,) if retry else ()),
+        ).rowcount
+
+    def _retry_completion(self, request_id, metadata):
+        # Commit completion before optional maintenance: a large retention query
+        # must not roll back an otherwise successful recovery.
+        deadline = time.monotonic() + 0.05
+        with self.connect(timeout=0.05) as db:
+            db.set_progress_handler(lambda: time.monotonic() >= deadline, 1000)
+            db.execute("BEGIN IMMEDIATE")
+            changed = self._write_completion(db, request_id, metadata, retry=True)
+        try:
+            self._completion_maintenance(deadline)
+        except sqlite3.Error:
+            self.completion_retries.maintenance_failed()
+            # Normal admission/completion will run retention again.
+        return bool(changed)
+
+    def _completion_maintenance(self, deadline):
+        if time.monotonic() >= deadline:
+            raise sqlite3.OperationalError("Maintenance budget exhausted")
+        with self.connect(timeout=0) as db:
+            db.set_progress_handler(lambda: time.monotonic() >= deadline, 1000)
+            db.execute("BEGIN IMMEDIATE")
+            self._retention_in_transaction(db, True)
 
     def retention(self, apply=False):
         """Report candidates by default; only completed requests can be removed."""
-        cutoff = (datetime.now(timezone.utc) - timedelta(days=self.max_age_days)).isoformat() if self.max_age_days else None
         if apply and self.read_only:
             raise ValueError("Audit store is read-only.")
-        result = {"max_records": self.max_records, "max_age_days": self.max_age_days,
-                  "candidates": 0, "removed": 0, "dry_run": not apply}
         if not self.path.exists():
-            return result
+            return {"max_records": self.max_records, "max_age_days": self.max_age_days,
+                    "candidates": 0, "removed": 0, "dry_run": not apply}
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE" if apply else "BEGIN")
-            completed = "(status IS NOT NULL OR outcome='interrupted')"
-            where = (completed + " AND (id IN (SELECT id FROM requests "
-                     "WHERE " + completed + " ORDER BY id DESC LIMIT -1 OFFSET ?)"
-                     + (" OR started_at < ?" if cutoff else "") + ")")
-            values = [self.max_records] + ([cutoff] if cutoff else [])
-            candidates = db.execute("SELECT COUNT(*) FROM requests WHERE " + where, values).fetchone()[0]
-            if apply:
-                db.execute("DELETE FROM requests WHERE " + where, values)
+            return self._retention_in_transaction(db, apply)
+
+    def _retention_in_transaction(self, db, apply):
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=self.max_age_days)).isoformat() if self.max_age_days else None
+        completed = "(status IS NOT NULL OR outcome='interrupted')"
+        where = (completed + " AND (id IN (SELECT id FROM requests "
+                 "WHERE " + completed + " ORDER BY id DESC LIMIT -1 OFFSET ?)"
+                 + (" OR started_at < ?" if cutoff else "") + ")")
+        values = [self.max_records] + ([cutoff] if cutoff else [])
+        candidates = db.execute("SELECT COUNT(*) FROM requests WHERE " + where, values).fetchone()[0]
+        if apply:
+            db.execute("DELETE FROM requests WHERE " + where, values)
         return {"max_records": self.max_records, "max_age_days": self.max_age_days,
                 "candidates": candidates, "removed": candidates if apply else 0, "dry_run": not apply}
 

@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.0.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.1.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -590,3 +590,39 @@ fails, the gateway refuses forwarding with HTTP 503 and increments its audit
 write-error counter; it does not leave an unreachable request marked in progress.
 Retrying admission after the storage failure clears creates one new request.
 Existing live requests remain protected from retention and crash recovery.
+
+
+### Audit completion retries (2.1.0)
+
+Transient completion-write failures enqueue a snapshot of the ledger's fixed
+metadata fields in memory. Prompt/response bodies, arbitrary caller fields, and
+provider credentials are not added to the queue. Inference is never replayed.
+The original write failure still increments the gateway audit error counter.
+Completion writes use a short SQLite lock wait before handing failures to the
+queue; admission remains fail-closed. Post-completion maintenance also has a
+short nonblocking budget so it cannot delay shutdown by the admission timeout.
+
+Each audit store permits at most 256 queued completions and a 1 MiB logical queue
+budget (UTF-8 metadata and request ID plus a 512-byte policy charge per item, not
+exact Python heap usage). It retries at most five times, waiting 0.25, 0.5, 1, 2,
+and 4 seconds before successive attempts. Short SQLite lock waits and a progress
+budget bound each background write. Duplicate IDs retain the first queued
+snapshot. Completed, deleted, or foreign-owner records are skipped; retry never
+inserts a row or overwrites another completion.
+
+A recovered completion commits before best-effort bounded retention. A retention
+failure increments a separate maintenance counter and normal admission/completion
+will run retention again. Active requests retain their existing protections.
+
+Authenticated `gateway diagnostics`, `/admin/api/sessions`, and `/admin/api/logs`
+include `audit_completion_retries`: pending count and logical bytes, attempts,
+recovered writes, skipped records, retry errors, maintenance errors, dropped
+entries, and limits. These diagnostics contain no queued metadata or request IDs.
+
+Graceful shutdown waits for audited handlers to finish or enqueue their completion
+before flushing the queue. Queue flushing allows one second, accelerates pending
+attempts within the existing attempt cap, then counts unresolved entries as
+dropped. Over-budget, exhausted, and abandoned entries also increment `dropped`.
+The queue is not persisted: process termination can lose pending completion
+metadata. Existing next-start crash recovery marks remaining orphaned requests
+interrupted; it cannot reconstruct their original completion status.
