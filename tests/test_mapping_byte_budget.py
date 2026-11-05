@@ -190,7 +190,8 @@ def test_failed_wrapper_does_not_mutate_supplied_session():
 def test_mutated_original_cannot_publish_unreloadable_snapshot(tmp_path):
     s = PrivacySession("mutated", max_mapping_bytes=1200)
     mask(s, "private")
-    next(iter(s.forward_store.values())).original = "x" * 10000
+    # Deliberate unsupported bypass: saving still revalidates corrupted state.
+    object.__setattr__(next(iter(s.forward_store.values())), "original", "x" * 10000)
     path = tmp_path / "state.enc"
     with pytest.raises(ValueError, match="Mapping byte limit"):
         save_session(path, s, "password")

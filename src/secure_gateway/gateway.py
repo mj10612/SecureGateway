@@ -479,7 +479,7 @@ class SharedEngine(MaskingEngine):
                     raise NumericLiteralConflict("Numeric literal conflicts with a preserved number; use a new session.")
                 mapping_store[key].occurrence_count += 1
                 if code and token_type == TokenType.LITERAL:
-                    mapping_store[key].code_literal = True
+                    mapping_store[key]._mark_code_literal()
                 return mapping_store[key].surrogate
             if len(mapping_store) >= min(self.mapping_limit, generator.max_mappings):
                 raise ValueError(
@@ -1793,6 +1793,39 @@ class GatewayHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.0"
     timeout = 60
 
+    def finish(self):
+        # An early rejection can leave POST bytes in flight. Closing immediately
+        # then resets the connection on Windows, sometimes discarding the 401.
+        # Publish EOF after the response, then allow a bounded body drain. Never
+        # wait here after a normal request has already consumed its body.
+        try:
+            if (
+                getattr(self, "command", None) == "POST"
+                and not getattr(self, "_request_body_consumed", False)
+            ):
+                headers = getattr(self, "headers", {})
+                try:
+                    length = int(headers.get("Content-Length", "0"))
+                except (ValueError, TypeError):
+                    length = 0
+                if 0 < length <= LIMIT and not headers.get("Transfer-Encoding"):
+                    self.wfile.flush()
+                    self.connection.shutdown(socket.SHUT_WR)
+                    deadline = time.monotonic() + 0.1
+                    while length:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0:
+                            break
+                        self.connection.settimeout(remaining)
+                        block = self.rfile.read1(min(length, 65536))
+                        if not block:
+                            break
+                        length -= len(block)
+        except (OSError, ValueError):
+            pass  # Peer disconnects/timeouts must not prevent stream cleanup.
+        finally:
+            super().finish()
+
     def log_message(self, *_):
         pass  # Never log headers, prompts, replies or tokens.
 
@@ -1892,6 +1925,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             )
 
     def do_POST(self):
+        self._request_body_consumed = False
         # Only fixed inference routes enter the ledger; never store caller paths,
         # query strings, error bodies, arbitrary headers or request/response text.
         request_path = self.path.partition("?")[0]
@@ -1963,6 +1997,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 if not 0 < length <= 1024:
                     raise ValueError("Invalid reset request.")
                 raw = self.rfile.read(length)
+                self._request_body_consumed = True
                 if len(raw) != length:
                     raise ValueError("Incomplete reset request body.")
                 payload = json.loads(raw)
@@ -2053,6 +2088,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             if not 0 < length <= LIMIT:
                 raise ValueError("Request size limit exceeded.")
             raw = self.rfile.read(length)
+            self._request_body_consumed = True
             if len(raw) != length:
                 raise ValueError("Incomplete request body.")
             if meta is not None:

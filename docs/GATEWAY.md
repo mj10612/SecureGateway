@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 1.7.3 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.0.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -569,3 +569,15 @@ regular settings files for subscription and xAI installation; the installer does
 not replace dotfile links. Recovery/uninstall also refuse a settings path changed
 into a symlink. A symlinked parent directory is supported when resolved ownership
 and actual writes refer to the same target.
+
+
+### SDK mapping identity (2.0.0)
+
+`TokenMapping` identity fields (original, surrogate, type, context, lookup key,
+identifier metadata, format and literal flags) are read-only. Assigning or deleting
+them raises a Pydantic validation error before changing the mapping, keeping
+session byte accounting and search indexes consistent. `occurrence_count` remains
+mutable for normal usage tracking. This is a breaking change for SDK callers that
+mutated identity fields directly; create a new session for different bindings.
+Allocator-private initialization methods are internal, not SDK mutation APIs.
+Snapshot schemas and CLI commands remain compatible with earlier releases.

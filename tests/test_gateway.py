@@ -750,7 +750,12 @@ def test_legacy_glued_numeric_alias_is_restored_in_gateway_tool_arguments():
     session = GatewaySession(mask_numbers=True)
     first = session.mask("0.5", code=True)
     second = session.mask(".1", code=True)
-    session.session.reverse_store[first].context = "code"
+    legacy = session.session.reverse_store[first].model_copy(update={"context": "code"})
+    for key, mapping in session.session.forward_store.items():
+        if mapping.surrogate == first:
+            session.session.forward_store[key] = legacy
+            break
+    session.session.reverse_store[first] = legacy
     # Simulate a legacy masked edit that glued two numeric aliases together.
     response = {
         "content": [

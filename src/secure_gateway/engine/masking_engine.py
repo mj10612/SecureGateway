@@ -523,13 +523,10 @@ class MaskingEngine:
             return allocated
         if candidate is not None and allocated != candidate:
             del reverse_store[allocated]
-            mapping.surrogate = candidate
+            mapping._initialize_identifier(candidate, base or allocated, language, semantic, quoted)
             reverse_store[candidate] = mapping
             generator.used_surrogates.add(candidate)
-        mapping.identifier_base = base or allocated
-        mapping.identifier_language = language
-        mapping.identifier_key = semantic
-        mapping.identifier_quoted = quoted
+        mapping._initialize_identifier(mapping.surrogate, base or allocated, language, semantic, quoted)
         variants.append(mapping)
         cache[group] = variants
         return mapping.surrogate

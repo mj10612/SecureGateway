@@ -45,20 +45,33 @@ class TokenType(str, Enum):
 class TokenMapping(BaseModel):
     """Bi-directional mapping between original token and synthetic surrogate."""
 
-    original: str
-    surrogate: str
-    token_type: TokenType = TokenType.UNKNOWN
+    # Mapping identity is immutable: stores cache its size and original/alias indexes.
+    # Use a new session for different bindings instead of mutating stored identity.
+    original: str = Field(frozen=True)
+    surrogate: str = Field(frozen=True)
+    token_type: TokenType = Field(default=TokenType.UNKNOWN, frozen=True)
     occurrence_count: int = 1
-    is_capitalized: bool = False
-    is_all_caps: bool = False
-    context: Literal["text", "code"] = "text"
-    format_version: int = Field(default=2, ge=1, le=2)
-    identifier_base: str | None = None
-    identifier_language: str | None = None
-    identifier_key: str | None = None
-    identifier_quoted: bool = False
-    lookup_key: str | None = None
-    code_literal: bool = False
+    is_capitalized: bool = Field(default=False, frozen=True)
+    is_all_caps: bool = Field(default=False, frozen=True)
+    context: Literal["text", "code"] = Field(default="text", frozen=True)
+    format_version: int = Field(default=2, ge=1, le=2, frozen=True)
+    identifier_base: str | None = Field(default=None, frozen=True)
+    identifier_language: str | None = Field(default=None, frozen=True)
+    identifier_key: str | None = Field(default=None, frozen=True)
+    identifier_quoted: bool = Field(default=False, frozen=True)
+    lookup_key: str | None = Field(default=None, frozen=True)
+    code_literal: bool = Field(default=False, frozen=True)
+
+    def _initialize_identifier(self, surrogate, base, language, key, quoted):
+        """Allocator-only initialization, before the operation exposes this binding."""
+        for name, value in (("surrogate", surrogate), ("identifier_base", base),
+                            ("identifier_language", language), ("identifier_key", key),
+                            ("identifier_quoted", quoted)):
+            object.__setattr__(self, name, value)
+
+    def _mark_code_literal(self):
+        """The shared allocator may encounter an existing text alias in code."""
+        object.__setattr__(self, "code_literal", True)
 
 
 class MaskResult(BaseModel):

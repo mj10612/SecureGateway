@@ -178,7 +178,7 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
         for item in payload["mappings"]:
             mapping = TokenMapping.model_validate(item)
             if version == 1:
-                mapping.format_version = 1
+                mapping = mapping.model_copy(update={"format_version": 1})
             key = mapping.lookup_key or mapping_key(
                 mapping.original, mapping.token_type, mapping.context == "code"
             )
