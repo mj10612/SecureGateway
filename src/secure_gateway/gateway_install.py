@@ -603,23 +603,32 @@ def apply_settings(path: Path, config, changes, *, mirrors=None):
     return list(changes)
 
 
-def uninstall_gateway(path: Path):
+def uninstall_gateway(path: Path, *, force_clean=False):
     path = path.resolve()
     if not path.parent.exists():
-        return False
+        if not force_clean:
+            return False
+        _ensure_state_directory(path)
     manifest_path = installation_path(path)
     if manifest_path.exists():
         load_installation_manifest(manifest_path)
     with session_file_lock(path):
         _recover_install(path)
-        return _uninstall_gateway(path)
+        return _uninstall_gateway(path, force_clean=force_clean)
 
 
-def _uninstall_gateway(path: Path):
+def _uninstall_gateway(path: Path, *, force_clean=False):
+    from secure_gateway.gateway_uninstall import merge_subscription_settings, recovery_settings
+
     manifest_path = installation_path(path)
-    if not manifest_path.exists():
+    exists = manifest_path.exists()
+    if not exists and not force_clean:
         return False
-    manifest = load_installation_manifest(manifest_path)
+    manifest = load_installation_manifest(manifest_path) if exists else {"files": {}}
+    config = load_config(path) if path.exists() else None
+    # Without a config the caller must explicitly opt into ownership discovery;
+    # API uninstall also uses this function after config loss.
+    subscription = force_clean if config is None else config.get("mode", "subscription") == "subscription"
     recovering = manifest.get("uninstall_started") is True
     originals = {}
     for name, record in manifest["files"].items():
@@ -629,7 +638,6 @@ def _uninstall_gateway(path: Path):
             if record["original_hex"] is not None
             else None
         )
-        originals[settings] = original
         current = settings.read_bytes() if settings.is_file() else None
         installed = _installed(record, current)
         restored = (
@@ -637,14 +645,62 @@ def _uninstall_gateway(path: Path):
             and current == original
             and (current is not None or not settings.exists())
         )
-        if settings.is_symlink() or (not installed and not restored):
+        if settings.is_symlink() or (settings.exists() and not settings.is_file()):
+            raise ValueError("Host settings changed; refusing to overwrite a symbolic link or non-file.")
+        if not installed and not restored and not recovering and subscription:
+            if current is None:
+                # Already removed by the user: do not resurrect a backup.
+                original = None
+                restored = True
+            else:
+                merged = merge_subscription_settings(settings, current, original, config)
+                if merged is not None:
+                    original = merged
+                    restored = True
+        if not installed and not restored:
             raise ValueError(
                 "Host settings changed; refusing to overwrite them. Restore/merge installation.json manually."
             )
+        originals[settings] = original
+        if current is not None:
+            # A pending selective restore must recognize the edited source as
+            # well as its merged target when retried after an interruption.
+            record["installed_sha256"] = sha256(current).hexdigest()
+            record.pop("accepted_sha256", None)
+    if subscription and not recovering:
+        # Orca can synchronize canonical settings into accounts never recorded
+        # by the installer. Only matching gateway routes/tokens are adopted.
+        for settings in sorted(recovery_settings() - set(originals)):
+            if settings.is_symlink() or not settings.is_file():
+                continue
+            current = settings.read_bytes()
+            if b"secure_gateway_subscription" not in current and b"x-securegateway-token" not in current.lower():
+                continue
+            merged = merge_subscription_settings(settings, current, None, config)
+            if merged is not None and merged != current:
+                originals[settings] = merged
+                manifest["files"][str(settings.resolve())] = {
+                    "original_hex": merged.hex(),
+                    "installed_sha256": sha256(current).hexdigest(),
+                }
+        if force_clean and not exists:
+            arguments = [sys.executable, "-m", "secure_gateway", "gateway", "ensure", "--config", str(path)]
+            startup, expected = startup_registration(arguments)
+            if not startup.is_symlink() and startup.is_file() and startup.read_bytes() == expected:
+                originals[startup] = None
+                manifest["files"][str(startup.resolve())] = {
+                    "original_hex": None, "installed_sha256": sha256(expected).hexdigest(),
+                }
+    if not exists and not originals:
+        return False
     # Persist the recovery boundary before touching any settings. A failed or
     # interrupted uninstall may retry files already restored to exact originals,
     # while any other user edits still prevent overwriting them.
     if not recovering:
+        # Persist the selected merge outputs as the retry targets. This keeps
+        # partial uninstall recovery as strict as the original transaction.
+        for settings, original in originals.items():
+            manifest["files"][str(settings.resolve())]["original_hex"] = original.hex() if original is not None else None
         manifest["uninstall_started"] = True
         _atomic_json(manifest_path, manifest)
     stop_gateway(path)

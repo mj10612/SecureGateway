@@ -38,7 +38,7 @@ Language support is lexical and masking is heuristic; exact restoration does not
 
 ## Stop and remove
 
-Stop the daemon before removing its settings. Uninstall restores owned settings and refuses to overwrite later user edits. The gateway requires regular host settings files rather than direct symlinks. See the main guide for upgrade and recovery procedures.
+Stop the daemon before removing its settings. Subscription uninstall removes owned gateway settings while preserving later user edits, including settings synchronized to Orca account homes. Use `gateway uninstall --force-clean` to recover without an installation record; unknown previous values cannot be restored. The gateway requires regular host settings files rather than direct symlinks. See the main guide for upgrade and recovery procedures.
 
 ```sh
 secure-gateway gateway stop

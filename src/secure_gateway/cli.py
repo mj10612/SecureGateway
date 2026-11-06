@@ -872,15 +872,18 @@ def gateway_admin(config, no_open):
 
 @gateway.command("uninstall")
 @click.option("--config", type=click.Path(path_type=Path))
-def gateway_uninstall(config):
-    """Restore backed-up settings; refuses to overwrite subsequent user edits."""
+@click.option("--force-clean", is_flag=True, help="Remove recognizable gateway settings even without an installation record.")
+def gateway_uninstall(config, force_clean):
+    """Remove gateway settings while preserving subsequent host edits."""
     from secure_gateway.gateway_install import default_config, uninstall_gateway
 
     try:
-        changed = uninstall_gateway(config or default_config())
+        changed = uninstall_gateway(config or default_config(), force_clean=force_clean)
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from None
-    click.echo("Previous agent settings restored. Restart the CLI." if changed else "No active gateway installation found.")
+    click.echo("Gateway settings removed; unrelated host edits preserved. Restart the CLI." if changed else "No active gateway installation found.")
+    if force_clean and changed:
+        click.echo("Settings without backups were cleaned by ownership; unknown previous values could not be restored.")
 
 
 @gateway.command("status")

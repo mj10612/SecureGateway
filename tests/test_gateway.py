@@ -356,7 +356,7 @@ def test_install_refuses_paid_override_without_modifying_hosts(tmp_path):
     assert settings.read_bytes() == before
 
 
-def test_uninstall_refuses_subsequent_edits(tmp_path):
+def test_uninstall_preserves_settings_already_cleared_by_user(tmp_path):
     config = tmp_path / "state/config.json"
     claude = tmp_path / "claude"
     install_gateway(
@@ -364,8 +364,7 @@ def test_uninstall_refuses_subsequent_edits(tmp_path):
     )
     settings = claude / "settings.json"
     settings.write_text("{}")
-    with pytest.raises(ValueError):
-        uninstall_gateway(config)
+    assert uninstall_gateway(config)
     assert settings.read_text() == "{}"
 
 

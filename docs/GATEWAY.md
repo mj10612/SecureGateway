@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.4.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.4.1 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -167,11 +167,24 @@ secure-gateway gateway uninstall
 ```
 
 If the daemon stops, configured inference fails at the loopback endpoint. There is no raw
-direct-provider fallback. `uninstall` stops it and restores exact backed-up settings/startup
-bytes. It refuses to overwrite files edited since setup; manually merge originals recorded
-in private `installation.json` in that case. State/backups remain in `~/.secure-gateway/gateway`
+direct-provider fallback. `uninstall` stops it and restores exact backed-up files when
+unchanged. For edited subscription settings, it restores only gateway-owned Codex provider/login
+keys and Claude URL/token headers, preserving unrelated edits and user-replaced values.
+It also removes matching gateway settings synchronized into other Orca account homes.
+Startup files and API-mode settings retain strict ownership checks.
+State remains in `~/.secure-gateway/gateway`
 by default for recovery; remove this directory after stopping if you want to discard them.
 Do not commit local state or reuse its access token for other services.
+
+If `installation.json` is missing, use `secure-gateway gateway uninstall --force-clean`
+(with `--config PATH` for a custom gateway). This scans the canonical/active Codex home,
+Orca account homes and the configured Claude home for recognizable gateway keys. With a
+gateway config present, only matching routes/tokens are removed. Without it, recovery
+requires the reserved Codex provider with a loopback gateway URL/token, or the Claude
+loopback route and token header together. Unknown previous provider, login and URL values
+cannot be recovered without a backup. Authentication caches are never changed. Only the
+default startup registration can be identified without its manifest; custom startup paths
+must be removed manually if the installation record is lost.
 
 ## Shared aliases and automatic results
 
@@ -550,7 +563,7 @@ optional runtime dependencies in the same environment that runs the gateway,
 then explicitly download the pinned, checksum-verified assets:
 
 ```bash
-pip install '.[context]'  # from this 2.4.0 checkout
+pip install '.[context]'  # from this checkout
 secure-gateway gateway model-install
 # Repository environment alternative:
 uv sync --locked --extra dev --extra native-validation --extra context
