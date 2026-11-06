@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.4.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.4.2 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -810,3 +810,11 @@ see a silent wait instead of live token output. Unsupported images/attachments
 and unsupported protocol fields still fail closed. Lexical source masking can
 remove semantic information needed for some analysis; a successful round trip is
 not a guarantee that the model's code analysis is correct.
+
+### Encoded tool argument numbers (2.4.2)
+
+JSON encoded inside tool `arguments` strings follows the same finite-number
+policy as the surrounding JSON. NaN, Infinity and overflowing exponents such
+as `1e400` are rejected before forwarding local requests. Invalid arguments in
+provider JSON or accumulated SSE tool deltas produce a safe HTTP 502 restoration
+error. Finite exponents and arbitrary-precision JSON integers remain supported.

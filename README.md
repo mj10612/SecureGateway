@@ -8,7 +8,7 @@ Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENA
 
 *17개 자연어·24개 코드 언어를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-2.4.1-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-2.4.2-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
 [![CI](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml)
@@ -61,7 +61,7 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 ## Supported Versions
 
-2.4.1에서는 설치 후 바뀐 사용자 설정을 보존하며 게이트웨이를 제거하도록 수정했습니다.
+2.4.2에서는 설치 후 바뀐 사용자 설정을 보존하며 게이트웨이를 제거하도록 수정했습니다.
 다른 Orca 계정에 동기화된 설정 정리와 `gateway uninstall --force-clean` 복구도 지원합니다.
 
 2.4.0에는 선택형 로컬 E5 문맥 모델과 MiniLM/E5 비교 검증 절차를 추가했습니다.
@@ -72,7 +72,7 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureGateway | **2.4.1** |
+| SecureGateway | **2.4.2** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |

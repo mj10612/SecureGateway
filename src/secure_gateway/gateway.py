@@ -1102,8 +1102,8 @@ class GatewaySession:
                 if not item.strip():
                     result[key] = ""
                     continue
-                result[key] = json.dumps(
-                    self.values(json.loads(item), restore, code=True),
+                result[key] = strict_json_dumps(
+                    self.values(strict_json_loads(item), restore, code=True),
                     ensure_ascii=False,
                     separators=(",", ":"),
                 )
@@ -1794,8 +1794,8 @@ class GatewaySession:
                 restored = (
                     combined
                     if not combined.strip()
-                    else json.dumps(
-                        self.values(json.loads(combined), restore=True),
+                    else strict_json_dumps(
+                        self.values(strict_json_loads(combined), restore=True),
                         ensure_ascii=False,
                     )
                 )
