@@ -1,5 +1,26 @@
 # Local language data
 
+## Optional context encoder (2.4.0)
+
+The explicitly installed encoder is [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small),
+upstream MIT license, revision `614241f622f53c4eeff9890bdc4f31cfecc418b3`.
+SecureGateway uses the upstream `onnx/model_qint8_avx512_vnni.onnx`, tokenizer and
+configuration without changing their bytes. Exact file sizes and SHA-256 values
+are pinned in `src/secure_gateway/context_assets.py`. Weights are downloaded from
+the upstream revision only on an explicit install command, not redistributed in
+the Python package. Preserve the upstream license when redistributing these assets.
+The `query: ` prefix follows the upstream model card for non-retrieval tasks.
+Model language coverage does not establish privacy classification accuracy.
+
+The comparison also used [sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2)
+(Apache-2.0), revision `e8f8c211226b894fcb81acc59f3b34ba3efd5f42`, with upstream
+`onnx/model_quint8_avx2.onnx`. It is not the runtime encoder. Both experiments used
+independently authored synthetic data committed with the tests. The small bundled
+classifier head was trained locally on those labelled training/calibration splits;
+held-out test rows were not used to train its coefficients.
+
+## Packaged frequency vocabulary
+
 The gateway uses the packaged word frequency lists in **wordfreq 3.1.1**, by
 Robyn Speer and contributors, to recognize ordinary prose across fifteen of
 the supported languages. The package is installed with the application; no

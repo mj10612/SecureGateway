@@ -61,6 +61,9 @@ class TokenMapping(BaseModel):
     identifier_quoted: bool = Field(default=False, frozen=True)
     lookup_key: str | None = Field(default=None, frozen=True)
     code_literal: bool = Field(default=False, frozen=True)
+    # None is a legacy record with unknown origin; preserve it conservatively.
+    # This optional additive field is ignored by earlier snapshot readers.
+    source_reference: bool | None = Field(default=None, frozen=True)
 
     def _initialize_identifier(self, surrogate, base, language, key, quoted):
         """Allocator-only initialization, before the operation exposes this binding."""
@@ -72,6 +75,9 @@ class TokenMapping(BaseModel):
     def _mark_code_literal(self):
         """The shared allocator may encounter an existing text alias in code."""
         object.__setattr__(self, "code_literal", True)
+
+    def _mark_source_reference(self):
+        object.__setattr__(self, "source_reference", True)
 
 
 class MaskResult(BaseModel):

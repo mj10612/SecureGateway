@@ -267,6 +267,7 @@ def test_native_subscription_cli_gateway(
     gateway = PrivacyGateway(
         ("127.0.0.1", 0), "offline-local-token", {"claude": upstream, "codex": upstream},
         audit_path=tmp_path / "logs.sqlite3",
+        context_model_path=os.environ.get("SECURE_GATEWAY_CONTEXT_MODEL_DIR"),
     )
     provider.gateway = gateway
     statuses = []

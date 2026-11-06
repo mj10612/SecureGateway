@@ -221,7 +221,10 @@ def tokenize(text: str, language: str) -> list[TextChunk]:
                     break
                 if _is_word(char):
                     end = _cluster_end(text, end)
-                elif char in "'’" and end + 1 < len(text) and _is_word(text[end + 1]):
+                elif char in "'’" and (
+                    (end + 1 < len(text) and _is_word(text[end + 1]))
+                    or (lang == "fr" and unicodedata.normalize("NFC", text[position:end + 1]).casefold().replace("’", "'") in CLOSED_CLASS_WORDS["fr"])
+                ):
                     end += 1
                     if lang == "fr" and unicodedata.normalize("NFC", text[position:end]).casefold().replace("’", "'") in CLOSED_CLASS_WORDS["fr"]:
                         break

@@ -632,6 +632,32 @@ def gateway():
     """Automatic masking/restoration using existing CLI subscription logins."""
 
 
+@gateway.command("model-install")
+@click.option("--directory", type=click.Path(path_type=Path))
+def gateway_model_install(directory):
+    """Download the optional pinned CPU context model (about 136 MB)."""
+    from secure_gateway.context_assets import default_model_directory, install_model
+    path = (directory or default_model_directory()).resolve()
+    try:
+        install_model(path)
+    except (ValueError, OSError):
+        raise click.ClickException("Context model installation failed. Check the directory and network, then retry.") from None
+    click.echo("Verified local context model. Install secure-gateway[context], then set this gateway JSON option and restart:")
+    click.echo(json.dumps({"context_model_path": str(path)}, ensure_ascii=False))
+
+
+@gateway.command("model-remove")
+@click.option("--directory", type=click.Path(path_type=Path))
+def gateway_model_remove(directory):
+    """Remove unchanged downloaded model files; preserve other user files."""
+    from secure_gateway.context_assets import default_model_directory, remove_model
+    try:
+        remove_model((directory or default_model_directory()).resolve())
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from None
+    click.echo("Model data removed. Remove context_model_path from gateway JSON and restart to disable the helper.")
+
+
 @gateway.command("install")
 @click.option("--agent", type=click.Choice(["claude", "codex", "both"]), default="both")
 @click.option("--config", type=click.Path(path_type=Path))
@@ -698,6 +724,7 @@ def gateway_run(config, mapping_limit, mask_numbers):
             natural_language=settings.get("natural_language", "auto"),
             prose_mode=settings.get("prose_mode", "content_words"),
             common_words=settings.get("common_words", []),
+            context_model_path=settings.get("context_model_path"),
             sql_dialect=settings.get("sql_dialect", "sqlite"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
@@ -1004,6 +1031,7 @@ def gateway_api_run(config, mask_numbers):
             natural_language=settings.get("natural_language", "auto"),
             prose_mode=settings.get("prose_mode", "content_words"),
             common_words=settings.get("common_words", []),
+            context_model_path=settings.get("context_model_path"),
             sql_dialect=settings.get("sql_dialect", "sqlite"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),

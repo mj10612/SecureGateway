@@ -63,7 +63,7 @@ class SessionMappings(dict[str, TokenMapping]):
             node = node.setdefault(char, {})
         node[None] = original
 
-    def originals_in(self, text: str) -> set[str]:
+    def originals_in(self, text: str, *, cjk: bool = False) -> set[str]:
         """Scan existing originals using cached failure transitions."""
         if self._original_automaton is None:
             if self._original_trie is None:
@@ -102,6 +102,8 @@ class SessionMappings(dict[str, TokenMapping]):
                     output[child] = target if terminal[target] is not None else output[target]
             self._original_automaton = edges, failure, terminal, output
         edges, failure, terminal, output = self._original_automaton
+        boundary = (r"[^\W\u3040-\u30ff\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\U00020000-\U000323af]"
+                    if cjk else r"\w")
         found = set()
         state = 0
         for position, char in enumerate(text):
@@ -113,7 +115,7 @@ class SessionMappings(dict[str, TokenMapping]):
                 original = terminal[match]
                 assert original is not None
                 start = position + 1 - len(original)
-                if not text[start].isspace() and (start == 0 or not re.match(r"\w", text[start - 1])):
+                if not text[start].isspace() and (start == 0 or not re.match(boundary, text[start - 1])):
                     found.add(original)
                 match = output[match]
         return found

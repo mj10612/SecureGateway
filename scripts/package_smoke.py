@@ -38,6 +38,9 @@ assert any(e.name == 'secure-gateway' and e.value == 'secure_gateway.cli:main'
 assert json.loads(get_privacy_status())['version'] == __version__
 for name in ('index.html', 'app.js', 'style.css', 'favicon.svg'):
     assert files('secure_gateway').joinpath('admin', name).is_file(), name
+assert files('secure_gateway').joinpath('data').joinpath('context_head.json').is_file()
+from secure_gateway.context_assets import model_metadata
+assert model_metadata()['download_bytes'] == 135430652
 result = capture_command([sys.executable, '-c', "print('smoke')"],
                          timeout=5, max_output_bytes=128)
 assert result.returncode == 0 and result.stdout.strip() == b'smoke'

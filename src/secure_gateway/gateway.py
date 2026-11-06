@@ -6,7 +6,8 @@ buffered so aliases split across events can be restored before local execution.
 
 from __future__ import annotations
 
-from contextlib import ExitStack
+from contextlib import ExitStack, nullcontext
+from contextvars import ContextVar
 from copy import deepcopy
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -22,6 +23,7 @@ import time
 import unicodedata
 from threading import Condition, RLock
 from typing import Any
+from secure_gateway.context_model import ContextModel, load_context_model, MAX_CONTEXT_CHARS
 import urllib.error
 import urllib.request
 import urllib.parse
@@ -498,12 +500,22 @@ def validate_api_options(payload, dialect):
         raise ValueError("Chat controls are unsupported in Responses.")
 
 
+_private_prose: ContextVar[bool] = ContextVar("private_gateway_prose", default=False)
+
+
 class SharedEngine(MaskingEngine):
     """One alias for an original in prompts, code, paths and tool results."""
 
     def __init__(self, mapping_limit=100_000, **restore_limits):
         super().__init__(**restore_limits)
         self.mapping_limit = mapping_limit
+
+    def mask_text(self, *args, private_context=False, **kwargs):
+        token = _private_prose.set(private_context)
+        try:
+            return super().mask_text(*args, **kwargs)
+        finally:
+            _private_prose.reset(token)
 
     def _get_or_create_surrogate(
         self,
@@ -516,6 +528,7 @@ class SharedEngine(MaskingEngine):
         lookup_key=None,
     ):
         with generator.operation():
+            source_reference = code or token_type == TokenType.LITERAL or _private_prose.get()
             kind = (
                 TokenType.NUMBER
                 if token_type == TokenType.NUMBER
@@ -525,6 +538,8 @@ class SharedEngine(MaskingEngine):
             if key in mapping_store:
                 if kind == TokenType.NUMBER and mapping_store[key].surrogate == original_token:
                     raise NumericLiteralConflict("Numeric literal conflicts with a preserved number; use a new session.")
+                if source_reference:
+                    mapping_store[key]._mark_source_reference()
                 mapping_store[key].occurrence_count += 1
                 if code and token_type == TokenType.LITERAL:
                     mapping_store[key]._mark_code_literal()
@@ -552,6 +567,7 @@ class SharedEngine(MaskingEngine):
                 context="code",
                 lookup_key=lookup_key,
                 code_literal=code and token_type == TokenType.LITERAL,
+                source_reference=source_reference,
             )
             mapping_store[key] = mapping
             reverse_store[surrogate] = mapping
@@ -575,10 +591,11 @@ def _prose_policy(prose_mode, common_words):
 
 class GatewaySession:
     def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, natural_language="auto", sql_dialect="sqlite", prose_mode="content_words", common_words=None, max_mapping_bytes=DEFAULT_MAPPING_BYTES,
-                 max_snapshot_bytes=DEFAULT_SNAPSHOT_BYTES, **restore_limits):
+                 max_snapshot_bytes=DEFAULT_SNAPSHOT_BYTES, context_model: ContextModel | None = None, **restore_limits):
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
         self.mask_numbers = mask_numbers
+        self.context_model = context_model
         self.prose_mode, self.common_words = _prose_policy(prose_mode, common_words)
         self.natural_language = canonical_language(natural_language)
         if not isinstance(sql_dialect, str) or sql_dialect not in {"standard", "postgresql", "sqlite"}:
@@ -615,7 +632,8 @@ class GatewaySession:
             json.dumps(stable, sort_keys=True, ensure_ascii=False).encode()
         ).hexdigest()
 
-    def _mask_prose(self, text: str, preserve_task_words: bool = True, skill_verbs: frozenset[str] = frozenset()) -> str:
+    def _mask_prose(self, text: str, preserve_task_words: bool = True, skill_verbs: frozenset[str] = frozenset(),
+                    model_context_complete: bool = True) -> str:
         s = self.session
         # Existing source aliases take precedence over prose grammar (e.g. A).
         terms = s.forward_store.originals_in(text)
@@ -633,6 +651,20 @@ class GatewaySession:
         from secure_gateway.engine.natural_languages import tokenize
         relevant = reviewed_inflections(text, selected)
         chunks = tokenize(text, selected)
+        if selected == "en":
+            # Nonword-leading private suffixes are not found at the ordinary
+            # left word boundary inside a possessive. Look up those exact
+            # originals through the existing index before preserving grammar.
+            terms.update(suffix for suffix in ("'s", "’s")
+                         if suffix in text and suffix in s.forward_store.originals_in(suffix))
+        cjk_known = (s.forward_store.originals_in(text, cjk=True)
+                     if self.context_model is not None or selected in {"zh", "ja"} else set())
+        if selected in {"zh", "ja"}:
+            # Code and opaque-value references remain private even between CJK
+            # characters. Ordinary prose grammar must not become a new source
+            # reference merely because statistical tokenization split it once.
+            terms.update(mapping.original for mapping in s.forward_store.values()
+                         if mapping.original in cjk_known and mapping.source_reference is not False)
         # Numeric separators can split one source value into adjacent prose
         # aliases (including 0b1010_0101). Protect the complete spelling.
         terms.update(match.group() for match in re.finditer(
@@ -659,7 +691,33 @@ class GatewaySession:
             task_words = task_words | DISCOURSE_WORDS.get(selected, frozenset()) | operator_words(selected)
         if selected in {"en", "ko"} and self.prose_mode != MaskMode.AGGRESSIVE:
             task_words = task_words | SKILL_TASK_WORDS
-        return self.engine.mask_text(
+        public_spans: frozenset[tuple[int, int]] = frozenset()
+        if (self.context_model is not None and model_context_complete and preserve_task_words and self.prose_mode != MaskMode.AGGRESSIVE
+                and len(text) <= MAX_CONTEXT_CHARS):
+            candidates = []
+            protected_model_terms = cjk_known | terms
+            offset = 0
+            for chunk in self.engine._chunks(text, terms, selected):
+                start = offset
+                offset += len(chunk.text)
+                word = chunk.text
+                prefix = text[:start].rstrip()
+                # Confidence is not permission to disclose a new word. The
+                # model only resolves sentence-initial capitalization within
+                # the gateway's existing public vocabulary. Unknown industry
+                # predicates and names keep the conservative masking policy.
+                public_word = unicodedata.normalize("NFC", word).casefold() in task_words
+                sentence_initial = not prefix or bool(re.search(r"[.!?。！？]\s+$", text[:start]))
+                if (chunk.is_word and chunk.kind in {"WORD", "HANGUL_WORD"} and 2 <= len(word) <= 64
+                        and public_word and sentence_initial and word[0].isupper()
+                        and not any(char.isdigit() for char in word)
+                        and "_" not in word and not word.isupper()
+                        and not any(char.isupper() for char in word[1:])
+                        and not any(term in word for term in protected_model_terms)):
+                    candidates.append((start, offset))
+            if candidates:
+                public_spans = self.context_model.public_spans(text, candidates, selected).intersection(candidates)
+        masked = self.engine.mask_text(
             text,
             s.session_id,
             s.generator,
@@ -674,8 +732,11 @@ class GatewaySession:
             preserve_capitalized_words=({"treffen", "buch", "hause"} if selected == "de" and general else set()) | skill_verbs,
             preserve_capitalized_positions=(discourse_capital_positions(text, selected) | operator_capital_positions(text, selected))
             if preserve_task_words and self.prose_mode != MaskMode.AGGRESSIVE else frozenset(),
+            preserve_spans=public_spans,
+            private_context=not preserve_task_words,
             language=selected,
         ).masked_text
+        return masked
 
     def _mask_source(self, text: str, language: str = "auto") -> str:
         """Lex a source fragment, falling back to text masking for prose.
@@ -719,7 +780,7 @@ class GatewaySession:
         s = self.session
         def encode(word):
             alias = self.engine._get_or_create_surrogate(
-                word, TokenType.ENTITY, s.generator, s.forward_store, s.reverse_store
+                word, TokenType.ENTITY, s.generator, s.forward_store, s.reverse_store, code=True
             )
             # Delimit partial-word aliases so they can be restored even next to
             # ASCII letters. The delimiters are consumed during restoration.
@@ -793,10 +854,13 @@ class GatewaySession:
             cursor = end
         add_prose(text[cursor:])
         output = []
+        # A fragment following code or a public skill name can start mid-sentence.
+        # Abstain instead of mistaking that local boundary for an instruction.
+        complete = len(parts) == 1
         skill_context = self.prose_mode != MaskMode.AGGRESSIVE and ("SKILL.md" in parts or "`SKILL.md`" in parts)
         for index, part in enumerate(parts):
             if index in protected_parts:
-                output.append(self._mask_prose(part))
+                output.append(self._mask_prose(part, model_context_complete=complete))
                 continue
             if part == "SKILL.md" and self.session.forward_store.originals_in(part):
                 output.append(self._mask_source(part))
@@ -824,7 +888,7 @@ class GatewaySession:
             else:
                 if any(any(char.isspace() for char in term)
                        for term in self.session.forward_store.originals_in(part)):
-                    output.append(self._mask_prose(part))
+                    output.append(self._mask_prose(part, model_context_complete=complete))
                     continue
                 verbs = set()
                 if skill_context and index + 1 < len(parts) and parts[index + 1] in {"SKILL.md", "`SKILL.md`"} and re.fullmatch(r"\s*Read\s+", part):
@@ -834,9 +898,9 @@ class GatewaySession:
                     if skill_context and re.match(r"\s*Follow (?:its|the) instructions\b", sentence):
                         prefix = re.match(r"\s*Follow\b", sentence)
                         assert prefix is not None
-                        output.append(self._mask_prose(prefix.group(), skill_verbs=frozenset({"follow"})))
+                        output.append(self._mask_prose(prefix.group(), skill_verbs=frozenset({"follow"}), model_context_complete=False))
                         sentence = sentence[prefix.end():]
-                    output.append(self._mask_prose(sentence, skill_verbs=frozenset(allowed)))
+                    output.append(self._mask_prose(sentence, skill_verbs=frozenset(allowed), model_context_complete=complete))
         return "".join(output)
 
     def restore(self, text):
@@ -1403,6 +1467,10 @@ class GatewaySession:
         return {"edits": result}
 
     def request(self, payload: dict[str, Any], *, dialect=None) -> dict[str, Any]:
+        with self.context_model.request_budget() if self.context_model is not None else nullcontext():
+            return self._request(payload, dialect=dialect)
+
+    def _request(self, payload: dict[str, Any], *, dialect=None) -> dict[str, Any]:
         request_dialect = dialect or ("claude" if "messages" in payload else "codex")
         validate_request(payload, request_dialect)
         fields = (
@@ -1786,6 +1854,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         sql_dialect="sqlite",
         prose_mode="content_words",
         common_words=None,
+        context_model_path=None,
     ):
         self.restore_limits = {"max_restore_input_bytes": max_restore_input_bytes,
                                "max_restore_output_bytes": max_restore_output_bytes}
@@ -1830,6 +1899,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             self.upstreams[agent] = origin
         self.sessions: dict[str, GatewaySession] = {}
         self.prose_mode, self.common_words = _prose_policy(prose_mode, common_words)
+        self.context_model, self.context_model_status = load_context_model(context_model_path)
         self.natural_language = canonical_language(natural_language)
         if not isinstance(sql_dialect, str) or sql_dialect not in {"standard", "postgresql", "sqlite"}:
             raise ValueError("Unsupported SQL dialect.")
@@ -1947,6 +2017,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                                     expired=session.session.is_expired())
                 providers[agent] = item
         return {"active_requests": active, "max_active_requests": self.max_active_requests,
+                "context_model": self.context_model.diagnostics() if self.context_model else {"status": self.context_model_status},
                 "max_provider_requests": self.max_provider_requests, "providers": providers,
                 "audit_write_errors": self.audit_write_errors,
                 "audit_error_counts": self.audit_error_diagnostics(),
@@ -1984,6 +2055,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                                      max_mapping_bytes=self.max_mapping_bytes,
                                      max_snapshot_bytes=self.max_snapshot_bytes,
                                      prose_mode=self.prose_mode, common_words=self.common_words,
+                                     context_model=self.context_model,
                                      **self.restore_limits)
             session.forced_rules = lambda: self.mask_rules
             # Reasoning provenance is only meaningful while the matching alias

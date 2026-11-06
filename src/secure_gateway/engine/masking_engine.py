@@ -110,6 +110,7 @@ class MaskingEngine:
         preserve_capitalized: bool = True,
         preserve_capitalized_words: set[str] | None = None,
         preserve_capitalized_positions: frozenset[int] = frozenset(),
+        preserve_spans: frozenset[tuple[int, int]] = frozenset(),
     ) -> MaskResult:
         strategy = self._strategy(generator, strategy)
         self._check_input(text)
@@ -242,6 +243,8 @@ class MaskingEngine:
                              or word.casefold() in (preserve_capitalized_words or set())
                              or start in preserve_capitalized_positions)):
                     should_mask = False
+                if (start, offset) in preserve_spans and not force and not chunk.is_number:
+                    should_mask = False
                 if should_mask:
                     output.append(
                         self._get_or_create_surrogate(
@@ -305,8 +308,20 @@ class MaskingEngine:
             return tokenize(text)
         if "" in terms:
             raise ValueError("Sensitive terms must be nonempty.")
+        protected_possessives = terms & {"'s", "’s"} if language == "en" else set()
+        if protected_possessives:
+            # A whole private suffix cannot become public grammar. Protect the
+            # complete lexical unit, preserving restoration and replay without
+            # inventing a new standalone s binding.
+            terms = terms | {chunk.text for chunk in tokenize(text)
+                             if chunk.is_word and chunk.text.endswith(tuple(protected_possessives))}
         suffixes = set(KOREAN_JOSA_LIST) | set(KOREAN_COPULA_LIST)
         suffixes.update(KOREAN_PLURAL + particle for particle in KOREAN_JOSA_LIST)
+        # Keep a possessive suffix attached when an existing private stem is
+        # split out. Retokenizing the tail would invent an unrelated `s` alias.
+        # An explicitly protected standalone s still takes precedence.
+        if language == "en" and "s" not in terms:
+            suffixes.update({"'s", "’s"})
         # Chinese/Japanese words need not have spaces between them. Keep Latin
         # word boundaries (ABC must not match ABCdef), but permit an explicit
         # term next to Han/kana. The original spelling remains untouched.

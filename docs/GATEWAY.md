@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.3.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.4.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -532,6 +532,65 @@ Gateway prose uses wordfreq's packaged frequency lists for fifteen languages and
 The default frequency cutoffs are Zipf 3.5 for languages with capitalization cues and 4.0 for other scripts. Capitalized words remain conservative, with narrow exceptions for skill verbs and reviewed German nouns. Reviewed person names and domain terms, explicit forced rules, and previously protected originals take priority. The lists are not exhaustive: common names can be ordinary words and frequent industry terms can look public. Register confidential vocabulary explicitly; automatic detection cannot promise to distinguish every such case.
 
 Code continues to use its lexer, literal tool arguments and schema data keep stricter handling, and `aggressive` does not enable the new ordinary-word exceptions. An unclosed code fence or inline backtick is rejected before forwarding; close it before retrying. Existing multiword source aliases remain private across prose boundaries. These changes apply to gateway prose; the library/CLI text modes retain their separate policies.
+
+### Optional local context model (2.4.0)
+
+An optional CPU-only multilingual E5 encoder and a bundled linear classifier can
+help distinguish sentence-initial ordinary expressions from capitalized names.
+It uses the existing public vocabulary as an eligibility boundary; a high model
+score alone **never discloses an unknown word**. This is limited assistance,
+not a complete semantic or privacy classifier. The unrestricted experiment exposed
+an industry verb and was rejected. Guarded assistance recovered eighteen labelled
+ordinary expressions in 1,020 probes but did not improve the independent 17-paragraph
+comprehension score. It remains disabled by default. See the
+[comparison, independent tests and limitations](evaluations/CONTEXT_MODEL_2.4.0.md).
+
+The helper is disabled when `context_model_path` is absent. To try it, install the
+optional runtime dependencies in the same environment that runs the gateway,
+then explicitly download the pinned, checksum-verified assets:
+
+```bash
+pip install '.[context]'  # from this 2.4.0 checkout
+secure-gateway gateway model-install
+# Repository environment alternative:
+uv sync --locked --extra dev --extra native-validation --extra context
+```
+
+`model-install` prints an absolute directory. Add that value as
+`"context_model_path"` to the existing gateway `config.json`, retaining its other
+settings. Finish active requests, stop the gateway and start it with the updated
+environment (`gateway stop`, then `gateway ensure`; use the same `--config` for
+both). API gateways use `gateway api-run` with their own configuration. The
+installer changes neither routing nor configuration. It downloads approximately
+136 MB; CPU execution additionally needs several hundred MB of memory. The
+repository includes only the small classifier head, not upstream encoder weights.
+
+Requests never download assets or upload text to a classifier. Missing dependencies,
+invalid checksums and inference failures retain the existing masking policy;
+authenticated `gateway diagnostics` reports `context_model.status` (`disabled`,
+`ready`, `missing_dependencies` or `unavailable`). Runtime counters contain no text.
+The encoder is shared across sessions, with bounded work and request-local caches.
+It abstains for split Markdown/skill fragments, strict data/tool values, code,
+`aggressive` mode, unsupported languages, long fragments and truncated candidates.
+Forced rules, existing private references, domain/name guards, identifiers and
+numbers retain priority. Matching an ordinary spelling can still be ambiguous;
+register confidential vocabulary through the administrator's forced rules.
+
+To disable and remove this helper:
+
+1. Remove only `context_model_path` from the same `config.json`.
+2. Finish active requests and restart the gateway in the same environment. Confirm
+   diagnostics reports `disabled`; do not reset alias sessions.
+3. Run `secure-gateway gateway model-remove --directory <the-printed-directory>`.
+   It deletes only unchanged, verified upstream model files, retaining unrelated
+   files. Modified assets cause removal to stop without deleting any model files.
+
+Model removal does not restore CLI routing. For full removal, follow the existing
+gateway uninstall procedure with the installation's configuration and account
+scope. Neither model installation nor removal deletes encrypted sessions, logs,
+forced rules or agent settings. Old snapshots without the new optional origin flag
+remain conservative. An actual 2.3.1 installation also restored and resaved a 2.4.0
+snapshot successfully; no snapshot format migration or alias reset is required.
 
 ### Text intent with opaque references (2.3.1)
 
