@@ -64,6 +64,13 @@ masked = engine.mask_text('the meeting uses zorblyx', session.session_id,
 assert 'meeting' in masked.masked_text and 'zorblyx' not in masked.masked_text
 assert engine.unmask(masked.masked_text, session.session_id, session.reverse_store,
                      strict=True).unmasked_text == 'the meeting uses zorblyx'
+from secure_gateway.gateway import GatewaySession
+session = GatewaySession(natural_language='en')
+text = 'Compare the options for Zorvexa. Then summarize the result without guessing.'
+masked = session.mask(text)
+assert masked.startswith('Compare the options') and 'Then summarize' in masked
+assert 'Zorvexa' not in masked and session.restore(masked) == text
+assert session.mask(text) == masked
 print(__version__)
 """
     for distribution in distributions:

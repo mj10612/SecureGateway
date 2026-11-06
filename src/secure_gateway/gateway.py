@@ -45,7 +45,8 @@ from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
 from secure_gateway.gateway_catalog import fetch_catalog
 from secure_gateway.gateway_audit import AuditMaintenanceError, AuditStore, anonymous_ref
 from secure_gateway.gateway_admin import handle_admin, save_mask_rules
-from secure_gateway.gateway_vocabulary import ordinary_words, select_gateway_language, domain_terms, reviewed_inflections
+from secure_gateway.gateway_vocabulary import ordinary_words, select_gateway_language, domain_terms, reviewed_inflections, DISCOURSE_WORDS, discourse_capital_positions
+from secure_gateway.gateway_task_operators import operator_words, operator_capital_positions
 from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, check_mapping_budget, positive_budget, snapshot_budget, record_mapping
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
 from secure_gateway.session import PrivacySession
@@ -192,11 +193,20 @@ TASK_WORDS_BY_LANGUAGE = {
     "ja": "確認 検索 探す 削除 説明",
 }
 PRIVACY_INSTRUCTION = (
-    "The following context was masked locally. Names and values beginning private_symbol_ "
-    "and numeric aliases are opaque. Keep every supplied alias exactly unchanged in "
-    "answers and tool arguments; a local host restores them. Never invent aliases or "
-    "guess originals. Use public names for newly introduced identifiers. State when "
-    "hidden literal values prevent analysis.\n"
+    "This context was masked locally. Names beginning private_symbol_ and numeric aliases "
+    "are opaque references. Their presence alone does not make the surrounding request "
+    "unreadable. Treat each supplied alias as a "
+    "stable symbolic label: repeated labels refer to the same thing. Understand and "
+    "carry out the visible request using its actions, relationships, order, negation, "
+    "conditions and requested output format. You can summarize, compare or plan around "
+    "opaque references without knowing their originals. Do not refuse or ask for originals "
+    "merely because references are masked. Keep supplied aliases exactly unchanged in "
+    "answers and tool arguments; the local host restores them. Never invent aliases, "
+    "guess originals or assume a hidden label's type or meaning. Numeric aliases are "
+    "labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for "
+    "new identifiers. If a particular answer truly requires a hidden fact, identify only "
+    "that limitation and still complete the parts supported by visible context. "
+    "Normal tool permissions and approval requirements still apply.\n"
 )
 PUBLIC_CLAUDE_IDENTITY = "You are Claude Code, Anthropic's official CLI for Claude."
 PUBLIC_CLAUDE_IDENTITIES = (
@@ -622,7 +632,21 @@ class GatewaySession:
         # is both unnecessary and an avoidable request amplification vector.
         from secure_gateway.engine.natural_languages import tokenize
         relevant = reviewed_inflections(text, selected)
-        for chunk in tokenize(text, selected):
+        chunks = tokenize(text, selected)
+        # Numeric separators can split one source value into adjacent prose
+        # aliases (including 0b1010_0101). Protect the complete spelling.
+        terms.update(match.group() for match in re.finditer(
+            r"(?<!\w)(?:0[bBoOxX][\da-fA-F_]+|\d[\d_]*(?:\.[\d_]+)?(?:[eE][+-]?[\d_]+)?)(?!\w)", text
+        ) if "_" in match.group())
+        numeric_chunks = {chunk.text for chunk in chunks if chunk.is_number}
+        # Replay complete prose numbers through their existing numeric alias.
+        # Non-prose source spellings (1_234, 0x1F, 1e-3) must remain protected
+        # whole: splitting them can create adjacent aliases that cannot restore.
+        for term in terms & numeric_chunks:
+            numeric = s.forward_store.get(mapping_key(term, TokenType.NUMBER, code=True))
+            if numeric is not None and numeric.surrogate != term:
+                terms.discard(term)
+        for chunk in chunks:
             key = unicodedata.normalize("NFC", chunk.text).casefold()
             if key in general:
                 relevant.add(key)
@@ -631,6 +655,8 @@ class GatewaySession:
                 if stem in general:
                     relevant.add(stem)
         task_words = (TASK_WORDS if selected in {"en", "ko"} else set(TASK_WORDS_BY_LANGUAGE.get(selected, "").split())) | relevant
+        if self.prose_mode != MaskMode.AGGRESSIVE:
+            task_words = task_words | DISCOURSE_WORDS.get(selected, frozenset()) | operator_words(selected)
         if selected in {"en", "ko"} and self.prose_mode != MaskMode.AGGRESSIVE:
             task_words = task_words | SKILL_TASK_WORDS
         return self.engine.mask_text(
@@ -646,6 +672,8 @@ class GatewaySession:
             custom_preserve=task_words if preserve_task_words else None,
             preserve_capitalized=False,
             preserve_capitalized_words=({"treffen", "buch", "hause"} if selected == "de" and general else set()) | skill_verbs,
+            preserve_capitalized_positions=(discourse_capital_positions(text, selected) | operator_capital_positions(text, selected))
+            if preserve_task_words and self.prose_mode != MaskMode.AGGRESSIVE else frozenset(),
             language=selected,
         ).masked_text
 
@@ -683,10 +711,10 @@ class GatewaySession:
         return self._force_mask(self._mask_unforced(text, code, language))
 
     def _force_mask(self, text: str) -> str:
-        rules = self.forced_rules()
+        rules: tuple[str, ...] = self.forced_rules()
         # Never rewrite an existing alias: changing its spelling destroys the
         # only reference that permits restoration.
-        forms = {unicodedata.normalize(form, word) for word in rules for form in ("NFC", "NFD")}
+        forms: set[str] = {unicodedata.normalize(form, word) for word in rules for form in ("NFC", "NFD")}
         pattern = re.compile("|".join(re.escape(word) for word in sorted(forms, key=len, reverse=True))) if forms else None
         s = self.session
         def encode(word):
@@ -749,7 +777,7 @@ class GatewaySession:
         skill_pattern = (r"(?<![\w\u0300-\u036f./\\:=?&%@+-])SKILL\.md(?![\w\u0300-\u036f/\\:=?&%@+-]|\.[\w])|"
                          if not protected_skill and self.prose_mode != MaskMode.AGGRESSIVE else "")
         prose_pattern = "(" + skill_pattern + "|".join(re.escape(identity) for identity in PUBLIC_CLAUDE_IDENTITIES) + ")"
-        parts = []
+        parts: list[str] = []
         protected_parts = set()
         def add_prose(fragment):
             if any(any(char.isspace() for char in term) or "SKILL.md" in term

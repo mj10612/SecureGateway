@@ -109,6 +109,7 @@ class MaskingEngine:
         common_vocabulary: set[str] | None = None,
         preserve_capitalized: bool = True,
         preserve_capitalized_words: set[str] | None = None,
+        preserve_capitalized_positions: frozenset[int] = frozenset(),
     ) -> MaskResult:
         strategy = self._strategy(generator, strategy)
         self._check_input(text)
@@ -150,8 +151,11 @@ class MaskingEngine:
                 known.update(common_vocabulary or ())
             output: list[str] = []
             total = masked = 0
+            offset = 0
             for chunk in chunks:
                 word = chunk.text
+                start = offset
+                offset += len(word)
                 if chunk.is_whitespace or (
                     not chunk.is_word and not chunk.is_code and chunk.kind != "ENTITY"
                 ):
@@ -235,7 +239,8 @@ class MaskingEngine:
                         should_mask = False
                 if ((word.casefold() in preserve or (not preserve_capitalized and stem.casefold() in preserve)) and not force
                         and (preserve_capitalized or not any(c.isupper() for c in word)
-                             or word.casefold() in (preserve_capitalized_words or set()))):
+                             or word.casefold() in (preserve_capitalized_words or set())
+                             or start in preserve_capitalized_positions)):
                     should_mask = False
                 if should_mask:
                     output.append(

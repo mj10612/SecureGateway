@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Set, Tuple
+from typing import AbstractSet, Set, Tuple
 from secure_gateway.models import TokenType
 
 
@@ -281,7 +281,7 @@ class KoreanGrammarEngine:
 
     @classmethod
     def decompose_token(
-        cls, token: str, known_stems: Set[str] | None = None
+        cls, token: str, known_stems: AbstractSet[str] | None = None
     ) -> Tuple[str, str, TokenType]:
         """Decompose an agglutinative Korean token into (stem, grammatical_suffix, token_type).
 
@@ -378,7 +378,7 @@ class KoreanGrammarEngine:
         return best_stem, best_suffix, token_type
 
     @staticmethod
-    def _supported_stem(stem: str, suffix: str, known: Set[str] | None) -> bool:
+    def _supported_stem(stem: str, suffix: str, known: AbstractSet[str] | None) -> bool:
         if not stem:
             return False
         # Foreign names/acronyms have unknown pronunciation; retain their written particle.

@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.3.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.3.1 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -532,6 +532,51 @@ Gateway prose uses wordfreq's packaged frequency lists for fifteen languages and
 The default frequency cutoffs are Zipf 3.5 for languages with capitalization cues and 4.0 for other scripts. Capitalized words remain conservative, with narrow exceptions for skill verbs and reviewed German nouns. Reviewed person names and domain terms, explicit forced rules, and previously protected originals take priority. The lists are not exhaustive: common names can be ordinary words and frequent industry terms can look public. Register confidential vocabulary explicitly; automatic detection cannot promise to distinguish every such case.
 
 Code continues to use its lexer, literal tool arguments and schema data keep stricter handling, and `aggressive` does not enable the new ordinary-word exceptions. An unclosed code fence or inline backtick is rejected before forwarding; close it before retrying. Existing multiword source aliases remain private across prose boundaries. These changes apply to gateway prose; the library/CLI text modes retain their separate policies.
+
+### Text intent with opaque references (2.3.1)
+
+The gateway preserves reviewed task operators, output words, sequencing and negative
+instructions in all seventeen supported languages. Reviewed inflections are exact
+forms, rather than an unrestricted prefix exemption. Sentence-initial capitalized
+instructions require grammatical cues; the exception applies at that position only.
+For example, `Compare the options and ask Compare` keeps the first instruction and
+hides the later name. Forced rules, recognized sensitive terms and existing private
+mappings continue to take priority. Ambiguous names still require explicit rules.
+
+The model-facing instruction treats supplied aliases as stable symbolic references.
+It asks the model to use visible actions, relations, order, conditions and output
+structure, completing supported work even when it cannot identify a hidden name.
+It prohibits guessing originals, inventing aliases or calculating with the displayed
+digits of numeric aliases. Tool permissions and approval requirements still apply.
+Repeated numeric references retain their aliases, and source numbers with separators
+remain locally restorable when mentioned in prose.
+
+For a reproducible blind evaluation with synthetic data, run:
+
+```powershell
+python scripts/export_semantic_context.py --corpus tests/fixtures/semantic_holdout.json --output "$env:TEMP/semantic-blind.json"
+```
+
+The exporter checks labelled-reference masking, exact restoration and replay stability.
+Its output contains only language, the actual model-facing instruction and masked text.
+Give that output alone to a separate interpreter and record its task interpretation,
+conditions and symbolic response. Only afterward let a grader compare the recorded
+answer with the original corpus: one point for the main intent and one for each of
+three labelled constraints. Hidden names or category types are acceptable when their
+roles remain clear; missing operations, negation, order or conditions fail. A local
+round trip alone never earns a model-comprehension pass.
+
+The development and independently authored holdout corpora each contain seventeen
+multi-sentence requests with synthetic private references. These are small,
+single-interpreter observations, not guarantees for every expression, language
+variant or actual provider model. The exporter does not call a model or execute
+tools. Native host and MCP checks remain separate from semantic evaluation.
+See the [recorded results and remaining failures](evaluations/SEMANTIC_CONTEXT_2.3.1.md)
+and its captured model inputs, responses and grading. The new seventeen-language
+holdout recovers main intent in fifteen cases but retains all three constraints in
+only six; the subsequent Korean predicate supplement scores all four criteria.
+Universal comprehension remains unresolved, particularly for Marathi/Telugu and
+less common predicate or relational forms.
 
 The default prose policy remains `content_words`. To preserve a small local
 ordinary vocabulary while masking unknown content, set these gateway JSON keys

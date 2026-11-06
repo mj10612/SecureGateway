@@ -1,0 +1,240 @@
+[
+  {
+    "language": "en",
+    "text": "Prepare a customer report for Velnora under reference KB-426 using the supplied request list. Keep only entries whose reference matches that code, group them by the status label already recorded, and order the groups by their first appearance in the list. Within each group, retain the original order and flag blank fields without inventing replacements. Do not send the report or alter any customer record.",
+    "expected_intent": "Draft a report from the supplied requests for the specified reference, grouping by recorded status in first-appearance order and preserving entry order within each group.",
+    "constraints": [
+      "Selection: Include only entries matching the supplied reference.",
+      "Fidelity: Preserve source order within groups and flag blank fields without filling them.",
+      "Side effects: Do not send the report or change customer records."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "ko",
+    "text": "Velnora의 일정 문의 KB-426에 대해, 제공된 참석 가능 시간표를 바탕으로 답변 초안을 작성해 주세요. 먼저 모든 참석자에게 공통으로 가능하다고 표시된 시간만 추린 뒤, 첨부된 선호 순서에 맞춰 나열해 주세요. 시간대가 비어 있거나 가능 여부가 불분명한 항목은 추측하지 말고 별도로 표시해 주세요. 회의를 예약하거나 참석자에게 메시지를 보내지는 마세요.",
+    "expected_intent": "Draft a scheduling reply using only slots explicitly marked available for every participant, ordered by the supplied preference list.",
+    "constraints": [
+      "Selection: Include only explicitly shared available slots.",
+      "Uncertainty: Separately flag missing time zones or unclear availability without guessing.",
+      "Side effects: Do not book a meeting or message participants."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "es",
+    "text": "Prepara para Velnora un borrador del plan del evento con la referencia KB-426 a partir de la lista de tareas adjunta. Coloca cada tarea después de sus requisitos indicados y conserva el orden original entre las tareas que no dependan unas de otras. Si falta un responsable o las dependencias forman un ciclo, señala el problema sin asignar personas ni inventar una solución. No envíes invitaciones ni compres materiales.",
+    "expected_intent": "Draft an event task plan that respects the supplied dependencies, preserves original order among independent tasks, and identifies missing owners or dependency cycles.",
+    "constraints": [
+      "Order: Place prerequisites before dependent tasks while preserving source order among independent tasks.",
+      "Uncertainty: Flag missing owners and dependency cycles without assigning people or inventing resolutions.",
+      "Side effects: Do not send invitations or buy materials."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "fr",
+    "text": "Pour le dossier domestique KB-426 de Velnora, transforme la liste fournie en une fiche de suivi. Présente d'abord les tâches non cochées, puis les tâches cochées, en conservant l'ordre de départ dans chaque groupe. Reprends les libellés tels quels et signale les cases dont l'état est illisible au lieu de décider à ma place. Ne supprime aucune tâche de la liste d'origine et n'envoie aucun rappel.",
+    "expected_intent": "Create a household tracking sheet with unchecked tasks before checked tasks, preserving source order and exact task labels.",
+    "constraints": [
+      "Order: Show unchecked tasks first and checked tasks second, preserving order within each group.",
+      "Fidelity: Keep labels unchanged and flag unreadable checkbox states without choosing a state.",
+      "Side effects: Do not delete source tasks or send reminders."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "pt",
+    "text": "Compare as duas tabelas fornecidas para o relatório de Velnora, referência KB-426. Alinhe as linhas pela chave já informada e apresente primeiro as que aparecem nas duas tabelas, depois as exclusivas da primeira e, por último, as exclusivas da segunda, mantendo a ordem de origem em cada bloco. Nas linhas alinhadas, mostre apenas os campos diferentes e trate uma célula vazia como algo distinto de um campo ausente. Não modifique as planilhas nem envie o resultado por e-mail.",
+    "expected_intent": "Compare two tables by their supplied row keys, present shared rows followed by rows unique to each table, and show differing fields for aligned rows.",
+    "constraints": [
+      "Order: Present shared rows, first-table-only rows, and second-table-only rows in that order, preserving source order within each block.",
+      "Fidelity: Show only differing fields for matched rows and distinguish blank cells from absent fields.",
+      "Side effects: Do not modify spreadsheets or email the result."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "de",
+    "text": "Erstelle für Velnora zum Vorgang KB-426 eine Übersicht aus der beigefügten Bestandsliste. Gruppiere die Einträge nach dem vorhandenen Standortfeld und behalte sowohl die Reihenfolge des ersten Auftretens der Standorte als auch die Reihenfolge der Einträge je Standort bei. Markiere fehlende Kategorien sowie mögliche Duplikate, aber nur dann als Duplikate, wenn Artikelcode und Standort exakt übereinstimmen. Löse keine Bestellung aus und reserviere oder lösche keine Bestände.",
+    "expected_intent": "Create an inventory overview grouped by recorded location in first-appearance order, preserving item order and flagging missing categories and exact code-and-location duplicates.",
+    "constraints": [
+      "Order: Preserve first-appearance order of locations and source order within locations.",
+      "Matching: Flag missing categories and identify duplicates only when both item code and location match exactly.",
+      "Side effects: Do not order, reserve, or delete inventory."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "id",
+    "text": "Susun draf ringkasan catatan panitia untuk Velnora dengan kode KB-426 dari bahan yang saya berikan. Tampilkan keputusan yang dinyatakan secara tegas terlebih dahulu, lalu pertanyaan yang masih terbuka, sambil mempertahankan urutan sumber di setiap bagian. Pernyataan yang belum jelas statusnya harus masuk bagian terpisah; jangan menganggap saran sebagai persetujuan. Jangan mengirim ringkasan atau mengubah catatan aslinya.",
+    "expected_intent": "Draft a committee note summary with explicit decisions before open questions, preserving source order and separating statements with unclear status.",
+    "constraints": [
+      "Order: Present explicit decisions before open questions and preserve source order within sections.",
+      "Interpretation: Separate unclear statements and do not treat suggestions as approval.",
+      "Side effects: Do not send the summary or edit the original notes."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "tr",
+    "text": "Velnora için KB-426 kodlu seyahat dosyasındaki rota seçeneklerini bir taslakta düzenle. Önce açıkça kullanılamaz olarak işaretlenen seçenekleri dışarıda bırak, sonra kalanları verilen tercih sırasına göre sırala. Tercih listesinde bulunmayan seçenekleri kaynak sıralarıyla sona ekle ve uygunluğu belirsiz olanları ayrı göster. Rezervasyon yapma, ödeme başlatma ve hiçbir seçeneğin adını değiştirme.",
+    "expected_intent": "Draft an ordered route shortlist, excluding explicitly unavailable options, following the supplied preference order, and appending unranked options in source order.",
+    "constraints": [
+      "Selection and order: Exclude explicitly unavailable options, follow the supplied ranking, and append unranked options in source order.",
+      "Fidelity: Separate uncertain availability and retain option names unchanged.",
+      "Side effects: Do not make reservations or initiate payments."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "ru",
+    "text": "Сравни для Velnora две версии документа по делу KB-426, используя указанные в них метки разделов. Сначала перечисли разделы, которые есть в обеих версиях, затем разделы только из ранней версии и после них разделы только из новой, сохраняя исходный порядок внутри каждой группы. Для общих разделов отметь, совпадает ли текст буквально, а отсутствующую метку вынеси в отдельный список без догадок о соответствии. Не редактируй документы и не загружай результат во внешние сервисы.",
+    "expected_intent": "Compare document versions by their recorded section labels, list shared and version-specific sections in the requested order, and indicate literal text equality for shared sections.",
+    "constraints": [
+      "Order: List shared sections, earlier-version-only sections, and newer-version-only sections in that order, preserving source order within groups.",
+      "Matching: Use supplied section labels, report literal text equality, and separately flag missing labels without guessing matches.",
+      "Side effects: Do not edit documents or upload the result to external services."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "hi",
+    "text": "Velnora की टीम के कामों की दी गई सूची से KB-426 के लिए एक प्रगति मसौदा तैयार करें। कामों को दर्ज जिम्मेदार व्यक्ति के अनुसार समूहों में रखें और समूहों का क्रम सूची में उनके पहली बार आने के अनुसार रखें। हर समूह में पहले वे काम दिखाएँ जिन पर बाधा का स्पष्ट निशान है, फिर बाकी काम मूल क्रम में रखें; जिनका जिम्मेदार व्यक्ति दर्ज नहीं है उन्हें अलग दिखाएँ और किसी को नया काम न सौंपें। मसौदा किसी को न भेजें और मूल सूची में बदलाव न करें।",
+    "expected_intent": "Draft a team progress view grouped by recorded owner in first-appearance order, putting explicitly blocked tasks first within each group and separating unassigned tasks.",
+    "constraints": [
+      "Order: Group by recorded owner in first-appearance order, then place explicitly blocked tasks before other tasks while preserving source order within those subsets.",
+      "Ownership: Separate tasks without an owner and do not assign new work.",
+      "Side effects: Do not send the draft or change the source list."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "mr",
+    "text": "Velnora च्या KB-426 या कार्यशाळेसाठी दिलेल्या यादीवरून तयारीची तपासणीसूची बनवा. आधी आवश्यक म्हणून चिन्हांकित गोष्टी आणि नंतर ऐच्छिक गोष्टी दाखवा; प्रत्येक गटात मूळ क्रम ठेवा. आवश्यक किंवा ऐच्छिक अशी खूण नसलेल्या गोष्टी वेगळ्या दाखवा आणि साधनांची माहिती रिकामी असेल तर ती भरून काढण्याऐवजी नोंद करा. कोणतीही खरेदी करू नका किंवा सहभागींची नोंदणी करू नका.",
+    "expected_intent": "Create a workshop preparation checklist with required items before optional items, preserving source order and separating unclassified items.",
+    "constraints": [
+      "Order: Present explicitly required items before optional items and preserve source order within groups.",
+      "Uncertainty: Separate items lacking a required-or-optional marker and flag missing tool information without filling it in.",
+      "Side effects: Do not make purchases or register participants."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "bn",
+    "text": "Velnora-র KB-426 নথির জন্য দেওয়া বইয়ের তালিকা থেকে একটি তাকভিত্তিক খসড়া তৈরি করুন। তালিকায় তাকের নাম প্রথম যে ক্রমে এসেছে সেই ক্রমে গোষ্ঠী সাজান এবং প্রতিটি গোষ্ঠীতে বইয়ের মূল ক্রম রাখুন। শিরোনাম ও বইয়ের শনাক্তকারী হুবহু মিলে গেলেই সম্ভাব্য পুনরাবৃত্তি হিসেবে চিহ্নিত করুন, আর শনাক্তকারী না থাকলে তা আলাদা করে উল্লেখ করুন। মূল ক্যাটালগ বদলাবেন না এবং কোনো বই সংরক্ষণ করবেন না।",
+    "expected_intent": "Draft a book list grouped by recorded shelf in first-appearance order, preserving book order and flagging exact title-and-identifier duplicates and missing identifiers.",
+    "constraints": [
+      "Order: Preserve shelf first-appearance order and source order of books within each shelf.",
+      "Matching: Flag duplicates only when both title and book identifier match exactly, and separately note missing identifiers.",
+      "Side effects: Do not change the catalogue or reserve books."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "ur",
+    "text": "Velnora کی میٹنگ کے لیے KB-426 کے تحت فراہم کردہ نکات سے ایجنڈے کا مسودہ بنائیں۔ پہلے وہ نکات رکھیں جنہیں کھلا ہوا نشان زد کیا گیا ہے، پھر وہ جنہیں مکمل نشان زد کیا گیا ہے، اور ہر حصے کے اندر دی گئی ترجیحی ترتیب استعمال کریں۔ جس نکتے کی ترجیح یا حالت درج نہیں، اسے الگ دکھائیں اور کسی تجویز کو طے شدہ فیصلہ نہ سمجھیں۔ دعوت نامہ نہ بھیجیں اور میٹنگ مقرر نہ کریں۔",
+    "expected_intent": "Draft a meeting agenda with explicitly open items before explicitly completed items, using the supplied priority order within each section and separating items with missing metadata.",
+    "constraints": [
+      "Order: Present open items before completed items and use the supplied priority order within each section.",
+      "Interpretation: Separate items missing priority or status and do not treat proposals as settled decisions.",
+      "Side effects: Do not send invitations or schedule the meeting."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "te",
+    "text": "Velnora కోసం KB-426 కింద ఇచ్చిన వంటసరుకుల అభ్యర్థన జాబితాను నిల్వ జాబితాతో పోల్చి ఒక ముసాయిదా తయారు చేయండి. రెండు జాబితాల్లో పేర్లు అచ్చంగా సరిపోలిన వాటిని అందుబాటులో ఉన్నవిగా, అభ్యర్థనలో మాత్రమే ఉన్నవాటిని లేనివిగా విడిగా చూపించి, రెండు విభాగాల్లోనూ అభ్యర్థన జాబితా క్రమాన్ని పాటించండి. అస్పష్టంగా ఉన్న పేర్లను వేరుగా చూపించండి; వాటికి బదులుగా మరొక సరుకును ఎంచుకోవద్దు. సరుకులు ఆర్డర్ చేయవద్దు లేదా నిల్వ రికార్డులను మార్చవద్దు.",
+    "expected_intent": "Compare requested pantry items with inventory by exact item-name matches, list available and missing items separately in request order, and isolate ambiguous names.",
+    "constraints": [
+      "Matching and order: Use exact name matches and preserve request-list order in both available and missing sections.",
+      "Uncertainty: Separate ambiguous names without choosing substitutes.",
+      "Side effects: Do not order supplies or change inventory records."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "ar",
+    "text": "أعد مسودة ملخص لمقابلات Velnora في الملف KB-426 اعتمادًا على النصوص المقدمة. اجمع الأقوال بحسب رمز المتحدث كما ورد، ورتب المجموعات بحسب أول ظهور لها مع الحفاظ على ترتيب الأقوال داخل كل مجموعة. افصل الوعود الصريحة عن الأسئلة، وضع العبارات الملتبسة في قسم مستقل من دون استنتاج التزام غير مذكور. لا تتواصل مع المتحدثين ولا تنشر الملخص.",
+    "expected_intent": "Draft an interview summary grouped by supplied speaker code in first-appearance order, preserving statement order and separating explicit promises, questions, and ambiguous statements.",
+    "constraints": [
+      "Order: Preserve speaker-code first-appearance order and statement order within each speaker group.",
+      "Interpretation: Separate explicit promises, questions, and ambiguous statements without inferring unstated commitments.",
+      "Side effects: Do not contact speakers or publish the summary."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "zh",
+    "text": "请根据提供的记录，为 Velnora 的 KB-426 事件整理一份报告草稿。先按记录中已有的事件标识分组，组的顺序沿用标识首次出现的顺序，同组细节也保持原有顺序。若同一标识下的不同来源说法冲突，请并列标明来源和差异，不要自行判断哪一方正确，也不要补写缺失的经过。不要创建工单、修改原始记录或发送告警。",
+    "expected_intent": "Draft an incident report grouped by supplied event identifiers in first-appearance order, preserving detail order and displaying conflicting source accounts side by side.",
+    "constraints": [
+      "Order: Preserve identifier first-appearance order and original detail order within groups.",
+      "Evidence: Attribute conflicting accounts to their sources without choosing a winner or inventing missing events.",
+      "Side effects: Do not create tickets, change source records, or send alerts."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  },
+  {
+    "language": "ja",
+    "text": "Velnora の経費資料について、KB-426 の確認用一覧の下書きを作ってください。資料に記載された区分でまとめ、区分が最初に現れた順に並べ、各区分の中では元の順序を保ってください。添付資料がない項目と区分が未記入の項目を明示し、金額の合計や不足情報の推測は行わないでください。会計記録への登録、支払い、一覧の送信はしないでください。",
+    "expected_intent": "Draft an expense-document review list grouped by recorded category in first-appearance order, preserving item order and flagging missing attachments and categories.",
+    "constraints": [
+      "Order: Group by recorded category in first-appearance order and preserve original item order within each category.",
+      "Scope: Flag missing attachments and categories without calculating totals or guessing missing information.",
+      "Side effects: Do not post accounting entries, make payments, or send the list."
+    ],
+    "references": [
+      "Velnora",
+      "KB-426"
+    ]
+  }
+]

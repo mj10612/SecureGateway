@@ -42,7 +42,7 @@ def ordinary_words(language: str) -> frozenset[str]:
         raise ValueError("Packaged ordinary vocabulary is missing for " + language)
     return frozenset(words)
 
-GENERAL_WORDS = {
+_GENERAL_WORDS = {
     "en": "please tell time meeting meetings start starts begin begins today tomorrow work store tea weather walk together friend list going explain how make nice check call",
     "ko": "오늘 내일 회의 시간 시 시작 시작하는지 알려주세요 퇴근 후 가게 들러서 필요한 물건 살게요 차 한 잔 만드는 방법 설명해 주세요 날씨 좋으니 함께 공원 걸어가요 목록 확인하고 친구 전화할게요",
     "es": "por favor dime qué hora empieza empezar reunión hoy tienda después trabajo puedes explicar cómo preparar taza té hace buen tiempo podemos caminar juntos mañana revisaré lista llamaré amigo",
@@ -104,12 +104,12 @@ ADDITIONAL_WORDS = {
 
 GENERAL_WORDS = {
     language: frozenset((words + " " + ADDITIONAL_WORDS.get(language, "")).split())
-    for language, words in GENERAL_WORDS.items()
+    for language, words in _GENERAL_WORDS.items()
 }
 
 # Reviewed domain markers are protected even when statistically frequent.
 # This is a starter denylist, not exhaustive industry/PII classification.
-DOMAIN_WORDS = {
+_DOMAIN_WORDS = {
     "en": "secret private password credential token confidential internal cancer insulin diabetes chemotherapy surgery diagnosis patient bank credit mortgage securitization pharmacokinetics electroplating bitcoin amazon apple tesla encryption merger acquisition oncology leukemia atherosclerosis underwriting actuarial derivatives collateral liquidity solvency immunotherapy radiotherapy bioreactor chromatography lithography etching metallurgy polymerase genome sequencing amortization bankruptcy",
     "ko": "암 인슐린 당뇨 은행 신용 담보 약물동태학 자산유동화 전기도금",
     "es": "cáncer insulina diabetes banco crédito hipoteca titulización farmacocinética galvanoplastia",
@@ -128,7 +128,7 @@ DOMAIN_WORDS = {
     "zh": "北京 上海 广州 深圳 癌症 胰岛素 糖尿病 银行 信贷 抵押 证券化 电镀",
     "ja": "東京 大阪 京都 横浜 名古屋 癌 がん インスリン 糖尿病 銀行 信用 住宅ローン 資産証券化 薬物動態学 電気めっき 証券化 めっき",
 }
-DOMAIN_WORDS = {language: frozenset(words.split()) for language, words in DOMAIN_WORDS.items()}
+DOMAIN_WORDS = {language: frozenset(words.split()) for language, words in _DOMAIN_WORDS.items()}
 ENGLISH_NAMES = frozenset("john james maria mary michael robert patricia jennifer linda elizabeth david william richard joseph thomas charles daniel matthew anthony mark donald steven paul andrew joshua kevin brian george edward ronald timothy jason jeffrey ryan jacob gary nicholas eric jonathan stephen larry justin scott brandon benjamin samuel frank gregory raymond alexander patrick jack dennis jerry tyler aaron henry douglas peter adam nathan zachary walter kyle harold carl jeremy keith roger gerald ethan arthur terry lawrence sean christian austin joe albert jesse alan ralph eugene russell vincent philip billy johnny bradley johnson washington smith garcia martinez rodriguez hernandez lopez gonzalez wilson anderson thompson jackson harris clark lewis robinson walker young allen king wright susan jessica sarah karen nancy lisa betty margaret sandra ashley kimberly emily donna michelle carol amanda dorothy melissa deborah stephanie rebecca sharon laura cynthia kathleen amy angela shirley anna brenda pamela nicole samantha katherine christine debra rachel catherine carolyn janet ruth heather diane virginia julie joyce victoria olivia kelly christina lauren joan evelyn judith megan cheryl andrea hannah jacqueline martha gloria teresa ann sara madison frances kathryn janice jean abigail alice judy sophia grace denise amber doris marilyn danielle beverly isabella theresa diana natalie brittany charlotte marie kayla alexis lori".split())
 
 
@@ -173,3 +173,39 @@ def reviewed_inflections(text: str, language: str) -> set[str]:
     roots = (INDIC_WORDS.get(language, frozenset()) | HOUSEHOLD_WORDS.get(language, frozenset())) - NAME_WORDS.get(language, frozenset()) - DOMAIN_WORDS.get(language, frozenset())
     return {chunk.text for chunk in tokenize(text, language)
             if any(chunk.text.endswith(suffix) and chunk.text[:-len(suffix)] in roots for suffix in suffixes)}
+
+
+# Public grammatical relations, not arbitrary subject words. These preserve the
+# structure of a task even when its names and confidential concepts are hidden.
+_DISCOURSE_WORDS = {
+    "en": "first next then finally however otherwise instead meanwhile therefore afterwards only unless without before after",
+    "ko": "먼저 우선 다음 다음으로 이후 마지막으로 단 다만 하지만 대신 따라서 그러므로 없이 말고 말아줘 하지 않고 않도록 제외하고 포함하지",
+    "es": "primero después luego finalmente sin embargo solamente únicamente antes mientras excepto nunca",
+    "fr": "ensuite enfin cependant sinon auparavant seulement sauf sans avant après pendant jamais",
+    "pt": "primeiro depois então finalmente porém somente apenas antes após enquanto exceto nunca",
+    "de": "zuerst dann danach schließlich jedoch andernfalls stattdessen anschließend nur ohne bevor nachdem außer niemals",
+    "id": "pertama kemudian selanjutnya akhirnya namun sebaliknya hanya sebelum sesudah setelah tanpa kecuali jangan",
+    "tr": "önce sonra ardından sonunda ancak yalnızca sadece olmadan hariç yapma etme",
+    "ru": "сначала затем потом наконец однако иначе вместо только прежде после без кроме нельзя",
+    "hi": "पहले फिर बाद अंत केवल बिना अलावा मत नहीं",
+    "mr": "प्रथम आधी नंतर शेवटी मात्र फक्त शिवाय वगळून नको नाही",
+    "bn": "প্রথমে তারপর পরে শেষে তবে শুধু কেবল ছাড়া বাদ নয় না",
+    "ur": "پہلے پھر بعد آخر صرف بغیر علاوہ نہیں مت",
+    "te": "మొదట ముందుగా తర్వాత చివరగా అయితే మాత్రమే తప్పకుండా లేకుండా వద్దు చేయవద్దు కాకుండా",
+    "ar": "أولاً أولا ثم بعد أخيراً أخيرا لكن فقط بدون باستثناء لا ليس",
+    "zh": "首先 然后 之后 最后 但是 否则 只 仅 仅仅 不要 不能 除外 之前 以后",
+    "ja": "まず 次に その後 最後 ただし しかし 代わり だけ のみ せず ない 禁止 除く",
+}
+DISCOURSE_WORDS = {language: frozenset(words.split()) for language, words in _DISCOURSE_WORDS.items()}
+
+
+def discourse_capital_positions(text: str, language: str) -> frozenset[int]:
+    """Permit a capitalized discourse marker at sentence start before a comma.
+
+    The offset matters: 'First, ask First' must not disclose the second First.
+    Forced spans and prior private mappings still override these positions.
+    """
+    words = DISCOURSE_WORDS.get(language, ())
+    return frozenset(match.start("word") for match in re.finditer(
+        r"(?:\A\s*|[.!?]\s+|\n\s*)(?P<word>[^\W\d_]+)\s*[,，:]", text
+    ) if match.group("word").casefold() in words)
