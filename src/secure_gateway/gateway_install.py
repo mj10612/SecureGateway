@@ -647,12 +647,13 @@ def _uninstall_gateway(path: Path, *, force_clean=False):
         )
         if settings.is_symlink() or (settings.exists() and not settings.is_file()):
             raise ValueError("Host settings changed; refusing to overwrite a symbolic link or non-file.")
-        if not installed and not restored and not recovering and subscription:
+        if not installed and not restored and not recovering:
             if current is None:
-                # Already removed by the user: do not resurrect a backup.
+                # Already removed by the user in either mode: retire the
+                # owned record without resurrecting a backup.
                 original = None
                 restored = True
-            else:
+            elif subscription:
                 merged = merge_subscription_settings(settings, current, original, config)
                 if merged is not None:
                     original = merged

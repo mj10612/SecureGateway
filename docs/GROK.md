@@ -89,3 +89,11 @@ when the configuration file has been deleted, including custom config filenames.
 It preserves later edits to host settings by refusing to overwrite them. Without
 the configuration credentials, it cannot verify daemon shutdown; stop any
 remaining API gateway process manually after restoring the settings.
+
+As of 2.4.3, deleting Grok's managed `config.toml` before uninstall is also
+supported: `gateway api-uninstall` retires the validated installation manifest
+without recreating the deleted file. This works with or without the API config
+and requires no `--force-clean`. Existing API configuration is retained; a
+second uninstall reports no active installation. Unrelated files and login
+caches are preserved, and edited host files or invalid manifests still cause
+a refusal before host settings are changed.
