@@ -28,6 +28,15 @@
     <main id="overview">
       <header><div><p class="eyebrow">GATEWAY OBSERVABILITY</p><h1>처리 로그</h1><p class="muted">어떤 에이전트가 어디로 요청했는지 확인하세요.</p></div><div class="header-tools"><label class="auto"><input id="auto-refresh" type="checkbox" checked> 자동 갱신</label><button id="refresh" class="secondary">↻ 새로고침</button></div></header>
       <p id="banner" class="banner" role="alert" hidden></p>
+      <section class="routing">
+        <div><h2>강제 치환 단어</h2><p class="muted">한 줄에 하나씩 입력하세요. 대소문자를 구분하며, 입력한 부분만 치환합니다. 앞뒤의 *는 생략 가능합니다.</p></div>
+        <form id="mask-rules-form">
+          <label for="mask-rules">치환할 문자열</label>
+          <textarea id="mask-rules" rows="5" spellcheck="false" autocomplete="off"></textarea>
+          <button class="secondary" type="submit">규칙 저장</button>
+          <p id="mask-rules-status" class="fine" role="status"></p>
+        </form>
+      </section>
       <section class="stats" aria-label="처리 통계">
         <article><span>전체 요청</span><strong id="stat-total">0</strong><small>현재 필터 기준</small></article>
         <article><span>성공한 요청</span><strong id="stat-success">0</strong><small>HTTP 2xx</small></article>

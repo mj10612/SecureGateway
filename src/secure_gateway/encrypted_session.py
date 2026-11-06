@@ -59,6 +59,20 @@ class SnapshotEncryption:
         return _MAGIC + self._salt + self._fernet.encrypt(payload)
 
 
+def decrypt_snapshot_bytes(data: bytes, password: str) -> bytes:
+    """Decrypt a bounded authenticated local snapshot payload."""
+    if len(data) > MAX_SNAPSHOT_FILE_BYTES or not data.startswith(_MAGIC) or len(data) <= len(_MAGIC) + _SALT_SIZE:
+        raise ValueError("Invalid encrypted snapshot.")
+    start = len(_MAGIC)
+    try:
+        payload = _cipher(password, data[start:start + _SALT_SIZE]).decrypt(data[start + _SALT_SIZE:])
+    except InvalidToken:
+        raise ValueError("Incorrect password or damaged snapshot.") from None
+    if len(payload) > DEFAULT_SNAPSHOT_BYTES:
+        raise ValueError("Snapshot payload limit reached.")
+    return payload
+
+
 def save_session(
     path: Path,
     session: PrivacySession,

@@ -107,6 +107,7 @@ class MaskingEngine:
         mask_numbers: bool = False,
         sql_dialect: str = "sqlite",
         common_vocabulary: set[str] | None = None,
+        preserve_capitalized: bool = True,
     ) -> MaskResult:
         strategy = self._strategy(generator, strategy)
         self._check_input(text)
@@ -229,7 +230,8 @@ class MaskingEngine:
                         stem, selected_language, common_vocabulary
                     ):
                         should_mask = False
-                if word.casefold() in preserve and not force:
+                if (word.casefold() in preserve and not force
+                        and (preserve_capitalized or not any(c.isupper() for c in word))):
                     should_mask = False
                 if should_mask:
                     output.append(
@@ -616,6 +618,34 @@ class MaskingEngine:
 
             def restore(match: re.Match[str]) -> str:
                 nonlocal count
+                wrapped = match["wrapped"]
+                if wrapped is not None:
+                    key = wrapped[1:-1]
+                    mapping = reverse_store.get(key)
+                    if mapping is None:
+                        glued_unmatched.append(key)
+                        return wrapped
+                    count += 1
+                    unique.add(key)
+                    return mapping.original
+                alias_run = match["alias_run"]
+                if alias_run is not None:
+                    pieces = []
+                    piece_bytes = 0
+                    for item in re.finditer(r"private_symbol_\d+", alias_run, re.IGNORECASE):
+                        key = item[0]
+                        mapping = reverse_store.get(key)
+                        if mapping is None:
+                            glued_unmatched.append(key)
+                            pieces.append(key)
+                        else:
+                            count += 1
+                            unique.add(key)
+                            pieces.append(mapping.original)
+                        piece_bytes += len(pieces[-1].encode("utf-8"))
+                        if piece_bytes > self.max_restore_output_bytes:
+                            raise ValueError("Restoration output size limit reached.")
+                    return "".join(pieces)
                 run = match["numeric"]
                 if run is None:
                     key = match["alias"]
@@ -654,7 +684,9 @@ class MaskingEngine:
 
             # Both forms are substituted from the original input in one pass:
             # restored originals may themselves contain allocated aliases.
-            pattern = "(?P<numeric>" + NUMERIC_ALIAS_RUN.pattern + ")"
+            pattern = (r"(?P<wrapped>⟦private_symbol_\d+⟧)|"
+                       r"(?P<alias_run>(?<![A-Za-z0-9_])(?:private_symbol_\d+){2,}"
+                       r"(?![A-Za-z0-9_]))|(?P<numeric>" + NUMERIC_ALIAS_RUN.pattern + ")")
             syntax = StrategyGenerator.get_pattern(strategy).pattern.split(r"|\b", 1)[0]
             aliases = [syntax, r"(?<![A-Za-z0-9_])(?:smcp_(?:ID|NUM|LIT)|private_symbol)_\d+(?![A-Za-z0-9_])"]
             pattern += "|(?P<alias>" + "|".join(alternatives + aliases) + ")"

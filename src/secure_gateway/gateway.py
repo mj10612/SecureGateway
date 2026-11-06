@@ -19,6 +19,7 @@ import secrets
 import socket
 import sqlite3
 import time
+import unicodedata
 from threading import Condition, RLock
 from typing import Any
 import urllib.error
@@ -27,11 +28,12 @@ import urllib.parse
 
 from secure_gateway.engine.masking_engine import MaskingEngine, NumericLiteralConflict
 from secure_gateway.engine.strategies import mapping_key
-from secure_gateway.engine.natural_languages import canonical_language
+from secure_gateway.engine.natural_languages import canonical_language, detect_natural_language
 from secure_gateway.engine.code_parser import LANGUAGE_KEYWORDS, ALIASES
 from secure_gateway.encrypted_session import (
     SessionExpiredError,
     SnapshotEncryption,
+    decrypt_snapshot_bytes,
     load_session,
     save_session,
 )
@@ -42,7 +44,7 @@ from secure_gateway.engine.grammar_en import CLOSED_CLASS_WORDS
 from secure_gateway.gateway_source import looks_like_source
 from secure_gateway.gateway_catalog import fetch_catalog
 from secure_gateway.gateway_audit import AuditMaintenanceError, AuditStore, anonymous_ref
-from secure_gateway.gateway_admin import handle_admin
+from secure_gateway.gateway_admin import handle_admin, save_mask_rules
 from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, check_mapping_budget, positive_budget, snapshot_budget, record_mapping
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
 from secure_gateway.session import PrivacySession
@@ -154,6 +156,38 @@ TASK_WORDS = {
     "반환",
     "값",
     "그대로",
+    # Common task language is public vocabulary, not a general allowlist for
+    # identifiers. Exact forms avoid preserving arbitrary private compounds.
+    "삭제", "삭제해", "삭제해줘", "삭제해주세요", "삭제해 주세요", "삭제하세요",
+    "제거", "제거해", "제거해줘", "제거해주세요", "지워줘", "지워주세요",
+    "찾아", "찾아서", "찾아줘", "찾아주세요", "찾을", "찾기", "검색해줘", "검색해주세요",
+    "수정해", "수정해줘", "수정해주세요", "수정하세요", "변경해줘", "변경해주세요",
+    "만들어", "만들어줘", "만들어주세요", "작성해줘", "작성해주세요",
+    "확인해", "확인해줘", "확인해주세요", "알려줘", "알려주세요",
+    "설치해줘", "설치해주세요", "실행해줘", "실행해주세요",
+    "줄", "수", "있어", "있나요", "있을까", "가능해", "가능할까",
+    "리파지토리", "리파지토리를", "리포지토리", "리포지토리를",
+    "저장소", "저장소를", "파일을", "폴더를", "프로그램을",
+    "github", "github에서",
+    "delete", "remove", "create", "install", "uninstall", "run", "update",
+    "repository", "repositories", "repo", "folder", "files",
+}
+TASK_WORDS_BY_LANGUAGE = {
+    "es": "revisa revisar busca buscar elimina explica",
+    "fr": "vérifie vérifier cherche chercher supprime explique",
+    "pt": "verifique verificar procure pesquise exclua explique",
+    "de": "prüfe prüfen suche suchen lösche erkläre",
+    "id": "periksa cari hapus jelaskan",
+    "tr": "kontrol et ara sil açıkla",
+    "ru": "проверь проверить найди удали объясни",
+    "hi": "जाँचें जांचें खोजें हटाएं समझाएं",
+    "mr": "तपासा शोधा काढा समजावून सांगा",
+    "bn": "পরীক্ষা করুন খুঁজুন মুছুন ব্যাখ্যা",
+    "ur": "جانچ کریں تلاش حذف وضاحت",
+    "te": "తనిఖీ చేయండి వెతకండి తొలగించండి వివరించండి",
+    "ar": "تحقق ابحث احذف اشرح",
+    "zh": "检查 檢查 查找 搜索 删除 刪除 解释 解釋",
+    "ja": "確認 検索 探す 削除 説明",
 }
 PRIVACY_INSTRUCTION = (
     "The following context was masked locally. Names and values beginning private_symbol_ "
@@ -555,6 +589,7 @@ class GatewaySession:
         self.opaque: set[str] = set()
         self.active_requests = 0
         self.encryption: SnapshotEncryption | None = None
+        self.forced_rules = lambda: ()
 
     def _opaque_key(self, block):
         stable = {
@@ -576,6 +611,8 @@ class GatewaySession:
                      if not preserve_task_words or word.lower() not in CLOSED_CLASS_WORDS)
         terms.update(re.findall(r"\b([A-Z])(?=\s+(?:함수|변수|식별자|클래스))", text))
         terms.update(re.findall(r"\b(?:function|variable|identifier|class)\s+([A-Z])\b", text))
+        selected = detect_natural_language(text) if self.natural_language == "auto" else self.natural_language
+        task_words = TASK_WORDS if selected in {"en", "ko"} else set(TASK_WORDS_BY_LANGUAGE.get(selected, "").split())
         return self.engine.mask_text(
             text,
             s.session_id,
@@ -586,7 +623,8 @@ class GatewaySession:
             common_vocabulary=self.common_words,
             sensitive_terms=terms,
             # Code fragments keep the "no identifier preservation" rule.
-            custom_preserve=TASK_WORDS if preserve_task_words else None,
+            custom_preserve=task_words if preserve_task_words else None,
+            preserve_capitalized=False,
             language=self.natural_language,
         ).masked_text
 
@@ -617,10 +655,55 @@ class GatewaySession:
             return self._mask_prose(text, preserve_task_words=False)
 
     def mask(self, text: str, code: bool = False, language: str = "auto") -> str:
+        return self._force_mask(self._mask_unforced(text, code, language))
+
+    def _force_mask(self, text: str) -> str:
+        rules = self.forced_rules()
+        # Never rewrite an existing alias: changing its spelling destroys the
+        # only reference that permits restoration.
+        forms = {unicodedata.normalize(form, word) for word in rules for form in ("NFC", "NFD")}
+        pattern = re.compile("|".join(re.escape(word) for word in sorted(forms, key=len, reverse=True))) if forms else None
+        s = self.session
+        def encode(word):
+            alias = self.engine._get_or_create_surrogate(
+                word, TokenType.ENTITY, s.generator, s.forward_store, s.reverse_store
+            )
+            # Delimit partial-word aliases so they can be restored even next to
+            # ASCII letters. The delimiters are consumed during restoration.
+            return "⟦" + alias + "⟧"
+        def substitute(match):
+            return encode(match.group())
+        with s.generator.operation():
+            parts = []
+            output_bytes = 0
+            def append(piece):
+                nonlocal output_bytes
+                output_bytes += len(piece.encode("utf-8"))
+                if output_bytes > self.engine.max_input_bytes:
+                    raise ValueError("Masked text size limit reached.")
+                parts.append(piece)
+            def ordinary(start, end):
+                cursor = start
+                if pattern:
+                    for match in pattern.finditer(text, start, end):
+                        append(text[cursor:match.start()])
+                        append(substitute(match))
+                        cursor = match.end()
+                append(text[cursor:end])
+            cursor = 0
+            for match in re.finditer(r"private_symbol_\d+|[⟦⟧]", text):
+                ordinary(cursor, match.start())
+                value = match.group()
+                append(encode(value) if value in {"⟦", "⟧"} else value)
+                cursor = match.end()
+            ordinary(cursor, len(text))
+            return "".join(parts)
+
+    def _mask_unforced(self, text: str, code: bool = False, language: str = "auto") -> str:
         if code:
             return self._mask_source(text, language)
         if "```" not in text and looks_like_source(text):
-            return self.mask(text, code=True)
+            return self._mask_source(text, language)
         # Fenced/inline source is lexed, rather than replaced as an opaque block.
         parts = re.split(
             r"(```[^\n]*\n[\s\S]*?```|`[^`\n]+`|"
@@ -1320,6 +1403,21 @@ class GatewaySession:
         for tool in result.get("tools", []):
             if tool.get("name") in TOOL_DESCRIPTIONS:
                 tool["description"] = TOOL_DESCRIPTIONS[tool["name"]]
+        rules = self.forced_rules()
+        if rules:
+            def check(value):
+                if isinstance(value, str):
+                    normalized = unicodedata.normalize("NFC", value)
+                    return any(unicodedata.normalize("NFC", rule) in normalized for rule in rules)
+                if isinstance(value, list):
+                    return any(check(item) for item in value)
+                if isinstance(value, dict):
+                    return any(check(key) or check(item) for key, item in value.items())
+                if isinstance(value, (int, float)) and not isinstance(value, bool):
+                    return any(rule in str(value) for rule in rules)
+                return False
+            if check(result):
+                raise ValueError("A forced masking rule matches a protocol field; request blocked.")
         return result
 
     def claude_system(self, value):
@@ -1625,6 +1723,14 @@ class PrivacyGateway(ThreadingHTTPServer):
         if state_dir:
             state_dir.mkdir(parents=True, exist_ok=True)
             state_dir.chmod(0o700)
+        self.rules_path = state_dir / "mask-rules.enc" if state_dir else None
+        self.mask_rules = ()
+        if self.rules_path and self.rules_path.exists():
+            with self.rules_path.open("rb") as stream:
+                encrypted_rules = stream.read(1024 * 1024 + 1)
+            if len(encrypted_rules) > 1024 * 1024:
+                raise ValueError("Rule file too large")
+            self.mask_rules = self.validate_mask_rules(json.loads(decrypt_snapshot_bytes(encrypted_rules, token)))
         self.audit = AuditStore(audit_path, audit_max_records, audit_max_age_days) if audit_path is not None else None
         self.audit_write_errors = 0
         self.audit_error_counts = {"admission": 0, "completion": 0, "maintenance": 0}
@@ -1642,6 +1748,33 @@ class PrivacyGateway(ThreadingHTTPServer):
         with self.admission:
             self.audit_write_errors += 1  # Retain the legacy aggregate contract.
             self.audit_error_counts[phase] += 1
+
+    @staticmethod
+    def validate_mask_rules(value):
+        if not isinstance(value, list) or len(value) > 256:
+            raise ValueError("Invalid rules")
+        rules = []
+        for rule in value:
+            if not isinstance(rule, str) or len(rule) > 256 or not rule.strip():
+                raise ValueError("Invalid rule")
+            literal = rule.strip().strip("*")
+            if not literal or "*" in literal or "\n" in literal or "\r" in literal or "⟦" in literal or "⟧" in literal:
+                raise ValueError("Invalid rule")
+            rules.append(literal)
+        return tuple(dict.fromkeys(rules))
+
+    def set_mask_rules(self, rules):
+        rules = self.validate_mask_rules(rules)
+        if self.rules_path is None:
+            raise ValueError("Rule storage is unavailable")
+        with self.admission:
+            if self.admitted_requests:
+                raise ValueError("Requests are active")
+            from secure_gateway.gateway_install import atomic_bytes
+            payload = json.dumps(list(rules), ensure_ascii=False).encode("utf-8")
+            atomic_bytes(self.rules_path, SnapshotEncryption(self.token).encrypt(payload))
+            self.mask_rules = rules
+        return rules
 
     def audit_error_diagnostics(self):
         with self.admission:
@@ -1735,6 +1868,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                                      max_snapshot_bytes=self.max_snapshot_bytes,
                                      prose_mode=self.prose_mode, common_words=self.common_words,
                                      **self.restore_limits)
+            session.forced_rules = lambda: self.mask_rules
             # Reasoning provenance is only meaningful while the matching alias
             # table is alive. Expired/missing snapshots start fresh, so stale
             # digests must not be loaded into the new table.
@@ -2021,6 +2155,9 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 self.server.record_audit_error("completion")
 
     def _do_POST(self):
+        if self.path == "/admin/api/mask-rules":
+            save_mask_rules(self)
+            return
         if not self.authorized():
             self.send_body(401, b'{"error":"Unauthorized"}')
             return

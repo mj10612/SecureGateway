@@ -79,6 +79,37 @@ def ledger(gateway, count):
         time.sleep(.01)
 
 
+def test_admin_forced_terms_are_authenticated_persisted_and_applied(tmp_path):
+    state = tmp_path / "sessions"
+    server = PrivacyGateway(("127.0.0.1", 0), "local-private-token-for-test-only",
+                            state_dir=state)
+    worker = Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    try:
+        assert call(server, "/admin/api/mask-rules", headers={})[0] == 401
+        body = json.dumps({"rules": ["*삭제*"]}, ensure_ascii=False).encode()
+        assert call(server, "/admin/api/mask-rules", body)[0] == 200
+        assert "삭제".encode() not in (state / "mask-rules.enc").read_bytes()
+        masked = server.get_session("codex").mask("SecureMCP 삭제해줘")
+        assert "삭제" not in masked
+        assert server.get_session("codex").restore(masked) == "SecureMCP 삭제해줘"
+        payload = {"input": [{"role": "user", "content": "SecureMCP 삭제해줘"}]}
+        assert "삭제" not in json.dumps(server.get_session("codex").request(payload), ensure_ascii=False)
+        assert call(server, "/admin/api/mask-rules", b'{"rules":["a*b"]}')[0] == 400
+        bad_origin = {"X-SecureGateway-Token": server.token, "Origin": "https://evil.example"}
+        assert call(server, "/admin/api/mask-rules", body, bad_origin)[0] == 403
+    finally:
+        server.shutdown()
+        worker.join(2)
+        server.server_close()
+    again = PrivacyGateway(("127.0.0.1", 0), "local-private-token-for-test-only",
+                           state_dir=state)
+    try:
+        assert "삭제" not in again.get_session("codex").mask("삭제해줘")
+    finally:
+        again.server_close()
+
+
 def test_durable_routing_metadata_without_payloads_or_credentials(admin_gateway):
     gateway, upstream = admin_gateway
     payload = json.dumps({"model": "fixture-model", "input": [{"role": "user", "content": "Review alice@example.com privateCompany."}]}).encode()

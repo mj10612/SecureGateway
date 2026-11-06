@@ -51,6 +51,12 @@ def handle_admin(handler):
     if not handler.authorized():
         handler.send_body(401, b'{"error":"Unauthorized"}')
         return True
+    if url.path == "/admin/api/mask-rules":
+        if url.query:
+            handler.send_body(400, b'{"error":"Invalid request"}')
+        else:
+            handler.send_body(200, json.dumps({"rules": handler.server.mask_rules}, ensure_ascii=False).encode())
+        return True
     if url.path == "/admin/api/sessions":
         if url.query:
             handler.send_body(400, b'{"error":"Session diagnostics take no filters"}')
@@ -103,3 +109,35 @@ def handle_admin(handler):
     except sqlite3.Error:
         handler.send_body(503, b'{"error":"Audit storage unavailable"}')
     return True
+
+
+def save_mask_rules(handler):
+    """Authenticated loopback-only rule update; never logs submitted terms."""
+    port = handler.server.server_port
+    hosts = {f"127.0.0.1:{port}", f"localhost:{port}"}
+    origin = handler.headers.get("Origin")
+    if handler.headers.get("Host") not in hosts or (
+        origin is not None and origin not in {"http://" + host for host in hosts}
+    ):
+        handler.send_body(403, b'{"error":"Local origin required"}')
+        return
+    if not handler.authorized():
+        handler.send_body(401, b'{"error":"Unauthorized"}')
+        return
+    try:
+        if handler.headers.get("Transfer-Encoding") or handler.headers.get("Content-Encoding"):
+            raise ValueError("Invalid encoding")
+        length = int(handler.headers.get("Content-Length", "0"))
+        if not 0 < length <= 65536:
+            raise ValueError("Invalid length")
+        raw = handler.rfile.read(length)
+        handler._request_body_consumed = len(raw) == length
+        if len(raw) != length:
+            raise ValueError("Incomplete body")
+        payload = json.loads(raw)
+        if not isinstance(payload, dict) or set(payload) != {"rules"}:
+            raise ValueError("Invalid body")
+        rules = handler.server.set_mask_rules(payload["rules"])
+        handler.send_body(200, json.dumps({"rules": rules}, ensure_ascii=False).encode())
+    except (ValueError, OSError, UnicodeError):
+        handler.send_body(400, b'{"error":"Invalid rules or active requests"}')

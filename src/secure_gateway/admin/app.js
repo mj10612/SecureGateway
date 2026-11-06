@@ -129,13 +129,34 @@ async function load() {
 }
 $("login-form").addEventListener("submit", async (event) => {
   event.preventDefault(); generation++; resetExport(); token = $("token").value.trim();
-  if (await load()) { $("token").value = ""; $("login-error").textContent = ""; $("login").hidden = true; $("dashboard").hidden = false; }
+  if (await load()) { $("token").value = ""; $("login-error").textContent = ""; $("login").hidden = true; $("dashboard").hidden = false; await loadRules(); }
 });
 $("logout").addEventListener("click", () => {
   token = ""; generation++; resetExport(); offset = 0; $("rows").replaceChildren(); $("detail-fields").replaceChildren();
+  $("mask-rules").value = ""; $("mask-rules-status").textContent = "";
   $("details").close(); $("dashboard").hidden = true; $("login").hidden = false; $("token").focus();
 });
 $("refresh").addEventListener("click", load);
+async function loadRules() {
+  const current = generation;
+  try {
+    const response = await fetch("/admin/api/mask-rules", {headers: {"X-SecureGateway-Token": token}, cache: "no-store"});
+    if (!response.ok) throw new Error();
+    const data = await response.json();
+    if (current === generation) $("mask-rules").value = data.rules.join("\n");
+  } catch (_) { if (current === generation) $("mask-rules-status").textContent = "규칙을 불러오지 못했습니다."; }
+}
+$("mask-rules-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const current = generation;
+  const rules = $("mask-rules").value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  try {
+    const response = await fetch("/admin/api/mask-rules", {method: "POST", headers: {"Content-Type": "application/json", "X-SecureGateway-Token": token}, body: JSON.stringify({rules}), cache: "no-store"});
+    if (!response.ok) throw new Error();
+    const data = await response.json();
+    if (current === generation) { $("mask-rules").value = data.rules.join("\n"); $("mask-rules-status").textContent = "저장했습니다."; }
+  } catch (_) { if (current === generation) $("mask-rules-status").textContent = "저장하지 못했습니다. 진행 중인 요청을 끝내고 규칙을 확인하세요."; }
+});
 async function exportLogs(next = false) {
   if (!token || exporting || (next && !exportCursor)) return;
   if (!next) resetExport();

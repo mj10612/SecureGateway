@@ -8,7 +8,7 @@ Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENA
 
 *17개 자연어·24개 코드 언어를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
 [![CI](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml)
@@ -63,7 +63,7 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureGateway | **2.1.1** |
+| SecureGateway | **2.2.0** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |
@@ -250,6 +250,18 @@ xAI API 모드는 구독 게이트웨이와 별도로 설정·실행하며 **별
 secure-gateway gateway admin --config /path/to/xai-api/config.json
 ```
 
+#### 강제 치환 단어
+
+관리자 페이지의 **강제 치환 단어**에 한 줄에 하나씩 입력하고 저장하세요. 대소문자를 구분하며
+입력한 문자열을 다른 단어 안에서도 치환합니다. `*비밀*`, `비밀*`, `*비밀`과 `비밀`은 모두
+`비밀` 부분을 뜻합니다. 중간 `*`나 `*`만 입력하는 것은 지원하지 않습니다. 저장은 새 요청부터
+적용되며 진행 중인 요청이 있으면 거부됩니다. 규칙은 로컬 게이트웨이 데이터 폴더에 저장됩니다.
+규칙 파일은 게이트웨이 토큰으로 암호화됩니다. 토큰을 잃거나 변경하면 기존 규칙을 읽을 수
+없으므로 토큰과 데이터를 함께 안전하게 보관하세요.
+필수 프로토콜 필드와 규칙이 충돌하면 안전하게 요청이 차단될 수 있으므로 규칙을 구체적으로
+정하세요. 일반 어휘 목록과 강제 치환은 휴리스틱이며 모든 민감 정보를 자동으로 식별하지는 못합니다.
+일반 단어와 철자가 같은 이름도 보존될 수 있으므로 보호할 이름은 강제 치환 목록에 넣으세요.
+
 #### 6. 종료·설정 해제·패키지 삭제
 
 | 원하는 작업 | 방법 | 남는 항목 |
@@ -275,6 +287,44 @@ uv tool uninstall secure-gateway
 덮어쓰지 않도록 제거가 거부되면 먼저 설정을 검토·병합해야 합니다. **설정 복원이 완료되기
 전에 패키지나 백업을 삭제하지 마세요.** xAI API 설정도 사용했다면 패키지를 삭제하기 전에
 `gateway api-uninstall`도 실행하세요.
+
+복원은 해당 `config.json`의 `installation.json`에 기록된 파일에만 적용됩니다. 설치 때
+`--config`를 사용했다면 제거할 때도 같은 경로를 지정하세요. `No active gateway installation
+found`는 복원 기록이 없다는 뜻이며, 다른 계정이나 설정 경로까지 복원됐다는 뜻은 아닙니다.
+Orca에서 여러 Codex 계정을 사용한다면 각 계정의 `CODEX_HOME`이 다를 수 있으므로 각 계정의
+`config.toml`도 확인하세요. 설치 기록이 없는 경우 현재 설정과 백업을 따로 보관하고 설치 전
+설정과 비교해 필요한 항목만 병합하세요. 백업 자체에 게이트웨이 설정이 들어 있을 수도 있으므로
+확인 없이 파일 전체를 덮어쓰지 마세요. 토큰이나 설정 원문은 공개하지 마세요.
+
+복원 확인은 실행 중인 Codex/Claude를 완전히 종료한 후 새로 시작하여 수행하세요. Codex의
+해당 계정 설정에 `model_provider = "secure_gateway_subscription"` 또는
+`[model_providers.secure_gateway_subscription]`이 남아 있다면 해당 계정은 아직 게이트웨이를
+참조할 수 있습니다. 기존 공급자 설정은 각자의 설치 전 설정을 기준으로 복원해야 합니다.
+레거시 `secure-gateway init`으로 별도 설치한 훅은 게이트웨이 제거와 별개입니다.
+[훅 제거 안내](docs/LOCAL_INTEGRATION.md)를 따라 설치 당시와 같은 에이전트 및 범위에서 제거하세요.
+
+#### 모델이 질문의 핵심을 알 수 없다고 답할 때
+
+게이트웨이는 일반적인 작업 지시어 일부를 그대로 전달하고 대상 이름과 민감한 값은 마스킹합니다.
+예를 들어 `SecureMCP 삭제해줘`에서 대상은 별칭으로 바꾸고 `삭제해줘`는 유지합니다. 지시어
+목록은 완전한 사전이 아니므로 목록에 없는 표현은 가려질 수 있습니다. 복원은 응답에 나온
+별칭을 되돌릴 뿐 모델이 보지 못한 의미를 복구하지 못합니다. 이 경우 표현을 바꿔 요청해 보세요.
+지원 언어의 대표 지시어를 보존하지만 모든 일상 표현을 판별하지는 못합니다. 언어 자동 감지는
+공유 문자만으로 언어를 정확히 구분할 수 없으므로 필요하면 `config.json`의 `natural_language`를
+해당 언어 코드로 지정하고 게이트웨이를 재시작하세요.
+이전 실행에서 해당 지시어가 이미 별칭으로 기록됐다면 업데이트 후에도 기존 매핑이 우선합니다.
+필요할 때 게이트웨이를 실행한 상태에서 `secure-gateway gateway reset --agent codex`로
+Codex 매핑을 지우고 새 대화를 시작하세요. 초기화하면 이전 대화의 별칭을 복원할 수 없으므로
+진행 중인 요청을 끝내고 이전 대화를 더 이상 재개하지 않을 때만 실행하세요.
+
+선택적으로 `config.json`의 기존 항목을 유지한 채 `prose_mode`를 `uncommon_words`로 설정하고
+공개해도 되는 단어만 `common_words`에 추가한 후 게이트웨이를 재시작할 수 있습니다.
+[설정 예시와 제약](docs/GATEWAY.md#selective-ordinary-vocabulary-160)을 확인하세요.
+이 목록은 완전한 한국어 사전이 아니며 활용형도 자동으로 모두 보존하지 않으므로 문제 해결을
+보장하지 않습니다. 목록에 추가한 단어는 제공자에게 보일 수 있으므로 민감한 이름이나 정보를
+추가하지 마세요. `entities_only`도 인식되지 않은 민감 정보를 노출할 수 있고 모든 일반 지시어의
+보존을 보장하지 않습니다. 기능이 우선이라면 게이트웨이 설정을 해제하고 직접 사용하되,
+그 세션의 입력은 게이트웨이로 보호되지 않습니다.
 
 복구용 설정·SQLite 로그·암호화 세션은 자동으로 삭제하지 않습니다. 제거가 성공하고
 게이트웨이가 종료된 것을 확인한 뒤, 데이터까지 삭제하려면 필요한 로그를 먼저 백업하고
