@@ -108,6 +108,7 @@ class MaskingEngine:
         sql_dialect: str = "sqlite",
         common_vocabulary: set[str] | None = None,
         preserve_capitalized: bool = True,
+        preserve_capitalized_words: set[str] | None = None,
     ) -> MaskResult:
         strategy = self._strategy(generator, strategy)
         self._check_input(text)
@@ -142,6 +143,8 @@ class MaskingEngine:
                 known = terms | mapping_store.originals_in(text)
             else:
                 known = terms | {m.original for m in mapping_store.values()}
+            if not preserve_capitalized:
+                known.update(preserve)
             if mode == MaskMode.UNCOMMON_WORDS:
                 known.update(common_words.COMMON_WORDS.get(selected_language, ()))
                 known.update(common_vocabulary or ())
@@ -230,8 +233,9 @@ class MaskingEngine:
                         stem, selected_language, common_vocabulary
                     ):
                         should_mask = False
-                if (word.casefold() in preserve and not force
-                        and (preserve_capitalized or not any(c.isupper() for c in word))):
+                if ((word.casefold() in preserve or (not preserve_capitalized and stem.casefold() in preserve)) and not force
+                        and (preserve_capitalized or not any(c.isupper() for c in word)
+                             or word.casefold() in (preserve_capitalized_words or set()))):
                     should_mask = False
                 if should_mask:
                     output.append(

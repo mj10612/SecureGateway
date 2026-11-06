@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.2.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.3.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -512,6 +512,26 @@ without publishing a partial file. Narrow the date range or use a supported loca
 filesystem. Temporary files are cleaned on normal exceptions and interruption.
 
 ## Selective ordinary vocabulary (1.6.0)
+
+### Offline multilingual and integration checks
+
+Run `python -m pytest tests/test_gateway_multilingual_corpus.py tests/test_gateway_tool_workflows.py tests/test_gateway_task_language.py -q` from the repository. The corpus contains 17 languages, ordinary passages and synthetic person, company, email and industry terms. Each case checks that the labelled terms are absent from the forwarded text and that local restoration reproduces the input. The checks use synthetic examples; they cannot establish that unlabelled sensitive terms are safe. Everyday words are deliberately disclosed and can also be names or sensitive industry terms. Register such values as forced masking rules before use.
+
+Run `python scripts/evaluate_multilingual.py` for a stricter diagnostic: it reports whole-sentence preservation, labelled-value exposure and restoration by language, plus required skill-text words. A nonzero exit indicates at least one criterion failed. Whole-sentence equality is stricter than semantic understanding and should not be confused with a model evaluation. Test a fresh, independently prepared set of prompts blind with a model: show only the masked text first, record its interpretation, then compare with the original. Never send real confidential content to an external evaluator.
+
+The integration suite exercises an MCP client and server over local stdio, and separately tests gateway tool schemas, calls and results using a local MCP server object. The `SKILL.md` case checks the forwarded instruction text and restoration; it does not execute a real skill. `tests/test_gateway_hosts.py` optionally runs a native Codex or Claude CLI against a local fake upstream when `SECURE_GATEWAY_CODEX_BINARY` or `SECURE_GATEWAY_CLAUDE_BINARY` is set. These checks do not establish that an actual model chose a tool or followed a skill. Live subscription tests in `tests/test_gateway_live.py` require explicit opt-in and can consume a subscription; they are not run by default.
+
+Gateway automatic language selection is heuristic for scripts shared by several languages. Explicit `natural_language` remains available, and ambiguous words can be private names even when they appear in the ordinary vocabulary. Existing aliases, explicit rules and code masking take precedence; use a new conversation after resetting old mappings when testing a policy change.
+
+The development corpus was used to choose initial vocabulary, so its results are not independent accuracy measurements. Before broad vocabulary support, a blind evaluator could not reliably identify both the subject and action in any of 17 new prompts. With the local frequency data and independently authored ordinary-word supplements, a second, newly authored set (`tests/fixtures/fresh_multilingual.json`) scored 12 complete, 4 partial and 1 failed interpretations on the subject/action criterion. Requiring important conditions and device details as well gives a more conservative 9 complete, 7 partial and 1 failed result. This is a small, single-evaluator comparison, not a statistical accuracy claim. A real model, MCP host or skill runtime must not be assumed to work merely because local round-trip tests pass.
+
+### Broad local gateway prose vocabulary (2.3.0)
+
+Gateway prose uses wordfreq's packaged frequency lists for fifteen languages and independently authored Marathi/Telugu forms, supplemented by reviewed household vocabulary. Unknown words still receive aliases. Matching uses exact normalized lookup keys; source spelling is restored unchanged. Frequency lookup uses existing tokenization, with no prompt uploads, runtime downloads or substitution of another language's dictionary. See [data attribution](THIRD_PARTY_DATA.md).
+
+The default frequency cutoffs are Zipf 3.5 for languages with capitalization cues and 4.0 for other scripts. Capitalized words remain conservative, with narrow exceptions for skill verbs and reviewed German nouns. Reviewed person names and domain terms, explicit forced rules, and previously protected originals take priority. The lists are not exhaustive: common names can be ordinary words and frequent industry terms can look public. Register confidential vocabulary explicitly; automatic detection cannot promise to distinguish every such case.
+
+Code continues to use its lexer, literal tool arguments and schema data keep stricter handling, and `aggressive` does not enable the new ordinary-word exceptions. An unclosed code fence or inline backtick is rejected before forwarding; close it before retrying. Existing multiword source aliases remain private across prose boundaries. These changes apply to gateway prose; the library/CLI text modes retain their separate policies.
 
 The default prose policy remains `content_words`. To preserve a small local
 ordinary vocabulary while masking unknown content, set these gateway JSON keys

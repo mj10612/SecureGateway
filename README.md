@@ -8,7 +8,7 @@ Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENA
 
 *17개 자연어·24개 코드 언어를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
 [![CI](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml)
@@ -63,7 +63,7 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureGateway | **2.2.0** |
+| SecureGateway | **2.3.0** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |
@@ -309,7 +309,10 @@ Orca에서 여러 Codex 계정을 사용한다면 각 계정의 `CODEX_HOME`이 
 예를 들어 `SecureMCP 삭제해줘`에서 대상은 별칭으로 바꾸고 `삭제해줘`는 유지합니다. 지시어
 목록은 완전한 사전이 아니므로 목록에 없는 표현은 가려질 수 있습니다. 복원은 응답에 나온
 별칭을 되돌릴 뿐 모델이 보지 못한 의미를 복구하지 못합니다. 이 경우 표현을 바꿔 요청해 보세요.
-지원 언어의 대표 지시어를 보존하지만 모든 일상 표현을 판별하지는 못합니다. 언어 자동 감지는
+2.3.0부터 게이트웨이는 로컬 빈도 사전과 검토한 생활 어휘로 일반 문맥을 더 넓게 보존합니다.
+이름·분야 용어·강제 치환·기존 비밀 매핑이 우선하며, 코드와 도구 인자 값은 더 엄격하게 처리합니다.
+[검증 결과와 자료 출처](docs/GATEWAY.md#broad-local-gateway-prose-vocabulary-230)를 확인하세요.
+모든 일상 표현을 판별하지는 못합니다. 언어 자동 감지는
 공유 문자만으로 언어를 정확히 구분할 수 없으므로 필요하면 `config.json`의 `natural_language`를
 해당 언어 코드로 지정하고 게이트웨이를 재시작하세요.
 이전 실행에서 해당 지시어가 이미 별칭으로 기록됐다면 업데이트 후에도 기존 매핑이 우선합니다.

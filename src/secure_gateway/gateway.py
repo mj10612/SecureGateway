@@ -41,10 +41,11 @@ from secure_gateway.hooks import _atomic_json
 from secure_gateway.gateway_validation import MODEL_ID_PATTERN, validate_request
 from secure_gateway.gateway_validation import validate_cache_control
 from secure_gateway.engine.grammar_en import CLOSED_CLASS_WORDS
-from secure_gateway.gateway_source import looks_like_source
+from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
 from secure_gateway.gateway_catalog import fetch_catalog
 from secure_gateway.gateway_audit import AuditMaintenanceError, AuditStore, anonymous_ref
 from secure_gateway.gateway_admin import handle_admin, save_mask_rules
+from secure_gateway.gateway_vocabulary import ordinary_words, select_gateway_language, domain_terms, reviewed_inflections
 from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, check_mapping_budget, positive_budget, snapshot_budget, record_mapping
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
 from secure_gateway.session import PrivacySession
@@ -172,6 +173,7 @@ TASK_WORDS = {
     "delete", "remove", "create", "install", "uninstall", "run", "update",
     "repository", "repositories", "repo", "folder", "files",
 }
+SKILL_TASK_WORDS = {"skill", "instructions", "using", "follow"}
 TASK_WORDS_BY_LANGUAGE = {
     "es": "revisa revisar busca buscar elimina explica",
     "fr": "vérifie vérifier cherche chercher supprime explique",
@@ -603,7 +605,7 @@ class GatewaySession:
             json.dumps(stable, sort_keys=True, ensure_ascii=False).encode()
         ).hexdigest()
 
-    def _mask_prose(self, text: str, preserve_task_words: bool = True) -> str:
+    def _mask_prose(self, text: str, preserve_task_words: bool = True, skill_verbs: frozenset[str] = frozenset()) -> str:
         s = self.session
         # Existing source aliases take precedence over prose grammar (e.g. A).
         terms = s.forward_store.originals_in(text)
@@ -611,8 +613,26 @@ class GatewaySession:
                      if not preserve_task_words or word.lower() not in CLOSED_CLASS_WORDS)
         terms.update(re.findall(r"\b([A-Z])(?=\s+(?:함수|변수|식별자|클래스))", text))
         terms.update(re.findall(r"\b(?:function|variable|identifier|class)\s+([A-Z])\b", text))
-        selected = detect_natural_language(text) if self.natural_language == "auto" else self.natural_language
-        task_words = TASK_WORDS if selected in {"en", "ko"} else set(TASK_WORDS_BY_LANGUAGE.get(selected, "").split())
+        selected = (select_gateway_language(text, detect_natural_language(text))
+                    if self.natural_language == "auto" else self.natural_language)
+        terms.update(domain_terms(text, selected))
+        general = ordinary_words(selected) if self.prose_mode != MaskMode.AGGRESSIVE else frozenset()
+        # Pass only vocabulary occurring in this fragment to the engine. Copying
+        # tens of thousands of dictionary entries for every short field/sentence
+        # is both unnecessary and an avoidable request amplification vector.
+        from secure_gateway.engine.natural_languages import tokenize
+        relevant = reviewed_inflections(text, selected)
+        for chunk in tokenize(text, selected):
+            key = unicodedata.normalize("NFC", chunk.text).casefold()
+            if key in general:
+                relevant.add(key)
+            if selected == "ko" and chunk.is_word:
+                stem, _, _ = self.engine.ko_grammar.decompose_token(chunk.text, general)
+                if stem in general:
+                    relevant.add(stem)
+        task_words = (TASK_WORDS if selected in {"en", "ko"} else set(TASK_WORDS_BY_LANGUAGE.get(selected, "").split())) | relevant
+        if selected in {"en", "ko"} and self.prose_mode != MaskMode.AGGRESSIVE:
+            task_words = task_words | SKILL_TASK_WORDS
         return self.engine.mask_text(
             text,
             s.session_id,
@@ -625,7 +645,8 @@ class GatewaySession:
             # Code fragments keep the "no identifier preservation" rule.
             custom_preserve=task_words if preserve_task_words else None,
             preserve_capitalized=False,
-            language=self.natural_language,
+            preserve_capitalized_words=({"treffen", "buch", "hause"} if selected == "de" and general else set()) | skill_verbs,
+            language=selected,
         ).masked_text
 
     def _mask_source(self, text: str, language: str = "auto") -> str:
@@ -652,7 +673,11 @@ class GatewaySession:
         except NumericLiteralConflict:
             raise
         except ValueError:
-            return self._mask_prose(text, preserve_task_words=False)
+            # Invalid source may contain a sensitive literal that happens to
+            # be a grammar/common word. Keep the whole fragment opaque.
+            self.engine._check_input(text)
+            return self.engine._get_or_create_surrogate(text, TokenType.LITERAL,
+                s.generator, s.forward_store, s.reverse_store, code=True)
 
     def mask(self, text: str, code: bool = False, language: str = "auto") -> str:
         return self._force_mask(self._mask_unforced(text, code, language))
@@ -702,34 +727,88 @@ class GatewaySession:
     def _mask_unforced(self, text: str, code: bool = False, language: str = "auto") -> str:
         if code:
             return self._mask_source(text, language)
-        if "```" not in text and looks_like_source(text):
+        if looks_like_source(text):
             return self._mask_source(text, language)
+        code_spans = markdown_code_spans(text)
+        known_terms = self.session.forward_store.originals_in(text)
+        if "`" in text and any("`" in term for term in known_terms):
+            raise ValueError("Protected text overlaps Markdown code boundaries; use plain text or a new conversation.")
+        if "`" not in text and any(any(char.isspace() for char in term) or "SKILL.md" in term
+                                  for term in known_terms):
+            # Do not split a previously protected source literal into separate
+            # public words at sentence/skill/code boundaries.
+            return self._mask_prose(text)
         # Fenced/inline source is lexed, rather than replaced as an opaque block.
-        parts = re.split(
-            r"(```[^\n]*\n[\s\S]*?```|`[^`\n]+`|"
-            + "|".join(re.escape(identity) for identity in PUBLIC_CLAUDE_IDENTITIES)
-            + ")",
-            text,
-        )
+        protected = {"EMAIL", "URL", "SECRET", "UUID", "IP", "PHONE", "CODE_BLOCK"}
+        protected_skill = any("SKILL.md" in chunk.text and chunk.kind in protected
+                              for chunk in self.engine.tokenizer.tokenize(text))
+        for match in re.finditer(re.escape("SKILL.md"), text):
+            neighbors = text[max(0, match.start() - 1):match.start()] + text[match.end():match.end() + 1]
+            if any(unicodedata.category(char).startswith("M") or char in "\u200c\u200d" for char in neighbors):
+                protected_skill = True
+        skill_pattern = (r"(?<![\w\u0300-\u036f./\\:=?&%@+-])SKILL\.md(?![\w\u0300-\u036f/\\:=?&%@+-]|\.[\w])|"
+                         if not protected_skill and self.prose_mode != MaskMode.AGGRESSIVE else "")
+        prose_pattern = "(" + skill_pattern + "|".join(re.escape(identity) for identity in PUBLIC_CLAUDE_IDENTITIES) + ")"
+        parts = []
+        protected_parts = set()
+        def add_prose(fragment):
+            if any(any(char.isspace() for char in term) or "SKILL.md" in term
+                   for term in self.session.forward_store.originals_in(fragment)):
+                protected_parts.add(len(parts))
+                parts.append(fragment)
+            else:
+                parts.extend(re.split(prose_pattern, fragment))
+        cursor = 0
+        for start, end in code_spans:
+            add_prose(text[cursor:start])
+            parts.append(text[start:end])
+            cursor = end
+        add_prose(text[cursor:])
         output = []
-        for part in parts:
-            if part in PUBLIC_CLAUDE_IDENTITIES:
+        skill_context = self.prose_mode != MaskMode.AGGRESSIVE and ("SKILL.md" in parts or "`SKILL.md`" in parts)
+        for index, part in enumerate(parts):
+            if index in protected_parts:
+                output.append(self._mask_prose(part))
+                continue
+            if part == "SKILL.md" and self.session.forward_store.originals_in(part):
+                output.append(self._mask_source(part))
+                continue
+            if part in PUBLIC_CLAUDE_IDENTITIES or (part == "SKILL.md" and self.prose_mode != MaskMode.AGGRESSIVE):
                 output.append(part)
                 continue
-            if part.startswith("```") and "\n" in part and part.endswith("```"):
+            delimiter = re.match(r"`+", part)
+            if delimiter and len(delimiter.group()) >= 3 and "\n" in part:
+                fence = delimiter.group()
                 header, body = part.split("\n", 1)
-                if header[3:].strip().lower() not in set(LANGUAGE_KEYWORDS) | set(ALIASES) | {""}:
-                    header = "```"
+                if header[len(fence):].strip().lower() not in set(LANGUAGE_KEYWORDS) | set(ALIASES) | {""}:
+                    header = fence
                 output.append(
                     header
                     + "\n"
-                    + self._mask_source(body[:-3], header[3:].strip() or "auto")
-                    + "```"
+                    + self._mask_source(body[:-len(fence)], header[len(fence):].strip() or "auto")
+                    + fence
                 )
-            elif part.startswith("`") and part.endswith("`") and len(part) > 1:
-                output.append("`" + self._mask_source(part[1:-1]) + "`")
+            elif part == "`SKILL.md`" and self.prose_mode != MaskMode.AGGRESSIVE and not self.session.forward_store.originals_in("SKILL.md"):
+                output.append(part)
+            elif delimiter:
+                fence = delimiter.group()
+                output.append(fence + self._mask_source(part[len(fence):-len(fence)]) + fence)
             else:
-                output.append(self._mask_prose(part))
+                if any(any(char.isspace() for char in term)
+                       for term in self.session.forward_store.originals_in(part)):
+                    output.append(self._mask_prose(part))
+                    continue
+                verbs = set()
+                if skill_context and index + 1 < len(parts) and parts[index + 1] in {"SKILL.md", "`SKILL.md`"} and re.fullmatch(r"\s*Read\s+", part):
+                    verbs.add("read")
+                for sentence in (re.split(r"(?<=[.!?])(?=\s)", part) if skill_context else [part]):
+                    allowed = set(verbs)
+                    if skill_context and re.match(r"\s*Follow (?:its|the) instructions\b", sentence):
+                        prefix = re.match(r"\s*Follow\b", sentence)
+                        assert prefix is not None
+                        output.append(self._mask_prose(prefix.group(), skill_verbs=frozenset({"follow"})))
+                        sentence = sentence[prefix.end():]
+                    output.append(self._mask_prose(sentence, skill_verbs=frozenset(allowed)))
         return "".join(output)
 
     def restore(self, text):
@@ -741,6 +820,11 @@ class GatewaySession:
     def values(self, value, restore=False, code=False):
         operation = self.restore if restore else lambda text: self.mask(text, code=code)
         if isinstance(value, str):
+            if not restore and not code and value:
+                self.engine._check_input(value)
+                s = self.session
+                return self.engine._get_or_create_surrogate(value, TokenType.LITERAL,
+                    s.generator, s.forward_store, s.reverse_store)
             return operation(value)
         if isinstance(value, list):
             return [self.values(item, restore, code) for item in value]
@@ -992,11 +1076,14 @@ class GatewaySession:
                 # enum/const/default/examples hold arbitrary JSON data. Protocol
                 # and schema exceptions must not apply inside them, or private
                 # values under keys like id/type/model/cache_control leak.
-                result[key] = self.walk_data(item, restore)
+                result[key] = self.walk_data(item, restore, prose=False)
             else:
                 if (kind in {"text", "input_text", "output_text", "refusal"}
                     or "role" in value) and key not in {"content", "tool_calls"}:
-                    result[key] = self.walk_data(item, restore)
+                    if key in {"text", "refusal"} and isinstance(item, str):
+                        result[key] = self.restore(item) if restore else self.mask(item, code=code)
+                    else:
+                        result[key] = self.walk_data(item, restore)
                 else:
                     result[key] = self.walk(item, restore, code, schema_root,
                                             property_names, schema_refs)
@@ -1151,20 +1238,22 @@ class GatewaySession:
                 for child in item:
                     self.validate_schema(child)
 
-    def walk_data(self, value, restore=False):
+    def walk_data(self, value, restore=False, *, prose=False):
         """Mask/restore arbitrary JSON data (enum/const/default/examples).
 
         Protocol and schema exceptions do not apply here: keys such as id,
         type, model or cache_control inside user data are still private.
         """
         if isinstance(value, str):
-            return self.restore(value) if restore else self.mask(value)
+            if restore:
+                return self.restore(value)
+            return self.mask(value) if prose else self._force_mask(self._mask_prose(value, preserve_task_words=False))
         if isinstance(value, list):
-            return [self.walk_data(item, restore) for item in value]
+            return [self.walk_data(item, restore, prose=prose) for item in value]
         if not isinstance(value, dict):
             return value
         return {
-            self.schema_name(key, restore): self.walk_data(item, restore)
+            self.schema_name(key, restore): self.walk_data(item, restore, prose=prose)
             for key, item in value.items()
         }
 

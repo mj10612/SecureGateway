@@ -59,3 +59,24 @@ def looks_like_source(text: str) -> bool:
         return True
     source = _LEADING_COMMENTS.sub("", source).lstrip()
     return bool(_DECLARATION.match(source) or _SQL.match(source))
+
+
+def markdown_code_spans(text: str) -> list[tuple[int, int]]:
+    """Find code spans using equal-length backtick delimiters in one scan.
+
+    Runs of another length inside a span are content, as in Markdown's double
+    backtick notation for a literal single backtick. The same spans drive both
+    validation and masking, including multiline inline code.
+    """
+    runs = iter(re.finditer(r"`+", text))
+    spans = []
+    for opener in runs:
+        for closer in runs:
+            if len(closer.group()) == len(opener.group()):
+                spans.append((opener.start(), closer.end()))
+                break
+        else:
+            raise ValueError("Unclosed Markdown code span; close the backticks before sending.")
+        if len(spans) > 4096:
+            raise ValueError("Too many Markdown code spans; split the request.")
+    return spans
