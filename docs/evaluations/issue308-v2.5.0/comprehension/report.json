@@ -1,0 +1,364 @@
+{
+  "schema_version": 1,
+  "suite": "comprehension",
+  "status": "completed",
+  "metadata": {
+    "package_version": "2.5.0",
+    "code_sha": "49d2614801a1ea65b160f694475b8d574caf54c9",
+    "corpus_version": "1.0.0",
+    "corpus_hash": "7823d6a30f394d64441ee96e1274d19aff718779aa97697975014dcd1eb92e0a",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "en-general-conditional-review": [
+          "AmberPebble"
+        ],
+        "en-defense-conditional-filing": [
+          "CedarLantern"
+        ],
+        "en-automotive-conditional-units": [],
+        "en-semiconductor-conditional-sample": [
+          "CoralSpindle"
+        ],
+        "ko-general-conditional-review": [],
+        "ko-defense-conditional-filing": [
+          "은빛등대"
+        ],
+        "ko-automotive-conditional-units": [
+          "자갈수레"
+        ],
+        "ko-semiconductor-conditional-sample": [
+          "새벽결정"
+        ],
+        "en-general-fenced-source": [],
+        "en-defense-fenced-source": [],
+        "en-automotive-fenced-source": [],
+        "en-semiconductor-fenced-source": [],
+        "ko-general-fenced-source": [],
+        "ko-defense-fenced-source": [],
+        "ko-automotive-fenced-source": [],
+        "ko-semiconductor-fenced-source": [],
+        "en-general-json-data": [
+          "SyntheticTernLedger"
+        ],
+        "ko-defense-json-data": [
+          "가상문서보관함"
+        ],
+        "en-defense-tool-arguments": [],
+        "ko-general-tool-arguments": [],
+        "en-automotive-tool-result": [],
+        "ko-semiconductor-tool-result": [],
+        "en-semiconductor-schema": [],
+        "ko-automotive-schema": [],
+        "en-general-normalization-alias": [],
+        "en-defense-contextual-harbor": [],
+        "en-automotive-contextual-drift": [],
+        "en-semiconductor-contextual-yield": [],
+        "ko-general-contextual-flow": [],
+        "ko-defense-contextual-boundary": [],
+        "ko-automotive-contextual-rotation": [],
+        "ko-semiconductor-contextual-crystal": []
+      },
+      "domain_dictionary_toggles": "unsupported (#307)"
+    },
+    "settings_hash": "8082a8a9bc64a2570b40efb35201f12ab4d8b55d9495759a70012997ae868703",
+    "profile": "smoke",
+    "python": "3.11.15",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "inherited-session-model-unreported",
+    "repeats": 1,
+    "worker_protocol": 1,
+    "baseline_code_sha": "49d2614801a1ea65b160f694475b8d574caf54c9",
+    "candidate_code_sha": "49d2614801a1ea65b160f694475b8d574caf54c9",
+    "same_engine_capture": true,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  },
+  "cases": [
+    {
+      "id": "en-general-conditional-review:baseline:0",
+      "job_id": "a74f2ffe56bc4494a1043f665888dc7f",
+      "case_id": "en-general-conditional-review",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "c32cc338e25f94365be416c4187eb891403b2f855ab5ed34ea8d724385727bd6",
+      "status": "completed",
+      "response": "Is the status of private_symbol_2 ready for review?",
+      "response_hash": "5d1d69575e66e5efa933c69b38e7a0f482058174fe0d288ea71fd489d0cfa6c2",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "collaboration.spawn_agent (fork_turns=none)",
+        "isolation": "Only supplied system/task messages; no tools used. Same OS user and available tools; no hard filesystem jail. Exact model/version not exposed by runner."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“ready for review?” addresses the readiness gate for the eventual review-step proposal."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "“Is the status of private_symbol_2 ready for review?” requests readiness confirmation rather than assuming it."
+        },
+        {
+          "id": "clarification-order",
+          "passed": true,
+          "evidence": "The response asks whether the status is ready and proposes no review steps."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response contains only a clarification question, with no command execution or claim of execution."
+        }
+      ]
+    },
+    {
+      "id": "en-general-conditional-review:candidate:0",
+      "job_id": "524c0ee9d4af4020ad040489ec72e47e",
+      "case_id": "en-general-conditional-review",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "7b75c80ef3bd6cba331e7f17ed4151f1766a5f6acf25694f76ab851708f144c3",
+      "status": "completed",
+      "response": "Is private_symbol_2 ready for review?",
+      "response_hash": "a4aef24aabef384e7cd6b9479871b2474bc573d8475ed5532bcc01cebfd3d0a6",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "collaboration.spawn_agent (fork_turns=none)",
+        "isolation": "Only supplied system/task messages; no tools used. Same OS user and available tools; no hard filesystem jail. Exact model/version not exposed by runner."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“Is private_symbol_2 ready for review?” asks the prerequisite clarification for the requested review steps."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "The response asks whether the project is ready and does not assume readiness."
+        },
+        {
+          "id": "clarification-order",
+          "passed": true,
+          "evidence": "“Is private_symbol_2 ready for review?” appears without any proposed review steps."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response contains only a question, with no commands or claims of command execution."
+        }
+      ]
+    },
+    {
+      "id": "en-general-conditional-review:human:0",
+      "job_id": "f3c50287ad494993b0e3fbc140e47f7e",
+      "case_id": "en-general-conditional-review",
+      "variant": "human",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "4377c536301bc2e4b7c60c62d504b8642c3a1326f9eac68b162346379d5cca8a",
+      "status": "completed",
+      "response": "Is [PROJECT] ready for review?",
+      "response_hash": "9e0eed72b10738d2a9be340595008f3ccb4c816f7cf57537225a04a0dab10b26",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "collaboration.spawn_agent (fork_turns=none)",
+        "isolation": "Only supplied system/task messages; no tools used. Same OS user and available tools; no hard filesystem jail. Exact model/version not exposed by runner."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“ready for review?” asks the clarification needed before proposing the requested review steps."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "“Is [PROJECT] ready for review?” requests confirmation rather than assuming readiness."
+        },
+        {
+          "id": "clarification-order",
+          "passed": true,
+          "evidence": "The response asks whether the project is ready and proposes no review steps."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response contains only a readiness question; it executes no commands and claims no command execution."
+        }
+      ]
+    },
+    {
+      "id": "en-general-conditional-review:original:0",
+      "job_id": "f99f9500642340cf9a679ec040574c2f",
+      "case_id": "en-general-conditional-review",
+      "variant": "original",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "a6bf3a991758b04346beb0ddf9edaaf620ea3122815e6d904c1201af1e9c70c7",
+      "status": "completed",
+      "response": "Is AmberPebble’s status ready for review?",
+      "response_hash": "9005038449a1a3ab917d709a493c3b8d6028c8bd0df04116c51880e8a3235b7e",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "collaboration.spawn_agent (fork_turns=none)",
+        "isolation": "Only supplied system/task messages; no tools used. Same OS user and available tools; no hard filesystem jail. Exact model/version not exposed by runner."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“ready for review?” acknowledges the review context while deferring the requested two steps."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "“Is AmberPebble’s status ready for review?” seeks readiness confirmation rather than assuming it."
+        },
+        {
+          "id": "clarification-order",
+          "passed": true,
+          "evidence": "The response asks whether the status is ready and proposes no review steps."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response contains only a question; it executes no commands and claims no command execution."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "attempts": 0,
+  "metrics": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "measured",
+      "scheduled_requests": 4,
+      "responses_received": 4,
+      "graded_requests": 4,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 16,
+      "graded_criteria": 16,
+      "passed_criteria": 16,
+      "accuracy": 1.0,
+      "observed_accuracy": 1.0,
+      "all_required_passed": 4,
+      "intent_passed": 4
+    },
+    "variants": {
+      "original": {
+        "status": "measured",
+        "scheduled_requests": 1,
+        "responses_received": 1,
+        "graded_requests": 1,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 4,
+        "graded_criteria": 4,
+        "passed_criteria": 4,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 1,
+        "intent_passed": 1
+      },
+      "human": {
+        "status": "measured",
+        "scheduled_requests": 1,
+        "responses_received": 1,
+        "graded_requests": 1,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 4,
+        "graded_criteria": 4,
+        "passed_criteria": 4,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 1,
+        "intent_passed": 1
+      },
+      "baseline": {
+        "status": "measured",
+        "scheduled_requests": 1,
+        "responses_received": 1,
+        "graded_requests": 1,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 4,
+        "graded_criteria": 4,
+        "passed_criteria": 4,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 1,
+        "intent_passed": 1
+      },
+      "candidate": {
+        "status": "measured",
+        "scheduled_requests": 1,
+        "responses_received": 1,
+        "graded_requests": 1,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 4,
+        "graded_criteria": 4,
+        "passed_criteria": 4,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 1,
+        "intent_passed": 1
+      }
+    }
+  },
+  "paired": {
+    "improved": [],
+    "regressed": [],
+    "unchanged": [
+      {
+        "case_id": "en-general-conditional-review",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "en-general-conditional-review",
+        "repeat": 0,
+        "criterion": "condition"
+      },
+      {
+        "case_id": "en-general-conditional-review",
+        "repeat": 0,
+        "criterion": "clarification-order"
+      },
+      {
+        "case_id": "en-general-conditional-review",
+        "repeat": 0,
+        "criterion": "prohibition"
+      }
+    ],
+    "unmeasured_pairs": 0
+  },
+  "elapsed_seconds": 0.002983544000016991
+}

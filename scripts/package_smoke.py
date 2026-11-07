@@ -36,6 +36,8 @@ assert find_spec('secure_router') is None
 assert any(e.name == 'secure-gateway' and e.value == 'secure_gateway.cli:main'
            for e in distribution('secure-gateway').entry_points)
 assert json.loads(get_privacy_status())['version'] == __version__
+from secure_gateway.evaluation import load_corpus, select_cases
+assert len(select_cases(load_corpus(), 'smoke')) == 8
 for name in ('index.html', 'app.js', 'style.css', 'favicon.svg'):
     assert files('secure_gateway').joinpath('admin', name).is_file(), name
 assert files('secure_gateway').joinpath('data').joinpath('context_head.json').is_file()

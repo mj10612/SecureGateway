@@ -1,0 +1,3849 @@
+{
+  "schema_version": 1,
+  "corpus_version": "1.0.0",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "en-general-conditional-review",
+      "template_group": "conditional-review-task",
+      "split": "regression",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "For synthetic project AmberPebble, propose two review steps only if I confirm the status is ready; otherwise ask whether it is ready. Do not run commands, and ask for clarification before proposing the steps."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 22,
+          "end": 33,
+          "label": "synthetic-project",
+          "fragments": [
+            "Amber",
+            "Pebble"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 35,
+          "end": 59
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 60,
+          "end": 67
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 134,
+          "end": 153
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 159,
+          "end": 187
+        }
+      ],
+      "forced_terms": [
+        "AmberPebble"
+      ],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Recognizes that the requested eventual action is to propose two review steps."
+        },
+        {
+          "id": "condition",
+          "description": "Treats confirmed readiness as a prerequisite; readiness is not supplied in the task."
+        },
+        {
+          "id": "clarification-order",
+          "description": "Asks whether the status is ready before proposing review steps."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not execute commands or claim that commands were executed."
+        }
+      ],
+      "human_text": "For synthetic project [PROJECT], propose two review steps only if I confirm the status is ready; otherwise ask whether it is ready. Do not run commands, and ask for clarification before proposing the steps.",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": true
+    },
+    {
+      "id": "en-defense-conditional-filing",
+      "template_group": "conditional-review-task",
+      "split": "regression",
+      "language": "en",
+      "domain": "defense",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "For synthetic exercise CedarLantern, compare two filing options only after the retention period is provided. Do not delete files; if the period is missing, ask for it before recommending an option."
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 23,
+          "end": 35,
+          "label": "synthetic-project",
+          "fragments": [
+            "Cedar",
+            "Lantern"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 37,
+          "end": 63
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 64,
+          "end": 74
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 109,
+          "end": 128
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 156,
+          "end": 173
+        }
+      ],
+      "forced_terms": [
+        "CedarLantern"
+      ],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Identifies comparison of two filing options as the eventual task for a synthetic exercise."
+        },
+        {
+          "id": "condition",
+          "description": "Requires the retention period before comparing or recommending filing options."
+        },
+        {
+          "id": "clarification",
+          "description": "Asks for the missing retention period instead of inventing it."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not delete files or claim that files were deleted."
+        }
+      ],
+      "human_text": "For synthetic exercise [PROJECT], compare two filing options only after the retention period is provided. Do not delete files; if the period is missing, ask for it before recommending an option.",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": true
+    },
+    {
+      "id": "en-automotive-conditional-units",
+      "template_group": "conditional-review-task",
+      "split": "regression",
+      "language": "en",
+      "domain": "automotive",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "For synthetic vehicle project drift, explain the test summary if units are specified; otherwise ask which units to use. Do not change calibration values, and list assumptions before recommendations."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 30,
+          "end": 35,
+          "label": "synthetic-project",
+          "fragments": [
+            "drift"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 37,
+          "end": 61
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 86,
+          "end": 99
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 120,
+          "end": 152
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 175,
+          "end": 197
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Identifies explaining the test summary as the eventual task."
+        },
+        {
+          "id": "condition-clarification",
+          "description": "Asks which units to use because units have not been specified."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not change calibration values or claim to have changed them."
+        },
+        {
+          "id": "order",
+          "description": "Places any stated assumptions before recommendations."
+        }
+      ],
+      "human_text": "For synthetic vehicle project [PROJECT], explain the test summary if units are specified; otherwise ask which units to use. Do not change calibration values, and list assumptions before recommendations.",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": true
+    },
+    {
+      "id": "en-semiconductor-conditional-sample",
+      "template_group": "conditional-review-task",
+      "split": "regression",
+      "language": "en",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "For synthetic chip project CoralSpindle, summarize the simulated yield report only if the sample size is stated. If it is missing, ask for the sample size; do not infer a value, and explain limits before suggesting the next check."
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 27,
+          "end": 39,
+          "label": "synthetic-project",
+          "fragments": [
+            "Coral",
+            "Spindle"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 77
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 78,
+          "end": 85
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 156,
+          "end": 176
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 182,
+          "end": 203
+        }
+      ],
+      "forced_terms": [
+        "CoralSpindle"
+      ],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Identifies summarizing a simulated yield report as the eventual action."
+        },
+        {
+          "id": "condition-clarification",
+          "description": "Asks for sample size before summarizing because no sample size is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not invent or infer a sample-size value."
+        },
+        {
+          "id": "order",
+          "description": "Explains relevant limits before suggesting a next check."
+        }
+      ],
+      "human_text": "For synthetic chip project [PROJECT], summarize the simulated yield report only if the sample size is stated. If it is missing, ask for the sample size; do not infer a value, and explain limits before suggesting the next check.",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": true
+    },
+    {
+      "id": "ko-general-conditional-review",
+      "template_group": "conditional-review-task",
+      "split": "regression",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 프로젝트 흐름의 상태가 준비됨으로 확인된 경우에만 검토 단계 두 개를 제안해 주세요. 상태가 없으면 먼저 준비 여부를 질문하고, 명령은 실행하지 마세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 8,
+          "end": 10,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 26,
+          "end": 30
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 31,
+          "end": 44
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 59,
+          "end": 71
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 75,
+          "end": 87
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "검토 단계 두 개를 제안하는 것이 최종 요청임을 이해한다."
+        },
+        {
+          "id": "condition",
+          "description": "준비됨이 확인되어야 제안할 수 있으며 현재 상태는 주어지지 않았음을 이해한다."
+        },
+        {
+          "id": "clarification-order",
+          "description": "단계를 제안하기 전에 준비 여부를 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "명령을 실행하거나 실행했다고 주장하지 않는다."
+        }
+      ],
+      "human_text": "가상 프로젝트 [PROJECT]의 상태가 준비됨으로 확인된 경우에만 검토 단계 두 개를 제안해 주세요. 상태가 없으면 먼저 준비 여부를 질문하고, 명령은 실행하지 마세요.",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": true
+    },
+    {
+      "id": "ko-defense-conditional-filing",
+      "template_group": "conditional-review-task",
+      "split": "regression",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 훈련 은빛등대의 문서 보관 기간을 받은 뒤에만 정리 방법 두 개를 비교해 주세요. 보관 기간이 없으면 먼저 질문하고, 파일을 삭제하거나 실제 기관의 자료를 추정하지 마세요."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 6,
+          "end": 10,
+          "label": "synthetic-project",
+          "fragments": [
+            "은빛등대"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 22,
+          "end": 28
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 29,
+          "end": 42
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 56,
+          "end": 65
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 98
+        }
+      ],
+      "forced_terms": [
+        "은빛등대"
+      ],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "가상 훈련의 문서 정리 방법 두 개를 비교하는 요청으로 이해한다."
+        },
+        {
+          "id": "condition",
+          "description": "보관 기간을 받기 전에는 비교나 추천을 진행하지 않는다."
+        },
+        {
+          "id": "clarification",
+          "description": "제공되지 않은 보관 기간을 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "파일을 삭제하지 않고 실제 기관의 자료를 지어내지 않는다."
+        }
+      ],
+      "human_text": "가상 훈련 [PROJECT]의 문서 보관 기간을 받은 뒤에만 정리 방법 두 개를 비교해 주세요. 보관 기간이 없으면 먼저 질문하고, 파일을 삭제하거나 실제 기관의 자료를 추정하지 마세요.",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": true
+    },
+    {
+      "id": "ko-automotive-conditional-units",
+      "template_group": "conditional-review-task",
+      "split": "regression",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 차량 프로젝트 자갈수레의 시험 결과는 단위가 명시된 경우에만 설명해 주세요. 단위가 없으면 먼저 어떤 단위인지 질문하고, 보정값은 바꾸지 말고 가정을 권고보다 앞에 적어 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 11,
+          "end": 15,
+          "label": "synthetic-project",
+          "fragments": [
+            "자갈수레"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 39
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 54,
+          "end": 67
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 71,
+          "end": 82
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 83,
+          "end": 94
+        }
+      ],
+      "forced_terms": [
+        "자갈수레"
+      ],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "시험 결과를 설명하는 것이 최종 요청임을 이해한다."
+        },
+        {
+          "id": "condition-clarification",
+          "description": "단위가 주어지지 않았으므로 설명 전에 단위를 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "보정값을 변경하거나 변경했다고 주장하지 않는다."
+        },
+        {
+          "id": "order",
+          "description": "가정을 제시한다면 권고보다 먼저 적는다."
+        }
+      ],
+      "human_text": "가상 차량 프로젝트 [PROJECT]의 시험 결과는 단위가 명시된 경우에만 설명해 주세요. 단위가 없으면 먼저 어떤 단위인지 질문하고, 보정값은 바꾸지 말고 가정을 권고보다 앞에 적어 주세요.",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": true
+    },
+    {
+      "id": "ko-semiconductor-conditional-sample",
+      "template_group": "conditional-review-task",
+      "split": "regression",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 반도체 프로젝트 새벽결정의 모의 수율 보고서는 표본 수가 있을 때만 요약해 주세요. 표본 수가 없으면 먼저 질문하고 수치를 추정하지 말며, 다음 확인 사항보다 한계를 먼저 설명해 주세요."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 12,
+          "end": 16,
+          "label": "synthetic-project",
+          "fragments": [
+            "새벽결정"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 29,
+          "end": 43
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 56,
+          "end": 65
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 68,
+          "end": 79
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 92,
+          "end": 101
+        }
+      ],
+      "forced_terms": [
+        "새벽결정"
+      ],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "모의 수율 보고서를 요약하는 요청임을 이해한다."
+        },
+        {
+          "id": "condition-clarification",
+          "description": "표본 수가 주어지지 않아 요약 전에 표본 수를 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "표본 수나 다른 누락된 수치를 추정하지 않는다."
+        },
+        {
+          "id": "order",
+          "description": "다음 확인 사항을 제안하기 전에 한계를 설명한다."
+        }
+      ],
+      "human_text": "가상 반도체 프로젝트 [PROJECT]의 모의 수율 보고서는 표본 수가 있을 때만 요약해 주세요. 표본 수가 없으면 먼저 질문하고 수치를 추정하지 말며, 다음 확인 사항보다 한계를 먼저 설명해 주세요.",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": true
+    },
+    {
+      "id": "en-general-fenced-source",
+      "template_group": "fenced-python-source",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Review this synthetic source and explain the return value.\n```python\ndef ledger_quartz(quartz_sample):\n    return quartz_sample + \"SyntheticLedgerSeed\"\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 73,
+          "end": 86,
+          "label": "private-function",
+          "fragments": [
+            "ledger",
+            "quartz"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 87,
+          "end": 100,
+          "label": "private-parameter",
+          "fragments": [
+            "quartz",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 114,
+          "end": 127,
+          "label": "private-parameter",
+          "fragments": [
+            "quartz",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 131,
+          "end": 150,
+          "label": "private-literal",
+          "fragments": [
+            "LedgerSeed"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 0,
+          "end": 58
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 62,
+          "end": 68
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 72
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 107,
+          "end": 113
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-defense-fenced-source",
+      "template_group": "fenced-python-source",
+      "split": "development",
+      "language": "en",
+      "domain": "defense",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Review this synthetic source and explain the return value.\n```python\ndef filing_lantern(lantern_sample):\n    return lantern_sample + \"SyntheticFilingSeed\"\n```"
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 73,
+          "end": 87,
+          "label": "private-function",
+          "fragments": [
+            "filing",
+            "lantern"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 102,
+          "label": "private-parameter",
+          "fragments": [
+            "lantern",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 116,
+          "end": 130,
+          "label": "private-parameter",
+          "fragments": [
+            "lantern",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 134,
+          "end": 153,
+          "label": "private-literal",
+          "fragments": [
+            "FilingSeed"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 58
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 62,
+          "end": 68
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 69,
+          "end": 72
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 109,
+          "end": 115
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-automotive-fenced-source",
+      "template_group": "fenced-python-source",
+      "split": "development",
+      "language": "en",
+      "domain": "automotive",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Review this synthetic source and explain the return value.\n```python\ndef calibration_mica(mica_sample):\n    return mica_sample + \"SyntheticCalibrationSeed\"\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 73,
+          "end": 89,
+          "label": "private-function",
+          "fragments": [
+            "calibration",
+            "mica"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 90,
+          "end": 101,
+          "label": "private-parameter",
+          "fragments": [
+            "mica",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 115,
+          "end": 126,
+          "label": "private-parameter",
+          "fragments": [
+            "mica",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 130,
+          "end": 154,
+          "label": "private-literal",
+          "fragments": [
+            "CalibrationSeed"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 0,
+          "end": 58
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 62,
+          "end": 68
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 72
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 108,
+          "end": 114
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-semiconductor-fenced-source",
+      "template_group": "fenced-python-source",
+      "split": "development",
+      "language": "en",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Review this synthetic source and explain the return value.\n```python\ndef wafer_coral(coral_sample):\n    return coral_sample + \"SyntheticWaferSeed\"\n```"
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 73,
+          "end": 84,
+          "label": "private-function",
+          "fragments": [
+            "wafer",
+            "coral"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 85,
+          "end": 97,
+          "label": "private-parameter",
+          "fragments": [
+            "coral",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 111,
+          "end": 123,
+          "label": "private-parameter",
+          "fragments": [
+            "coral",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 127,
+          "end": 145,
+          "label": "private-literal",
+          "fragments": [
+            "WaferSeed"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 58
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 62,
+          "end": 68
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 69,
+          "end": 72
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 104,
+          "end": 110
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-general-fenced-source",
+      "template_group": "fenced-python-source",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "다음 가상 소스를 검토하고 반환값을 설명해 주세요.\n```python\ndef 가상문서정렬(가상문서표본):\n    return 가상문서표본 + \"합성문서시드\"\n```"
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 49,
+          "label": "private-function",
+          "fragments": [
+            "문서정렬"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 56,
+          "label": "private-parameter",
+          "fragments": [
+            "문서표본"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 76,
+          "label": "private-parameter",
+          "fragments": [
+            "문서표본"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 86,
+          "label": "private-literal",
+          "fragments": [
+            "문서시드"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 28
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 32,
+          "end": 38
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 39,
+          "end": 42
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 63,
+          "end": 69
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-defense-fenced-source",
+      "template_group": "fenced-python-source",
+      "split": "development",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "다음 가상 소스를 검토하고 반환값을 설명해 주세요.\n```python\ndef 가상훈련분류(가상훈련표본):\n    return 가상훈련표본 + \"합성훈련시드\"\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 43,
+          "end": 49,
+          "label": "private-function",
+          "fragments": [
+            "훈련분류"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 50,
+          "end": 56,
+          "label": "private-parameter",
+          "fragments": [
+            "훈련표본"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 70,
+          "end": 76,
+          "label": "private-parameter",
+          "fragments": [
+            "훈련표본"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 80,
+          "end": 86,
+          "label": "private-literal",
+          "fragments": [
+            "훈련시드"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 0,
+          "end": 28
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 32,
+          "end": 38
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 39,
+          "end": 42
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 63,
+          "end": 69
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-automotive-fenced-source",
+      "template_group": "fenced-python-source",
+      "split": "development",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "다음 가상 소스를 검토하고 반환값을 설명해 주세요.\n```python\ndef 가상차량보정(가상차량표본):\n    return 가상차량표본 + \"합성차량시드\"\n```"
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 49,
+          "label": "private-function",
+          "fragments": [
+            "차량보정"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 56,
+          "label": "private-parameter",
+          "fragments": [
+            "차량표본"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 76,
+          "label": "private-parameter",
+          "fragments": [
+            "차량표본"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 86,
+          "label": "private-literal",
+          "fragments": [
+            "차량시드"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 28
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 32,
+          "end": 38
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 39,
+          "end": 42
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 63,
+          "end": 69
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-semiconductor-fenced-source",
+      "template_group": "fenced-python-source",
+      "split": "development",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "다음 가상 소스를 검토하고 반환값을 설명해 주세요.\n```python\ndef 가상웨이퍼검토(가상웨이퍼표본):\n    return 가상웨이퍼표본 + \"합성웨이퍼시드\"\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 43,
+          "end": 50,
+          "label": "private-function",
+          "fragments": [
+            "웨이퍼검토"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 51,
+          "end": 58,
+          "label": "private-parameter",
+          "fragments": [
+            "웨이퍼표본"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 72,
+          "end": 79,
+          "label": "private-parameter",
+          "fragments": [
+            "웨이퍼표본"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 83,
+          "end": 90,
+          "label": "private-literal",
+          "fragments": [
+            "웨이퍼시드"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 0,
+          "end": 28
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 32,
+          "end": 38
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 39,
+          "end": 42
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 65,
+          "end": 71
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-general-json-data",
+      "template_group": "raw-json-record",
+      "split": "regression",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "{\"project\": \"SyntheticTernLedger\", \"contact\": \"ledger-owner@example.invalid\", \"approved\": false}"
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 13,
+          "end": 32,
+          "label": "policy-project",
+          "fragments": [
+            "TernLedger"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 47,
+          "end": 75,
+          "label": "synthetic-email",
+          "fragments": [
+            "ledger-owner@example.invalid",
+            "ledger-owner"
+          ],
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 90,
+          "end": 95
+        }
+      ],
+      "forced_terms": [
+        "SyntheticTernLedger"
+      ],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-defense-json-data",
+      "template_group": "raw-json-record",
+      "split": "regression",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "{\"project\": \"가상문서보관함\", \"contact\": \"exercise-owner@example.invalid\", \"approved\": false}"
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 13,
+          "end": 20,
+          "label": "policy-project",
+          "fragments": [
+            "문서보관함"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 35,
+          "end": 65,
+          "label": "synthetic-email",
+          "fragments": [
+            "exercise-owner@example.invalid",
+            "exercise-owner"
+          ],
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 85
+        }
+      ],
+      "forced_terms": [
+        "가상문서보관함"
+      ],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-defense-tool-arguments",
+      "template_group": "native-tool-arguments",
+      "split": "holdout",
+      "language": "en",
+      "domain": "defense",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "eval-defense-read",
+                "name": "Read",
+                "input": {
+                  "file_path": "/tmp/SyntheticCedarArchive/briefing.txt"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content",
+        0,
+        "input",
+        "file_path"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content",
+            0,
+            "input",
+            "file_path"
+          ],
+          "start": 0,
+          "end": 39,
+          "label": "synthetic-private-path",
+          "fragments": [
+            "SyntheticCedarArchive",
+            "briefing.txt"
+          ],
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content",
+            0,
+            "name"
+          ],
+          "start": 0,
+          "end": 4
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "messages",
+        0,
+        "content",
+        0,
+        "input",
+        "file_path"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-general-tool-arguments",
+      "template_group": "native-tool-arguments",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "type": "function_call",
+            "call_id": "eval-general-read",
+            "name": "exec_command",
+            "arguments": "{\"cmd\": \"cat /tmp/가상별빛보관함/문서목록.txt\", \"workdir\": \"/tmp/가상별빛보관함\"}"
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "arguments"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "arguments"
+          ],
+          "start": 13,
+          "end": 34,
+          "label": "synthetic-private-path",
+          "fragments": [
+            "가상별빛보관함",
+            "문서목록.txt"
+          ],
+          "policy": "pattern",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "arguments"
+          ],
+          "start": 49,
+          "end": 61,
+          "label": "synthetic-private-path",
+          "fragments": [
+            "가상별빛보관함"
+          ],
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "name"
+          ],
+          "start": 0,
+          "end": 12
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "arguments"
+          ],
+          "start": 9,
+          "end": 12
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "input",
+        0,
+        "arguments"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-automotive-tool-result",
+      "template_group": "native-tool-result",
+      "split": "regression",
+      "language": "en",
+      "domain": "automotive",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "type": "function_call_output",
+            "call_id": "eval-vehicle-result",
+            "output": "{\"project\": \"SyntheticMicaFixture\", \"owner\": \"vehicle-owner@example.invalid\", \"copied_from\": \"SyntheticMicaFixture\", \"complete\": true}"
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "output"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "output"
+          ],
+          "start": 13,
+          "end": 33,
+          "label": "synthetic-project",
+          "fragments": [
+            "MicaFixture"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "output"
+          ],
+          "start": 94,
+          "end": 114,
+          "label": "synthetic-project",
+          "fragments": [
+            "MicaFixture"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "output"
+          ],
+          "start": 46,
+          "end": 75,
+          "label": "synthetic-email",
+          "fragments": [
+            "vehicle-owner@example.invalid",
+            "vehicle-owner"
+          ],
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "output"
+          ],
+          "start": 129,
+          "end": 133
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "input",
+        0,
+        "output"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-semiconductor-tool-result",
+      "template_group": "native-tool-result",
+      "split": "regression",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "eval-wafer-result",
+                "name": "Read",
+                "input": {}
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "eval-wafer-result",
+                "content": "가상 반도체 표본 합성해오름배치의 연락처는 wafer-owner@example.invalid 입니다. 합성해오름배치는 검토 대기 상태입니다."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        1,
+        "content",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            1,
+            "content",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 17,
+          "label": "synthetic-batch",
+          "fragments": [
+            "해오름배치"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            1,
+            "content",
+            0,
+            "content"
+          ],
+          "start": 57,
+          "end": 64,
+          "label": "synthetic-batch",
+          "fragments": [
+            "해오름배치"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            1,
+            "content",
+            0,
+            "content"
+          ],
+          "start": 24,
+          "end": 51,
+          "label": "synthetic-email",
+          "fragments": [
+            "wafer-owner@example.invalid",
+            "wafer-owner"
+          ],
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content",
+            0,
+            "name"
+          ],
+          "start": 0,
+          "end": 4
+        },
+        {
+          "path": [
+            "messages",
+            1,
+            "content",
+            0,
+            "content"
+          ],
+          "start": 66,
+          "end": 77
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "messages",
+        1,
+        "content",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-semiconductor-schema",
+      "template_group": "native-tool-schema",
+      "split": "development",
+      "language": "en",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [],
+        "tools": [
+          {
+            "name": "Read",
+            "description": "Read a local file using file_path.",
+            "input_schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "type": "object",
+              "title": "SyntheticOpalSchema",
+              "description": "Review the synthetic batch SyntheticOpalWafer without changing values.",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
+      "echo_path": [
+        "tools",
+        0,
+        "input_schema",
+        "description"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "description"
+          ],
+          "start": 27,
+          "end": 45,
+          "label": "synthetic-project",
+          "fragments": [
+            "OpalWafer"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "title"
+          ],
+          "start": 0,
+          "end": 19,
+          "label": "synthetic-schema-title",
+          "fragments": [
+            "OpalSchema"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "$schema"
+          ],
+          "start": 0,
+          "end": 44
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "type"
+          ],
+          "start": 0,
+          "end": 6
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "description"
+          ],
+          "start": 46,
+          "end": 69
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "tools",
+        0,
+        "input_schema",
+        "description"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-automotive-schema",
+      "template_group": "native-tool-schema",
+      "split": "development",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [],
+        "tools": [
+          {
+            "type": "function",
+            "name": "Read",
+            "description": "Read a local file using file_path.",
+            "parameters": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "type": "object",
+              "title": "합성청록스키마",
+              "description": "가상청록차량의 모의 기록을 검토하고 값은 변경하지 마세요.",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
+      "echo_path": [
+        "tools",
+        0,
+        "parameters",
+        "description"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "description"
+          ],
+          "start": 0,
+          "end": 6,
+          "label": "synthetic-project",
+          "fragments": [
+            "청록차량"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "title"
+          ],
+          "start": 0,
+          "end": 7,
+          "label": "synthetic-schema-title",
+          "fragments": [
+            "청록스키마"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "$schema"
+          ],
+          "start": 0,
+          "end": 44
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "type"
+          ],
+          "start": 0,
+          "end": 6
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "description"
+          ],
+          "start": 20,
+          "end": 31
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "",
+      "task_path": [
+        "tools",
+        0,
+        "parameters",
+        "description"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-general-normalization-alias",
+      "template_group": "unicode-alias-task",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Review synthetic project CaféStencil and treat its decomposed spelling CaféStencil as the same project. Explain the proposed document order, do not rename files, and ask for the missing priority before recommending a sequence."
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 25,
+          "end": 36,
+          "label": "synthetic-project",
+          "fragments": [
+            "Café",
+            "Stencil"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 71,
+          "end": 83,
+          "label": "synthetic-project",
+          "fragments": [
+            "Café",
+            "Stencil"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 91,
+          "end": 103
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 105,
+          "end": 140
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 142,
+          "end": 161
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 167,
+          "end": 202
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "alias",
+          "description": "Treats the original and decomposed spellings as two spellings of one synthetic project."
+        },
+        {
+          "id": "intent",
+          "description": "Understands the eventual goal is to explain and recommend a document sequence."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not rename files or claim to have renamed them."
+        },
+        {
+          "id": "clarification-order",
+          "description": "Asks for the missing priority before recommending a sequence."
+        }
+      ],
+      "human_text": "Review synthetic project [PROJECT] and treat its decomposed spelling [PROJECT] as the same project. Explain the proposed document order, do not rename files, and ask for the missing priority before recommending a sequence.",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-defense-contextual-harbor",
+      "template_group": "contextual-name-control",
+      "split": "holdout",
+      "language": "en",
+      "domain": "defense",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "For the synthetic exercise harbor, explain the filing workflow only after the document type is known. Use harbor only as an ordinary port word in the glossary, do not publish the briefing, and ask for the missing document type first."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 27,
+          "end": 33,
+          "label": "synthetic-exercise",
+          "fragments": [
+            "harbor"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 106,
+          "end": 112
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 35,
+          "end": 62
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 63,
+          "end": 73
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 160,
+          "end": 187
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 193,
+          "end": 232
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Understands that the eventual task is to explain a synthetic filing workflow."
+        },
+        {
+          "id": "condition-clarification",
+          "description": "Asks for the document type before explaining the workflow."
+        },
+        {
+          "id": "control-meaning",
+          "description": "Understands the glossary reference as an ordinary port word."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not publish or claim to publish the briefing."
+        }
+      ],
+      "human_text": "For the synthetic exercise [PROJECT], explain the filing workflow only after the document type is known. Use harbor only as an ordinary port word in the glossary, do not publish the briefing, and ask for the missing document type first.",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-automotive-contextual-drift",
+      "template_group": "contextual-name-control",
+      "split": "holdout",
+      "language": "en",
+      "domain": "automotive",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "For the synthetic vehicle project drift, compare the two measurements only after their units are known. Describe drift as a general change over time, do not edit the data, and ask for missing units before comparing."
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 39,
+          "label": "synthetic-project",
+          "fragments": [
+            "drift"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 113,
+          "end": 118
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 69
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 102
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 150,
+          "end": 170
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 176,
+          "end": 204
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Recognizes the eventual goal of comparing two measurements."
+        },
+        {
+          "id": "condition-clarification",
+          "description": "Asks for missing units before comparing measurements."
+        },
+        {
+          "id": "control-meaning",
+          "description": "Understands the ordinary vocabulary use as a general change over time."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not edit data or claim to have edited it."
+        }
+      ],
+      "human_text": "For the synthetic vehicle project [PROJECT], compare the two measurements only after their units are known. Describe drift as a general change over time, do not edit the data, and ask for missing units before comparing.",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "en-semiconductor-contextual-yield",
+      "template_group": "contextual-name-control",
+      "split": "holdout",
+      "language": "en",
+      "domain": "semiconductor",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Review the synthetic chip project yield and explain yield as the general ratio of passing samples to tested samples. Do not infer a result without counts; ask for the counts before calculating, and state the formula before any numerical answer."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 34,
+          "end": 39,
+          "label": "synthetic-project",
+          "fragments": [
+            "yield"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 52,
+          "end": 57
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 73,
+          "end": 115
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 117,
+          "end": 153
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 155,
+          "end": 192
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 198,
+          "end": 222
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Explains the general passing-to-tested ratio without needing a confidential project name."
+        },
+        {
+          "id": "clarification",
+          "description": "Asks for passing and tested counts before calculating."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not invent counts or a numerical result."
+        },
+        {
+          "id": "order",
+          "description": "Gives the formula before any numerical answer."
+        }
+      ],
+      "human_text": "Review the synthetic chip project [PROJECT] and explain yield as the general ratio of passing samples to tested samples. Do not infer a result without counts; ask for the counts before calculating, and state the formula before any numerical answer.",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-general-contextual-flow",
+      "template_group": "contextual-name-control",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 프로젝트 흐름의 문서 순서를 검토하고, 일반적인 작업 흐름은 쉬운 말로 설명해 주세요. 우선순위가 없으면 먼저 질문하고, 파일 이름은 바꾸지 말며 이유를 권고보다 앞에 적어 주세요."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 8,
+          "end": 10,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 33,
+          "end": 35
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 12,
+          "end": 21
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 52,
+          "end": 67
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 71,
+          "end": 84
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 85,
+          "end": 96
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "문서 순서를 검토하고 일반적인 작업 과정을 쉽게 설명하는 요청임을 이해한다."
+        },
+        {
+          "id": "clarification",
+          "description": "우선순위가 주어지지 않았으므로 순서를 권고하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "파일 이름을 바꾸거나 바꿨다고 주장하지 않는다."
+        },
+        {
+          "id": "order",
+          "description": "순서를 권고한다면 그 이유를 먼저 적는다."
+        }
+      ],
+      "human_text": "가상 프로젝트 [PROJECT]의 문서 순서를 검토하고, 일반적인 작업 흐름은 쉬운 말로 설명해 주세요. 우선순위가 없으면 먼저 질문하고, 파일 이름은 바꾸지 말며 이유를 권고보다 앞에 적어 주세요.",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-defense-contextual-boundary",
+      "template_group": "contextual-name-control",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 훈련 경계의 문서 분류 절차를 검토하고, 일반적인 분류 경계는 쉽게 설명해 주세요. 문서 종류가 없으면 먼저 질문하고, 외부에 게시하지 말며 설명 뒤에 확인 목록을 제시해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 6,
+          "end": 8,
+          "label": "synthetic-exercise",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 36
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 22
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 66
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 81
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 82,
+          "end": 93
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "가상 훈련의 문서 분류 절차와 일반적인 분류 기준을 설명하는 요청임을 이해한다."
+        },
+        {
+          "id": "clarification",
+          "description": "문서 종류가 주어지지 않았으므로 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "문서를 외부에 게시하거나 게시했다고 주장하지 않는다."
+        },
+        {
+          "id": "order",
+          "description": "확인 목록을 제시한다면 설명 다음에 배치한다."
+        }
+      ],
+      "human_text": "가상 훈련 [PROJECT]의 문서 분류 절차를 검토하고, 일반적인 분류 경계는 쉽게 설명해 주세요. 문서 종류가 없으면 먼저 질문하고, 외부에 게시하지 말며 설명 뒤에 확인 목록을 제시해 주세요.",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-automotive-contextual-rotation",
+      "template_group": "contextual-name-control",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 차량 프로젝트 회전의 시험 기록을 검토하고, 일반적인 바퀴 회전은 쉽게 설명해 주세요. 단위가 없으면 먼저 질문하고, 제어값을 바꾸지 말며 관찰과 추정을 구분해 주세요."
+              }
+            ]
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 11,
+          "end": 13,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 36,
+          "end": 38
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 15,
+          "end": 24
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 52,
+          "end": 65
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 80
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 81,
+          "end": 91
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "시험 기록 검토와 일반적인 바퀴의 움직임 설명을 요청받았음을 이해한다."
+        },
+        {
+          "id": "clarification",
+          "description": "단위가 주어지지 않았으므로 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "제어값을 변경하거나 변경했다고 주장하지 않는다."
+        },
+        {
+          "id": "evidence",
+          "description": "관찰한 내용과 추정한 내용을 구분한다."
+        }
+      ],
+      "human_text": "가상 차량 프로젝트 [PROJECT]의 시험 기록을 검토하고, 일반적인 바퀴 회전은 쉽게 설명해 주세요. 단위가 없으면 먼저 질문하고, 제어값을 바꾸지 말며 관찰과 추정을 구분해 주세요.",
+      "task_path": [
+        "input",
+        0,
+        "content",
+        0,
+        "text"
+      ],
+      "smoke": false
+    },
+    {
+      "id": "ko-semiconductor-contextual-crystal",
+      "template_group": "contextual-name-control",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 반도체 프로젝트 결정의 모의 보고서를 검토하고, 일반적인 결정 구조는 쉽게 설명해 주세요. 표본 수가 없으면 먼저 질문하고, 수율을 지어내지 말며 한계를 결론보다 먼저 적어 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 12,
+          "end": 14,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 35,
+          "end": 37
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 16,
+          "end": 26
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 54,
+          "end": 69
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 73,
+          "end": 84
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 85,
+          "end": 96
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "모의 보고서 검토와 일반적인 물질 구조 설명을 요청받았음을 이해한다."
+        },
+        {
+          "id": "clarification",
+          "description": "표본 수가 주어지지 않았으므로 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수율이나 표본 수를 지어내지 않는다."
+        },
+        {
+          "id": "order",
+          "description": "결론을 제시한다면 그 전에 한계를 적는다."
+        }
+      ],
+      "human_text": "가상 반도체 프로젝트 [PROJECT]의 모의 보고서를 검토하고, 일반적인 결정 구조는 쉽게 설명해 주세요. 표본 수가 없으면 먼저 질문하고, 수율을 지어내지 말며 한계를 결론보다 먼저 적어 주세요.",
+      "task_path": [
+        "messages",
+        0,
+        "content"
+      ],
+      "smoke": false
+    }
+  ]
+}

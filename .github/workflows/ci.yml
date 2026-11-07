@@ -36,6 +36,12 @@ jobs:
         run: |
           pytest -W error --cov=secure_gateway --cov-report=term-missing --cov-fail-under=85
 
+      - name: Offline privacy evaluation and regression comparison
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        run: |
+          secure-gateway evaluate --suite privacy --profile release --output-dir "${{ runner.temp }}/sg-evaluation"
+          secure-gateway evaluate compare --baseline docs/evaluations/issue308-v2.5.0/privacy/report.json --candidate "${{ runner.temp }}/sg-evaluation/report.json"
+
       - name: Lint
         run: python -m ruff check src tests examples
 

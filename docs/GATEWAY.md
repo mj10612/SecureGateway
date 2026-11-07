@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.4.4 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.5.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.

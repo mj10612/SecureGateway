@@ -12,6 +12,7 @@ import time
 
 import click
 from secure_gateway import __version__
+from secure_gateway.evaluation_cli import evaluate
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
@@ -1070,6 +1071,9 @@ def gateway_api_uninstall(config):
         click.echo("Grok settings restored. API gateway stopped.")
     else:
         click.echo("Grok settings restored. Configuration is missing; stop any remaining API gateway manually.")
+
+
+main.add_command(evaluate)
 
 
 if __name__ == "__main__":
