@@ -6,6 +6,12 @@ SDK native tool 계약은 `google-antigravity==0.1.21`을 별도 환경에서 �
 
 ## CLI의 stdio MCP 연결
 
+2.4.4부터 `doctor`는 설치·제거 명령과 같은 실제 설정 경로를 확인한다.
+`~/.gemini/config/mcp_config.json`이 심볼릭 링크이면 링크 대상 옆의 설치
+기록으로 진단하며, 출력의 `settings`도 실제 경로를 표시한다. 상대 링크도
+지원하고, 대상이 아직 없는 링크는 설치 전에는 `ready: false`로 표시한다.
+설치·제거는 링크를 보존하며, 진단 자체는 설정 파일을 생성하거나 바꾸지 않는다.
+
 자동 등록은 SecureGateway가 설치된 인터프리터를 그대로 사용한다:
 
 ```powershell
