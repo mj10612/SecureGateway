@@ -88,3 +88,42 @@ jobs:
         run: uv build
       - name: Install distributions outside the source tree
         run: python scripts/package_smoke.py
+
+  native-release:
+    name: Native artifact lifecycle (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: astral-sh/setup-uv@v2
+      - name: Install pinned offline host clients
+        run: npm install --global @anthropic-ai/claude-code@2.1.319 @openai/codex@0.167.0
+      - name: Build current and immutable previous artifacts
+        shell: bash
+        run: |
+          mkdir -p "${RUNNER_TEMP}/sg-previous" "${RUNNER_TEMP}/sg-previous-dist"
+          git archive aa18f93 | tar -x -C "${RUNNER_TEMP}/sg-previous"
+          uv build "${RUNNER_TEMP}/sg-previous" --wheel --out-dir "${RUNNER_TEMP}/sg-previous-dist"
+          uv build
+      - name: Require native clients and installed upgrade lifecycle
+        shell: bash
+        run: |
+          export SECURE_GATEWAY_CLAUDE_BINARY="$(command -v claude)"
+          export SECURE_GATEWAY_CODEX_BINARY="$(command -v codex)"
+          if [ "${RUNNER_OS}" = "Windows" ]; then
+            export SG_NPM_ROOT="$(npm root -g)"
+            export SECURE_GATEWAY_CLAUDE_BINARY="$(python -c "import os,pathlib; print(next(pathlib.Path(os.environ['SG_NPM_ROOT']).rglob('claude.exe')))")"
+            export SECURE_GATEWAY_CODEX_BINARY="$(python -c "import os,pathlib; print(next(pathlib.Path(os.environ['SG_NPM_ROOT']).rglob('codex.exe')))")"
+          fi
+          python scripts/package_smoke.py --require-native --upgrade-from "${RUNNER_TEMP}/sg-previous-dist/secure_gateway-2.5.1-py3-none-any.whl"

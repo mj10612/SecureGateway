@@ -168,10 +168,24 @@ def test_grader_requires_exact_criteria(tmp_path, workspace, request_payload, gr
             run_worker(command, request_payload, workspace)
 
 
-def fake_codex(tmp_path, source):
+def fake_codex(tmp_path, source, monkeypatch=None):
     path = tmp_path / "codex"
     path.write_text("#!" + sys.executable + "\n" + textwrap.dedent(source), encoding="utf-8")
     path.chmod(0o700)
+    if monkeypatch is not None:
+        # Windows does not execute extensionless Python shebang fixtures. PATH
+        # lookup can otherwise select an installed real CLI, making positive
+        # cases fail and negative cases pass for the wrong reason. Pin this
+        # fixture and run it through Python while retaining real process capture.
+        adapter = importlib.import_module("secure_gateway.evaluation_codex_worker")
+        capture = adapter.capture_worker_process
+
+        def fixture_capture(command, *args, **kwargs):
+            assert command[0] == str(path), "test attempted to launch a non-fixture CLI"
+            return capture([sys.executable, str(path), *command[1:]], *args, **kwargs)
+
+        monkeypatch.setattr(adapter.shutil, "which", lambda name: str(path) if name == "codex" else None)
+        monkeypatch.setattr(adapter, "capture_worker_process", fixture_capture)
     return path
 
 
@@ -198,8 +212,7 @@ def test_codex_adapter_uses_fresh_context_and_records_usage(tmp_path, monkeypatc
         print(json.dumps({'type':'thread.started','thread_id':'new-thread'}))
         print(json.dumps({'type':'item.completed','item':{'type':'agent_message','text':'Meaning preserved.'}}))
         print(json.dumps({'type':'turn.completed','usage':{'input_tokens':20,'cached_input_tokens':5,'output_tokens':7}}))
-    """)
-    monkeypatch.setenv("PATH", str(tmp_path) + os.pathsep + os.environ["PATH"])
+    """, monkeypatch)
     monkeypatch.setenv("CODEX_THREAD_ID", "existing-thread")
     monkeypatch.setenv("OPENAI_API_KEY", "UNAUTHORIZED_PAID_FALLBACK")
     adapter = importlib.import_module("secure_gateway.evaluation_codex_worker")
@@ -228,10 +241,10 @@ def test_codex_adapter_rejects_tool_use_and_failed_turns(tmp_path, monkeypatch, 
         pathlib.Path(sys.argv[sys.argv.index('--output-last-message') + 1]).write_text('Looks valid.', encoding='utf-8')
         print(json.dumps({event!r}))
         print(json.dumps({{'type':'turn.completed','usage':{{'input_tokens':1,'output_tokens':1}}}}))
-    """)
-    monkeypatch.setenv("PATH", str(tmp_path) + os.pathsep + os.environ["PATH"])
+    """, monkeypatch)
     adapter = importlib.import_module("secure_gateway.evaluation_codex_worker")
-    with pytest.raises(ValueError):
+    reason = "Codex inference failed" if event["type"] == "turn.failed" else "Codex used a tool"
+    with pytest.raises(ValueError, match=reason):
         adapter.run_codex_worker(request_payload)
 
 
@@ -247,8 +260,7 @@ def test_codex_adapter_grades_only_supplied_criteria(tmp_path, monkeypatch, requ
         final = {'grades':[{'id':'c1','passed':True,'evidence':'The answer states the relationship.'}]}
         pathlib.Path(sys.argv[sys.argv.index('--output-last-message') + 1]).write_text(json.dumps(final), encoding='utf-8')
         print(json.dumps({'type':'turn.completed','usage':{'input_tokens':3,'output_tokens':12}}))
-    """)
-    monkeypatch.setenv("PATH", str(tmp_path) + os.pathsep + os.environ["PATH"])
+    """, monkeypatch)
     result = importlib.import_module("secure_gateway.evaluation_codex_worker").run_codex_worker(request_payload)
     assert result["grades"] == [{"id": "c1", "passed": True, "evidence": "The answer states the relationship."}]
 

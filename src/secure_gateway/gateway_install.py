@@ -17,6 +17,7 @@ import tempfile
 from threading import Thread
 import urllib.error
 import urllib.request
+import warnings
 
 import tomlkit
 
@@ -157,6 +158,16 @@ def _parse_installation_manifest(data):
         raise ValueError(message)
     if "uninstall_started" in manifest and not isinstance(
         manifest["uninstall_started"], bool
+    ):
+        raise ValueError(message)
+    identity = manifest.get("gateway")
+    if identity is not None and (
+        not isinstance(identity, dict)
+        or type(identity.get("port")) is not int
+        or not 1024 <= identity["port"] <= 65535
+        or not isinstance(identity.get("token"), str)
+        or len(identity["token"]) < 32
+        or identity.get("mode") not in ("subscription", "api")
     ):
         raise ValueError(message)
     for name, record in manifest["files"].items():
@@ -548,6 +559,11 @@ def apply_settings(path: Path, config, changes, *, mirrors=None, start=False):
         raise ValueError(
             "Uninstall recovery is incomplete; retry uninstall before installing."
         )
+    # The private ownership record must outlive accidental runtime config loss.
+    # Keep only the identity needed to scope selective settings cleanup; never
+    # infer another instance's token or port from untracked host files.
+    manifest["gateway"] = {"port": config["port"], "token": config["token"],
+                           "mode": config.get("mode", "subscription")}
     # Prepare and validate every file before any host settings are changed.
     for settings, data in changes.items():
         name = str(settings.resolve())
@@ -648,10 +664,18 @@ def _uninstall_gateway(path: Path, *, force_clean=False):
     if not exists and not force_clean:
         return False
     manifest = load_installation_manifest(manifest_path) if exists else {"files": {}}
-    config = load_config(path) if path.exists() else None
+    invalid_config = False
+    try:
+        config = load_config(path) if path.exists() else None
+    except (ValueError, UnicodeError):
+        # Restore ownership comes from the validated manifest, independently
+        # of the runtime credentials required for authenticated shutdown.
+        config = manifest.get("gateway")
+        invalid_config = True
     # Without a config the caller must explicitly opt into ownership discovery;
     # API uninstall also uses this function after config loss.
-    subscription = force_clean if config is None else config.get("mode", "subscription") == "subscription"
+    subscription = (force_clean and not exists if config is None
+                    else config.get("mode", "subscription") == "subscription")
     recovering = manifest.get("uninstall_started") is True
     originals = {}
     for name, record in manifest["files"].items():
@@ -727,7 +751,17 @@ def _uninstall_gateway(path: Path, *, force_clean=False):
             manifest["files"][str(settings.resolve())]["original_hex"] = original.hex() if original is not None else None
         manifest["uninstall_started"] = True
         _atomic_json(manifest_path, manifest)
-    stop_gateway(path)
+    if invalid_config:
+        warnings.warn(
+            "Gateway configuration is invalid; cannot confirm the daemon stopped. "
+            "Owned settings will be restored without stopping processes. "
+            "If a gateway remains running, stop its known foreground terminal or "
+            "restore a verified configuration backup and run gateway stop --config PATH. "
+            "Do not terminate an unrelated listener; retain encrypted state until recovery is complete.",
+            RuntimeWarning, stacklevel=2,
+        )
+    else:
+        stop_gateway(path)
     for settings, original in originals.items():
         if original is None:
             settings.unlink(missing_ok=True)

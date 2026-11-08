@@ -1055,20 +1055,26 @@ def gateway_api_uninstall(config):
     try:
         path = (config or default_api_config()).resolve()
         has_config = path.exists()
+        valid_config = has_config
         if not has_config and not installation_path(path).exists():
             click.echo("No active gateway installation found.")
             return
         if has_config:
-            load_api_config(path)
+            try:
+                load_api_config(path)
+            except (ValueError, OSError, UnicodeError):
+                if not installation_path(path).exists():
+                    raise
+                valid_config = False
         changed = uninstall_gateway(path)
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from None
     if not changed:
         click.echo("No active gateway installation found.")
-    elif has_config:
+    elif valid_config:
         click.echo("Grok settings restored. API gateway stopped.")
     else:
-        click.echo("Grok settings restored. Configuration is missing; stop any remaining API gateway manually.")
+        click.echo("Grok settings restored. Configuration is missing or invalid; stop any remaining API gateway manually.")
 
 
 main.add_command(evaluate)

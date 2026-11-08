@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.5.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.5.2 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -188,6 +188,53 @@ must be removed manually if the installation record is lost.
 
 ## Shared aliases and automatic results
 
+### Conversation isolation and diagnostics (2.5.2)
+
+Codex's `session_id` header selects an account-scoped conversation table. Other
+clients may provide `X-SecureGateway-Session`; clients without either header keep
+the legacy provider session and must not expect conversation isolation. Identifiers
+are hashed with the local token before becoming snapshot names. Registry capacity
+is bounded, and provider reset clears all its conversation snapshots/provenance.
+Bearer refresh does not change aliases. Switching to scoped sessions intentionally
+does not adopt legacy signed reasoning; start a new conversation after upgrading.
+
+The authenticated `/admin/api/sessions` endpoint aggregates conversation mappings
+and retains the last 32 request timing summaries in memory: masking, lock wait,
+upstream headers/body, restore/save where applicable, first stream event and total.
+It contains no prompts, paths, conversation headers, aliases or tokens. Timing
+summaries disappear at restart. A 600-second socket timeout is distinct from a
+total request deadline; heartbeat delivery does not accelerate upstream inference.
+
+Validation 400s now include a stable `code` and fixed `guidance`, distinguishing
+unsupported attachments, unsupported fields/Claude attribution, unknown reasoning
+provenance and generic invalid requests. Existing signed conversations require a
+new session rather than silently discarding reasoning/tool history. Images remain
+blocked: unmasked passthrough is not introduced by this compatibility fix.
+
+Strict restoration checks altered reserved spellings in the original response
+before substitution, including ASCII prefixes/suffixes. Restored originals are
+not rescanned because legitimate paths/source literals can contain alias-looking
+text. Exact registered alias 10 is never guessed to mean alias 1 plus `0`; model
+selection of another valid issued alias remains a semantic error that cannot be
+inferred from spelling alone. Whole-path tool aliases and lexical shell aliases
+are both supported; malformed combinations fail rather than receiving guessed paths.
+
+### Corrupt config and interrupted model downloads (2.5.2)
+
+Uninstall can restore manifest-owned settings when runtime JSON/port/token is
+invalid. New private manifests retain a validated runtime identity for selective
+cleanup; older manifests without it only restore exactly owned files. A corrupt
+runtime config cannot authenticate shutdown: a warning explicitly asks you to
+stop the matching daemon using its original terminal or OS process manager after
+checking its command/config path. No unrelated process is killed.
+
+Model installation/removal shares a crash-released OS lock and an inode ownership
+journal. Retry or remove safely cleans only the recorded interrupted download.
+An unrecorded `.download` is preserved; stop installers, inspect and move that
+file aside before retrying. The sibling `.model-install.lock` is persistent and
+must not be deleted during active operations. Unknown or modified assets are
+never silently removed.
+
 A prompt referring to `A` and code containing `def A(...)` use the same identifier alias.
 Function/variable names, strings and comments are masked; code numbers are preserved
 by default and masked only with explicit opt-in. Filename aliases
@@ -222,9 +269,12 @@ those sentences inside source literals are still masked. All other system contex
 masked, and the privacy instruction is appended after the original blocks. Anthropic
 [documents this positional attribution contract](https://code.claude.com/docs/en/llm-gateway-protocol#system-prompt-attribution-block).
 
-JSON replies and SSE text/tool-argument deltas are restored. Streams are buffered until
-complete so split aliases can be folded before restoration. This adds latency and removes
-live token-by-token display. Unknown/altered aliases fail rather than inventing originals.
+JSON replies and SSE text/tool-argument deltas are restored. SSE headers and heartbeats
+are sent immediately; ordinary Claude/Codex text streams at completed token boundaries.
+Partial aliases, tool JSON, signed thinking and whitespace-bearing legacy aliases retain
+bounded buffers. Chat Completions groups remain buffered until their finish reason.
+Unknown/altered aliases fail rather than inventing originals. A stream validation or
+storage failure closes the connection without a successful terminal event.
 Schema properties and tool-argument JSON keys share aliases. Local `$ref` pointers keep
 keywords and array indexes so masked schemas still resolve. Only pinned public Codex
 `exec` / `apply_patch` grammars pass unchanged; other custom grammars are blocked. Claude's
@@ -315,7 +365,7 @@ until you no longer need rollback.
 Supported routes: Anthropic Messages/token counting, Codex Responses/model catalog.
 Only IPv4 loopback can bind; a local access token is mandatory. Production upstreams are
 fixed HTTPS origins; redirects and environment proxies are disabled when forwarding OAuth.
-Requests/replies are bounded to 16 MiB; upstream response reads time out after 180 seconds.
+Requests/replies are bounded to 16 MiB; upstream socket operations time out after 600 seconds.
 
 Explicit xAI API-key mode is **opt-in through separate API commands**:
 `/xai/v1/responses` and `/xai/v1/chat/completions` forward the caller's own API key to the
@@ -426,8 +476,8 @@ Upstream 400/401/403/404/408/413/422/429/500/502/503/504/529 statuses are preser
 Only allowlisted public error types/codes are returned; provider messages, parameter names,
 and other diagnostic content are discarded. Context-length errors receive a fixed
 compaction hint. Unknown statuses and redirects become 502. Retry metadata remains bounded
-to the existing public response-header allowlist. SSE is fully buffered (16 MiB maximum);
-the 180-second socket timeout is a read timeout, **not a total request deadline**. These
+to the existing public response-header allowlist. SSE retains a 16 MiB aggregate budget;
+the 600-second socket timeout is a read timeout, **not a total request deadline**. These
 limits can reject large or slow streams; reset is not a substitute for context compaction.
 
 
@@ -805,8 +855,8 @@ must select UTF-8 explicitly (`Get-Content -Encoding UTF8`). A host tool that
 already decoded the source incorrectly sends damaged text into the gateway;
 masking/restoration cannot recover bytes that the host tool discarded.
 
-SSE responses are buffered until complete before local restoration, so users may
-see a silent wait instead of live token output. Unsupported images/attachments
+SSE text is restored incrementally; incomplete tokens and structured tool groups
+can still wait for their safe completion boundary. Unsupported images/attachments
 and unsupported protocol fields still fail closed. Lexical source masking can
 remove semantic information needed for some analysis; a successful round trip is
 not a guarantee that the model's code analysis is correct.

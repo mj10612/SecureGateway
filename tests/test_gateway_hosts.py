@@ -137,9 +137,9 @@ class Provider(BaseHTTPRequestHandler):
             and len(self.server.requests) == 1
         ):
             agent = "claude" if self.path.split("?", 1)[0].endswith("messages") else "codex"
-            mappings = self.server.gateway.sessions[
-                agent
-            ].session.forward_store.values()
+            mappings = [mapping for key, session in self.server.gateway.sessions.items()
+                        if key == agent or key.startswith(agent + "-")
+                        for mapping in session.session.forward_store.values()]
             names = {m.original: m.surrogate for m in mappings}
             filename = names["fixture"] + "." + names["py"]
             if self.path.split("?", 1)[0].endswith("messages"):
@@ -414,11 +414,12 @@ def test_native_subscription_cli_gateway(
                 for payload, _ in provider.requests
             )
             assert "alice@example.com" in completed.stdout
-        session = gateway.sessions[agent]
+        sessions = [session for key, session in gateway.sessions.items()
+                    if key == agent or key.startswith(agent + "-")]
         # The fixture returns a real alias; native output must contain its restored original.
         assert any(
             mapping.original in completed.stdout
-            for mapping in session.session.forward_store.values()
+            for session in sessions for mapping in session.session.forward_store.values()
         )
         for _, headers in provider.requests:
             assert headers["Authorization"].startswith(

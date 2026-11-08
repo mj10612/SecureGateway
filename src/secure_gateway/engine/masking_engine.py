@@ -675,6 +675,7 @@ class MaskingEngine:
                     key = match["alias"]
                     mapping = reverse_store.get(key)
                     if mapping is None:
+                        glued_unmatched.append(key)
                         return match[0]
                     count += 1
                     unique.add(key)
@@ -718,13 +719,30 @@ class MaskingEngine:
                 pattern += r"(?P<particle>(?:으로|이랑|이나|은|는|을|를|과|와|이|가|로|랑|나)(?:부터|도|만|는|의)?(?=\s|[.,!?]|$))?"
             output_limit = self.max_restore_output_bytes if self._restore_remaining is None else self._restore_remaining
             parts, cursor, output_bytes = [], 0, 0
+            altered_aliases: set[str] = set()
+            identifier_tokens = re.compile(r"[A-Za-z0-9_]+")
+            reserved_alias = re.compile(r"(?:smcp_(?:ID|NUM|LIT)|private_symbol)_\d+", re.IGNORECASE)
+
+            def check_unrestored(start: int, end: int) -> None:
+                # A model can append/prepend identifier characters to an alias.
+                # Boundary-aware substitution deliberately leaves those strings
+                # alone, but strict restoration must not silently execute them.
+                # Scan only original-input gaps: valid registered identifier
+                # spellings and restored originals can themselves contain the
+                # reserved syntax and must never be interpreted a second time.
+                for token in identifier_tokens.finditer(masked_text, start, end):
+                    if reserved_alias.search(token[0]):
+                        altered_aliases.add(token[0])
+
             for match in re.finditer(pattern, masked_text, re.IGNORECASE):
+                check_unrestored(cursor, match.start())
                 for part in (masked_text[cursor:match.start()], restore(match)):
                     output_bytes += len(part.encode("utf-8"))
                     if output_bytes > output_limit:
                         raise ValueError("Restoration output size limit reached.")
                     parts.append(part)
                 cursor = match.end()
+            check_unrestored(cursor, len(masked_text))
             tail = masked_text[cursor:]
             if output_bytes + len(tail.encode("utf-8")) > output_limit:
                 raise ValueError("Restoration output size limit reached.")
@@ -732,10 +750,7 @@ class MaskingEngine:
             output = "".join(parts)
             if self._restore_remaining is not None:
                 self._restore_remaining -= output_bytes + len(tail.encode("utf-8"))
-            candidates = StrategyGenerator.get_pattern(strategy).findall(masked_text)
-            unmatched = sorted(
-                {c for c in candidates if c not in reverse_store} | set(glued_unmatched)
-            )
+            unmatched = sorted(set(glued_unmatched) | altered_aliases)
             if strict and unmatched:
                 raise ValueError(
                     "Unrecognized or altered surrogate tokens: " + ", ".join(unmatched)

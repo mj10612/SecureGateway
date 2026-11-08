@@ -1,13 +1,14 @@
 """Loopback subscription proxy. CLI-owned OAuth is forwarded, never loaded from disk.
 
-Only inference endpoints are proxied. Unknown/binary payloads fail closed. SSE is
-buffered so aliases split across events can be restored before local execution.
+Only inference endpoints are proxied. Unknown/binary payloads fail closed. SSE
+text is incremental; incomplete aliases and tool JSON retain bounded buffers.
 """
 
 from __future__ import annotations
 
 from contextlib import ExitStack, nullcontext
 from contextvars import ContextVar
+from collections import deque
 from copy import deepcopy
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -23,6 +24,7 @@ import time
 import unicodedata
 from threading import Condition, RLock
 from typing import Any
+from secure_gateway import __version__
 from secure_gateway.context_model import ContextModel, load_context_model, MAX_CONTEXT_CHARS
 import urllib.error
 import urllib.request
@@ -52,6 +54,8 @@ from secure_gateway.gateway_task_operators import operator_words, operator_capit
 from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, check_mapping_budget, positive_budget, snapshot_budget, record_mapping
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
 from secure_gateway.session import PrivacySession
+from secure_gateway.gateway_stream import relay_stream
+from secure_gateway.gateway_errors import public_request_error
 
 LIMIT = 16 * 1024 * 1024
 
@@ -539,9 +543,13 @@ class SharedEngine(MaskingEngine):
                 if kind == TokenType.NUMBER and mapping_store[key].surrogate == original_token:
                     raise NumericLiteralConflict("Numeric literal conflicts with a preserved number; use a new session.")
                 if source_reference:
+                    if mapping_store[key].source_reference is not True:
+                        self.cache_epoch = getattr(self, "cache_epoch", 0) + 1
                     mapping_store[key]._mark_source_reference()
                 mapping_store[key].occurrence_count += 1
                 if code and token_type == TokenType.LITERAL:
+                    if not mapping_store[key].code_literal:
+                        self.cache_epoch = getattr(self, "cache_epoch", 0) + 1
                     mapping_store[key]._mark_code_literal()
                 return mapping_store[key].surrogate
             if len(mapping_store) >= min(self.mapping_limit, generator.max_mappings):
@@ -619,6 +627,9 @@ class GatewaySession:
         self.active_requests = 0
         self.encryption: SnapshotEncryption | None = None
         self.forced_rules = lambda: ()
+        self._mask_cache: dict[tuple, str] = {}
+        self._mask_cache_bytes = 0
+        self.storage_key: str | None = None
 
     def _opaque_key(self, block):
         stable = {
@@ -769,7 +780,24 @@ class GatewaySession:
                 s.generator, s.forward_store, s.reverse_store, code=True)
 
     def mask(self, text: str, code: bool = False, language: str = "auto") -> str:
-        return self._force_mask(self._mask_unforced(text, code, language))
+        # Cache only within this private session, with every policy/mapping
+        # dependency in the key. New aliases invalidate prior interpretations.
+        key: tuple = (text, code, language, self.natural_language, self.prose_mode,
+               tuple(self.forced_rules()), getattr(self.engine, "cache_epoch", 0), len(self.session.forward_store))
+        cached = self._mask_cache.get(key)
+        if cached is not None:
+            return cached
+        result = self._force_mask(self._mask_unforced(text, code, language))
+        key = (*key[:-2], getattr(self.engine, "cache_epoch", 0), len(self.session.forward_store))
+        size = len(text.encode()) + len(result.encode())
+        if size <= 1024 * 1024:
+            if self._mask_cache_bytes + size > 4 * 1024 * 1024 or len(self._mask_cache) >= 256:
+                self._mask_cache.clear()
+                self._mask_cache_bytes = 0
+            if key not in self._mask_cache:
+                self._mask_cache[key] = result
+                self._mask_cache_bytes += size
+        return result
 
     def _force_mask(self, text: str) -> str:
         rules: tuple[str, ...] = self.forced_rules()
@@ -1883,6 +1911,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         self.active_audit_handlers = 0
         self.provider_admitted: dict[str, int] = {}
         self.closing = False
+        self.recent_timings: deque = deque(maxlen=32)
         self.token = token
         self.upstreams = dict(UPSTREAMS if upstreams is None else upstreams)
         # Explicit API-key modes are opt-in at construction. They are never
@@ -1995,10 +2024,15 @@ class PrivacyGateway(ThreadingHTTPServer):
         with self.admission:
             active = self.admitted_requests
             admitted = dict(self.provider_admitted)
+            recent_timings = list(self.recent_timings)
         providers = {}
         for agent in sorted(self.upstreams):
             with self.provider_locks[agent]:
+                owned_sessions = [value for key, value in self.sessions.items()
+                                  if key == agent or key.startswith(agent + "-")]
                 session = self.sessions.get(agent)
+                if session is None and owned_sessions:
+                    session = owned_sessions[0]
                 item: dict[str, Any] = {"active_requests": admitted.get(agent, 0),
                         "mapping_limit": self.mapping_limit, "mapping_count": 0,
                         "max_mapping_bytes": self.max_mapping_bytes, "mapping_bytes": 0,
@@ -2015,17 +2049,30 @@ class PrivacyGateway(ThreadingHTTPServer):
                                     ttl_seconds=session.session.ttl_seconds,
                                     expires_at=session.session.last_accessed + session.session.ttl_seconds,
                                     expired=session.session.is_expired())
+                mapping_count, mapping_bytes = 0, 0
+                for owned in owned_sessions:
+                    with owned.lock:
+                        mapping_count += len(owned.session.forward_store)
+                        mapping_bytes += owned.session.forward_store.mapping_bytes
+                item.update(conversation_count=len(owned_sessions), mapping_count=mapping_count,
+                            mapping_bytes=mapping_bytes)
                 providers[agent] = item
         return {"active_requests": active, "max_active_requests": self.max_active_requests,
+                "recent_timings": recent_timings,
                 "context_model": self.context_model.diagnostics() if self.context_model else {"status": self.context_model_status},
                 "max_provider_requests": self.max_provider_requests, "providers": providers,
                 "audit_write_errors": self.audit_write_errors,
                 "audit_error_counts": self.audit_error_diagnostics(),
                 "audit_completion_retries": self.audit.completion_retries.diagnostics() if self.audit else None}
 
-    def get_session(self, agent):
+    def get_session(self, agent, conversation=None):
+        key = agent
+        if conversation:
+            if not isinstance(conversation, str) or len(conversation.encode()) > 2048:
+                raise ValueError("Invalid conversation identity.")
+            key += "-" + sha256((self.token + "\0" + agent + "\0" + conversation).encode()).hexdigest()
         with self.provider_locks[agent]:
-            current = self.sessions.get(agent)
+            current = self.sessions.get(key)
             if current is not None:
                 # Serialize with an in-flight request before dropping state.
                 with current.lock:
@@ -2040,9 +2087,18 @@ class PrivacyGateway(ThreadingHTTPServer):
                     current.session.clear()
                     current.opaque.clear()
                     current.encryption = None
-                del self.sessions[agent]
+                del self.sessions[key]
+            if len(self.sessions) >= 256:
+                for old_key, old_session in list(self.sessions.items()):
+                    with old_session.lock:
+                        if not old_session.active_requests and old_session.session.is_expired():
+                            old_session.session.clear()
+                            old_session._mask_cache.clear()
+                            del self.sessions[old_key]
+                if len(self.sessions) >= 256:
+                    raise ValueError("Conversation capacity reached; reset idle sessions.")
             path = (
-                self.state_dir / f"{agent}-symbols-v2.enc" if self.state_dir else None
+                self.state_dir / f"{key}-symbols-v2.enc" if self.state_dir else None
             )
             saved = None
             if path and path.exists():
@@ -2058,6 +2114,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                                      context_model=self.context_model,
                                      **self.restore_limits)
             session.forced_rules = lambda: self.mask_rules
+            session.storage_key = key
             # Reasoning provenance is only meaningful while the matching alias
             # table is alive. Expired/missing snapshots start fresh, so stale
             # digests must not be loaded into the new table.
@@ -2071,7 +2128,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                 ):
                     raise ValueError("Invalid persisted reasoning state.")
                 session.opaque = set(digests)
-            self.sessions[agent] = session
+            self.sessions[key] = session
             return session
 
     def save(self, agent, session):
@@ -2085,7 +2142,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             return
         session.session.touch()
         if self.state_dir:
-            path = self.state_dir / f"{agent}-symbols-v2.enc"
+            path = self.state_dir / f"{session.storage_key or agent}-symbols-v2.enc"
             if session.encryption is None:
                 session.encryption = SnapshotEncryption(self.token)
             save_session(
@@ -2101,7 +2158,13 @@ class PrivacyGateway(ThreadingHTTPServer):
         with ExitStack() as stack:
             for name in agents:
                 stack.enter_context(self.provider_locks[name])
-            current = [(name, self.sessions.get(name)) for name in agents]
+            keys = set(agents) | {key for key in self.sessions
+                                      if any(key.startswith(name + "-") for name in agents)}
+            if self.state_dir:
+                for name in agents:
+                    keys.update(file.name.removesuffix("-symbols-v2.enc") for file in
+                                self.state_dir.glob(name + "-*-symbols-v2.enc"))
+            current = [(name, self.sessions.get(name)) for name in sorted(keys)]
             for _, session in current:
                 if session is not None:
                     stack.enter_context(session.lock)
@@ -2116,6 +2179,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                     path.with_suffix(".opaque.json").unlink(missing_ok=True)
                 if session is not None:
                     session.session.clear()
+                    session._mask_cache.clear()
                     session.opaque.clear()
                     session.encryption = None
                     del self.sessions[name]
@@ -2129,6 +2193,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         for session in self.sessions.values():
             with session.lock:
                 session.session.clear()
+                session._mask_cache.clear()
                 session.opaque.clear()
                 session.encryption = None
         self.sessions.clear()
@@ -2139,6 +2204,7 @@ class PrivacyGateway(ThreadingHTTPServer):
 class GatewayHandler(BaseHTTPRequestHandler):
     server: PrivacyGateway
     audit_metadata: dict[str, Any] | None = None
+    stream_metrics: dict[str, Any]
     protocol_version = "HTTP/1.0"
     timeout = 60
 
@@ -2229,7 +2295,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 self.send_body(502, b'{"error":"Model catalog unavailable"}')
             return
         if self.path == "/health" and self.authorized():
-            self.send_body(200, b'{"service":"secure-gateway-subscription-gateway"}')
+            self.send_body(200, strict_json_dumps({"service": "secure-gateway-subscription-gateway", "version": __version__}).encode())
         elif (
             self.authorized()
             and re.fullmatch(r"/codex/models(?:\?client_version=[\d.]+)?", self.path)
@@ -2443,6 +2509,9 @@ class GatewayHandler(BaseHTTPRequestHandler):
                            b'{"error":"Gateway inference capacity unavailable; retry later"}')
             return
         meta = self.audit_metadata
+        timings: dict[str, Any] = {"provider": agent}
+        request_started = time.perf_counter()
+        stage_started = request_started
         if meta is not None:
             meta["credential_ref"] = anonymous_ref(self.server.token, "credential", auth)
             if agent == "codex":
@@ -2474,8 +2543,14 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 if MODEL_ID_PATTERN.fullmatch(model):
                     meta["model"] = model
             # Refresh stays CLI-owned; changing bearer tokens must not change aliases.
-            session = self.server.get_session(agent)
+            conversation = self.headers.get("session_id") or self.headers.get("X-SecureGateway-Session")
+            if conversation:
+                conversation = self.headers.get("chatgpt-account-id", "") + "\0" + conversation
+            session = self.server.get_session(agent, conversation)
+            stage_started = time.perf_counter()
             with session.lock:
+                timings["mask_lock_wait_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
+                stage_started = time.perf_counter()
                 dialect = (
                     "chat_completions"
                     if path.endswith("/chat/completions")
@@ -2485,6 +2560,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 )
                 before = len(session.session.forward_store)
                 masked = session.request(payload, dialect=dialect)
+                timings["mask_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                 if meta is not None:
                     meta["new_aliases"] = max(0, len(session.session.forward_store) - before)
                 session.active_requests += 1
@@ -2529,7 +2605,9 @@ class GatewayHandler(BaseHTTPRequestHandler):
                     if meta is not None:
                         meta["upstream_attempted"] = 1
                         meta["outcome"] = "transport_error"
-                    upstream_response = opener.open(request, timeout=180)
+                    stage_started = time.perf_counter()
+                    upstream_response = opener.open(request, timeout=600)
+                    timings["upstream_headers_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                 except urllib.error.HTTPError:
                     raise
                 except (OSError, http.client.HTTPException) as exc:
@@ -2539,8 +2617,35 @@ class GatewayHandler(BaseHTTPRequestHandler):
                     return
                 with upstream_response as upstream:
                     self.capture_response_headers(upstream.headers)
+                    content_type = upstream.headers.get("Content-Type", "application/json")
+                    if masked.get("stream") and content_type.split(";", 1)[0].strip().lower() == "text/event-stream":
+                        try:
+                            persisted_state = None
+                            def persist_completion():
+                                nonlocal persisted_state
+                                with session.lock:
+                                    state = (len(session.session.forward_store),
+                                             getattr(session.engine, "cache_epoch", 0), frozenset(session.opaque))
+                                    if state != persisted_state:
+                                        save_started = time.perf_counter()
+                                        self.server.save(agent, session)
+                                        timings["save_ms"] = timings.get("save_ms", 0) + round((time.perf_counter() - save_started) * 1000, 2)
+                                        persisted_state = state
+                            relay_stream(self, upstream, session, dialect, limit=LIMIT, before_complete=persist_completion)
+                            timings["first_event_ms"] = self.stream_metrics["first_event_ms"]
+                            timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
+                            persist_completion()
+                        except (ValueError, TypeError, KeyError, OSError, http.client.HTTPException):
+                            if meta is not None:
+                                meta["status"] = 502
+                                meta["outcome"] = "stream_error"
+                            # Headers have already been sent. Close rather than
+                            # forge a successful completion or send a second HTTP response.
+                            self.close_connection = True
+                        return
                     try:
                         body = upstream.read(LIMIT + 1)
+                        timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                         if len(body) <= LIMIT and getattr(upstream, "length", None) not in (None, 0):
                             raise http.client.IncompleteRead(body)
                     except (OSError, http.client.HTTPException) as exc:
@@ -2559,14 +2664,18 @@ class GatewayHandler(BaseHTTPRequestHandler):
                     ):
                         content_type = "text/event-stream"
                     with session.lock:
+                        stage_started = time.perf_counter()
                         if meta is not None:
                             meta["outcome"] = "restore_error"
                         try:
                             restored = session.response(body, content_type, dialect=dialect)
+                            timings["restore_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                         except (ValueError, TypeError, AttributeError, KeyError, RecursionError):
                             self.send_body(502, b'{"error":"Upstream response could not be safely restored"}')
                             return
+                        stage_started = time.perf_counter()
                         self.server.save(agent, session)
+                        timings["save_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                 self.send_body(200, restored, content_type)
             finally:
                 with session.lock:
@@ -2587,12 +2696,15 @@ class GatewayHandler(BaseHTTPRequestHandler):
             KeyError,
             RecursionError,
             http.client.HTTPException,
-        ):
+        ) as exc:
             self.send_body(
                 400,
-                b'{"error":"Privacy gateway could not safely process this request; nothing bypassed masking"}',
+                strict_json_dumps(public_request_error(exc)).encode(),
             )
         finally:
+            timings["total_ms"] = round((time.perf_counter() - request_started) * 1000, 2)
+            with self.server.admission:
+                self.server.recent_timings.append(timings)
             self.server.release_admission(agent)
 
 

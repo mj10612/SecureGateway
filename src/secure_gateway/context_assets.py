@@ -7,6 +7,9 @@ import os
 from pathlib import Path
 import urllib.request
 
+from secure_gateway.encrypted_session import session_file_lock
+from secure_gateway.hooks import _atomic_json
+
 REPOSITORY = "intfloat/multilingual-e5-small"
 REVISION = "614241f622f53c4eeff9890bdc4f31cfecc418b3"
 MODEL_ID = "context-e5-small-v1"
@@ -18,6 +21,53 @@ FILES = {
     "tokenizer_config.json": ("tokenizer_config.json", 443, "a1d6bc8734a6f635dc158508bef000f8e2e5a759c7d92f984b2c86e5ff53425b"),
     "config.json": ("config.json", 655, "69137736cab8b8903a07fe8afaafdda25aac55415a12a55d1bffa9f581abf959"),
 }
+_DOWNLOAD_RECORD = ".secure-gateway-download.json"
+
+
+def _download_identity(path: Path):
+    stat = path.lstat()
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("Download path changed; no temporary files were removed.")
+    return [stat.st_dev, stat.st_ino]
+
+
+def _recover_download(directory: Path) -> None:
+    """Only a recorded inode may be removed after its owner's lock is released."""
+    record = directory / _DOWNLOAD_RECORD
+    if not record.exists() and not record.is_symlink():
+        return
+    try:
+        if record.is_symlink() or not record.is_file() or record.stat().st_size > 4096:
+            raise ValueError()
+        value = json.loads(record.read_bytes())
+        if (not isinstance(value, dict) or value.get("version") != 1
+                or value.get("asset") not in FILES
+                or not isinstance(value.get("identity"), list)
+                or len(value["identity"]) != 2
+                or any(type(item) is not int for item in value["identity"])):
+            raise ValueError()
+        pending = directory / (value["asset"] + ".download")
+        if pending.exists() or pending.is_symlink():
+            if _download_identity(pending) != value["identity"]:
+                raise ValueError()
+            pending.unlink()
+        record.unlink()
+    except (ValueError, TypeError, KeyError):
+        raise ValueError(
+            "Download ownership record is invalid or its temporary file changed; "
+            "stop all model installers, inspect/move the .download file and "
+            ".secure-gateway-download.json aside, then retry. No unverified files were removed."
+        ) from None
+
+
+def _check_unowned_downloads(directory: Path) -> None:
+    for name in FILES:
+        pending = directory / (name + ".download")
+        if pending.exists() or pending.is_symlink():
+            raise FileExistsError(
+                "Unowned .download file remains; no files were removed. Stop all model "
+                f"installers, inspect/move '{pending}' aside, then retry model-install or model-remove."
+            )
 
 
 def default_model_directory() -> Path:
@@ -44,6 +94,15 @@ def install_model(directory: Path) -> None:
     """Download data only after an explicit CLI invocation, with bounded bytes."""
     directory = directory.resolve()
     directory.mkdir(parents=True, exist_ok=True)
+    # Keep the persistent lock next to the model directory. Never unlink it:
+    # different lock inodes would allow two installers to run concurrently.
+    with session_file_lock(directory.with_name(directory.name + ".model-install")):
+        _recover_download(directory)
+        _check_unowned_downloads(directory)
+        _install_model(directory)
+
+
+def _install_model(directory: Path) -> None:
     for name, (remote, size, digest) in FILES.items():
         target = directory / name
         if valid_file(target, size, digest):
@@ -53,9 +112,14 @@ def install_model(directory: Path) -> None:
         # Exclusive creation avoids overwriting another install or user data.
         pending = directory / (name + ".download")
         owned = False
+        identity = None
         try:
             with pending.open("xb") as output:
                 owned = True
+                identity = _download_identity(pending)
+                _atomic_json(directory / _DOWNLOAD_RECORD, {
+                    "version": 1, "asset": name, "identity": identity,
+                })
                 request = urllib.request.Request(
                     f"https://huggingface.co/{REPOSITORY}/resolve/{REVISION}/{remote}?download=true",
                     headers={"User-Agent": "SecureGateway-model-install"},
@@ -71,10 +135,14 @@ def install_model(directory: Path) -> None:
                 raise ValueError("Context model checksum verification failed.")
             os.link(pending, target)
             pending.unlink()
+            (directory / _DOWNLOAD_RECORD).unlink()
         except BaseException:
             # A pre-existing .download belongs to someone else.
             if owned:
-                pending.unlink(missing_ok=True)
+                if pending.exists() and _download_identity(pending) == identity:
+                    pending.unlink()
+                if not pending.exists():
+                    (directory / _DOWNLOAD_RECORD).unlink(missing_ok=True)
             raise
     verify_model(directory)
 
@@ -82,10 +150,19 @@ def install_model(directory: Path) -> None:
 def remove_model(directory: Path) -> None:
     """Remove only unchanged upstream assets; preserve all unrelated files."""
     directory = directory.resolve()
+    if not directory.exists():
+        return
+    with session_file_lock(directory.with_name(directory.name + ".model-install")):
+        _remove_model(directory)
+
+
+def _remove_model(directory: Path) -> None:
     present = [(directory / name, size, digest) for name, (_, size, digest) in FILES.items()
-               if (directory / name).exists()]
+               if (directory / name).exists() or (directory / name).is_symlink()]
     if any(not valid_file(path, size, digest) for path, size, digest in present):
         raise ValueError("A model file was changed; no model files were removed.")
+    _recover_download(directory)
+    _check_unowned_downloads(directory)
     for path, _, _ in present:
         path.unlink()
 

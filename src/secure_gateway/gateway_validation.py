@@ -2,6 +2,7 @@
 
 import math
 import re
+from secure_gateway.gateway_errors import GatewayRequestError
 
 
 MODEL_ID_PATTERN = re.compile(r"[A-Za-z0-9_./:-]{1,200}")
@@ -68,6 +69,8 @@ def _content(value, dialect):
         kind = block.get("type")
         if not isinstance(kind, str):
             raise ValueError("Content blocks require a public type.")
+        if kind in {"image", "input_image", "image_url", "document", "input_file", "file", "input_audio", "audio", "video"}:
+            raise GatewayRequestError("unsupported_attachment")
         if kind in {"text", "input_text", "output_text"}:
             if not isinstance(block.get("text"), str):
                 raise ValueError("Text blocks require text.")
