@@ -31,7 +31,7 @@ def installation(tmp_path, monkeypatch):
     monkeypatch.setattr(gateway_install, "stop_gateway", lambda path: False)
     ensured = []
     monkeypatch.setattr(
-        gateway_install, "ensure_gateway", lambda path: ensured.append(path)
+        gateway_install, "_start_gateway", lambda path, config: ensured.append(path)
     )
     return home, claude, startup, config, ensured
 

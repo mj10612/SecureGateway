@@ -23,6 +23,8 @@ import tomlkit
 from secure_gateway.encrypted_session import session_file_lock
 from secure_gateway.hooks import _atomic_json, _remove_owned, _settings
 
+_STARTUP_TIMEOUT = 60
+
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *_args, **_kwargs):
@@ -99,6 +101,8 @@ def _recover_install(path):
     # Validate all files before restoring any. Retain journal until every restore
     # succeeds, so recovery itself can be interrupted and safely retried.
     for target, original in originals.items():
+        if (target.read_bytes() if target.is_file() else None) == original:
+            continue
         if original is None:
             target.unlink(missing_ok=True)
         else:
@@ -220,61 +224,69 @@ def healthy(config):
 
 
 def ensure_gateway(path: Path):
-    config = load_config(path)
     with session_file_lock(path):
-        if healthy(config):
-            return
-        options = (
-            {
-                "creationflags": getattr(subprocess, "CREATE_NO_WINDOW", 0)
-                | getattr(subprocess, "DETACHED_PROCESS", 0)
-            }
-            if os.name == "nt"
-            else {"start_new_session": True}
-        )
-        # Keep the child's stderr for diagnostics only; prompts and tokens are
-        # never logged by the gateway. A temp file avoids pipe backpressure.
-        diagnostics = tempfile.TemporaryFile()
+        _start_gateway(path, load_config(path))
+
+
+def _terminate_started_gateway(process):
+    """Reap only the child created by this operation, never a port's owner."""
+    if process.poll() is None:
         try:
-            process = subprocess.Popen(
-                [
-                    sys.executable,
-                    "-m",
-                    "secure_gateway",
-                    "gateway",
-                    "run",
-                    "--config",
-                    str(path.resolve()),
-                ],
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=diagnostics,
-                **options,
-            )
-            deadline = time.monotonic() + 60
+            process.terminate()
+        except ProcessLookupError:
+            pass
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=5)
+
+
+def _start_gateway(path, config):
+    """Caller owns the config lock. Return a newly started child, or None."""
+    if healthy(config):
+        return None
+    options = (
+        {"creationflags": getattr(subprocess, "CREATE_NO_WINDOW", 0)
+         | getattr(subprocess, "DETACHED_PROCESS", 0)}
+        if os.name == "nt" else {"start_new_session": True}
+    )
+    # Bounded diagnostics never contain the configured local authentication token.
+    with tempfile.TemporaryFile() as diagnostics:
+        process = subprocess.Popen(
+            [sys.executable, "-m", "secure_gateway", "gateway", "run",
+             "--config", str(path.resolve())],
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+            stderr=diagnostics, **options,
+        )
+        try:
+            deadline = time.monotonic() + _STARTUP_TIMEOUT
             while time.monotonic() < deadline:
                 if healthy(config):
-                    # Keep the child handle owned and reap it after shutdown.
                     Thread(target=process.wait, daemon=True).start()
-                    return
+                    return process
                 if process.poll() is not None:
                     break
                 time.sleep(0.1)
-            if process.poll() is None:
-                process.terminate()
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait()
+            _terminate_started_gateway(process)
             diagnostics.seek(0)
-            detail = diagnostics.read(2000).decode("utf-8", "replace").strip()
+            captured = diagnostics.read(2001)
+            token = config["token"].encode("utf-8")
+            detail_bytes = captured[:2000].replace(token, b"[redacted]")
+            if len(captured) > 2000:
+                # The bounded read may split a token (including UTF-8 bytes).
+                for length in range(min(len(token) - 1, len(detail_bytes)), 0, -1):
+                    if detail_bytes.endswith(token[:length]):
+                        detail_bytes = detail_bytes[:-length] + b"[redacted]"
+                        break
+            detail = detail_bytes.decode("utf-8", "replace").strip()
             message = "Local gateway could not start; no direct-provider fallback was enabled."
             if detail:
                 message += " (" + detail[-1000:] + ")"
             raise ValueError(message)
-        finally:
-            diagnostics.close()
+        except BaseException:
+            _terminate_started_gateway(process)
+            raise
 
 
 def stop_gateway(path: Path):
@@ -346,6 +358,8 @@ def install_gateway(
     claude_dir: Path | None = None,
     codex_dir: Path | None = None,
     startup_path: Path | None = None,
+    *,
+    start: bool = False,
 ):
     path = path.resolve()
     manifest_path = installation_path(path)
@@ -354,7 +368,7 @@ def install_gateway(
     _ensure_state_directory(path)
     with session_file_lock(path):
         _recover_install(path)
-        return _install_gateway(path, agent, port, claude_dir, codex_dir, startup_path)
+        return _install_gateway(path, agent, port, claude_dir, codex_dir, startup_path, start=start)
 
 
 def startup_registration(arguments, startup_path=None):
@@ -408,7 +422,7 @@ def startup_registration(arguments, startup_path=None):
     return destination, data
 
 
-def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_path):
+def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_path, *, start=False):
     path = path.resolve()
     manifest_path = installation_path(path)
     previous_manifest = (
@@ -505,10 +519,16 @@ def _install_gateway(path: Path, agent, port, claude_dir, codex_dir, startup_pat
     mirrors = (
         {homes[1] / "config.toml": homes[0] / "config.toml"} if len(homes) == 2 else {}
     )
-    return apply_settings(path, config, changes, mirrors=mirrors)
+    return apply_settings(path, config, changes, mirrors=mirrors, start=start)
 
 
-def apply_settings(path: Path, config, changes, *, mirrors=None):
+def _assert_install_unchanged(path, expected):
+    if (path.is_symlink() or (path.exists() and not path.is_file())
+            or (path.read_bytes() if path.is_file() else None) != expected):
+        raise ValueError("Installation settings changed during setup; merge installation.pending.json before retrying.")
+
+
+def apply_settings(path: Path, config, changes, *, mirrors=None, start=False):
     """Back up and transactionally apply settings, shared by subscription/API setup."""
     # Replacing a symlink would detach the dotfile while the manifest points
     # to its resolved target. Reject before recovery or any transaction writes.
@@ -553,7 +573,6 @@ def apply_settings(path: Path, config, changes, *, mirrors=None):
         settings: settings.read_bytes() if settings.exists() else None
         for settings in changes
     }
-    applied = []
     journal_path = installation_path(path, pending=True)
     pending = {
         str(settings.resolve()): {
@@ -573,33 +592,37 @@ def apply_settings(path: Path, config, changes, *, mirrors=None):
             "after_sha256": sha256(data).hexdigest(),
         }
     _atomic_json(journal_path, {"files": pending})
+    started = None
+    committed = False
     try:
         _atomic_json(path, config)
         path.chmod(0o600)
+        if start:
+            # Keep the outer transaction lock; ensure_gateway would reacquire it.
+            started = _start_gateway(path, config)
+        # Activation can take time. Do not overwrite edits made while waiting.
+        for target, expected in [(path, config_data), (manifest_path, previous_manifest), *originals.items()]:
+            _assert_install_unchanged(target, expected)
         _atomic_json(manifest_path, manifest)
         manifest_path.chmod(0o600)
         for settings, data in changes.items():
+            _assert_install_unchanged(settings, originals[settings])
             atomic_bytes(settings, data)
-            applied.append(settings)
             settings.chmod(0o600)
         journal_path.unlink()
-    except OSError:
-        for settings in reversed(applied):
-            original = originals[settings]
-            if original is None:
-                settings.unlink()
-            else:
-                atomic_bytes(settings, original)
-        if previous_manifest is None:
-            manifest_path.unlink(missing_ok=True)
-        else:
-            atomic_bytes(manifest_path, previous_manifest)
-        if previous_config is None:
-            path.unlink(missing_ok=True)
-        else:
-            atomic_bytes(path, previous_config)
-        journal_path.unlink(missing_ok=True)
+        committed = True
+    except (OSError, ValueError):
+        if started is not None:
+            _terminate_started_gateway(started)
+            started = None
+        # Validate ownership before restoring. Conflicting edits retain the
+        # journal and require merge/retry, rather than destroying user changes.
+        _recover_install(path)
         raise
+    finally:
+        # Also stop an owned child on interruption; leave its journal recoverable.
+        if not committed and started is not None:
+            _terminate_started_gateway(started)
     return list(changes)
 
 

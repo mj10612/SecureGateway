@@ -667,14 +667,12 @@ def gateway_install(agent, config, port):
     """One-time user-wide setup. Keeps auth caches; installs automatic startup."""
     from secure_gateway.gateway_install import (
         default_config,
-        ensure_gateway,
         install_gateway,
     )
 
     path = config or default_config()
     try:
-        changed = install_gateway(path, agent, port)
-        ensure_gateway(path)
+        changed = install_gateway(path, agent, port, start=True)
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from None
     click.echo(

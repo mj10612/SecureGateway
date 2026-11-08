@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.5.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.5.1 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -818,3 +818,12 @@ policy as the surrounding JSON. NaN, Infinity and overflowing exponents such
 as `1e400` are rejected before forwarding local requests. Invalid arguments in
 provider JSON or accumulated SSE tool deltas produce a safe HTTP 502 restoration
 error. Finite exponents and arbitrary-precision JSON integers remain supported.
+
+
+## Failed subscription setup
+
+`gateway install` stages its runtime configuration while holding the installation lock, then waits for the authenticated local daemon to become healthy before publishing client routing and installation records. If startup fails (occupied port, invalid runtime options, or timeout), the transaction restores the exact prior configuration, host settings, startup file and ownership manifest. A fresh failed setup can be retried with another port.
+
+If a later host-file write fails, setup stops and reaps the daemon it started and rolls back the owned changes. A healthy daemon that existed before setup is retained. The low-level Python `install_gateway()` API still prepares files without starting a daemon unless `start=True` is explicitly supplied; the public CLI enables it.
+
+Setup rechecks file contents after waiting for startup. Detected user changes are preserved; a conflicting `installation.pending.json` remains for explicit merge/retry instead of overwriting them. Normal activation failure removes the journal after successful rollback. Ctrl+C stops a newly started child while retaining the journal for the existing interrupted-install recovery path. Startup diagnostics redact the configured local token, including a token split by the diagnostic capture limit. Only temporary synthetic host settings and local child processes are needed to test these paths; no model provider calls are involved.
