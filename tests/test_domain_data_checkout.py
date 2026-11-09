@@ -1,10 +1,12 @@
 """Windows text conversion must not invalidate packaged dictionary hashes."""
 
+import io
 from hashlib import sha256
 import json
 from pathlib import Path
 import shutil
 import subprocess
+import tarfile
 
 import pytest
 
@@ -75,3 +77,26 @@ def test_frozen_evaluation_bytes_survive_git_conversion(tmp_path):
     subprocess.run(common + ["clone", "--quiet", "--no-local", str(source), str(checkout)],
                    check=True, capture_output=True, timeout=30)
     assert (checkout / relative).read_bytes() == captured
+
+
+def test_historical_upgrade_archive_uses_raw_blob_bytes(tmp_path):
+    git = shutil.which("git")
+    if not git:
+        pytest.skip("Git required")
+    source = tmp_path / "source"
+    source.mkdir()
+    relative = "src/secure_gateway/data/domains/fixture.json"
+    path = source / relative
+    path.parent.mkdir(parents=True)
+    original = b'{\n  "terms": ["synthetic"]\n}\n'
+    path.write_bytes(original)
+    common = [git, "-C", str(source), "-c", "core.hooksPath=", "-c", "commit.gpgsign=false"]
+    for args in (["init", "--quiet"], ["-c", "core.autocrlf=false", "add", "."],
+                 ["-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
+                  "commit", "--quiet", "-m", "historical fixture without attributes"]):
+        subprocess.run(common + args, check=True, capture_output=True, timeout=30)
+    for autocrlf, matches in (("true", False), ("false", True)):
+        archive_bytes = subprocess.check_output(common + ["-c", "core.autocrlf=" + autocrlf, "archive", "HEAD"], timeout=30)
+        with tarfile.open(fileobj=io.BytesIO(archive_bytes)) as archive:
+            extracted = archive.extractfile(relative).read()
+        assert (sha256(extracted).digest() == sha256(original).digest()) is matches

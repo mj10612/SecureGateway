@@ -117,7 +117,7 @@ jobs:
           temporary = pathlib.Path(os.environ['RUNNER_TEMP'])
           previous = temporary / 'sg-previous'
           previous.mkdir(parents=True, exist_ok=True)
-          snapshot = subprocess.check_output(['git', 'archive', '56e988353f9db169e01d624d7a2d2eaa1a19ca27'])
+          snapshot = subprocess.check_output(['git', '-c', 'core.autocrlf=false', 'archive', '56e988353f9db169e01d624d7a2d2eaa1a19ca27'])
           with tarfile.open(fileobj=io.BytesIO(snapshot)) as archive:
               archive.extractall(previous, filter='data')
           subprocess.run(['uv', 'build', str(previous), '--wheel', '--out-dir', str(temporary / 'sg-previous-dist')], check=True)
