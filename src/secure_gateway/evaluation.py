@@ -305,9 +305,10 @@ def _capture_case(case, max_seconds=40):
                     # received a payload but local restoration/save failed.
                     # Preserve that integrity failure instead of discarding
                     # the capture or certifying a roundtrip.
-                    if not captured:
-                        raise
-                    return None, exc.code
+                    with exc:
+                        if not captured:
+                            raise
+                        return None, exc.code
             begin = time.monotonic()
             answer, response_status = receive()
             first_seconds = time.monotonic() - begin
