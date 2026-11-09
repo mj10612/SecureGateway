@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.7.18 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.7.19 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -945,3 +945,51 @@ error. Finite exponents and arbitrary-precision JSON integers remain supported.
 If a later host-file write fails, setup stops and reaps the daemon it started and rolls back the owned changes. A healthy daemon that existed before setup is retained. The low-level Python `install_gateway()` API still prepares files without starting a daemon unless `start=True` is explicitly supplied; the public CLI enables it.
 
 Setup rechecks file contents after waiting for startup. Detected user changes are preserved; a conflicting `installation.pending.json` remains for explicit merge/retry instead of overwriting them. Normal activation failure removes the journal after successful rollback. Ctrl+C stops a newly started child while retaining the journal for the existing interrupted-install recovery path. Startup diagnostics redact the configured local token, including a token split by the diagnostic capture limit. Only temporary synthetic host settings and local child processes are needed to test these paths; no model provider calls are involved.
+
+## Operational failure diagnostics
+
+Authenticated `GET /admin/api/sessions` includes `diagnostic_counts` for the current
+gateway instance. Each fixed counter saturates at 2,147,483,647 and resets on
+restart. Counters describe attempts/events, not unique files or production leak
+rates. They are separate from the SQLite audit-write counters.
+
+| Counter | Meaning |
+| --- | --- |
+| `snapshot_scan_io` | A maintenance directory iterator failed. |
+| `snapshot_cleanup_io` | Inspecting or removing a maintenance candidate failed. |
+| `snapshot_preserved` | An unreadable/foreign/corrupt maintenance candidate was preserved. |
+| `snapshot_load_failed` | An active snapshot/provenance load was refused or failed. |
+| `snapshot_recovered` | Active request recovery quarantined corrupt state. |
+| `snapshot_recovery_io` | Quarantine failed; the existing safe request failure applies. |
+| `upstream_error_body` | An upstream error body could not be read/parsed within the size limit. |
+| `upstream_error_format` | Unexpected error formatter/cleanup failure required a fixed fallback. |
+| `upstream_error_close` | Closing the error stream in that fallback also failed. |
+| `log_delivery_failed` | Delivering a warning raised; counted quietly to prevent recursive logging. |
+
+The `secure_gateway.gateway` logger emits one warning per actionable category per
+instance; later events remain visible in the counters. Preserved maintenance
+candidates increment a quiet counter because foreign state is not proof of
+corruption. Authenticated expiry and files already removed during a scan are
+normal maintenance, with no warning. Active proven-corrupt state retains the
+existing quarantine policy; maintenance never deletes such files speculatively.
+
+Gateway warning records contain only a fixed category and message: no snapshot path, token,
+mapping, request, provider body or exception traceback. This bounds repeated
+warning output. The counters remain available when a logging destination filters
+warnings; they are not persistent forensic records. Normal client disconnect
+cleanup and disabled HTTP request logging remain intentionally quiet.
+
+Both inference and model-catalog HTTP errors preserve sanitized allowlisted
+statuses and captured retry headers. If the formatter itself fails, the gateway
+closes its error stream and returns the fixed error schema instead of dropping
+the client connection or exposing exception contents. Normal structured provider
+errors retain their public allowlisted type/code. Standalone calls to
+`sanitized_upstream_error()` attempt a best-effort fixed warning on read/parse failure unless an
+explicit diagnostic callback is supplied; the gateway supplies its bounded
+instance callback.
+
+A warning-handler exception does not alter the sanitized response or snapshot policy.
+Gateway instances count failed emission attempts in `log_delivery_failed` without
+recursively logging them. The stateless sanitizer also tolerates such failures.
+
+Known limitation: on some Python versions, a logging handler can report a delivery failure to standard error instead of raising it to the gateway. See [issue #340](https://github.com/mj10612/SecureGateway/issues/340).
