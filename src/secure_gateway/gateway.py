@@ -2334,6 +2334,32 @@ class PrivacyGateway(ThreadingHTTPServer):
                 "audit_error_counts": self.audit_error_diagnostics(),
                 "audit_completion_retries": self.audit.completion_retries.diagnostics() if self.audit else None}
 
+    def _recover_snapshot(self, key: str, *, opaque_only: bool = False) -> None:
+        """Quarantine proven-corrupt local snapshot state for this conversation.
+
+        Bounded to one quarantined copy per file. Never follows symlinks and
+        never raises errors containing snapshot contents, tokens, or exception
+        details.
+        """
+        if not self.state_dir:
+            return
+        base = self.state_dir / f"{key}-symbols-v2.enc"
+        paths = [base.with_suffix(".opaque.json")]
+        if not opaque_only:
+            paths.insert(0, base)
+        for path in paths:
+            try:
+                if path.is_symlink():
+                    path.unlink(missing_ok=True)
+                    continue
+                if not path.exists():
+                    continue
+                target = path.with_name(path.name + ".quarantined")
+                path.chmod(0o600)
+                path.replace(target)
+            except OSError:
+                raise OSError("Snapshot recovery failed.") from None
+
     def _remove_snapshot(self, key):
         if self.state_dir:
             path = self.state_dir / f"{key}-symbols-v2.enc"
@@ -2433,11 +2459,20 @@ class PrivacyGateway(ThreadingHTTPServer):
                 self.state_dir / f"{key}-symbols-v2.enc" if self.state_dir else None
             )
             saved = None
+            if path and path.is_symlink():
+                raise OSError("Snapshot path is unsafe.")
             if path and path.exists():
                 try:
                     saved = load_session(path, self.token, "gateway")
                 except SessionExpiredError:
                     self._remove_snapshot(key)
+                    saved = None
+                except ValueError as exc:
+                    # Only an invalid envelope is distinguishable from a wrong
+                    # password. Preserve all ambiguous authentication failures.
+                    if str(exc) != "Invalid encrypted session file.":
+                        raise ValueError("Snapshot could not be loaded.") from None
+                    self._recover_snapshot(key)
                     saved = None
             session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers,
                                      natural_language=self.natural_language, sql_dialect=self.sql_dialect,
@@ -2453,16 +2488,30 @@ class PrivacyGateway(ThreadingHTTPServer):
             # Reasoning provenance is only meaningful while the matching alias
             # table is alive. Expired/missing snapshots start fresh, so stale
             # digests must not be loaded into the new table.
-            if saved is not None and path and path.with_suffix(".opaque.json").exists():
-                digests = json.loads(
-                    path.with_suffix(".opaque.json").read_text(encoding="utf-8")
-                )
-                if not isinstance(digests, list) or any(
-                    not isinstance(x, str) or not re.fullmatch(r"[a-f0-9]{64}", x)
-                    for x in digests
-                ):
-                    raise ValueError("Invalid persisted reasoning state.")
-                session.opaque = set(digests)
+            opaque_path = path.with_suffix(".opaque.json") if path else None
+            if saved is not None and opaque_path and opaque_path.is_symlink():
+                raise OSError("Snapshot path is unsafe.")
+            if saved is not None and opaque_path and opaque_path.exists():
+                try:
+                    raw_opaque = opaque_path.read_text(encoding="utf-8")
+                    digests = json.loads(raw_opaque)
+                    if not isinstance(digests, list) or any(
+                        not isinstance(x, str) or not re.fullmatch(r"[a-f0-9]{64}", x)
+                        for x in digests
+                    ):
+                        raise ValueError
+                except OSError:
+                    # Transient read/permission errors must not be treated as
+                    # proven corruption; fail safely without quarantining.
+                    raise
+                except (json.JSONDecodeError, ValueError):
+                    # Invalid provenance metadata: quarantine only opaque state so
+                    # encrypted mappings can still load, but old opaque blocks
+                    # cannot be replayed without fresh provenance.
+                    self._recover_snapshot(key, opaque_only=True)
+                    digests = None
+                if digests is not None:
+                    session.opaque = set(digests)
             self.sessions[key] = session
             if pin:
                 session.active_requests += 1
