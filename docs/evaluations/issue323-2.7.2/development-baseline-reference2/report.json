@@ -1,0 +1,4784 @@
+{
+  "schema_version": 1,
+  "status": "incomplete",
+  "freeze": {
+    "schema_version": 2,
+    "prepared": true,
+    "split": "development",
+    "model": "gpt-6.1-sol",
+    "repeats": 3,
+    "reasoning_effort": "medium",
+    "max_output_tokens": 2048,
+    "grading_policy_version": 2,
+    "corpus_byte_hashes": {
+      "tasks-development.json": "4d9b74dc805ba8d4316a1067c8b888c6c933c6f84e137857541149a3ef7906b6",
+      "privacy-development.json": "e1b657f93cafd84c9f5ae70f355c4eb67f66075cd2818ca6b689092beca02bfb",
+      "tasks-holdout.json": "81506851cef58214e7179dccff85d0fe774c903da356247e52f7d544acbcd630",
+      "privacy-holdout.json": "41a520e309be679a2329c1bbb11ff42583a8ecbb76491cfe88c92dc7cf299113"
+    },
+    "coverage": {
+      "tasks-development.json": {
+        "cases": 17,
+        "languages": [
+          "ar",
+          "bn",
+          "de",
+          "en",
+          "es",
+          "fr",
+          "hi",
+          "id",
+          "ja",
+          "ko",
+          "mr",
+          "pt",
+          "ru",
+          "te",
+          "tr",
+          "ur",
+          "zh"
+        ],
+        "private_occurrences": 71,
+        "public_spans": 0,
+        "max_task_points_per_repeat": 68
+      },
+      "privacy-development.json": {
+        "cases": 102,
+        "languages": [
+          "ar",
+          "bn",
+          "de",
+          "en",
+          "es",
+          "fr",
+          "hi",
+          "id",
+          "ja",
+          "ko",
+          "mr",
+          "pt",
+          "ru",
+          "te",
+          "tr",
+          "ur",
+          "zh"
+        ],
+        "private_occurrences": 786,
+        "public_spans": 186,
+        "max_task_points_per_repeat": 0
+      },
+      "tasks-holdout.json": {
+        "cases": 17,
+        "languages": [
+          "ar",
+          "bn",
+          "de",
+          "en",
+          "es",
+          "fr",
+          "hi",
+          "id",
+          "ja",
+          "ko",
+          "mr",
+          "pt",
+          "ru",
+          "te",
+          "tr",
+          "ur",
+          "zh"
+        ],
+        "private_occurrences": 64,
+        "public_spans": 0,
+        "max_task_points_per_repeat": 68
+      },
+      "privacy-holdout.json": {
+        "cases": 102,
+        "languages": [
+          "ar",
+          "bn",
+          "de",
+          "en",
+          "es",
+          "fr",
+          "hi",
+          "id",
+          "ja",
+          "ko",
+          "mr",
+          "pt",
+          "ru",
+          "te",
+          "tr",
+          "ur",
+          "zh"
+        ],
+        "private_occurrences": 747,
+        "public_spans": 282,
+        "max_task_points_per_repeat": 0
+      }
+    },
+    "grading_policy_sha256": "4a36f7832cb5d1a254c0f95d4ac244198bd18e9a5c2298860dd495457c66646a",
+    "adapter_source_sha256": "7b7e8fcca6155688ebb62b87d059d0d40e06b8e8677774f63af8d1f665be7fd9",
+    "cli_version": "codex-cli 0.167.0",
+    "requires_reference_audit": true,
+    "reference_audit_verified": false,
+    "reference_audit_root": null,
+    "reference_audit_verification": null,
+    "reference_audit_evidence": {},
+    "baseline_root": null,
+    "baseline_evidence": {},
+    "holdout_use": null,
+    "holdout_ledger": null,
+    "scope": "Synthetic fresh task responses + loopback privacy, not real-world risk estimates.",
+    "jobs_sha256": "c575c48a96ff88d5cb1983a1fa1565582bfa63d1afaf4f69f0c975889d1aff80"
+  },
+  "freeze_problems": [],
+  "privacy": {
+    "privacy": {
+      "total_sensitive": 786,
+      "measured_sensitive": 786,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 751,
+      "full_exposures": 35,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.955470737913486,
+      "observed_accuracy": 0.955470737913486,
+      "requests_with_leak": 17,
+      "measured_requests": 102,
+      "total_requests": 102
+    },
+    "overmasking": {
+      "measured_public": 186,
+      "overmasked": 110,
+      "rate": 0.5913978494623656
+    },
+    "integrity": {
+      "roundtrip_passed": 100,
+      "semantic_roundtrip_passed": 100,
+      "replay_passed": 100,
+      "measured_requests": 102,
+      "response_failures": 2,
+      "payload_replay_passed": 102,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "privacy_breakdown": {
+    "language": {
+      "ar": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 42,
+          "full_exposures": 4,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9130434782608695,
+          "observed_accuracy": 0.9130434782608695,
+          "requests_with_leak": 3,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 10,
+          "overmasked": 7,
+          "rate": 0.7
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "bn": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 43,
+          "full_exposures": 3,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9347826086956522,
+          "observed_accuracy": 0.9347826086956522,
+          "requests_with_leak": 2,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 10,
+          "overmasked": 7,
+          "rate": 0.7
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "de": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 46,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 11,
+          "overmasked": 9,
+          "rate": 0.8181818181818182
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "en": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 46,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 15,
+          "overmasked": 7,
+          "rate": 0.4666666666666667
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "es": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 46,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 13,
+          "overmasked": 6,
+          "rate": 0.46153846153846156
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "fr": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 46,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 11,
+          "overmasked": 5,
+          "rate": 0.45454545454545453
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "hi": {
+        "privacy": {
+          "total_sensitive": 47,
+          "measured_sensitive": 47,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 38,
+          "full_exposures": 9,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8085106382978723,
+          "observed_accuracy": 0.8085106382978723,
+          "requests_with_leak": 3,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 11,
+          "overmasked": 7,
+          "rate": 0.6363636363636364
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "id": {
+        "privacy": {
+          "total_sensitive": 47,
+          "measured_sensitive": 47,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 47,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 11,
+          "overmasked": 3,
+          "rate": 0.2727272727272727
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ja": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 43,
+          "full_exposures": 3,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9347826086956522,
+          "observed_accuracy": 0.9347826086956522,
+          "requests_with_leak": 2,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 10,
+          "overmasked": 7,
+          "rate": 0.7
+        },
+        "integrity": {
+          "roundtrip_passed": 5,
+          "semantic_roundtrip_passed": 5,
+          "replay_passed": 5,
+          "measured_requests": 6,
+          "response_failures": 1,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ko": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 44,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9565217391304348,
+          "observed_accuracy": 0.9565217391304348,
+          "requests_with_leak": 1,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 10,
+          "overmasked": 8,
+          "rate": 0.8
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "mr": {
+        "privacy": {
+          "total_sensitive": 47,
+          "measured_sensitive": 47,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 45,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9574468085106383,
+          "observed_accuracy": 0.9574468085106383,
+          "requests_with_leak": 1,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 10,
+          "overmasked": 9,
+          "rate": 0.9
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "pt": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 46,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 11,
+          "overmasked": 3,
+          "rate": 0.2727272727272727
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ru": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 46,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 11,
+          "overmasked": 5,
+          "rate": 0.45454545454545453
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "te": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 46,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 9,
+          "overmasked": 9,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "tr": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 46,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 13,
+          "overmasked": 3,
+          "rate": 0.23076923076923078
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ur": {
+        "privacy": {
+          "total_sensitive": 46,
+          "measured_sensitive": 46,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 39,
+          "full_exposures": 7,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8478260869565217,
+          "observed_accuracy": 0.8478260869565217,
+          "requests_with_leak": 3,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 10,
+          "overmasked": 6,
+          "rate": 0.6
+        },
+        "integrity": {
+          "roundtrip_passed": 6,
+          "semantic_roundtrip_passed": 6,
+          "replay_passed": 6,
+          "measured_requests": 6,
+          "response_failures": 0,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "zh": {
+        "privacy": {
+          "total_sensitive": 47,
+          "measured_sensitive": 47,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 42,
+          "full_exposures": 5,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8936170212765957,
+          "observed_accuracy": 0.8936170212765957,
+          "requests_with_leak": 2,
+          "measured_requests": 6,
+          "total_requests": 6
+        },
+        "overmasking": {
+          "measured_public": 10,
+          "overmasked": 9,
+          "rate": 0.9
+        },
+        "integrity": {
+          "roundtrip_passed": 5,
+          "semantic_roundtrip_passed": 5,
+          "replay_passed": 5,
+          "measured_requests": 6,
+          "response_failures": 1,
+          "payload_replay_passed": 6
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "domain": {
+      "general": {
+        "privacy": {
+          "total_sensitive": 786,
+          "measured_sensitive": 786,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 751,
+          "full_exposures": 35,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.955470737913486,
+          "observed_accuracy": 0.955470737913486,
+          "requests_with_leak": 17,
+          "measured_requests": 102,
+          "total_requests": 102
+        },
+        "overmasking": {
+          "measured_public": 186,
+          "overmasked": 110,
+          "rate": 0.5913978494623656
+        },
+        "integrity": {
+          "roundtrip_passed": 100,
+          "semantic_roundtrip_passed": 100,
+          "replay_passed": 100,
+          "measured_requests": 102,
+          "response_failures": 2,
+          "payload_replay_passed": 102
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "dialect": {
+      "claude": {
+        "privacy": {
+          "total_sensitive": 395,
+          "measured_sensitive": 395,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 382,
+          "full_exposures": 13,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9670886075949368,
+          "observed_accuracy": 0.9670886075949368,
+          "requests_with_leak": 6,
+          "measured_requests": 51,
+          "total_requests": 51
+        },
+        "overmasking": {
+          "measured_public": 90,
+          "overmasked": 57,
+          "rate": 0.6333333333333333
+        },
+        "integrity": {
+          "roundtrip_passed": 49,
+          "semantic_roundtrip_passed": 49,
+          "replay_passed": 49,
+          "measured_requests": 51,
+          "response_failures": 2,
+          "payload_replay_passed": 51
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "codex": {
+        "privacy": {
+          "total_sensitive": 391,
+          "measured_sensitive": 391,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 369,
+          "full_exposures": 22,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9437340153452686,
+          "observed_accuracy": 0.9437340153452686,
+          "requests_with_leak": 11,
+          "measured_requests": 51,
+          "total_requests": 51
+        },
+        "overmasking": {
+          "measured_public": 96,
+          "overmasked": 53,
+          "rate": 0.5520833333333334
+        },
+        "integrity": {
+          "roundtrip_passed": 51,
+          "semantic_roundtrip_passed": 51,
+          "replay_passed": 51,
+          "measured_requests": 51,
+          "response_failures": 0,
+          "payload_replay_passed": 51
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "split": {
+      "development": {
+        "privacy": {
+          "total_sensitive": 786,
+          "measured_sensitive": 786,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 751,
+          "full_exposures": 35,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.955470737913486,
+          "observed_accuracy": 0.955470737913486,
+          "requests_with_leak": 17,
+          "measured_requests": 102,
+          "total_requests": 102
+        },
+        "overmasking": {
+          "measured_public": 186,
+          "overmasked": 110,
+          "rate": 0.5913978494623656
+        },
+        "integrity": {
+          "roundtrip_passed": 100,
+          "semantic_roundtrip_passed": 100,
+          "replay_passed": 100,
+          "measured_requests": 102,
+          "response_failures": 2,
+          "payload_replay_passed": 102
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "language_mode": {
+      "auto": {
+        "privacy": {
+          "total_sensitive": 392,
+          "measured_sensitive": 392,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 372,
+          "full_exposures": 20,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9489795918367347,
+          "observed_accuracy": 0.9489795918367347,
+          "requests_with_leak": 10,
+          "measured_requests": 51,
+          "total_requests": 51
+        },
+        "overmasking": {
+          "measured_public": 91,
+          "overmasked": 48,
+          "rate": 0.5274725274725275
+        },
+        "integrity": {
+          "roundtrip_passed": 50,
+          "semantic_roundtrip_passed": 50,
+          "replay_passed": 50,
+          "measured_requests": 51,
+          "response_failures": 1,
+          "payload_replay_passed": 51
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "explicit": {
+        "privacy": {
+          "total_sensitive": 394,
+          "measured_sensitive": 394,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 379,
+          "full_exposures": 15,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9619289340101523,
+          "observed_accuracy": 0.9619289340101523,
+          "requests_with_leak": 7,
+          "measured_requests": 51,
+          "total_requests": 51
+        },
+        "overmasking": {
+          "measured_public": 95,
+          "overmasked": 62,
+          "rate": 0.6526315789473685
+        },
+        "integrity": {
+          "roundtrip_passed": 50,
+          "semantic_roundtrip_passed": 50,
+          "replay_passed": 50,
+          "measured_requests": 51,
+          "response_failures": 1,
+          "payload_replay_passed": 51
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "policy": {
+      "contextual": {
+        "total_sensitive": 446,
+        "measured_sensitive": 446,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 411,
+        "full_exposures": 35,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.92152466367713,
+        "observed_accuracy": 0.92152466367713,
+        "requests_with_leak": 17,
+        "measured_requests": 102,
+        "total_requests": 102
+      },
+      "explicit": {
+        "total_sensitive": 68,
+        "measured_sensitive": 68,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 68,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "pattern": {
+        "total_sensitive": 272,
+        "measured_sensitive": 272,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 272,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 85,
+        "total_requests": 85
+      }
+    },
+    "label": {
+      "account_id": {
+        "total_sensitive": 34,
+        "measured_sensitive": 34,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 34,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "email": {
+        "total_sensitive": 85,
+        "measured_sensitive": 85,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 85,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 85,
+        "total_requests": 85
+      },
+      "employee_id": {
+        "total_sensitive": 17,
+        "measured_sensitive": 17,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 17,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "hostname": {
+        "total_sensitive": 34,
+        "measured_sensitive": 34,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 34,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 34,
+        "total_requests": 34
+      },
+      "organization": {
+        "total_sensitive": 51,
+        "measured_sensitive": 51,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 51,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 51,
+        "total_requests": 51
+      },
+      "person": {
+        "total_sensitive": 361,
+        "measured_sensitive": 361,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 326,
+        "full_exposures": 35,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.9030470914127424,
+        "observed_accuracy": 0.9030470914127424,
+        "requests_with_leak": 17,
+        "measured_requests": 102,
+        "total_requests": 102
+      },
+      "phone": {
+        "total_sensitive": 51,
+        "measured_sensitive": 51,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 51,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 51,
+        "total_requests": 51
+      },
+      "project": {
+        "total_sensitive": 68,
+        "measured_sensitive": 68,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 68,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "student_id": {
+        "total_sensitive": 17,
+        "measured_sensitive": 17,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 17,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "ticket_id": {
+        "total_sensitive": 17,
+        "measured_sensitive": 17,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 17,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "unit_id": {
+        "total_sensitive": 17,
+        "measured_sensitive": 17,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 17,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "username": {
+        "total_sensitive": 34,
+        "measured_sensitive": 34,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 34,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 34,
+        "total_requests": 34
+      }
+    }
+  },
+  "task_payload_privacy": {
+    "privacy": {
+      "total_sensitive": 71,
+      "measured_sensitive": 71,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 70,
+      "full_exposures": 1,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.9859154929577465,
+      "observed_accuracy": 0.9859154929577465,
+      "requests_with_leak": 1,
+      "measured_requests": 17,
+      "total_requests": 17
+    },
+    "overmasking": {
+      "measured_public": 0,
+      "overmasked": 0,
+      "rate": null
+    },
+    "integrity": {
+      "roundtrip_passed": 17,
+      "semantic_roundtrip_passed": 17,
+      "replay_passed": 17,
+      "measured_requests": 17,
+      "response_failures": 0,
+      "payload_replay_passed": 17,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "task_response": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "not_measured",
+      "scheduled_requests": 153,
+      "responses_received": 0,
+      "graded_requests": 0,
+      "missing_or_failed_requests": 153,
+      "total_criteria": 612,
+      "graded_criteria": 0,
+      "passed_criteria": 0,
+      "accuracy": null,
+      "observed_accuracy": null,
+      "all_required_passed": 0,
+      "intent_passed": 0
+    },
+    "variants": {
+      "original": {
+        "status": "not_measured",
+        "scheduled_requests": 51,
+        "responses_received": 0,
+        "graded_requests": 0,
+        "missing_or_failed_requests": 51,
+        "total_criteria": 204,
+        "graded_criteria": 0,
+        "passed_criteria": 0,
+        "accuracy": null,
+        "observed_accuracy": null,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      },
+      "human": {
+        "status": "not_measured",
+        "scheduled_requests": 51,
+        "responses_received": 0,
+        "graded_requests": 0,
+        "missing_or_failed_requests": 51,
+        "total_criteria": 204,
+        "graded_criteria": 0,
+        "passed_criteria": 0,
+        "accuracy": null,
+        "observed_accuracy": null,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      },
+      "baseline": {
+        "status": "not_measured",
+        "scheduled_requests": 51,
+        "responses_received": 0,
+        "graded_requests": 0,
+        "missing_or_failed_requests": 51,
+        "total_criteria": 204,
+        "graded_criteria": 0,
+        "passed_criteria": 0,
+        "accuracy": null,
+        "observed_accuracy": null,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      }
+    }
+  },
+  "repeated_statistics": {
+    "schema_version": 1,
+    "expected_repeats": 3,
+    "minimum_repeats": 3,
+    "groups": [
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "ar",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "bn",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "de",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "es",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "fr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "hi",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "id",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "ja",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "mr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "pt",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "ru",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "te",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "tr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "ur",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "baseline",
+        "language": "zh",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "ar",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "bn",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "de",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "es",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "fr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "hi",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "id",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "ja",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "mr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "pt",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "ru",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "te",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "tr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "ur",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "language": "zh",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "ar",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "bn",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "de",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "es",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "fr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "hi",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "id",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "ja",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "mr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "pt",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "ru",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "te",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "tr",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "ur",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "language": "zh",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 4,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 0,
+            "missing_tasks": 1,
+            "possible_criteria": 4,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      }
+    ],
+    "aggregates": [
+      {
+        "split": "development",
+        "variant": "baseline",
+        "languages": [
+          "ar",
+          "bn",
+          "de",
+          "en",
+          "es",
+          "fr",
+          "hi",
+          "id",
+          "ja",
+          "ko",
+          "mr",
+          "pt",
+          "ru",
+          "te",
+          "tr",
+          "ur",
+          "zh"
+        ],
+        "scheduled_tasks": 17,
+        "possible_criteria_per_repeat": 68,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "human",
+        "languages": [
+          "ar",
+          "bn",
+          "de",
+          "en",
+          "es",
+          "fr",
+          "hi",
+          "id",
+          "ja",
+          "ko",
+          "mr",
+          "pt",
+          "ru",
+          "te",
+          "tr",
+          "ur",
+          "zh"
+        ],
+        "scheduled_tasks": 17,
+        "possible_criteria_per_repeat": 68,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      },
+      {
+        "split": "development",
+        "variant": "original",
+        "languages": [
+          "ar",
+          "bn",
+          "de",
+          "en",
+          "es",
+          "fr",
+          "hi",
+          "id",
+          "ja",
+          "ko",
+          "mr",
+          "pt",
+          "ru",
+          "te",
+          "tr",
+          "ur",
+          "zh"
+        ],
+        "scheduled_tasks": 17,
+        "possible_criteria_per_repeat": 68,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          },
+          {
+            "repeat": 2,
+            "scheduled_tasks": 17,
+            "rows_present": 17,
+            "graded_tasks": 0,
+            "missing_tasks": 17,
+            "possible_criteria": 68,
+            "graded_criteria": 0,
+            "passed_criteria": 0,
+            "task_success": 0,
+            "complete": false,
+            "accuracy": null,
+            "observed_accuracy": null
+          }
+        ],
+        "complete_repeats": 0,
+        "eligible": false,
+        "ineligible_reasons": [
+          "missing_grades"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 0,
+          "graded_criteria": 0,
+          "passed_criteria": 0,
+          "mean_observed_accuracy": null
+        }
+      }
+    ],
+    "paired": [],
+    "holdout_eligibility": {
+      "split": "holdout",
+      "present": false,
+      "variants": {},
+      "paired_eligible": false,
+      "decision": null,
+      "note": "Statistical eligibility only; this report adopts and enables nothing."
+    }
+  },
+  "privacy_comparison": null,
+  "task_privacy_comparison": null,
+  "execution": {
+    "status": "not_started",
+    "rejected_records": 0,
+    "note": "Budgets are checked before each batch. Calls already in flight (at most the worker count) can exceed call/token/time budgets; the adapter has a fixed per-call timeout and the provider offers no hard token cap. Reported usage is actual CLI-reported usage only."
+  },
+  "artifact_scope": "Capture reports retain synthetic alias-to-original source maps for owner-side grading. They are synthetic evaluation artifacts for owner review, not production privacy data or shareable results.",
+  "adoption": {
+    "decision": null,
+    "review_eligible": false,
+    "integrity_passed": false,
+    "observed_task_gain": false,
+    "holdout_first_candidate_use": false,
+    "holdout_use_status": "Development split.",
+    "criterion_regressions": {},
+    "blocking_criterion_regressions": [],
+    "reason": "Holdout only; inspect privacy, repeat distributions and hard failures. Nothing is automatically enabled."
+  },
+  "artifacts": {
+    "privacy": "privacy/report.json",
+    "tasks": "comprehension/report.json",
+    "first_answers": "comprehension/first-responses.json",
+    "grades": "comprehension/first-grades.json",
+    "rejected_records": "comprehension/rejected-records.json"
+  }
+}

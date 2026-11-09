@@ -43,3 +43,30 @@ Frequency is a heuristic, not a privacy classification. Frequent domain terms
 and names can be sensitive. Reviewed domain/name lists and explicit forced
 masking rules take priority over ordinary vocabulary. The starter lists cannot
 enumerate every person, organization, industry or inflected form.
+
+## Common-vocabulary data files (issue #323, not yet activated)
+
+`src/secure_gateway/data/common_vocabulary/` holds 17 per-language data files
+(`<lang>.json.gz`) plus `manifest.json` and `NOTICE.md`. They are built offline by
+`scripts/curate_common_vocabulary.py` from pinned inputs. They are **data under
+their own licences**, separate from the Apache-2.0 code:
+
+- **15 languages:** ordinary-word lists derived from the wordfreq 3.1.1 lists
+  above, licensed **CC BY-SA 4.0** with the wordfreq source credits.
+- **ko, id, hi and ur:** after all wordfreq entries, also the fastText
+  vocabulary of the same language. These files are CC BY-SA 4.0 adaptations
+  (BY-SA 3.0 Section 4(b)(ii)), crediting both sources.
+- **mr and te:** lists derived from the frequency-ordered vocabulary of the
+  fastText Common Crawl vectors, licensed **CC BY-SA 3.0**. Cite Grave et al.,
+  *Learning Word Vectors for 157 Languages* (LREC 2018). No vectors are included.
+- **Korean `predicate_lemmas`:** lemma forms from English Wiktionary via the
+  wiktextract/kaikki.org extraction, licensed **CC BY-SA 4.0** (Wiktionary
+  contributors). No glosses are included.
+- **Name/place evidence** (metadata, plus fallback candidates outside the word lists):
+  drawn from Wikidata (CC0), GeoNames
+  (CC BY 4.0, attribution: GeoNames, www.geonames.org), the jieba 0.42.1 dictionary
+  (MIT) and the authored SecureGateway denysets.
+
+`NOTICE.md` in that directory must accompany redistributed copies. The data is
+not downloaded at runtime. Source details, statistics and gaps are documented in
+[COMMON_VOCABULARY_SOURCES.md](COMMON_VOCABULARY_SOURCES.md).

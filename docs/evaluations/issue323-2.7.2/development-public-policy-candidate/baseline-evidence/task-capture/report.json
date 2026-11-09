@@ -1,0 +1,3595 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "85b67b4e2c314354a24727c55cd0eb5b",
+  "metadata": {
+    "package_version": "2.7.1",
+    "code_sha": "60ffe54156307371b70ea904612ff382eece478c",
+    "source_hash": "d98656ab43d471ddce81d16c270438f481176b6d7d51d9feceae8455f01c506d",
+    "scoring_version": 2,
+    "corpus_version": "issue324-tasks-development-v1-reference2",
+    "corpus_hash": "4cd355690062ccd0bbe07303d9ebafcb27ed2a91876b634b0de5a9dd17d5d3da",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "dev-task-en": [],
+        "dev-task-ko": [],
+        "dev-task-es": [],
+        "dev-task-fr": [],
+        "dev-task-pt": [],
+        "dev-task-de": [],
+        "dev-task-id": [],
+        "dev-task-tr": [],
+        "dev-task-ru": [],
+        "dev-task-hi": [],
+        "dev-task-mr": [],
+        "dev-task-bn": [],
+        "dev-task-ur": [],
+        "dev-task-te": [],
+        "dev-task-ar": [],
+        "dev-task-zh": [],
+        "dev-task-ja": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63",
+      "case_language_modes": {
+        "dev-task-en": "auto",
+        "dev-task-ko": "explicit",
+        "dev-task-es": "auto",
+        "dev-task-fr": "explicit",
+        "dev-task-pt": "auto",
+        "dev-task-de": "explicit",
+        "dev-task-id": "auto",
+        "dev-task-tr": "explicit",
+        "dev-task-ru": "auto",
+        "dev-task-hi": "explicit",
+        "dev-task-mr": "auto",
+        "dev-task-bn": "explicit",
+        "dev-task-ur": "auto",
+        "dev-task-te": "explicit",
+        "dev-task-ar": "auto",
+        "dev-task-zh": "explicit",
+        "dev-task-ja": "auto"
+      }
+    },
+    "settings_hash": "dce5388df920df2acd5bcd17889841922f97ecc56e1b5fa38c9645571a09399d",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ar",
+      "bn",
+      "de",
+      "en",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "ko",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "languages_not_measured": [],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "dev-task-en",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-en-development-task-release-note",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "ticket_id",
+          "policy": "pattern",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "ticket_id",
+          "policy": "pattern",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 5,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 these private_symbol_2 bullets into a two-paragraph, user-facing release note for private_symbol_3 732846136995128393. private_symbol_5: dark mode added (private_symbol_6-private_symbol_7-732846921193428972, owner private_symbol_9 private_symbol_10); private_symbol_11 export now keeps leading private_symbol_12 (private_symbol_6-private_symbol_7-732846383496894275); fixed a crash when private_symbol_14 a folder that contains an private_symbol_15; private_symbol_9 says offline sync slipped to 732846866041919961. private_symbol_17 paragraph: new features. private_symbol_18 paragraph: fixes and what's coming next. private_symbol_19 mention ticket numbers or staff names. No private_symbol_20."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Turn these internal bullets into a two-paragraph, user-facing release note for Lumenfold 4.2. Bullets: dark mode added (TCK-SYN-1104, owner Grant Ruiz); CSV export now keeps leading zeros (TCK-SYN-1121); fixed a crash when renaming a folder that contains an emoji; Grant says offline sync slipped to 4.3. First paragraph: new features. Second paragraph: fixes and what's coming next. Don't mention ticket numbers or staff names. No headings.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Turn",
+        "private_symbol_2": "internal",
+        "private_symbol_3": "Lumenfold",
+        "732846136995128393": "4.2",
+        "private_symbol_5": "Bullets",
+        "private_symbol_6": "TCK",
+        "private_symbol_7": "SYN",
+        "732846921193428972": "1104",
+        "private_symbol_9": "Grant",
+        "private_symbol_10": "Ruiz",
+        "private_symbol_11": "CSV",
+        "private_symbol_12": "zeros",
+        "732846383496894275": "1121",
+        "private_symbol_14": "renaming",
+        "private_symbol_15": "emoji",
+        "732846866041919961": "4.3",
+        "private_symbol_17": "First",
+        "private_symbol_18": "Second",
+        "private_symbol_19": "Don't",
+        "private_symbol_20": "headings"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 79,
+          "end": 88,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 120,
+          "end": 132,
+          "label": "ticket_id",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 140,
+          "end": 150,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 189,
+          "end": 201,
+          "label": "ticket_id",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 265,
+          "end": 270,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-ko",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-ko-development-task-dinner-vote-notice",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 9,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "팀 private_symbol_2 장소 투표 결과를 정리해서 팀 채널에 올릴 공지를 써 주세요. 투표 결과: private_symbol_3 'private_symbol_4' 732846968336490914(private_symbol_6, private_symbol_7, private_symbol_8, private_symbol_9), private_symbol_10 'private_symbol_11' 732846968336490914(private_symbol_12, private_symbol_13, private_symbol_14, private_symbol_15), private_symbol_16 '하루' 732846569610645261. private_symbol_18이면 팀장 private_symbol_19 님이 결정하기로 private_symbol_20, 아직 결정을 private_symbol_21 private_symbol_22. 날짜는 다음 주 금요일 저녁 732846041863164270로 확정입니다. 누가 어디에 private_symbol_24 private_symbol_25 마세요. 공지는 732846103073151352 이내로 써 주세요."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "팀 회식 장소 투표 결과를 정리해서 팀 채널에 올릴 공지를 써 주세요. 투표 결과: 한식당 '소반' 4표(이다온, 김한주, 박서윤, 최민재), 이탈리안 '포르타' 4표(정예린, 한태섭, 윤보늬, 서강호), 일식 '하루' 2표. 동점이면 팀장 오정원 님이 결정하기로 했는데, 아직 결정을 듣지 못했습니다. 날짜는 다음 주 금요일 저녁 7시로 확정입니다. 누가 어디에 투표했는지는 공개하지 마세요. 공지는 3문장 이내로 써 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.014999999999417923,
+      "timings_seconds": {
+        "request_transform": [
+          0.014999999999417923,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "user",
+        "private_symbol_2": "회식",
+        "private_symbol_3": "한식당",
+        "private_symbol_4": "소반",
+        "732846968336490914": "4표",
+        "private_symbol_6": "이다온",
+        "private_symbol_7": "김한주",
+        "private_symbol_8": "박서윤",
+        "private_symbol_9": "최민재",
+        "private_symbol_10": "이탈리안",
+        "private_symbol_11": "포르타",
+        "private_symbol_12": "정예린",
+        "private_symbol_13": "한태섭",
+        "private_symbol_14": "윤보늬",
+        "private_symbol_15": "서강호",
+        "private_symbol_16": "일식",
+        "732846569610645261": "2표",
+        "private_symbol_18": "동점",
+        "private_symbol_19": "오정원",
+        "private_symbol_20": "했는데",
+        "private_symbol_21": "듣지",
+        "private_symbol_22": "못했습니다",
+        "732846041863164270": "7시",
+        "private_symbol_24": "투표했는지는",
+        "private_symbol_25": "공개하지",
+        "732846103073151352": "3문장"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 59,
+          "end": 62,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 64,
+          "end": 67,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 69,
+          "end": 72,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 74,
+          "end": 77,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 94,
+          "end": 97,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 99,
+          "end": 102,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 104,
+          "end": 107,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 109,
+          "end": 112,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 135,
+          "end": 138,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-es",
+      "language": "es",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-es-development-task-speed-bump-letter",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Redacta una carta formal de la private_symbol_1 private_symbol_2 Los private_symbol_3 al ayuntamiento pidiendo un private_symbol_4 de velocidad en la calle private_symbol_5, frente al colegio. private_symbol_6: en octubre hubo dos private_symbol_7 leves en ese tramo y la petición la private_symbol_8 732846218008555949 vecinos. private_symbol_10 la presidenta, private_symbol_11 private_symbol_12, con el correo private_symbol_13 como contacto. private_symbol_14 respetuoso: no private_symbol_15 con protestas ni con avisar a los medios. private_symbol_16 732846624996692113 palabras, sin línea de asunto ni bloque de dirección."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Redacta una carta formal de la Asociación Vecinal Los Almendros al ayuntamiento pidiendo un reductor de velocidad en la calle Mirlo, frente al colegio. Datos: en octubre hubo dos atropellos leves en ese tramo y la petición la firmamos 63 vecinos. Firma la presidenta, Pilar Montesinos, con el correo pilar.montesinos@almendros-demo.invalid como contacto. Tono respetuoso: no amenaces con protestas ni con avisar a los medios. Máximo 150 palabras, sin línea de asunto ni bloque de dirección.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Asociación",
+        "private_symbol_2": "Vecinal",
+        "private_symbol_3": "Almendros",
+        "private_symbol_4": "reductor",
+        "private_symbol_5": "Mirlo",
+        "private_symbol_6": "Datos",
+        "private_symbol_7": "atropellos",
+        "private_symbol_8": "firmamos",
+        "732846218008555949": "63",
+        "private_symbol_10": "Firma",
+        "private_symbol_11": "Pilar",
+        "private_symbol_12": "Montesinos",
+        "private_symbol_13": "pilar.montesinos@almendros-demo.invalid",
+        "private_symbol_14": "Tono",
+        "private_symbol_15": "amenaces",
+        "private_symbol_16": "Máximo",
+        "732846624996692113": "150"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 31,
+          "end": 63,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 268,
+          "end": 284,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 300,
+          "end": 339,
+          "label": "email",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-fr",
+      "language": "fr",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-fr-development-task-day-itinerary",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 l'itinéraire d'une journée à private_symbol_2-sur-private_symbol_3 (ville private_symbol_4) pour private_symbol_5 private_symbol_6 et son fils private_symbol_7 private_symbol_6, samedi. private_symbol_8 : le musée de la private_symbol_9 (ouvert de 732846175672880868 h à 732846464863173281 h), le marché couvert (ouvert de 732846662848942311 h à 732846939444462080 h), la tour de l'private_symbol_14 (horaires inconnus pour le moment). private_symbol_15 : commencer par le marché ; déjeuner de 732846939444462080 h 732846498889370308 à 732846464863173281 h 732846498889370308. Ne propose aucun lieu supplémentaire. private_symbol_17 un programme horaire, puis une seule ligne sur ce qu'il faut vérifier."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Prépare l'itinéraire d'une journée à Valmont-sur-Lys (ville fictive) pour Céleste Arnaud et son fils Tom Arnaud, samedi. Lieux : le musée de la Dentelle (ouvert de 10 h à 13 h), le marché couvert (ouvert de 8 h à 12 h), la tour de l'Horloge (horaires inconnus pour le moment). Règles : commencer par le marché ; déjeuner de 12 h 30 à 13 h 30. Ne propose aucun lieu supplémentaire. Donne un programme horaire, puis une seule ligne sur ce qu'il faut vérifier.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.01600000000325963
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Prépare",
+        "private_symbol_2": "Valmont",
+        "private_symbol_3": "Lys",
+        "private_symbol_4": "fictive",
+        "private_symbol_5": "Céleste",
+        "private_symbol_6": "Arnaud",
+        "private_symbol_7": "Tom",
+        "private_symbol_8": "Lieux",
+        "private_symbol_9": "Dentelle",
+        "732846175672880868": "10",
+        "732846464863173281": "13",
+        "732846662848942311": "8",
+        "732846939444462080": "12",
+        "private_symbol_14": "Horloge",
+        "private_symbol_15": "Règles",
+        "732846498889370308": "30",
+        "private_symbol_17": "Donne"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 74,
+          "end": 88,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 101,
+          "end": 111,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-pt",
+      "language": "pt",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-pt-development-task-reading-quiz",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 um private_symbol_2 de 732846730701355341 perguntas de private_symbol_4 escolha (A–private_symbol_5) sobre o texto abaixo, para a turma da professora private_symbol_6 private_symbol_7. Não inclua o private_symbol_8, porque a private_symbol_6 vai private_symbol_9-lo separadamente. As perguntas devem seguir a ordem do texto e só cobrar informações que estão nele.\nprivate_symbol_10: \"A horta da private_symbol_11 private_symbol_12 private_symbol_13 private_symbol_14 foi criada em 732846031051507241 por iniciativa do private_symbol_16 private_symbol_17 private_symbol_18. private_symbol_19 ela tem 732846672587379679 private_symbol_21. Os alunos do 732846307293600666º ano private_symbol_23 as plantas às private_symbol_24 e quintas. A private_symbol_25 private_symbol_26 é private_symbol_27 à cozinha da escola.\""
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Crie um quiz de 4 perguntas de múltipla escolha (A–C) sobre o texto abaixo, para a turma da professora Irene Valadares. Não inclua o gabarito, porque a Irene vai entregá-lo separadamente. As perguntas devem seguir a ordem do texto e só cobrar informações que estão nele.\nTexto: \"A horta da Escola Municipal Ribeirão Claro foi criada em 2019 por iniciativa do zelador Benedito Assis. Hoje ela tem 12 canteiros. Os alunos do 5º ano regam as plantas às terças e quintas. A alface colhida é doada à cozinha da escola.\"",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01599999999962165,
+      "timings_seconds": {
+        "request_transform": [
+          0.01599999999962165,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Crie",
+        "private_symbol_2": "quiz",
+        "732846730701355341": "4",
+        "private_symbol_4": "múltipla",
+        "private_symbol_5": "C",
+        "private_symbol_6": "Irene",
+        "private_symbol_7": "Valadares",
+        "private_symbol_8": "gabarito",
+        "private_symbol_9": "entregá",
+        "private_symbol_10": "Texto",
+        "private_symbol_11": "Escola",
+        "private_symbol_12": "Municipal",
+        "private_symbol_13": "Ribeirão",
+        "private_symbol_14": "Claro",
+        "732846031051507241": "2019",
+        "private_symbol_16": "zelador",
+        "private_symbol_17": "Benedito",
+        "private_symbol_18": "Assis",
+        "private_symbol_19": "Hoje",
+        "732846672587379679": "12",
+        "private_symbol_21": "canteiros",
+        "732846307293600666": "5",
+        "private_symbol_23": "regam",
+        "private_symbol_24": "terças",
+        "private_symbol_25": "alface",
+        "private_symbol_26": "colhida",
+        "private_symbol_27": "doada"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 103,
+          "end": 118,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 152,
+          "end": 157,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 290,
+          "end": 321,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 367,
+          "end": 381,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-de",
+      "language": "de",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-de-development-task-shopping-sections",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Sortiere die private_symbol_1 von private_symbol_2 private_symbol_3 nach den private_symbol_4 im private_symbol_5 private_symbol_6 (private_symbol_7 & private_symbol_8, private_symbol_9, private_symbol_10, private_symbol_11). private_symbol_12 doppelte private_symbol_13 und alles, was private_symbol_2 mit „hab ich noch\" markiert hat. private_symbol_14: private_symbol_15, private_symbol_16, private_symbol_17, private_symbol_18, private_symbol_16, private_symbol_19 (hab ich noch), private_symbol_20, private_symbol_21, private_symbol_15, private_symbol_22, private_symbol_23. private_symbol_24 nichts hinzu. private_symbol_25 nur die vier private_symbol_26 mit den private_symbol_27 darunter aus."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Sortiere die Einkaufsliste von Wilma Kranz nach den Abteilungen im Frischmarkt Tannenweg (Obst & Gemüse, Kühlregal, Backwaren, Drogerie). Entferne doppelte Einträge und alles, was Wilma mit „hab ich noch\" markiert hat. Liste: Äpfel, Milch, Zahnpasta, Brötchen, Milch, Butter (hab ich noch), Karotten, Joghurt, Äpfel, Vollkornbrot, Duschgel. Füge nichts hinzu. Gib nur die vier Überschriften mit den Artikeln darunter aus.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.01599999999962165
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Einkaufsliste",
+        "private_symbol_2": "Wilma",
+        "private_symbol_3": "Kranz",
+        "private_symbol_4": "Abteilungen",
+        "private_symbol_5": "Frischmarkt",
+        "private_symbol_6": "Tannenweg",
+        "private_symbol_7": "Obst",
+        "private_symbol_8": "Gemüse",
+        "private_symbol_9": "Kühlregal",
+        "private_symbol_10": "Backwaren",
+        "private_symbol_11": "Drogerie",
+        "private_symbol_12": "Entferne",
+        "private_symbol_13": "Einträge",
+        "private_symbol_14": "Liste",
+        "private_symbol_15": "Äpfel",
+        "private_symbol_16": "Milch",
+        "private_symbol_17": "Zahnpasta",
+        "private_symbol_18": "Brötchen",
+        "private_symbol_19": "Butter",
+        "private_symbol_20": "Karotten",
+        "private_symbol_21": "Joghurt",
+        "private_symbol_22": "Vollkornbrot",
+        "private_symbol_23": "Duschgel",
+        "private_symbol_24": "Füge",
+        "private_symbol_25": "Gib",
+        "private_symbol_26": "Überschriften",
+        "private_symbol_27": "Artikeln"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 31,
+          "end": 42,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 67,
+          "end": 88,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 180,
+          "end": 185,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-id",
+      "language": "id",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-id-development-task-birthday-story",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 pembuka cerita (maksimal 732846482794315396 kata) untuk dibacakan di ulang tahun private_symbol_3 private_symbol_4, yang suka kucing dan layang-layang. private_symbol_5, private_symbol_6 private_symbol_4, juga harus muncul. private_symbol_7 ada unsur menakutkan seperti hantu atau anak hilang. private_symbol_8 tidak usah disebut karena kami belum yakin mau private_symbol_9. private_symbol_10 judul dan cerita saja, tanpa penjelasan."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Tuliskan pembuka cerita (maksimal 100 kata) untuk dibacakan di ulang tahun Arunika Siregar, yang suka kucing dan layang-layang. Kakaknya, Bima Siregar, juga harus muncul. Jangan ada unsur menakutkan seperti hantu atau anak hilang. Usianya tidak usah disebut karena kami belum yakin mau mencantumkannya. Berikan judul dan cerita saja, tanpa penjelasan.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Tuliskan",
+        "732846482794315396": "100",
+        "private_symbol_3": "Arunika",
+        "private_symbol_4": "Siregar",
+        "private_symbol_5": "Kakaknya",
+        "private_symbol_6": "Bima",
+        "private_symbol_7": "Jangan",
+        "private_symbol_8": "Usianya",
+        "private_symbol_9": "mencantumkannya",
+        "private_symbol_10": "Berikan"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 75,
+          "end": 90,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 138,
+          "end": 150,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-tr",
+      "language": "tr",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-tr-development-task-bill-split",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 6,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_2 akşamki yemeğin hesabını private_symbol_3: toplam 732846930860990455 private_symbol_5. private_symbol_6 private_symbol_7 ve private_symbol_8 private_symbol_9 alkol private_symbol_10; private_symbol_11 private_symbol_12 732846799724680756 private_symbol_5 ve sadece private_symbol_14 private_symbol_15 ile private_symbol_16 private_symbol_17 arasında eşit private_symbol_18. private_symbol_19 tutar dört kişiye eşit private_symbol_20. private_symbol_21 private_symbol_14 ödedi. private_symbol_22 private_symbol_23 ne kadar borçlu olduğunu liste halinde yaz; private_symbol_24 ekleme."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Dün akşamki yemeğin hesabını böl: toplam 2.400 TL. Ece Arslan ve Mert Güler alkol içmedi; içkilerin tutarı 600 TL ve sadece Oğuz Şen ile Dilara Koç arasında eşit paylaşılacak. Kalan tutar dört kişiye eşit bölünecek. Hesabı Oğuz ödedi. Kimin Oğuz'a ne kadar borçlu olduğunu liste halinde yaz; bahşiş ekleme.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "user",
+        "private_symbol_2": "Dün",
+        "private_symbol_3": "böl",
+        "732846930860990455": "2.400",
+        "private_symbol_5": "TL",
+        "private_symbol_6": "Ece",
+        "private_symbol_7": "Arslan",
+        "private_symbol_8": "Mert",
+        "private_symbol_9": "Güler",
+        "private_symbol_10": "içmedi",
+        "private_symbol_11": "içkilerin",
+        "private_symbol_12": "tutarı",
+        "732846799724680756": "600",
+        "private_symbol_14": "Oğuz",
+        "private_symbol_15": "Şen",
+        "private_symbol_16": "Dilara",
+        "private_symbol_17": "Koç",
+        "private_symbol_18": "paylaşılacak",
+        "private_symbol_19": "Kalan",
+        "private_symbol_20": "bölünecek",
+        "private_symbol_21": "Hesabı",
+        "private_symbol_22": "Kimin",
+        "private_symbol_23": "Oğuz'a",
+        "private_symbol_24": "bahşiş"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 51,
+          "end": 61,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 65,
+          "end": 75,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 124,
+          "end": 132,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 137,
+          "end": 147,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 223,
+          "end": 227,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 241,
+          "end": 245,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-ru",
+      "language": "ru",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-ru-development-task-router-steps",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "phone",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 соседка private_symbol_2 private_symbol_3 плохо видит. private_symbol_4 для неё private_symbol_5 по private_symbol_6 private_symbol_7 «private_symbol_8» крупными простыми private_symbol_9, private_symbol_10 порядок: private_symbol_11 блок питания из private_symbol_12; подождать 732846028494252854 секунд; вставить обратно; дождаться, пока private_symbol_14 «private_symbol_15» private_symbol_16 private_symbol_17 (до 732846355920504962 минут); если не private_symbol_19 — позвонить private_symbol_20 private_symbol_21 по номеру private_symbol_22. private_symbol_23 private_symbol_24 шагов про настройки и private_symbol_25. private_symbol_26 private_symbol_27 список, обращение на «вы»."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Моя соседка Агния Петровна плохо видит. Перепиши для неё инструкцию по перезагрузке роутера «СетьТочка» крупными простыми шагами, сохранив порядок: выдернуть блок питания из розетки; подождать 30 секунд; вставить обратно; дождаться, пока лампочка «Интернет» загорится зелёным (до 2 минут); если не загорелась — позвонить внуку Дмитрию по номеру +1 202 555 0189. Не добавляй шагов про настройки и пароли. Только нумерованный список, обращение на «вы».",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Моя",
+        "private_symbol_2": "Агния",
+        "private_symbol_3": "Петровна",
+        "private_symbol_4": "Перепиши",
+        "private_symbol_5": "инструкцию",
+        "private_symbol_6": "перезагрузке",
+        "private_symbol_7": "роутера",
+        "private_symbol_8": "СетьТочка",
+        "private_symbol_9": "шагами",
+        "private_symbol_10": "сохранив",
+        "private_symbol_11": "выдернуть",
+        "private_symbol_12": "розетки",
+        "732846028494252854": "30",
+        "private_symbol_14": "лампочка",
+        "private_symbol_15": "Интернет",
+        "private_symbol_16": "загорится",
+        "private_symbol_17": "зелёным",
+        "732846355920504962": "2",
+        "private_symbol_19": "загорелась",
+        "private_symbol_20": "внуку",
+        "private_symbol_21": "Дмитрию",
+        "private_symbol_22": "+1 202 555 0189",
+        "private_symbol_23": "Не",
+        "private_symbol_24": "добавляй",
+        "private_symbol_25": "пароли",
+        "private_symbol_26": "Только",
+        "private_symbol_27": "нумерованный"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 12,
+          "end": 26,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 92,
+          "end": 103,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 327,
+          "end": 334,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 345,
+          "end": 360,
+          "label": "phone",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-hi",
+      "language": "hi",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-hi-development-task-lesson-outline",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "कक्षा 732846031406810007 के लिए 732846563407085374 मिनट की विज्ञान पाठ-योजना की private_symbol_4 private_symbol_5, विषय 'पौधों में जल का परिवहन'। private_symbol_6 private_symbol_7 अग्रवाल हैं; सह-शिक्षक अनुराग private_symbol_8 प्रयोग वाले हिस्से में मदद करेंगे। खंड इसी क्रम में हों: परिचय (732846194696858158 मिनट), प्रयोग – private_symbol_10 के private_symbol_11 को रंगीन पानी में रखना (732846515413253513 मिनट), चर्चा (732846696175628173 मिनट), सारांश और private_symbol_14 (बाकी समय)। प्रयोगशाला मिलेगी या नहीं, यह अभी पता नहीं। कोई खतरनाक रसायन न private_symbol_15। केवल private_symbol_16 दें: खंड, समय, गतिविधि।"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "कक्षा 7 के लिए 40 मिनट की विज्ञान पाठ-योजना की रूपरेखा बनाइए, विषय 'पौधों में जल का परिवहन'। शिक्षिका रेणु अग्रवाल हैं; सह-शिक्षक अनुराग सेठी प्रयोग वाले हिस्से में मदद करेंगे। खंड इसी क्रम में हों: परिचय (5 मिनट), प्रयोग – सेलेरी के डंठल को रंगीन पानी में रखना (15 मिनट), चर्चा (10 मिनट), सारांश और गृहकार्य (बाकी समय)। प्रयोगशाला मिलेगी या नहीं, यह अभी पता नहीं। कोई खतरनाक रसायन न सुझाएँ। केवल तालिका दें: खंड, समय, गतिविधि।",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "user",
+        "732846031406810007": "7",
+        "732846563407085374": "40",
+        "private_symbol_4": "रूपरेखा",
+        "private_symbol_5": "बनाइए",
+        "private_symbol_6": "शिक्षिका",
+        "private_symbol_7": "रेणु",
+        "private_symbol_8": "सेठी",
+        "732846194696858158": "5",
+        "private_symbol_10": "सेलेरी",
+        "private_symbol_11": "डंठल",
+        "732846515413253513": "15",
+        "732846696175628173": "10",
+        "private_symbol_14": "गृहकार्य",
+        "private_symbol_15": "सुझाएँ",
+        "private_symbol_16": "तालिका"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 102,
+          "end": 114,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 130,
+          "end": 141,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-mr",
+      "language": "mr",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-mr-development-task-teacher-thanks",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 private_symbol_2, private_symbol_3 private_symbol_4, संगीत private_symbol_5 private_symbol_6 private_symbol_7 private_symbol_8 छोटी आभार-private_symbol_9 private_symbol_10. मुद्दे: private_symbol_11 private_symbol_12 दर private_symbol_13 private_symbol_14; private_symbol_15 private_symbol_16 private_symbol_17 private_symbol_18 private_symbol_19 private_symbol_20 private_symbol_21. private_symbol_9 732846816853471660 ते 732846315931240475 private_symbol_24 private_symbol_25. private_symbol_26 उल्लेख private_symbol_27 private_symbol_28. private_symbol_29 'private_symbol_30 private_symbol_31, private_symbol_32 private_symbol_33' private_symbol_34 private_symbol_10."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "माझ्या मुलीच्या, गार्गी ताम्हणकरच्या, संगीत शिक्षिका शुभदा साने बाईंसाठी छोटी आभार-चिठ्ठी लिहा. मुद्दे: त्यांनी वर्षभर दर शनिवारी शिकवले; गार्गीने शाळेच्या स्नेहसंमेलनात पहिल्यांदा एकटीने गाणे म्हटले. चिठ्ठी ४ ते ६ वाक्यांची असावी. भेटवस्तूचा उल्लेख करू नका. शेवटी 'आपली कृतज्ञ, माधवी ताम्हणकर' असे लिहा.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "माझ्या",
+        "private_symbol_2": "मुलीच्या",
+        "private_symbol_3": "गार्गी",
+        "private_symbol_4": "ताम्हणकरच्या",
+        "private_symbol_5": "शिक्षिका",
+        "private_symbol_6": "शुभदा",
+        "private_symbol_7": "साने",
+        "private_symbol_8": "बाईंसाठी",
+        "private_symbol_9": "चिठ्ठी",
+        "private_symbol_10": "लिहा",
+        "private_symbol_11": "त्यांनी",
+        "private_symbol_12": "वर्षभर",
+        "private_symbol_13": "शनिवारी",
+        "private_symbol_14": "शिकवले",
+        "private_symbol_15": "गार्गीने",
+        "private_symbol_16": "शाळेच्या",
+        "private_symbol_17": "स्नेहसंमेलनात",
+        "private_symbol_18": "पहिल्यांदा",
+        "private_symbol_19": "एकटीने",
+        "private_symbol_20": "गाणे",
+        "private_symbol_21": "म्हटले",
+        "732846816853471660": "४",
+        "732846315931240475": "६",
+        "private_symbol_24": "वाक्यांची",
+        "private_symbol_25": "असावी",
+        "private_symbol_26": "भेटवस्तूचा",
+        "private_symbol_27": "करू",
+        "private_symbol_28": "नका",
+        "private_symbol_29": "शेवटी",
+        "private_symbol_30": "आपली",
+        "private_symbol_31": "कृतज्ञ",
+        "private_symbol_32": "माधवी",
+        "private_symbol_33": "ताम्हणकर",
+        "private_symbol_34": "असे"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 17,
+          "end": 32,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 53,
+          "end": 63,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 138,
+          "end": 144,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 279,
+          "end": 293,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-bn",
+      "language": "bn",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-bn-development-task-allergy-meal-plan",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "আমার private_symbol_2 private_symbol_3 private_symbol_4 সোমবার থেকে বুধবার আমাদের বাড়িতে থাকবে। তার জন্য তিন দিনের রাতের খাবারের পরিকল্পনা করুন। তার চিংড়ি আর private_symbol_5 private_symbol_6 আছে। আমার স্ত্রী private_symbol_7 private_symbol_8 খান, তাই প্রতিদিন অন্তত একটি private_symbol_8 পদ থাকবে। বাজেট এখনও ঠিক করিনি, তাই দামের কথা লিখবেন না। প্রতিদিনের জন্য এক লাইন দিন: দিন – private_symbol_9।"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "আমার ভাগ্নে রাজীব সান্যাল সোমবার থেকে বুধবার আমাদের বাড়িতে থাকবে। তার জন্য তিন দিনের রাতের খাবারের পরিকল্পনা করুন। তার চিংড়ি আর বাদামে অ্যালার্জি আছে। আমার স্ত্রী সুমনা নিরামিষ খান, তাই প্রতিদিন অন্তত একটি নিরামিষ পদ থাকবে। বাজেট এখনও ঠিক করিনি, তাই দামের কথা লিখবেন না। প্রতিদিনের জন্য এক লাইন দিন: দিন – পদগুলো।",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.014999999999417923,
+      "timings_seconds": {
+        "request_transform": [
+          0.014999999999417923,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "user",
+        "private_symbol_2": "ভাগ্নে",
+        "private_symbol_3": "রাজীব",
+        "private_symbol_4": "সান্যাল",
+        "private_symbol_5": "বাদামে",
+        "private_symbol_6": "অ্যালার্জি",
+        "private_symbol_7": "সুমনা",
+        "private_symbol_8": "নিরামিষ",
+        "private_symbol_9": "পদগুলো"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 12,
+          "end": 25,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 165,
+          "end": 170,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-ur",
+      "language": "ur",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-ur-development-task-club-faq",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 اسپورٹس کلب کے رکنیت کے قواعد سے تین سوال و جواب (private_symbol_2) بنائیں۔ قواعد: رکنیت 732846221040629202 ماہ کی ہوتی ہے؛ مہمان کو مہینے میں دو بار لایا جا سکتا ہے، ہر بار رکن کے ساتھ؛ رکنیت معطل کرنے کے لیے کم از کم 732846637176776459 دن پہلے سیکرٹری private_symbol_5 انصاری کو private_symbol_6 پر لکھنا ہوگا۔ سالانہ فیس کی رقم کمیٹی نے ابھی منظور نہیں کی۔ کوئی ایسا قاعدہ نہ جوڑیں جو اوپر نہیں ہے۔ اگر فیس کا سوال شامل کریں تو رقم نہ لکھیں۔ صرف تین سوال و جواب دیں۔"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "سرو اسپورٹس کلب کے رکنیت کے قواعد سے تین سوال و جواب (FAQ) بنائیں۔ قواعد: رکنیت 12 ماہ کی ہوتی ہے؛ مہمان کو مہینے میں دو بار لایا جا سکتا ہے، ہر بار رکن کے ساتھ؛ رکنیت معطل کرنے کے لیے کم از کم 15 دن پہلے سیکرٹری فریحہ انصاری کو fariha.ansari@sarw-demo.invalid پر لکھنا ہوگا۔ سالانہ فیس کی رقم کمیٹی نے ابھی منظور نہیں کی۔ کوئی ایسا قاعدہ نہ جوڑیں جو اوپر نہیں ہے۔ اگر فیس کا سوال شامل کریں تو رقم نہ لکھیں۔ صرف تین سوال و جواب دیں۔",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.014999999999417923,
+      "timings_seconds": {
+        "request_transform": [
+          0.014999999999417923,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "سرو",
+        "private_symbol_2": "FAQ",
+        "732846221040629202": "12",
+        "732846637176776459": "15",
+        "private_symbol_5": "فریحہ",
+        "private_symbol_6": "fariha.ansari@sarw-demo.invalid"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 15,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 213,
+          "end": 225,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 229,
+          "end": 260,
+          "label": "email",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-te",
+      "language": "te",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-te-development-task-recipe-scaling",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_2 private_symbol_3 private_symbol_4 private_symbol_5 private_symbol_6 private_symbol_7 private_symbol_8 private_symbol_9 732846765195184716 private_symbol_11 private_symbol_12 732846165133378792 private_symbol_11 మార్చండి. private_symbol_14 (732846765195184716 private_symbol_11): private_symbol_15 732846017627204055 private_symbol_17, బియ్యం అర కప్పు, private_symbol_18 732846765195184716, అల్లం 732846017627204055 private_symbol_19, ఉప్పు రుచికి private_symbol_20. private_symbol_21: private_symbol_22 సరిగ్గా ఉండాలి; 'రుచికి private_symbol_20' అని private_symbol_23 సంఖ్యగా మార్చవద్దు; కొత్త private_symbol_14 చేర్చవద్దు. private_symbol_5 private_symbol_7 పేరు private_symbol_24 లేదు. private_symbol_25 – private_symbol_26 జాబితా మాత్రమే ఇవ్వండి."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "అన్నపూర్ణ వంటిల్లు బ్లాగ్‌లోని లావణ్య చిలుకూరి గారి పెసరట్టు వంటకాన్ని 4 మందికి బదులు 10 మందికి మార్చండి. పదార్థాలు (4 మందికి): పెసలు 2 కప్పులు, బియ్యం అర కప్పు, పచ్చిమిర్చి 4, అల్లం 2 అంగుళాలు, ఉప్పు రుచికి సరిపడా. నియమాలు: లెక్కలు సరిగ్గా ఉండాలి; 'రుచికి సరిపడా' అని ఉన్నదాన్ని సంఖ్యగా మార్చవద్దు; కొత్త పదార్థాలు చేర్చవద్దు. లావణ్య గారి పేరు అవసరం లేదు. పదార్థం – పరిమాణం జాబితా మాత్రమే ఇవ్వండి.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.014999999999417923,
+      "timings_seconds": {
+        "request_transform": [
+          0.014999999999417923,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "user",
+        "private_symbol_2": "అన్నపూర్ణ",
+        "private_symbol_3": "వంటిల్లు",
+        "private_symbol_4": "బ్లాగ్‌లోని",
+        "private_symbol_5": "లావణ్య",
+        "private_symbol_6": "చిలుకూరి",
+        "private_symbol_7": "గారి",
+        "private_symbol_8": "పెసరట్టు",
+        "private_symbol_9": "వంటకాన్ని",
+        "732846765195184716": "4",
+        "private_symbol_11": "మందికి",
+        "private_symbol_12": "బదులు",
+        "732846165133378792": "10",
+        "private_symbol_14": "పదార్థాలు",
+        "private_symbol_15": "పెసలు",
+        "732846017627204055": "2",
+        "private_symbol_17": "కప్పులు",
+        "private_symbol_18": "పచ్చిమిర్చి",
+        "private_symbol_19": "అంగుళాలు",
+        "private_symbol_20": "సరిపడా",
+        "private_symbol_21": "నియమాలు",
+        "private_symbol_22": "లెక్కలు",
+        "private_symbol_23": "ఉన్నదాన్ని",
+        "private_symbol_24": "అవసరం",
+        "private_symbol_25": "పదార్థం",
+        "private_symbol_26": "పరిమాణం"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 18,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 31,
+          "end": 46,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 328,
+          "end": 334,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-ar",
+      "language": "ar",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-ar-development-task-seating-plan",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 13,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "رتّب private_symbol_1 ستة أشخاص حول طاولة عشاء private_symbol_2 (المقاعد من 732846641885250029 إلى 732846442144418728 باتجاه private_symbol_5 الساعة): private_symbol_6 private_symbol_7، private_symbol_8 private_symbol_7، private_symbol_9 private_symbol_7، private_symbol_10 بركات، private_symbol_11 بركات، private_symbol_12 private_symbol_13. القيود: private_symbol_6 في private_symbol_14 732846641885250029 الأقرب إلى المطبخ؛ private_symbol_8 private_symbol_15 لا private_symbol_16 private_symbol_17؛ private_symbol_10 بجانب private_symbol_11؛ private_symbol_12 لا يجلس بجانب private_symbol_6. لا private_symbol_18 private_symbol_19. أعطني قائمة من 732846641885250029 إلى 732846442144418728 فقط."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "رتّب جلوس ستة أشخاص حول طاولة عشاء مستديرة (المقاعد من 1 إلى 6 باتجاه عقارب الساعة): فاطمة الراوي، سامي الراوي، ليلى الراوي، يوسف بركات، هند بركات، طارق ناصيف. القيود: فاطمة في المقعد 1 الأقرب إلى المطبخ؛ سامي وليلى لا يجلسان متجاورين؛ يوسف بجانب هند؛ طارق لا يجلس بجانب فاطمة. لا تضف أشخاصًا. أعطني قائمة من 1 إلى 6 فقط.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "جلوس",
+        "private_symbol_2": "مستديرة",
+        "732846641885250029": "1",
+        "732846442144418728": "6",
+        "private_symbol_5": "عقارب",
+        "private_symbol_6": "فاطمة",
+        "private_symbol_7": "الراوي",
+        "private_symbol_8": "سامي",
+        "private_symbol_9": "ليلى",
+        "private_symbol_10": "يوسف",
+        "private_symbol_11": "هند",
+        "private_symbol_12": "طارق",
+        "private_symbol_13": "ناصيف",
+        "private_symbol_14": "المقعد",
+        "private_symbol_15": "وليلى",
+        "private_symbol_16": "يجلسان",
+        "private_symbol_17": "متجاورين",
+        "private_symbol_18": "تضف",
+        "private_symbol_19": "أشخاصًا"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 85,
+          "end": 97,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 99,
+          "end": 110,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 112,
+          "end": 123,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 125,
+          "end": 135,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 137,
+          "end": 146,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 148,
+          "end": 158,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 168,
+          "end": 173,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 205,
+          "end": 209,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 211,
+          "end": 215,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 236,
+          "end": 240,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 247,
+          "end": 250,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 252,
+          "end": 256,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 271,
+          "end": 276,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-zh",
+      "language": "zh",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-zh-development-task-landlord-message",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "帮我给private_symbol_2private_symbol_3写一条微信消息：private_symbol_4private_symbol_5private_symbol_6已经三天了，楼上private_symbol_7家说他们那边没问题。请他派人来修，并给出两个我在家的private_symbol_8：private_symbol_9晚上732846859832156521点到732846532346281607点，周六上午private_symbol_12。不要提private_symbol_13的事。语气礼貌，不超过732846451321273425字。只写消息private_symbol_15。"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "帮我给房东刘振华写一条微信消息：卫生间天花板漏水已经三天了，楼上孙悦家说他们那边没问题。请他派人来修，并给出两个我在家的时间段：周三晚上7点到9点，周六上午全天。不要提减租的事。语气礼貌，不超过100字。只写消息正文。",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "user",
+        "private_symbol_2": "房东",
+        "private_symbol_3": "刘振华",
+        "private_symbol_4": "卫生间",
+        "private_symbol_5": "天花板",
+        "private_symbol_6": "漏水",
+        "private_symbol_7": "孙悦",
+        "private_symbol_8": "时间段",
+        "private_symbol_9": "周三",
+        "732846859832156521": "7",
+        "732846532346281607": "9",
+        "private_symbol_12": "全天",
+        "private_symbol_13": "减租",
+        "732846451321273425": "100",
+        "private_symbol_15": "正文"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 5,
+          "end": 8,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 32,
+          "end": 34,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "dev-task-ja",
+      "language": "ja",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "development-task-ja-development-task-return-reply",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "お客様の藤井 private_symbol_1から、private_symbol_2private_symbol_3店で購入したprivate_symbol_4をprivate_symbol_5したいとの問い合わせがありました。private_symbol_6の規定：購入から732846724184704880日以内、private_symbol_8、private_symbol_9ありの場合のみprivate_symbol_5可。お客様はprivate_symbol_9を持っていてprivate_symbol_10用とのことですが、購入日は書かれていません。private_symbol_11を作ってください。条件：規定をprivate_symbol_12場合とprivate_symbol_13さない場合の両方の案内を含め、購入日を確認すること。private_symbol_5のprivate_symbol_14を勝手にprivate_symbol_15しないこと。署名は「private_symbol_2private_symbol_3店 岡田」。"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "お客様の藤井 涼様から、ひまわり雑貨店で購入したマグカップを返品したいとの問い合わせがありました。当店の規定：購入から14日以内、未使用、レシートありの場合のみ返品可。お客様はレシートを持っていて未使用とのことですが、購入日は書かれていません。返信文を作ってください。条件：規定を満たす場合と満たさない場合の両方の案内を含め、購入日を確認すること。返品の可否を勝手に断定しないこと。署名は「ひまわり雑貨店 岡田」。",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01599999999962165,
+      "timings_seconds": {
+        "request_transform": [
+          0.01599999999962165,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "涼様",
+        "private_symbol_2": "ひまわり",
+        "private_symbol_3": "雑貨",
+        "private_symbol_4": "マグカップ",
+        "private_symbol_5": "返品",
+        "private_symbol_6": "当店",
+        "732846724184704880": "14",
+        "private_symbol_8": "未使用",
+        "private_symbol_9": "レシート",
+        "private_symbol_10": "未使",
+        "private_symbol_11": "返信文",
+        "private_symbol_12": "満たす",
+        "private_symbol_13": "満た",
+        "private_symbol_14": "可否",
+        "private_symbol_15": "断定"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 4,
+          "end": 8,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 12,
+          "end": 19,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 195,
+          "end": 202,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 203,
+          "end": 205,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    }
+  ],
+  "status": "completed",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 71,
+      "measured_sensitive": 71,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 70,
+      "full_exposures": 1,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.9859154929577465,
+      "observed_accuracy": 0.9859154929577465,
+      "requests_with_leak": 1,
+      "measured_requests": 17,
+      "total_requests": 17
+    },
+    "overmasking": {
+      "measured_public": 0,
+      "overmasked": 0,
+      "rate": null
+    },
+    "integrity": {
+      "roundtrip_passed": 17,
+      "semantic_roundtrip_passed": 17,
+      "replay_passed": 17,
+      "measured_requests": 17,
+      "response_failures": 0,
+      "payload_replay_passed": 17,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "elapsed_seconds": 1.110000000000582,
+  "performance": {
+    "request_transform_first_mapping_pass": {
+      "n": 17,
+      "p50": 0.0,
+      "p95": 0.01599999999962165,
+      "p99": 0.01599999999962165
+    },
+    "request_transform_replay": {
+      "n": 17,
+      "p50": 0.0,
+      "p95": 0.01599999999962165,
+      "p99": 0.01599999999962165
+    },
+    "response_restore_first_mapping_pass": {
+      "n": 17,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "response_restore_replay": {
+      "n": 17,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    }
+  },
+  "breakdown": {
+    "language": {
+      "ar": {
+        "privacy": {
+          "total_sensitive": 13,
+          "measured_sensitive": 13,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 13,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "bn": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 2,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "de": {
+        "privacy": {
+          "total_sensitive": 3,
+          "measured_sensitive": 3,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "en": {
+        "privacy": {
+          "total_sensitive": 5,
+          "measured_sensitive": 5,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 5,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "es": {
+        "privacy": {
+          "total_sensitive": 3,
+          "measured_sensitive": 3,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "fr": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 2,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "hi": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 2,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "id": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 2,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ja": {
+        "privacy": {
+          "total_sensitive": 4,
+          "measured_sensitive": 4,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.75,
+          "observed_accuracy": 0.75,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ko": {
+        "privacy": {
+          "total_sensitive": 9,
+          "measured_sensitive": 9,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 9,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "mr": {
+        "privacy": {
+          "total_sensitive": 4,
+          "measured_sensitive": 4,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 4,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "pt": {
+        "privacy": {
+          "total_sensitive": 4,
+          "measured_sensitive": 4,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 4,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ru": {
+        "privacy": {
+          "total_sensitive": 4,
+          "measured_sensitive": 4,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 4,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "te": {
+        "privacy": {
+          "total_sensitive": 3,
+          "measured_sensitive": 3,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "tr": {
+        "privacy": {
+          "total_sensitive": 6,
+          "measured_sensitive": 6,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 6,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ur": {
+        "privacy": {
+          "total_sensitive": 3,
+          "measured_sensitive": 3,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "zh": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 2,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "domain": {
+      "general": {
+        "privacy": {
+          "total_sensitive": 71,
+          "measured_sensitive": 71,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 70,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9859154929577465,
+          "observed_accuracy": 0.9859154929577465,
+          "requests_with_leak": 1,
+          "measured_requests": 17,
+          "total_requests": 17
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 17,
+          "semantic_roundtrip_passed": 17,
+          "replay_passed": 17,
+          "measured_requests": 17,
+          "response_failures": 0,
+          "payload_replay_passed": 17
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "dialect": {
+      "codex": {
+        "privacy": {
+          "total_sensitive": 71,
+          "measured_sensitive": 71,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 70,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9859154929577465,
+          "observed_accuracy": 0.9859154929577465,
+          "requests_with_leak": 1,
+          "measured_requests": 17,
+          "total_requests": 17
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 17,
+          "semantic_roundtrip_passed": 17,
+          "replay_passed": 17,
+          "measured_requests": 17,
+          "response_failures": 0,
+          "payload_replay_passed": 17
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "split": {
+      "development": {
+        "privacy": {
+          "total_sensitive": 71,
+          "measured_sensitive": 71,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 70,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9859154929577465,
+          "observed_accuracy": 0.9859154929577465,
+          "requests_with_leak": 1,
+          "measured_requests": 17,
+          "total_requests": 17
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 17,
+          "semantic_roundtrip_passed": 17,
+          "replay_passed": 17,
+          "measured_requests": 17,
+          "response_failures": 0,
+          "payload_replay_passed": 17
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "language_mode": {
+      "auto": {
+        "privacy": {
+          "total_sensitive": 42,
+          "measured_sensitive": 42,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 41,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.9761904761904762,
+          "observed_accuracy": 0.9761904761904762,
+          "requests_with_leak": 1,
+          "measured_requests": 9,
+          "total_requests": 9
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 9,
+          "semantic_roundtrip_passed": 9,
+          "replay_passed": 9,
+          "measured_requests": 9,
+          "response_failures": 0,
+          "payload_replay_passed": 9
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "explicit": {
+        "privacy": {
+          "total_sensitive": 29,
+          "measured_sensitive": 29,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 29,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 8,
+          "total_requests": 8
+        },
+        "overmasking": {
+          "measured_public": 0,
+          "overmasked": 0,
+          "rate": null
+        },
+        "integrity": {
+          "roundtrip_passed": 8,
+          "semantic_roundtrip_passed": 8,
+          "replay_passed": 8,
+          "measured_requests": 8,
+          "response_failures": 0,
+          "payload_replay_passed": 8
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "policy": {
+      "contextual": {
+        "total_sensitive": 66,
+        "measured_sensitive": 66,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 65,
+        "full_exposures": 1,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.9848484848484849,
+        "observed_accuracy": 0.9848484848484849,
+        "requests_with_leak": 1,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "pattern": {
+        "total_sensitive": 5,
+        "measured_sensitive": 5,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 5,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 4,
+        "total_requests": 4
+      }
+    },
+    "label": {
+      "email": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 2,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 2,
+        "total_requests": 2
+      },
+      "organization": {
+        "total_sensitive": 9,
+        "measured_sensitive": 9,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 9,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 8,
+        "total_requests": 8
+      },
+      "person": {
+        "total_sensitive": 57,
+        "measured_sensitive": 57,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 56,
+        "full_exposures": 1,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.9824561403508771,
+        "observed_accuracy": 0.9824561403508771,
+        "requests_with_leak": 1,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "phone": {
+        "total_sensitive": 1,
+        "measured_sensitive": 1,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 1,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 1,
+        "total_requests": 1
+      },
+      "ticket_id": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 2,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 1,
+        "total_requests": 1
+      }
+    }
+  }
+}

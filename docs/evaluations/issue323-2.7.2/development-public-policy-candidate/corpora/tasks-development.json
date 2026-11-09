@@ -1,0 +1,2021 @@
+{
+ "schema_version": 1,
+ "synthetic": true,
+ "corpus_version": "issue324-tasks-development-v1-reference2",
+ "cases": [
+  {
+   "id": "dev-task-en",
+   "language": "en",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-en-development-task-release-note",
+   "family": "development-task-release-note",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Turn these internal bullets into a two-paragraph, user-facing release note for Lumenfold 4.2. Bullets: dark mode added (TCK-SYN-1104, owner Grant Ruiz); CSV export now keeps leading zeros (TCK-SYN-1121); fixed a crash when renaming a folder that contains an emoji; Grant says offline sync slipped to 4.3. First paragraph: new features. Second paragraph: fixes and what's coming next. Don't mention ticket numbers or staff names. No headings."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 79,
+     "end": 88,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 120,
+     "end": 132,
+     "label": "ticket_id",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 140,
+     "end": 150,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 189,
+     "end": 201,
+     "label": "ticket_id",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 265,
+     "end": 270,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Turn these internal bullets into a two-paragraph, user-facing release note for ORG_1 4.2. Bullets: dark mode added (ID_1, owner PERSON_1); CSV export now keeps leading zeros (ID_2); fixed a crash when renaming a folder that contains an emoji; PERSON_1 says offline sync slipped to 4.3. First paragraph: new features. Second paragraph: fixes and what's coming next. Don't mention ticket numbers or staff names. No headings.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Rewrites the internal bullets as a user-facing release note for version 4.2 of the named product."
+    },
+    {
+     "id": "conditions",
+     "description": "Two paragraphs in the requested order: first new features (dark mode); second the fixes (CSV leading zeros, emoji-folder rename crash) plus the move of offline sync to 4.3."
+    },
+    {
+     "id": "prohibition",
+     "description": "Mentions no ticket numbers and no staff names, and invents no release date for 4.3."
+    },
+    {
+     "id": "scope",
+     "description": "Exactly two paragraphs of release-note prose with no headings or extra commentary."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "Lumenfold 4.2 introduces dark mode, so you can switch the whole app to a darker theme that is easier on the eyes in low light.\n\nThis release also fixes two issues: CSV exports now keep leading zeros, and the app no longer crashes when you rename a folder that contains an emoji. Offline sync, originally planned for this version, is now scheduled for version 4.3.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No release date for 4.3 exists in the original; stating only the version is correct.",
+   "missing_original_facts": [
+    "v4.3 date (not given; must not be invented)"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-ko",
+   "language": "ko",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-ko-development-task-dinner-vote-notice",
+   "family": "development-task-dinner-vote-notice",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "팀 회식 장소 투표 결과를 정리해서 팀 채널에 올릴 공지를 써 주세요. 투표 결과: 한식당 '소반' 4표(이다온, 김한주, 박서윤, 최민재), 이탈리안 '포르타' 4표(정예린, 한태섭, 윤보늬, 서강호), 일식 '하루' 2표. 동점이면 팀장 오정원 님이 결정하기로 했는데, 아직 결정을 듣지 못했습니다. 날짜는 다음 주 금요일 저녁 7시로 확정입니다. 누가 어디에 투표했는지는 공개하지 마세요. 공지는 3문장 이내로 써 주세요."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 59,
+     "end": 62,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 64,
+     "end": 67,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 69,
+     "end": 72,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 74,
+     "end": 77,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 94,
+     "end": 97,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 99,
+     "end": 102,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 104,
+     "end": 107,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 109,
+     "end": 112,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 135,
+     "end": 138,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "팀 회식 장소 투표 결과를 정리해서 팀 채널에 올릴 공지를 써 주세요. 투표 결과: 한식당 '소반' 4표(PERSON_1, PERSON_2, PERSON_3, PERSON_4), 이탈리안 '포르타' 4표(PERSON_5, PERSON_6, PERSON_7, PERSON_8), 일식 '하루' 2표. 동점이면 팀장 PERSON_9 님이 결정하기로 했는데, 아직 결정을 듣지 못했습니다. 날짜는 다음 주 금요일 저녁 7시로 확정입니다. 누가 어디에 투표했는지는 공개하지 마세요. 공지는 3문장 이내로 써 주세요.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a team-channel notice summarizing the dinner-venue vote."
+    },
+    {
+     "id": "conditions",
+     "description": "Reports the 4–4–2 result with the Soban/Porta tie, the confirmed date/time (next Friday 7 pm), and that the tie is to be broken by team lead Oh Jeong-won (decision pending)."
+    },
+    {
+     "id": "prohibition",
+     "description": "Reveals no individual votes and does not invent the team lead's decision or a final venue."
+    },
+    {
+     "id": "scope",
+     "description": "A notice of at most three sentences, with no extra commentary."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "다음 주 금요일 저녁 7시 팀 회식 장소 투표 결과, 한식당 '소반'과 이탈리안 '포르타'가 각 4표로 동점이었고 일식 '하루'는 2표였습니다. 미리 정한 대로 최종 장소는 오정원 팀장님이 결정해 주실 예정입니다. 장소가 확정되는 대로 다시 공지드리겠습니다.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. The tie-break decision is genuinely missing; saying it is pending is full credit.",
+   "missing_original_facts": [
+    "team lead's tie-break decision"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-es",
+   "language": "es",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-es-development-task-speed-bump-letter",
+   "family": "development-task-speed-bump-letter",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Redacta una carta formal de la Asociación Vecinal Los Almendros al ayuntamiento pidiendo un reductor de velocidad en la calle Mirlo, frente al colegio. Datos: en octubre hubo dos atropellos leves en ese tramo y la petición la firmamos 63 vecinos. Firma la presidenta, Pilar Montesinos, con el correo pilar.montesinos@almendros-demo.invalid como contacto. Tono respetuoso: no amenaces con protestas ni con avisar a los medios. Máximo 150 palabras, sin línea de asunto ni bloque de dirección."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 31,
+     "end": 63,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 268,
+     "end": 284,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 300,
+     "end": 339,
+     "label": "email",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Redacta una carta formal de la ORG_1 al ayuntamiento pidiendo un reductor de velocidad en la calle Mirlo, frente al colegio. Datos: en octubre hubo dos atropellos leves en ese tramo y la petición la firmamos 63 vecinos. Firma la presidenta, PERSON_1, con el correo EMAIL_1 como contacto. Tono respetuoso: no amenaces con protestas ni con avisar a los medios. Máximo 150 palabras, sin línea de asunto ni bloque de dirección.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a formal letter from the neighbourhood association to the city council requesting a speed bump on Calle Mirlo in front of the school."
+    },
+    {
+     "id": "conditions",
+     "description": "Includes both supporting facts (two minor pedestrian accidents in October; 63 signing neighbours), a respectful formal tone, the president's signature and contact email, and stays within 150 words."
+    },
+    {
+     "id": "prohibition",
+     "description": "Contains no threats of protests or media involvement."
+    },
+    {
+     "id": "scope",
+     "description": "Only the letter, without a subject line or address block."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "Estimados señores:\n\nEn nombre de la Asociación Vecinal Los Almendros, solicitamos la instalación de un reductor de velocidad en la calle Mirlo, frente al colegio. Durante el mes de octubre se produjeron dos atropellos leves en ese tramo, y nos preocupa la seguridad de los niños y de las familias que lo cruzan cada día. Esta petición cuenta con el respaldo de 63 vecinos firmantes.\n\nQuedamos a su disposición para aportar cualquier información adicional y les agradecemos de antemano su atención.\n\nAtentamente,\nPilar Montesinos\nPresidenta de la Asociación Vecinal Los Almendros\npilar.montesinos@almendros-demo.invalid",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-fr",
+   "language": "fr",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-fr-development-task-day-itinerary",
+   "family": "development-task-day-itinerary",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Prépare l'itinéraire d'une journée à Valmont-sur-Lys (ville fictive) pour Céleste Arnaud et son fils Tom Arnaud, samedi. Lieux : le musée de la Dentelle (ouvert de 10 h à 13 h), le marché couvert (ouvert de 8 h à 12 h), la tour de l'Horloge (horaires inconnus pour le moment). Règles : commencer par le marché ; déjeuner de 12 h 30 à 13 h 30. Ne propose aucun lieu supplémentaire. Donne un programme horaire, puis une seule ligne sur ce qu'il faut vérifier."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 74,
+     "end": 88,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 101,
+     "end": 111,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Prépare l'itinéraire d'une journée à Valmont-sur-Lys (ville fictive) pour PERSON_1 et son fils PERSON_2, samedi. Lieux : le musée de la Dentelle (ouvert de 10 h à 13 h), le marché couvert (ouvert de 8 h à 12 h), la tour de l'Horloge (horaires inconnus pour le moment). Règles : commencer par le marché ; déjeuner de 12 h 30 à 13 h 30. Ne propose aucun lieu supplémentaire. Donne un programme horaire, puis une seule ligne sur ce qu'il faut vérifier.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Produces a Saturday day itinerary for Céleste and Tom covering the three named places."
+    },
+    {
+     "id": "conditions",
+     "description": "Starts with the market within 8:00–12:00, places the museum within 10:00–13:00, keeps lunch at 12:30–13:30 and schedules no visit overlapping lunch; the clock tower is placed tentatively."
+    },
+    {
+     "id": "prohibition",
+     "description": "Adds no extra places and invents no opening hours for the clock tower."
+    },
+    {
+     "id": "scope",
+     "description": "An hour-by-hour programme followed by exactly one line on what to verify (the tower's hours)."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "- 8 h 30 – 9 h 45 : marché couvert\n- 10 h – 12 h 15 : musée de la Dentelle\n- 12 h 30 – 13 h 30 : déjeuner\n- À partir de 14 h (sous réserve) : tour de l'Horloge\nÀ vérifier : les horaires d'ouverture de la tour de l'Horloge le samedi après-midi ; si elle est fermée, il faudra revoir la fin du programme.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Tower hours are genuinely unknown; a tentative slot plus a verification line is full credit.",
+   "missing_original_facts": [
+    "clock tower opening hours"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-pt",
+   "language": "pt",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-pt-development-task-reading-quiz",
+   "family": "development-task-reading-quiz",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Crie um quiz de 4 perguntas de múltipla escolha (A–C) sobre o texto abaixo, para a turma da professora Irene Valadares. Não inclua o gabarito, porque a Irene vai entregá-lo separadamente. As perguntas devem seguir a ordem do texto e só cobrar informações que estão nele.\nTexto: \"A horta da Escola Municipal Ribeirão Claro foi criada em 2019 por iniciativa do zelador Benedito Assis. Hoje ela tem 12 canteiros. Os alunos do 5º ano regam as plantas às terças e quintas. A alface colhida é doada à cozinha da escola.\""
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 103,
+     "end": 118,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 152,
+     "end": 157,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 290,
+     "end": 321,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 367,
+     "end": 381,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Crie um quiz de 4 perguntas de múltipla escolha (A–C) sobre o texto abaixo, para a turma da professora PERSON_1. Não inclua o gabarito, porque a PERSON_1 vai entregá-lo separadamente. As perguntas devem seguir a ordem do texto e só cobrar informações que estão nele.\nTexto: \"A horta da ORG_1 foi criada em 2019 por iniciativa do zelador PERSON_2. Hoje ela tem 12 canteiros. Os alunos do 5º ano regam as plantas às terças e quintas. A alface colhida é doada à cozinha da escola.\"",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Creates a four-question multiple-choice quiz about the given passage."
+    },
+    {
+     "id": "conditions",
+     "description": "Exactly four questions, each with options A–C, following the order of the passage and asking only about facts stated in it (distractor options may be invented)."
+    },
+    {
+     "id": "prohibition",
+     "description": "Includes no answer key or marked correct answers."
+    },
+    {
+     "id": "scope",
+     "description": "Only the quiz itself, without introduction or explanations."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "1. Em que ano a horta da escola foi criada?\nA) 2017  B) 2019  C) 2021\n2. Quem teve a iniciativa de criar a horta?\nA) O zelador Benedito Assis  B) A diretora da escola  C) Os alunos do 5º ano\n3. Quantos canteiros a horta tem hoje?\nA) 8  B) 10  C) 12\n4. O que é feito com a alface colhida?\nA) É vendida na feira  B) É doada à cozinha da escola  C) É levada para casa pelos alunos",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Distractors are necessarily invented and do not violate 'only facts from the text'; the question stems must be answerable from the passage.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-de",
+   "language": "de",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-de-development-task-shopping-sections",
+   "family": "development-task-shopping-sections",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Sortiere die Einkaufsliste von Wilma Kranz nach den Abteilungen im Frischmarkt Tannenweg (Obst & Gemüse, Kühlregal, Backwaren, Drogerie). Entferne doppelte Einträge und alles, was Wilma mit „hab ich noch\" markiert hat. Liste: Äpfel, Milch, Zahnpasta, Brötchen, Milch, Butter (hab ich noch), Karotten, Joghurt, Äpfel, Vollkornbrot, Duschgel. Füge nichts hinzu. Gib nur die vier Überschriften mit den Artikeln darunter aus."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 31,
+     "end": 42,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 67,
+     "end": 88,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 180,
+     "end": 185,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Sortiere die Einkaufsliste von PERSON_1 nach den Abteilungen im ORG_1 (Obst & Gemüse, Kühlregal, Backwaren, Drogerie). Entferne doppelte Einträge und alles, was PERSON_1 mit „hab ich noch\" markiert hat. Liste: Äpfel, Milch, Zahnpasta, Brötchen, Milch, Butter (hab ich noch), Karotten, Joghurt, Äpfel, Vollkornbrot, Duschgel. Füge nichts hinzu. Gib nur die vier Überschriften mit den Artikeln darunter aus.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Sorts Wilma's shopping list into the four store sections."
+    },
+    {
+     "id": "conditions",
+     "description": "Every remaining item is in the correct section (Äpfel, Karotten / Milch, Joghurt / Brötchen, Vollkornbrot / Zahnpasta, Duschgel) with duplicates removed."
+    },
+    {
+     "id": "prohibition",
+     "description": "Butter (marked 'hab ich noch') is excluded and no items are added."
+    },
+    {
+     "id": "scope",
+     "description": "Only the four headings with items beneath them, no extra text."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "Obst & Gemüse\n- Äpfel\n- Karotten\nKühlregal\n- Milch\n- Joghurt\nBackwaren\n- Brötchen\n- Vollkornbrot\nDrogerie\n- Zahnpasta\n- Duschgel",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-id",
+   "language": "id",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-id-development-task-birthday-story",
+   "family": "development-task-birthday-story",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Tuliskan pembuka cerita (maksimal 100 kata) untuk dibacakan di ulang tahun Arunika Siregar, yang suka kucing dan layang-layang. Kakaknya, Bima Siregar, juga harus muncul. Jangan ada unsur menakutkan seperti hantu atau anak hilang. Usianya tidak usah disebut karena kami belum yakin mau mencantumkannya. Berikan judul dan cerita saja, tanpa penjelasan."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 75,
+     "end": 90,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 138,
+     "end": 150,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Tuliskan pembuka cerita (maksimal 100 kata) untuk dibacakan di ulang tahun PERSON_1, yang suka kucing dan layang-layang. Kakaknya, PERSON_2, juga harus muncul. Jangan ada unsur menakutkan seperti hantu atau anak hilang. Usianya tidak usah disebut karena kami belum yakin mau mencantumkannya. Berikan judul dan cerita saja, tanpa penjelasan.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a birthday story opening featuring Arunika."
+    },
+    {
+     "id": "conditions",
+     "description": "Includes cats and kites and features her older brother Bima; at most 100 words."
+    },
+    {
+     "id": "prohibition",
+     "description": "No frightening elements (ghosts, lost children, etc.) and no mention of the child's age."
+    },
+    {
+     "id": "scope",
+     "description": "Only a title and the story, no explanation."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "Layang-Layang Kucing Oranye\nPagi itu angin bertiup lembut di halaman rumah. Arunika membawa layang-layang baru bergambar kucing oranye, persis seperti Kumis, kucing kesayangannya. \"Ayo, Kak Bima, bantu aku menerbangkannya!\" serunya. Bima memegang benang sambil tertawa, lalu menghitung, \"Satu, dua, tiga!\" Layang-layang itu naik tinggi dan menari di antara awan putih. Kumis mengeong dari jendela seolah ikut bersorak. Hari itu terasa istimewa, karena setiap tarikan benang membawa Arunika semakin dekat pada kejutan ulang tahun yang sudah menunggunya.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. The age is deliberately withheld and must not be stated; invented story details (e.g. a pet's name) are acceptable creative content.",
+   "missing_original_facts": [
+    "child's age (deliberately withheld)"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-tr",
+   "language": "tr",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-tr-development-task-bill-split",
+   "family": "development-task-bill-split",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Dün akşamki yemeğin hesabını böl: toplam 2.400 TL. Ece Arslan ve Mert Güler alkol içmedi; içkilerin tutarı 600 TL ve sadece Oğuz Şen ile Dilara Koç arasında eşit paylaşılacak. Kalan tutar dört kişiye eşit bölünecek. Hesabı Oğuz ödedi. Kimin Oğuz'a ne kadar borçlu olduğunu liste halinde yaz; bahşiş ekleme."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 51,
+     "end": 61,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 65,
+     "end": 75,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 124,
+     "end": 132,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 137,
+     "end": 147,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 223,
+     "end": 227,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 241,
+     "end": 245,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Dün akşamki yemeğin hesabını böl: toplam 2.400 TL. PERSON_1 ve PERSON_2 alkol içmedi; içkilerin tutarı 600 TL ve sadece PERSON_3 ile PERSON_4 arasında eşit paylaşılacak. Kalan tutar dört kişiye eşit bölünecek. Hesabı PERSON_3 ödedi. Kimin PERSON_3'a ne kadar borçlu olduğunu liste halinde yaz; bahşiş ekleme.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Splits the dinner bill and states who owes Oğuz how much."
+    },
+    {
+     "id": "conditions",
+     "description": "Correct arithmetic: food 1,800 TL split four ways (450 TL each), drinks 600 TL split between Oğuz and Dilara (300 TL each); Ece 450 TL, Mert 450 TL, Dilara 750 TL owed to Oğuz."
+    },
+    {
+     "id": "prohibition",
+     "description": "Adds no tip and does not list Oğuz as owing himself."
+    },
+    {
+     "id": "scope",
+     "description": "Output is a list of debts (an optional one-line check is fine)."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "- Ece Arslan: 450 TL\n- Mert Güler: 450 TL\n- Dilara Koç: 750 TL\n(Oğuz'un kendi payı 750 TL; toplam 2.400 TL tutuyor.)",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-ru",
+   "language": "ru",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-ru-development-task-router-steps",
+   "family": "development-task-router-steps",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Моя соседка Агния Петровна плохо видит. Перепиши для неё инструкцию по перезагрузке роутера «СетьТочка» крупными простыми шагами, сохранив порядок: выдернуть блок питания из розетки; подождать 30 секунд; вставить обратно; дождаться, пока лампочка «Интернет» загорится зелёным (до 2 минут); если не загорелась — позвонить внуку Дмитрию по номеру +1 202 555 0189. Не добавляй шагов про настройки и пароли. Только нумерованный список, обращение на «вы»."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 12,
+     "end": 26,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 92,
+     "end": 103,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 327,
+     "end": 334,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 345,
+     "end": 360,
+     "label": "phone",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Моя соседка PERSON_1 плохо видит. Перепиши для неё инструкцию по перезагрузке роутера ORG_1 крупными простыми шагами, сохранив порядок: выдернуть блок питания из розетки; подождать 30 секунд; вставить обратно; дождаться, пока лампочка «Интернет» загорится зелёным (до 2 минут); если не загорелась — позвонить внуку PERSON_2 по номеру PHONE_1. Не добавляй шагов про настройки и пароли. Только нумерованный список, обращение на «вы».",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Rewrites the router-restart instructions as simple steps for the neighbour."
+    },
+    {
+     "id": "conditions",
+     "description": "All five steps present in the original order with the details preserved (30 seconds, up to 2 minutes, green 'Интернет' light, call the grandson at the given number), addressed with formal «вы»."
+    },
+    {
+     "id": "prohibition",
+     "description": "Adds no steps about settings or passwords."
+    },
+    {
+     "id": "scope",
+     "description": "Only a numbered list."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "1. Выдерните блок питания роутера из розетки.\n2. Подождите 30 секунд.\n3. Вставьте блок питания обратно в розетку.\n4. Подождите до 2 минут, пока лампочка «Интернет» не загорится зелёным.\n5. Если лампочка не загорелась зелёным, позвоните внуку Дмитрию по номеру +1 202 555 0189.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-hi",
+   "language": "hi",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-hi-development-task-lesson-outline",
+   "family": "development-task-lesson-outline",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "कक्षा 7 के लिए 40 मिनट की विज्ञान पाठ-योजना की रूपरेखा बनाइए, विषय 'पौधों में जल का परिवहन'। शिक्षिका रेणु अग्रवाल हैं; सह-शिक्षक अनुराग सेठी प्रयोग वाले हिस्से में मदद करेंगे। खंड इसी क्रम में हों: परिचय (5 मिनट), प्रयोग – सेलेरी के डंठल को रंगीन पानी में रखना (15 मिनट), चर्चा (10 मिनट), सारांश और गृहकार्य (बाकी समय)। प्रयोगशाला मिलेगी या नहीं, यह अभी पता नहीं। कोई खतरनाक रसायन न सुझाएँ। केवल तालिका दें: खंड, समय, गतिविधि।"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 102,
+     "end": 114,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 130,
+     "end": 141,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "कक्षा 7 के लिए 40 मिनट की विज्ञान पाठ-योजना की रूपरेखा बनाइए, विषय 'पौधों में जल का परिवहन'। शिक्षिका PERSON_1 हैं; सह-शिक्षक PERSON_2 प्रयोग वाले हिस्से में मदद करेंगे। खंड इसी क्रम में हों: परिचय (5 मिनट), प्रयोग – सेलेरी के डंठल को रंगीन पानी में रखना (15 मिनट), चर्चा (10 मिनट), सारांश और गृहकार्य (बाकी समय)। प्रयोगशाला मिलेगी या नहीं, यह अभी पता नहीं। कोई खतरनाक रसायन न सुझाएँ। केवल तालिका दें: खंड, समय, गतिविधि।",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Creates a 40-minute lesson-plan outline on water transport in plants for class 7."
+    },
+    {
+     "id": "conditions",
+     "description": "Four sections in the given order with times 5/15/10/10 minutes (the remainder correctly computed as 10), the celery-in-coloured-water experiment, and the co-teacher helping in the experiment."
+    },
+    {
+     "id": "prohibition",
+     "description": "Suggests no hazardous chemicals and does not assume the lab is available (works in a classroom or states a conditional alternative)."
+    },
+    {
+     "id": "scope",
+     "description": "Only a table with the columns section, time, activity."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "| खंड | समय | गतिविधि |\n|---|---|---|\n| परिचय | 5 मिनट | रेणु अग्रवाल प्रश्न से शुरुआत करेंगी: पौधे पानी को जड़ से पत्तियों तक कैसे पहुँचाते हैं? |\n| प्रयोग | 15 मिनट | अनुराग सेठी की मदद से सेलेरी के डंठल को खाने वाले रंग मिले पानी में रखना और रंग को ऊपर चढ़ते देखना (प्रयोगशाला न मिले तो कक्षा की मेज़ पर) |\n| चर्चा | 10 मिनट | छात्र बताएँगे कि रंग ऊपर क्यों चढ़ा और इसका पौधों में पानी के परिवहन से क्या संबंध है |\n| सारांश और गृहकार्य | 10 मिनट | मुख्य बिंदुओं का सारांश; गृहकार्य: प्रयोग का चित्र बनाकर दो वाक्य लिखना |",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Lab availability is genuinely unknown; the plan must work either way.",
+   "missing_original_facts": [
+    "whether a lab is available"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-mr",
+   "language": "mr",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-mr-development-task-teacher-thanks",
+   "family": "development-task-teacher-thanks",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "माझ्या मुलीच्या, गार्गी ताम्हणकरच्या, संगीत शिक्षिका शुभदा साने बाईंसाठी छोटी आभार-चिठ्ठी लिहा. मुद्दे: त्यांनी वर्षभर दर शनिवारी शिकवले; गार्गीने शाळेच्या स्नेहसंमेलनात पहिल्यांदा एकटीने गाणे म्हटले. चिठ्ठी ४ ते ६ वाक्यांची असावी. भेटवस्तूचा उल्लेख करू नका. शेवटी 'आपली कृतज्ञ, माधवी ताम्हणकर' असे लिहा."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 17,
+     "end": 32,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 53,
+     "end": 63,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 138,
+     "end": 144,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 279,
+     "end": 293,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "माझ्या मुलीच्या, PERSON_1च्या, संगीत शिक्षिका PERSON_2 बाईंसाठी छोटी आभार-चिठ्ठी लिहा. मुद्दे: त्यांनी वर्षभर दर शनिवारी शिकवले; PERSON_1ने शाळेच्या स्नेहसंमेलनात पहिल्यांदा एकटीने गाणे म्हटले. चिठ्ठी ४ ते ६ वाक्यांची असावी. भेटवस्तूचा उल्लेख करू नका. शेवटी 'आपली कृतज्ञ, PERSON_3' असे लिहा.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a short thank-you note to the music teacher."
+    },
+    {
+     "id": "conditions",
+     "description": "Mentions both points (taught every Saturday for the whole year; Gargi's first solo song at the school gathering) in 4–6 sentences."
+    },
+    {
+     "id": "prohibition",
+     "description": "Makes no mention of a gift."
+    },
+    {
+     "id": "scope",
+     "description": "Only the note, ending with the exact sign-off 'आपली कृतज्ञ, माधवी ताम्हणकर'."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "आदरणीय शुभदा साने बाई,\nवर्षभर दर शनिवारी गार्गीला मनापासून शिकवल्याबद्दल आपले खूप आभार. आपल्या मार्गदर्शनामुळे तिच्यात गाण्याची गोडी आणि आत्मविश्वास वाढला. शाळेच्या स्नेहसंमेलनात तिने पहिल्यांदाच एकटीने गाणे म्हटले, तो क्षण आमच्यासाठी अविस्मरणीय होता. यामागे आपली मेहनत आणि संयम आहे. पुन्हा एकदा मनःपूर्वक धन्यवाद.\nआपली कृतज्ञ, माधवी ताम्हणकर",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-bn",
+   "language": "bn",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-bn-development-task-allergy-meal-plan",
+   "family": "development-task-allergy-meal-plan",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "আমার ভাগ্নে রাজীব সান্যাল সোমবার থেকে বুধবার আমাদের বাড়িতে থাকবে। তার জন্য তিন দিনের রাতের খাবারের পরিকল্পনা করুন। তার চিংড়ি আর বাদামে অ্যালার্জি আছে। আমার স্ত্রী সুমনা নিরামিষ খান, তাই প্রতিদিন অন্তত একটি নিরামিষ পদ থাকবে। বাজেট এখনও ঠিক করিনি, তাই দামের কথা লিখবেন না। প্রতিদিনের জন্য এক লাইন দিন: দিন – পদগুলো।"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 12,
+     "end": 25,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 165,
+     "end": 170,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "আমার ভাগ্নে PERSON_1 সোমবার থেকে বুধবার আমাদের বাড়িতে থাকবে। তার জন্য তিন দিনের রাতের খাবারের পরিকল্পনা করুন। তার চিংড়ি আর বাদামে অ্যালার্জি আছে। আমার স্ত্রী PERSON_2 নিরামিষ খান, তাই প্রতিদিন অন্তত একটি নিরামিষ পদ থাকবে। বাজেট এখনও ঠিক করিনি, তাই দামের কথা লিখবেন না। প্রতিদিনের জন্য এক লাইন দিন: দিন – পদগুলো।",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Plans dinners for Monday to Wednesday for the visiting nephew."
+    },
+    {
+     "id": "conditions",
+     "description": "Each day includes at least one vegetarian dish; covers exactly Monday, Tuesday and Wednesday."
+    },
+    {
+     "id": "prohibition",
+     "description": "Contains no shrimp and no nuts (including nut-based gravies) and mentions no prices or costs."
+    },
+    {
+     "id": "scope",
+     "description": "Exactly three lines in the format 'day – dishes'."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "সোমবার – ভাত, মুসুর ডাল, আলু-পটলের তরকারি, ডিমের ঝোল\nমঙ্গলবার – রুটি, ছোলার ডাল, পনিরের তরকারি, মাছের ঝোল\nবুধবার – খিচুড়ি, বেগুন ভাজা, মিক্সড সবজি, মুরগির ঝোল",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Budget is deliberately undecided; no prices should appear and no clarification is needed.",
+   "missing_original_facts": [
+    "budget (deliberately undecided)"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-ur",
+   "language": "ur",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-ur-development-task-club-faq",
+   "family": "development-task-club-faq",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "سرو اسپورٹس کلب کے رکنیت کے قواعد سے تین سوال و جواب (FAQ) بنائیں۔ قواعد: رکنیت 12 ماہ کی ہوتی ہے؛ مہمان کو مہینے میں دو بار لایا جا سکتا ہے، ہر بار رکن کے ساتھ؛ رکنیت معطل کرنے کے لیے کم از کم 15 دن پہلے سیکرٹری فریحہ انصاری کو fariha.ansari@sarw-demo.invalid پر لکھنا ہوگا۔ سالانہ فیس کی رقم کمیٹی نے ابھی منظور نہیں کی۔ کوئی ایسا قاعدہ نہ جوڑیں جو اوپر نہیں ہے۔ اگر فیس کا سوال شامل کریں تو رقم نہ لکھیں۔ صرف تین سوال و جواب دیں۔"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 0,
+     "end": 15,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 213,
+     "end": 225,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 229,
+     "end": 260,
+     "label": "email",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "ORG_1 کے رکنیت کے قواعد سے تین سوال و جواب (FAQ) بنائیں۔ قواعد: رکنیت 12 ماہ کی ہوتی ہے؛ مہمان کو مہینے میں دو بار لایا جا سکتا ہے، ہر بار رکن کے ساتھ؛ رکنیت معطل کرنے کے لیے کم از کم 15 دن پہلے سیکرٹری PERSON_1 کو EMAIL_1 پر لکھنا ہوگا۔ سالانہ فیس کی رقم کمیٹی نے ابھی منظور نہیں کی۔ کوئی ایسا قاعدہ نہ جوڑیں جو اوپر نہیں ہے۔ اگر فیس کا سوال شامل کریں تو رقم نہ لکھیں۔ صرف تین سوال و جواب دیں۔",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Turns the club membership rules into an FAQ."
+    },
+    {
+     "id": "conditions",
+     "description": "Each answer is faithful to the stated rules (12-month membership; guests twice a month, always with the member; suspension request at least 15 days ahead to the secretary at the given email)."
+    },
+    {
+     "id": "prohibition",
+     "description": "Adds no rule not in the source and states no fee amount (a fee question, if included, says the amount is not yet approved)."
+    },
+    {
+     "id": "scope",
+     "description": "Exactly three question–answer pairs and nothing else."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "س: رکنیت کتنی مدت کے لیے ہوتی ہے؟\nج: رکنیت 12 ماہ کے لیے ہوتی ہے۔\nس: کیا میں مہمان لا سکتا ہوں؟\nج: جی ہاں، مہینے میں دو بار، اور ہر بار مہمان کو آپ کے ساتھ آنا ہوگا۔\nس: رکنیت معطل کیسے کروائی جائے؟\nج: کم از کم 15 دن پہلے سیکرٹری فریحہ انصاری کو fariha.ansari@sarw-demo.invalid پر لکھیں۔",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. The fee amount is genuinely missing; either omitting the fee or saying it is pending approval is full credit.",
+   "missing_original_facts": [
+    "annual fee amount (not yet approved)"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-te",
+   "language": "te",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-te-development-task-recipe-scaling",
+   "family": "development-task-recipe-scaling",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "అన్నపూర్ణ వంటిల్లు బ్లాగ్‌లోని లావణ్య చిలుకూరి గారి పెసరట్టు వంటకాన్ని 4 మందికి బదులు 10 మందికి మార్చండి. పదార్థాలు (4 మందికి): పెసలు 2 కప్పులు, బియ్యం అర కప్పు, పచ్చిమిర్చి 4, అల్లం 2 అంగుళాలు, ఉప్పు రుచికి సరిపడా. నియమాలు: లెక్కలు సరిగ్గా ఉండాలి; 'రుచికి సరిపడా' అని ఉన్నదాన్ని సంఖ్యగా మార్చవద్దు; కొత్త పదార్థాలు చేర్చవద్దు. లావణ్య గారి పేరు అవసరం లేదు. పదార్థం – పరిమాణం జాబితా మాత్రమే ఇవ్వండి."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 0,
+     "end": 18,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 31,
+     "end": 46,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 328,
+     "end": 334,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "ORG_1 బ్లాగ్‌లోని PERSON_1 గారి పెసరట్టు వంటకాన్ని 4 మందికి బదులు 10 మందికి మార్చండి. పదార్థాలు (4 మందికి): పెసలు 2 కప్పులు, బియ్యం అర కప్పు, పచ్చిమిర్చి 4, అల్లం 2 అంగుళాలు, ఉప్పు రుచికి సరిపడా. నియమాలు: లెక్కలు సరిగ్గా ఉండాలి; 'రుచికి సరిపడా' అని ఉన్నదాన్ని సంఖ్యగా మార్చవద్దు; కొత్త పదార్థాలు చేర్చవద్దు. PERSON_1 గారి పేరు అవసరం లేదు. పదార్థం – పరిమాణం జాబితా మాత్రమే ఇవ్వండి.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Scales the pesarattu recipe from 4 to 10 servings."
+    },
+    {
+     "id": "conditions",
+     "description": "Every quantity multiplied by 2.5 correctly: 5 cups green gram, 1¼ cups rice, 10 green chillies, 5 inches ginger."
+    },
+    {
+     "id": "prohibition",
+     "description": "Salt stays 'to taste' (no number) and no ingredients are added."
+    },
+    {
+     "id": "scope",
+     "description": "Only an 'ingredient – quantity' list, without the author's name or extra steps."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "పెసలు – 5 కప్పులు\nబియ్యం – 1¼ కప్పులు\nపచ్చిమిర్చి – 10\nఅల్లం – 5 అంగుళాలు\nఉప్పు – రుచికి సరిపడా",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-ar",
+   "language": "ar",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-ar-development-task-seating-plan",
+   "family": "development-task-seating-plan",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "رتّب جلوس ستة أشخاص حول طاولة عشاء مستديرة (المقاعد من 1 إلى 6 باتجاه عقارب الساعة): فاطمة الراوي، سامي الراوي، ليلى الراوي، يوسف بركات، هند بركات، طارق ناصيف. القيود: فاطمة في المقعد 1 الأقرب إلى المطبخ؛ سامي وليلى لا يجلسان متجاورين؛ يوسف بجانب هند؛ طارق لا يجلس بجانب فاطمة. لا تضف أشخاصًا. أعطني قائمة من 1 إلى 6 فقط."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 85,
+     "end": 97,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 99,
+     "end": 110,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 112,
+     "end": 123,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 125,
+     "end": 135,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 137,
+     "end": 146,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 148,
+     "end": 158,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 168,
+     "end": 173,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 205,
+     "end": 209,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 211,
+     "end": 215,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 236,
+     "end": 240,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 247,
+     "end": 250,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 252,
+     "end": 256,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 271,
+     "end": 276,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "رتّب جلوس ستة أشخاص حول طاولة عشاء مستديرة (المقاعد من 1 إلى 6 باتجاه عقارب الساعة): PERSON_1، PERSON_2، PERSON_3، PERSON_4، PERSON_5، PERSON_6. القيود: PERSON_1 في المقعد 1 الأقرب إلى المطبخ؛ PERSON_2 وPERSON_3 لا يجلسان متجاورين؛ PERSON_4 بجانب PERSON_5؛ PERSON_6 لا يجلس بجانب PERSON_1. لا تضف أشخاصًا. أعطني قائمة من 1 إلى 6 فقط.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Produces a seating plan for the six named guests around the round table."
+    },
+    {
+     "id": "conditions",
+     "description": "All constraints hold on the circular table (seat 6 is adjacent to seat 1): Fatima in seat 1; Sami and Layla not adjacent; Youssef next to Hind; Tariq not in seat 2 or 6. Any valid arrangement earns credit."
+    },
+    {
+     "id": "prohibition",
+     "description": "Adds no people and omits none; each person appears exactly once."
+    },
+    {
+     "id": "scope",
+     "description": "Only a list numbered 1 to 6."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "1. فاطمة الراوي\n2. سامي الراوي\n3. طارق ناصيف\n4. ليلى الراوي\n5. يوسف بركات\n6. هند بركات",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Several valid arrangements exist; graders must check constraints rather than match the reference.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-zh",
+   "language": "zh",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-zh-development-task-landlord-message",
+   "family": "development-task-landlord-message",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "帮我给房东刘振华写一条微信消息：卫生间天花板漏水已经三天了，楼上孙悦家说他们那边没问题。请他派人来修，并给出两个我在家的时间段：周三晚上7点到9点，周六上午全天。不要提减租的事。语气礼貌，不超过100字。只写消息正文。"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 5,
+     "end": 8,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 32,
+     "end": 34,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "帮我给房东PERSON_1写一条微信消息：卫生间天花板漏水已经三天了，楼上PERSON_2家说他们那边没问题。请他派人来修，并给出两个我在家的时间段：周三晚上7点到9点，周六上午全天。不要提减租的事。语气礼貌，不超过100字。只写消息正文。",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a WeChat message to the landlord asking for the bathroom-ceiling leak to be repaired."
+    },
+    {
+     "id": "conditions",
+     "description": "States the leak has lasted three days, that the upstairs neighbour reports no problem, and offers both time windows (Wednesday 7–9 pm; all Saturday morning); polite tone; at most 100 characters."
+    },
+    {
+     "id": "prohibition",
+     "description": "Does not mention rent reduction."
+    },
+    {
+     "id": "scope",
+     "description": "Only the message body."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "刘先生您好，我家卫生间天花板漏水已经三天了。楼上孙悦家说他们那边没有问题，想麻烦您安排师傅来检查维修。我在家的时间是周三晚上7点到9点，或者周六上午全天，您看哪个时间方便？谢谢！",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "dev-task-ja",
+   "language": "ja",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "development",
+   "template_group": "development-task-ja-development-task-return-reply",
+   "family": "development-task-return-reply",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "お客様の藤井 涼様から、ひまわり雑貨店で購入したマグカップを返品したいとの問い合わせがありました。当店の規定：購入から14日以内、未使用、レシートありの場合のみ返品可。お客様はレシートを持っていて未使用とのことですが、購入日は書かれていません。返信文を作ってください。条件：規定を満たす場合と満たさない場合の両方の案内を含め、購入日を確認すること。返品の可否を勝手に断定しないこと。署名は「ひまわり雑貨店 岡田」。"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 4,
+     "end": 8,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 12,
+     "end": 19,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 195,
+     "end": 202,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 203,
+     "end": 205,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "お客様のPERSON_1様から、ORG_1で購入したマグカップを返品したいとの問い合わせがありました。当店の規定：購入から14日以内、未使用、レシートありの場合のみ返品可。お客様はレシートを持っていて未使用とのことですが、購入日は書かれていません。返信文を作ってください。条件：規定を満たす場合と満たさない場合の両方の案内を含め、購入日を確認すること。返品の可否を勝手に断定しないこと。署名は「ORG_1 PERSON_2」。",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a reply to the customer's mug-return inquiry."
+    },
+    {
+     "id": "conditions",
+     "description": "Explains the policy, asks for the purchase date, and gives guidance for both cases (within 14 days: return accepted with receipt; beyond 14 days: not accepted)."
+    },
+    {
+     "id": "prohibition",
+     "description": "Does not decide acceptance or refusal unconditionally and invents no purchase date."
+    },
+    {
+     "id": "scope",
+     "description": "Only the reply text, ending with the signature 'ひまわり雑貨店 岡田'."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "藤井 涼 様\n\nこのたびはお問い合わせいただき、ありがとうございます。\n当店では、ご購入から14日以内・未使用・レシートありの場合に返品を承っております。レシートをお持ちで未使用とのことですので、恐れ入りますがご購入日をお知らせいただけますでしょうか。\nご購入から14日以内であれば、商品とレシートをご持参いただければ返品を承ります。14日を過ぎている場合は、規定により返品をお受けできかねますので、あらかじめご了承ください。\n\nひまわり雑貨店 岡田",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. The purchase date is genuinely missing; a conditional reply asking for it is full credit.",
+   "missing_original_facts": [
+    "purchase date"
+   ],
+   "max_points": 4
+  }
+ ]
+}

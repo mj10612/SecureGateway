@@ -49,7 +49,10 @@ from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
 from secure_gateway.gateway_catalog import fetch_catalog
 from secure_gateway.gateway_audit import AuditMaintenanceError, AuditStore, anonymous_ref
 from secure_gateway.gateway_admin import handle_admin, save_mask_rules
-from secure_gateway.gateway_vocabulary import ordinary_words, select_gateway_language, domain_terms, reviewed_inflections, DISCOURSE_WORDS, discourse_capital_positions
+from secure_gateway.gateway_vocabulary import select_gateway_language, domain_terms, DISCOURSE_WORDS, ENGLISH_NAMES, discourse_capital_positions
+from secure_gateway.gateway_name_vocabulary import NAME_WORDS
+from secure_gateway.gateway_public_vocabulary import ordinary_words, lexicon
+from secure_gateway.gateway_morphology import is_ordinary_form
 from secure_gateway.gateway_task_operators import operator_words, operator_capital_positions
 from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, check_mapping_budget, positive_budget, snapshot_budget, record_mapping
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
@@ -506,6 +509,114 @@ def validate_api_options(payload, dialect):
 
 
 _private_prose: ContextVar[bool] = ContextVar("private_gateway_prose", default=False)
+# Issue #323: while masking a prose fragment, a single-word generic domain span
+# that is an ordinary public word is not re-masked (see GatewaySession._mask_prose).
+_public_domain_span: ContextVar[Callable[[str], bool] | None] = ContextVar("public_domain_span", default=None)
+_STATIC_NAMES = {language: frozenset(unicodedata.normalize("NFC", word).casefold() for word in words)
+                 for language, words in NAME_WORDS.items()}
+_EN_NAME_SUFFIXES = ("'s", "’s", "es", "s", "ing", "ed")
+_AR_PREFIXES = ("وال", "بال", "لل", "ال", "و", "ف", "ب", "ل", "ك")
+# Apostrophes are not boundaries: French/Italian elision (d'Zorvexa) precedes names.
+_SENTENCE_BOUNDARY = set(".!?。！？:;\n\"“”‘([{*•-")
+
+
+def _static_name_hit(term: str, language: str) -> bool:
+    """A match of the static NAME_WORDS/ENGLISH_NAMES lists, including their affixed forms."""
+    names = _STATIC_NAMES.get(language, frozenset())
+    if language == "en":
+        names = names | ENGLISH_NAMES
+    key = unicodedata.normalize("NFC", term).casefold()
+    if key in names:
+        return True
+    if language == "en" and any(key.endswith(suffix) and key[:-len(suffix)] in names for suffix in _EN_NAME_SUFFIXES):
+        return True
+    return language == "ar" and any(key.startswith(prefix) and key[len(prefix):] in names for prefix in _AR_PREFIXES)
+
+
+def _public_root(root: str, language: str, vocabulary) -> bool:
+    """Ordinary frequency word or typed predicate; name evidence never vetoes it."""
+    if root in vocabulary.words or root in vocabulary.predicates:
+        return True
+    if language == "ko" and root.endswith("다"):
+        if root[:-1] in vocabulary.words:
+            return True
+        return (root.endswith(("하다", "되다")) and root[-2:] in vocabulary.predicates
+                and root[:-2] in vocabulary.words)
+    return False
+
+
+def _public_surface(term: str, language: str, vocabulary) -> bool:
+    key = unicodedata.normalize("NFC", term).casefold()
+    if key in vocabulary.words or key in vocabulary.predicates:
+        return True
+    return is_ordinary_form(term, language, lambda root: _public_root(root, language, vocabulary), lambda _: False)
+
+
+def _identifier_shaped(word: str) -> bool:
+    """Definite identifier shape: snake_case, letters mixed with digits, inner capitals, acronyms.
+
+    ``private_method``, ``account37591``, camelCase/PascalCase with an inner capital
+    (``KeplerQzx``) and all-capital words of at least two letters that are not public
+    vocabulary are treated as identifiers.
+    """
+    if "_" in word.strip("_") or (any(char.isdigit() for char in word) and any(char.isalpha() for char in word)):
+        return True
+    cased = [char for char in word if char.isalpha() and char.upper() != char.lower()]
+    if len(cased) < 2:
+        return False
+    if all(char.isupper() for char in cased):
+        return True
+    return any(char.isupper() for char in word[1:])
+
+
+def _identifier_context(text: str, start: int, end: int) -> bool:
+    """A word that is part of a path, dotted name, handle, key=value pair or header/flag key.
+
+    Public spellings in such positions (``src/radar/config.yaml``, ``@john``,
+    ``mode=fast``, ``x-billing-header:``, ``--dry-run``) are source/tool identifiers,
+    not prose, and remain masked. Ordinary hyphenated prose (``well-known``) is kept.
+    """
+    before = text[start - 1] if start > 0 else ""
+    after = text[end] if end < len(text) else ""
+    if before == "=" or after == "=":
+        return True
+    # Maximal hyphen-joined run around the word (letters, marks, digits and '-').
+    left, right = start, end
+    while left > 0 and (text[left - 1] == "-" or text[left - 1].isalnum()
+                        or unicodedata.category(text[left - 1]).startswith("M")):
+        left -= 1
+    while right < len(text) and (text[right] == "-" or text[right].isalnum()
+                                 or unicodedata.category(text[right]).startswith("M")):
+        right += 1
+    run = text[left:right]
+    if "-" in run.strip("-") and right < len(text) and text[right] in ":=":
+        return True
+    if text[max(0, left - 2):left] == "--" or run.startswith("--"):
+        return True
+    if end - start < 2:  # single letters (e.g. "e.g.") are not identifiers by themselves
+        return False
+    if (before and before in "/\\_@") or (after and after in "/\\_"):
+        return True
+    if after == "." and end + 1 < len(text) and text[end + 1].isalnum():
+        return True
+    return before == "." and start >= 2 and text[start - 2].isalnum() and not text[start - 2].isspace()
+
+
+def _name_fallback(text: str, start: int, word: str, language: str) -> bool:
+    """Narrow name fallback (issue #323 policy, documented in docs/research/issue323-public-policy.md).
+
+    Only a non-public, Title-case word in a cased script that is not at a sentence/line/list
+    start is treated as a probable proper name. German is excluded because ordinary nouns
+    are capitalised; case-free scripts never trigger it. Common names that are public
+    vocabulary never reach this rule.
+    """
+    if language == "de" or len(word) < 2 or not word[0].isupper():
+        return False
+    rest = [char for char in word[1:] if char.isalpha() and char.upper() != char.lower()]
+    if not rest or not all(char.islower() for char in rest):
+        return False
+    prefix = text[:start].rstrip(" \t")
+    return bool(prefix) and prefix[-1] not in _SENTENCE_BOUNDARY
 
 
 class SharedEngine(MaskingEngine):
@@ -519,7 +630,13 @@ class SharedEngine(MaskingEngine):
         self._domain_depth += 1
         try:
             chunks = super()._chunks(text, terms, language, literal_aliases)
-            return protect_chunks(text, chunks, self.domain_spans(text))
+            spans = self.domain_spans(text)
+            public = _public_domain_span.get()
+            if public is not None and spans:
+                # A generic dictionary entry must not re-mask an ordinary public
+                # prose word; explicit/private rules are applied separately.
+                spans = [(start, end) for start, end in spans if not public(text[start:end])]
+            return protect_chunks(text, chunks, spans)
         finally:
             self._domain_depth -= 1
 
@@ -668,13 +785,24 @@ class GatewaySession:
         terms.update(re.findall(r"\b(?:function|variable|identifier|class)\s+([A-Z])\b", text))
         selected = (select_gateway_language(text, detect_natural_language(text))
                     if self.natural_language == "auto" else self.natural_language)
-        terms.update(domain_terms(text, selected))
         general = ordinary_words(selected) if self.prose_mode != MaskMode.AGGRESSIVE else frozenset()
+        vocabulary = lexicon(selected) if self.prose_mode != MaskMode.AGGRESSIVE else None
+        static_hits = domain_terms(text, selected)
+        if vocabulary is None:
+            terms.update(static_hits)
+        else:
+            # Issue #323 public-word policy: the static NAME_WORDS/ENGLISH_NAMES
+            # lists are widely used names, not private registrations, and a
+            # static DOMAIN_WORDS entry must not re-mask an ordinary public word.
+            # Only a non-public domain-list term keeps the old default masking.
+            terms.update(term for term in static_hits
+                         if not _static_name_hit(term, selected)
+                         and not _public_surface(term, selected, vocabulary))
         # Pass only vocabulary occurring in this fragment to the engine. Copying
         # tens of thousands of dictionary entries for every short field/sentence
         # is both unnecessary and an avoidable request amplification vector.
         from secure_gateway.engine.natural_languages import tokenize
-        relevant = reviewed_inflections(text, selected)
+        relevant: set[str] = set()
         chunks = tokenize(text, selected)
         if selected == "en":
             # Nonword-leading private suffixes are not found at the ordinary
@@ -703,10 +831,60 @@ class GatewaySession:
             numeric = s.forward_store.get(mapping_key(term, TokenType.NUMBER, code=True))
             if numeric is not None and numeric.surrogate != term:
                 terms.discard(term)
+        private_roots = {unicodedata.normalize('NFC', term).casefold() for term in terms}
+        private_cache: dict[str, bool] = {}
+
+        def private_root(root):
+            if root not in private_cache:
+                candidates = {root}
+                if selected == 'ko' and root.endswith('\ub2e4'):
+                    candidates.add(root[:-1])
+                    if root.endswith(('\ud558\ub2e4', '\ub418\ub2e4')):
+                        candidates.add(root[:-2])
+                found = bool(candidates & private_roots)
+                for candidate in candidates:
+                    for spelling in {candidate, candidate.capitalize(), candidate.upper()}:
+                        found |= any(unicodedata.normalize('NFC', value).casefold() == candidate
+                                     for value in s.forward_store.originals_in(spelling))
+                if len(private_cache) < 4096:
+                    private_cache[root] = found
+                return found
+            return private_cache[root]
+
+        def public_root(root):
+            # Name evidence is not a veto: public words and typed predicates win.
+            return vocabulary is not None and _public_root(root, selected, vocabulary)
+
+        offset = 0
         for chunk in chunks:
+            start = offset
+            offset += len(chunk.text)
             key = unicodedata.normalize("NFC", chunk.text).casefold()
+            if (vocabulary is not None and chunk.is_word and (s.forward_store or private_roots)
+                    and is_ordinary_form(chunk.text, selected, private_root, lambda _: False)):
+                # Inflections of an actual private registration/mapping stay private.
+                terms.add(chunk.text)
+                continue
+            if vocabulary is not None and chunk.is_word and _identifier_context(text, start, offset):
+                terms.add(chunk.text)
+                continue
             if key in general:
                 relevant.add(key)
+                relevant.add(chunk.text.casefold())
+            elif (vocabulary is not None and chunk.is_word
+                  and is_ordinary_form(chunk.text, selected, public_root, private_root)):
+                relevant.add(key)
+                relevant.add(chunk.text.casefold())
+            elif vocabulary is not None and chunk.is_word and chunk.kind in {"WORD", "HANGUL_WORD"}:
+                # Absence from the vocabulary is not evidence of privacy. Only the
+                # narrow, documented identifier/name fallback masks such a word.
+                if _identifier_shaped(chunk.text) or _name_fallback(text, start, chunk.text, selected):
+                    # Keep English possessive grammar outside the alias (Maribel's -> alias's).
+                    possessive = chunk.text[-2:] in {"'s", "’s"} and len(chunk.text) > 2
+                    terms.add(chunk.text[:-2] if possessive else chunk.text)
+                else:
+                    relevant.add(key)
+                    relevant.add(chunk.text.casefold())
             if selected == "ko" and chunk.is_word:
                 stem, _, _ = self.engine.ko_grammar.decompose_token(chunk.text, general)
                 if stem in general:
@@ -716,51 +894,63 @@ class GatewaySession:
             task_words = task_words | DISCOURSE_WORDS.get(selected, frozenset()) | operator_words(selected)
         if selected in {"en", "ko"} and self.prose_mode != MaskMode.AGGRESSIVE:
             task_words = task_words | SKILL_TASK_WORDS
-        public_spans: frozenset[tuple[int, int]] = frozenset()
-        if (self.context_model is not None and model_context_complete and preserve_task_words and self.prose_mode != MaskMode.AGGRESSIVE
-                and len(text) <= MAX_CONTEXT_CHARS):
-            candidates = []
-            protected_model_terms = cjk_known | terms
-            offset = 0
-            for chunk in self.engine._chunks(text, terms, selected):
-                start = offset
-                offset += len(chunk.text)
-                word = chunk.text
-                prefix = text[:start].rstrip()
-                # Confidence is not permission to disclose a new word. The
-                # model only resolves sentence-initial capitalization within
-                # the gateway's existing public vocabulary. Unknown industry
-                # predicates and names keep the conservative masking policy.
-                public_word = unicodedata.normalize("NFC", word).casefold() in task_words
-                sentence_initial = not prefix or bool(re.search(r"[.!?。！？]\s+$", text[:start]))
-                if (chunk.is_word and chunk.kind in {"WORD", "HANGUL_WORD"} and 2 <= len(word) <= 64
-                        and public_word and sentence_initial and word[0].isupper()
-                        and not any(char.isdigit() for char in word)
-                        and "_" not in word and not word.isupper()
-                        and not any(char.isupper() for char in word[1:])
-                        and not any(term in word for term in protected_model_terms)):
-                    candidates.append((start, offset))
-            if candidates:
-                public_spans = self.context_model.public_spans(text, candidates, selected).intersection(candidates)
-        masked = self.engine.mask_text(
-            text,
-            s.session_id,
-            s.generator,
-            s.forward_store,
-            s.reverse_store,
-            mode=self.prose_mode,
-            common_vocabulary=self.common_words,
-            sensitive_terms=terms,
-            # Code fragments keep the "no identifier preservation" rule.
-            custom_preserve=task_words if preserve_task_words else None,
-            preserve_capitalized=False,
-            preserve_capitalized_words=({"treffen", "buch", "hause"} if selected == "de" and general else set()) | skill_verbs,
-            preserve_capitalized_positions=(discourse_capital_positions(text, selected) | operator_capital_positions(text, selected))
-            if preserve_task_words and self.prose_mode != MaskMode.AGGRESSIVE else frozenset(),
-            preserve_spans=public_spans,
-            private_context=not preserve_task_words,
-            language=selected,
-        ).masked_text
+        # Single-word generic domain spans that are ordinary public words stay
+        # public; any actual private registration or mapping still wins.
+        span_token = _public_domain_span.set(
+            (lambda span: not any(char.isspace() for char in span)
+             and unicodedata.normalize('NFC', span).casefold() not in private_roots
+             and _public_surface(span, selected, vocabulary)) if vocabulary is not None else None)
+        try:
+            public_spans: frozenset[tuple[int, int]] = frozenset()
+            if (self.context_model is not None and model_context_complete and preserve_task_words and self.prose_mode != MaskMode.AGGRESSIVE
+                    and len(text) <= MAX_CONTEXT_CHARS):
+                candidates = []
+                protected_model_terms = cjk_known | terms
+                offset = 0
+                for chunk in self.engine._chunks(text, terms, selected):
+                    start = offset
+                    offset += len(chunk.text)
+                    word = chunk.text
+                    prefix = text[:start].rstrip()
+                    # Confidence is not permission to disclose a new word. The
+                    # model only resolves sentence-initial capitalization within
+                    # the gateway's existing public vocabulary. Unknown industry
+                    # predicates and names keep the conservative masking policy.
+                    public_word = unicodedata.normalize("NFC", word).casefold() in task_words
+                    sentence_initial = not prefix or bool(re.search(r"[.!?。！？]\s+$", text[:start]))
+                    if (chunk.is_word and chunk.kind in {"WORD", "HANGUL_WORD"} and 2 <= len(word) <= 64
+                            and public_word and sentence_initial and word[0].isupper()
+                            and not any(char.isdigit() for char in word)
+                            and "_" not in word and not word.isupper()
+                            and not any(char.isupper() for char in word[1:])
+                            and not any(term in word for term in protected_model_terms)):
+                        candidates.append((start, offset))
+                if candidates:
+                    public_spans = self.context_model.public_spans(text, candidates, selected).intersection(candidates)
+            masked = self.engine.mask_text(
+                text,
+                s.session_id,
+                s.generator,
+                s.forward_store,
+                s.reverse_store,
+                mode=self.prose_mode,
+                common_vocabulary=self.common_words,
+                sensitive_terms=terms,
+                # Code fragments keep the "no identifier preservation" rule.
+                custom_preserve=task_words if preserve_task_words else None,
+                preserve_capitalized=False,
+                # Public words win over capitalization heuristics in every language;
+                # actual private terms are forced ENTITY chunks and stay masked.
+                preserve_capitalized_words=((set(relevant) | ({"treffen", "buch", "hause"} if selected == "de" else set()))
+                                            if vocabulary is not None else set()) | skill_verbs,
+                preserve_capitalized_positions=(discourse_capital_positions(text, selected) | operator_capital_positions(text, selected))
+                if preserve_task_words and self.prose_mode != MaskMode.AGGRESSIVE else frozenset(),
+                preserve_spans=public_spans,
+                private_context=not preserve_task_words,
+                language=selected,
+            ).masked_text
+        finally:
+            _public_domain_span.reset(span_token)
         return masked
 
     def _mask_source(self, text: str, language: str = "auto") -> str:
@@ -1606,6 +1796,9 @@ class GatewaySession:
                 continue  # Optional diagnostics are not required for inference.
             if key == "tool_choice":
                 result[key] = self.tool_choice(value, request_dialect)
+                continue
+            if key in {"stop", "stop_sequences"}:
+                result[key] = self.walk_data(value)
                 continue
             if key in {
                 "messages",
