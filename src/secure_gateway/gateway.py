@@ -13,6 +13,7 @@ from copy import deepcopy
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import logging
 import math
 import http.client
 from pathlib import Path
@@ -62,6 +63,23 @@ from secure_gateway.gateway_errors import GatewayRequestError, public_request_er
 from secure_gateway.domain_dictionaries import catalog as domain_catalog, DEFAULTS as DOMAIN_DEFAULTS, protect_chunks
 
 LIMIT = 16 * 1024 * 1024
+_LOGGER = logging.getLogger(__name__)
+_DIAGNOSTIC_LIMIT = 2**31 - 1
+_DIAGNOSTIC_CATEGORIES = (
+    "snapshot_scan_io", "snapshot_cleanup_io", "snapshot_preserved",
+    "snapshot_load_failed", "snapshot_recovered", "snapshot_recovery_io",
+    "upstream_error_body", "upstream_error_format", "upstream_error_close",
+    "log_delivery_failed",
+)
+
+
+def _warn_diagnostic(category):
+    """Optional logging must not change the error response or expose its cause."""
+    try:
+        _LOGGER.warning("Gateway operational event: %s; inspect authenticated diagnostics.", category)
+    except Exception:
+        return False
+    return True
 
 
 def _reject_json_constant(value: str) -> None:
@@ -2191,6 +2209,8 @@ class PrivacyGateway(ThreadingHTTPServer):
         self.audit = AuditStore(audit_path, audit_max_records, audit_max_age_days) if audit_path is not None else None
         self.audit_write_errors = 0
         self.audit_error_counts = {"admission": 0, "completion": 0, "maintenance": 0}
+        self._diagnostic_lock = RLock()
+        self._diagnostic_counts = dict.fromkeys(_DIAGNOSTIC_CATEGORIES, 0)
         try:
             if self.audit is not None:
                 self.audit.recover_incomplete(apply=True)
@@ -2265,6 +2285,43 @@ class PrivacyGateway(ThreadingHTTPServer):
         with self.admission:
             return dict(self.audit_error_counts)
 
+    def record_diagnostic(self, category):
+        """Bounded instance counters and one content-free warning per category."""
+        with self._diagnostic_lock:
+            if category not in self._diagnostic_counts:
+                raise ValueError("Unknown diagnostic category.")
+            previous = self._diagnostic_counts[category]
+            self._diagnostic_counts[category] = min(previous + 1, _DIAGNOSTIC_LIMIT)
+        if previous == 0 and category not in {"snapshot_preserved", "log_delivery_failed"}:
+            if not _warn_diagnostic(category):
+                # Count directly: logging this failure could recurse forever.
+                with self._diagnostic_lock:
+                    current = self._diagnostic_counts["log_delivery_failed"]
+                    self._diagnostic_counts["log_delivery_failed"] = min(current + 1, _DIAGNOSTIC_LIMIT)
+
+    def operational_diagnostics(self):
+        with self._diagnostic_lock:
+            return dict(self._diagnostic_counts)
+
+    def format_upstream_error(self, exc):
+        """Keep a formatter failure inside the sanitized HTTP error boundary."""
+        try:
+            return sanitized_upstream_error(
+                exc, on_failure=lambda: self.record_diagnostic("upstream_error_body"),
+            )
+        except Exception:
+            # A formatter bug must not disconnect clients or reflect its inputs.
+            self.record_diagnostic("upstream_error_format")
+            try:
+                exc.close()
+            except Exception:
+                self.record_diagnostic("upstream_error_close")
+            code = getattr(exc, "code", None)
+            status = code if type(code) is int and code in UPSTREAM_ERROR_STATUSES else 502
+            message = (b'Prompt is too long; reduce context or compact the conversation.'
+                       if status == 413 else b'Upstream rejected the request.')
+            return status, b'{"error": {"message": "' + message + b'"}}'
+
     def try_admit(self, agent):
         """Reserve an inference slot without waiting or reading the body."""
         with self.admission:
@@ -2332,6 +2389,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                 "max_provider_requests": self.max_provider_requests, "providers": providers,
                 "audit_write_errors": self.audit_write_errors,
                 "audit_error_counts": self.audit_error_diagnostics(),
+                "diagnostic_counts": self.operational_diagnostics(),
                 "audit_completion_retries": self.audit.completion_retries.diagnostics() if self.audit else None}
 
     def _recover_snapshot(self, key: str, *, opaque_only: bool = False) -> None:
@@ -2360,7 +2418,9 @@ class PrivacyGateway(ThreadingHTTPServer):
                 path.chmod(0o600)
                 path.replace(target)
             except OSError:
+                self.record_diagnostic("snapshot_recovery_io")
                 raise OSError("Snapshot recovery failed.") from None
+        self.record_diagnostic("snapshot_recovered")
 
     def _remove_snapshot(self, key):
         if self.state_dir:
@@ -2388,6 +2448,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                     self._snapshot_scan = iter(self.state_dir.glob("*-symbols-v2.enc"))
                     break
                 except OSError:
+                    self.record_diagnostic("snapshot_scan_io")
                     break
                 key = path.name.removesuffix("-symbols-v2.enc")
                 if key in self.sessions or not any(key == agent or re.fullmatch(re.escape(agent) + r"-[a-f0-9]{64}", key) for agent in self.upstreams):
@@ -2402,8 +2463,14 @@ class PrivacyGateway(ThreadingHTTPServer):
                         self._remove_snapshot(key)
                     else:
                         loaded.clear()
-                except (OSError, ValueError):
-                    pass
+                except FileNotFoundError:
+                    continue  # Another operation already removed the candidate.
+                except OSError:
+                    self.record_diagnostic("snapshot_cleanup_io")
+                except ValueError:
+                    # Foreign/corrupt maintenance candidates are intentionally
+                    # preserved; repeated scans are not warning-worthy failures.
+                    self.record_diagnostic("snapshot_preserved")
                 if decrypted >= 2:
                     break
 
@@ -2462,6 +2529,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             )
             saved = None
             if path and path.is_symlink():
+                self.record_diagnostic("snapshot_load_failed")
                 raise OSError("Snapshot path is unsafe.")
             if path and path.exists():
                 try:
@@ -2474,9 +2542,13 @@ class PrivacyGateway(ThreadingHTTPServer):
                     # Quarantine the bytes intact before starting a new session.
                     if str(exc) not in {"Invalid encrypted session file.",
                                         "Incorrect session password or damaged session file."}:
+                        self.record_diagnostic("snapshot_load_failed")
                         raise ValueError("Snapshot could not be loaded.") from None
                     self._recover_snapshot(key)
                     saved = None
+                except OSError:
+                    self.record_diagnostic("snapshot_load_failed")
+                    raise
             session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers,
                                      natural_language=self.natural_language, sql_dialect=self.sql_dialect,
                                      max_mapping_bytes=self.max_mapping_bytes,
@@ -2493,6 +2565,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             # digests must not be loaded into the new table.
             opaque_path = path.with_suffix(".opaque.json") if path else None
             if saved is not None and opaque_path and opaque_path.is_symlink():
+                self.record_diagnostic("snapshot_load_failed")
                 raise OSError("Snapshot path is unsafe.")
             if saved is not None and opaque_path and opaque_path.exists():
                 try:
@@ -2506,6 +2579,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                 except OSError:
                     # Transient read/permission errors must not be treated as
                     # proven corruption; fail safely without quarantining.
+                    self.record_diagnostic("snapshot_load_failed")
                     raise
                 except (json.JSONDecodeError, ValueError):
                     # Invalid provenance metadata: quarantine only opaque state so
@@ -2682,7 +2756,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 self.send_body(200, body)
             except urllib.error.HTTPError as exc:
                 self.capture_response_headers(exc.headers)
-                status, body = sanitized_upstream_error(exc)
+                status, body = self.server.format_upstream_error(exc)
                 self.send_body(status, body)
             except (ValueError, OSError, http.client.HTTPException):
                 self.send_body(502, b'{"error":"Model catalog unavailable"}')
@@ -3077,7 +3151,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             if meta is not None:
                 meta["outcome"] = "upstream_rejected"
             self.capture_response_headers(exc.headers)
-            status, body = sanitized_upstream_error(exc)
+            status, body = self.server.format_upstream_error(exc)
             self.send_body(status, body)
         except OSError:
             if meta is not None:
@@ -3160,7 +3234,7 @@ UPSTREAM_ERROR_STATUSES = {
 }
 
 
-def sanitized_upstream_error(exc):
+def sanitized_upstream_error(exc, *, on_failure: Callable[[], None] | None = None):
     status = exc.code if exc.code in UPSTREAM_ERROR_STATUSES else 502
     error = {"message": "Upstream rejected the request."}
     try:
@@ -3187,8 +3261,15 @@ def sanitized_upstream_error(exc):
                     value = upstream.get(field)
                     if isinstance(value, str) and value in allowed:
                         error[field] = value
+        elif on_failure is not None:
+            on_failure()
+        else:
+            _warn_diagnostic("upstream_error_body")
     except (ValueError, OSError, http.client.HTTPException):
-        pass
+        if on_failure is not None:
+            on_failure()
+        else:
+            _warn_diagnostic("upstream_error_body")
     finally:
         exc.close()
     if status == 413 or error.get("code") == "context_length_exceeded":
