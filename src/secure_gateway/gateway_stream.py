@@ -4,12 +4,20 @@ from __future__ import annotations
 
 import codecs
 import json
+import logging
 import queue
 import re
 import socket
 import time
 from threading import Event, Lock, Thread
 from typing import Any
+
+_logger = logging.getLogger(__name__)
+
+
+def _cleanup_diag(category: str) -> None:
+    """Log a fixed-category cleanup diagnostic without sensitive details."""
+    _logger.warning("stream cleanup: %s", category)
 
 
 class EventRestorer:
@@ -174,7 +182,7 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
                 try:
                     owned_file.close()
                 except (OSError, ValueError):
-                    pass
+                    _cleanup_diag("reader_owned_file_close_failed")
 
     handler.send_response(200)
     handler.send_header("Content-Type", "text/event-stream")
@@ -214,6 +222,7 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
         handler.wfile.flush()
         handler.stream_metrics["output_bytes"] += len(body)
 
+    primary: BaseException | None = None
     try:
         write(b": gateway connected\n\n")
         while True:
@@ -249,6 +258,9 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
                     handler.stream_metrics["first_event_ms"] = round((time.perf_counter() - started) * 1000, 2)
                 write(body)
         write(restorer.finish())
+    except BaseException as exc:
+        primary = exc
+        raise
     finally:
         cancelled.set()
         interrupted_raw = False
@@ -262,7 +274,7 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
                 try:
                     upstream_socket.shutdown(socket.SHUT_RDWR)
                 except OSError:
-                    pass
+                    _cleanup_diag("raw_socket_shutdown_failed")
                 # On Windows, shutdown alone need not wake a timed recv's
                 # select wait. Release the SocketIO ownership before closing
                 # its buffered wrapper, whose lock the reader still holds.
@@ -270,7 +282,7 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
                     raw.close()
                     interrupted_raw = True
                 except OSError:
-                    pass
+                    _cleanup_diag("raw_stream_interrupt_close_failed")
         with state_lock:
             # A kernel wakeup is not guaranteed on every platform (observed on
             # macOS runners): a still-blocked read1 keeps the buffer lock. Detach
@@ -285,7 +297,8 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
         except (OSError, ValueError):
             # HTTPResponse.close flushes its buffered wrapper first; an
             # intentionally interrupted raw stream can already be closed.
-            if not interrupted_raw:
+            _cleanup_diag("upstream_close_failed")
+            if not interrupted_raw and primary is None:
                 raise
         if not detached:
             worker.join(timeout=1)
