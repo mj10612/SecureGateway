@@ -30,7 +30,10 @@ TOKEN_SPLIT_REGEX = re.compile(
     rf"|(?P<IP>{IP_PATTERN})"
     rf"|(?P<PHONE>{PHONE_PATTERN})"
     r"|(?P<HANGUL_WORD>(?=[\w]*[가-힣])\w+)"
-    r"|(?P<NUMBER>[$€£₩¥]?\d+(?:,\d{3})*(?:\.\d+)?%?(?:[A-Za-z]+)?)"
+    # A number never ends inside a word: 2024_report, 3d_models or 3é4x stay one
+    # WORD. Splitting them gave adjacent number/word aliases with no separator,
+    # which strict restore cannot tell apart (tool paths then failed with 502).
+    r"|(?P<NUMBER>[$€£₩¥]?\d+(?:,\d{3})*(?:\.\d+)?%?(?:[A-Za-z]+)?(?!\w))"
     r"|(?P<WORD>\w+(?:['’]\w+)*)"
     r"|(?P<OTHER>.)",
     re.UNICODE,

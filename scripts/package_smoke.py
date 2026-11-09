@@ -59,7 +59,42 @@ def verify_native(python, work, env, root, binaries):
     print(f"Native offline versions: {versions}")
 
 
-LIFECYCLE_PROOF = r'''
+# Content-free failure summary for the child lifecycle proof. It is shared with
+# tests so the child and the tested helper cannot drift apart. It reports the
+# HTTP status, the gateway's fixed error string (never provider text or fixture
+# content), provider request count and the random work basename that shapes
+# masked tool paths, so an intermittent CI failure can be replayed exactly.
+LIFECYCLE_DIAGNOSTICS = r'''
+import json
+
+LIFECYCLE_GATEWAY_ERRORS = frozenset((
+    'Upstream response could not be safely restored',
+    'Upstream transport unavailable',
+    'Privacy gateway local I/O failed; request could not be completed',
+    'Upstream response size limit exceeded',
+))
+LIFECYCLE_UPSTREAM_TYPES = frozenset((
+    'invalid_request_error', 'authentication_error', 'permission_error',
+    'not_found_error', 'rate_limit_error', 'api_error', 'overloaded_error',
+))
+
+def lifecycle_http_diagnostic(step, status, body, provider_requests, work_name):
+    try:
+        error = json.loads(body.decode('utf-8')).get('error')
+    except (ValueError, AttributeError, UnicodeDecodeError):
+        error = None
+    if isinstance(error, dict):  # sanitized upstream rejection: keep only its type
+        kind = error.get('type')
+        error = 'upstream:' + kind if isinstance(kind, str) and kind in LIFECYCLE_UPSTREAM_TYPES else 'upstream'
+    elif not isinstance(error, str) or error not in LIFECYCLE_GATEWAY_ERRORS:
+        error = 'unavailable'
+    return {'step': step, 'status': status, 'gateway_error': error,
+            'provider_requests': provider_requests, 'work_basename': work_name}
+'''
+exec(LIFECYCLE_DIAGNOSTICS)
+
+
+LIFECYCLE_PROOF = LIFECYCLE_DIAGNOSTICS + r'''
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
@@ -198,21 +233,30 @@ if stage in ('finish', 'all'):
                     'type': 'object', 'properties': {'file_path': {'type': 'string', 'default': str(private_file)}},
                     'required': ['file_path']}}]}
             opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-            def send(value):
+            def send(value, step):
                 request = urllib.request.Request(f"http://127.0.0.1:{settings['port']}/codex/responses",
                     data=json.dumps(value).encode(), headers={'Content-Type': 'application/json',
                     'Authorization': 'Bearer eyJ-offline-fixture-only',
                     'X-SecureGateway-Token': settings['token']})
-                with opener.open(request, timeout=20) as response:
-                    return json.load(response)
-            restored = send(payload)['output'][0]
+                try:
+                    with opener.open(request, timeout=20) as response:
+                        return json.load(response)
+                except urllib.error.HTTPError as exc:
+                    try:
+                        body = exc.read(4096)
+                    finally:
+                        exc.close()
+                    summary = lifecycle_http_diagnostic(step, exc.code, body, len(provider.payloads), work.name)
+                    print('LIFECYCLE_DIAGNOSTIC ' + json.dumps(summary, sort_keys=True), file=sys.stderr, flush=True)
+                    raise
+            restored = send(payload, 'tool_call')['output'][0]
             assert restored['name'] == 'read_file'
             actual_path = Path(json.loads(restored['arguments'])['file_path'])
             assert actual_path == private_file
             tool_output = actual_path.read_text(encoding='utf-8')
             payload['input'].extend([restored, {'type': 'function_call_output', 'call_id': 'call_smoke',
                                       'output': tool_output}])
-            result = send(payload)
+            result = send(payload, 'tool_result')
             assert result['output'][0]['content'][0]['text'] == tool_output
             assert len(provider.payloads) == 2
             cli('gateway', 'stop', '--config', str(config))
