@@ -14,7 +14,7 @@ from threading import Event, Lock, Thread
 import time
 from typing import Any, BinaryIO
 
-from secure_gateway.command_capture import _cancel
+from secure_gateway.platform_utils import cancel_process, child_process_options, read_available
 
 
 MAX_WORKER_INPUT_BYTES = 1024 * 1024
@@ -177,10 +177,7 @@ def capture_worker_process(
         or not command[0]
     ):
         raise ValueError("Invalid worker execution arguments.")
-    options = (
-        {"creationflags": getattr(subprocess, "CREATE_NO_WINDOW", 0)}
-        if os.name == "nt" else {"start_new_session": new_process_group}
-    )
+    options = child_process_options(new_process_group=new_process_group)
     deadline = time.monotonic() + timeout
     try:
         process = subprocess.Popen(
@@ -200,7 +197,7 @@ def capture_worker_process(
         nonlocal total, finished, failure
         try:
             while True:
-                block = stream.read1(65536)  # type: ignore[attr-defined]
+                block = read_available(stream, 65536)
                 if not block:
                     break
                 with lock:
@@ -261,7 +258,7 @@ def capture_worker_process(
             changed.wait(min(remaining, 0.05))
     except BaseException:
         if new_process_group or os.name == "nt":
-            _cancel(process)
+            cancel_process(process)
         else:
             # An outer evaluation runner owns the group. Keep nested inference
             # in that group so its deadline also cancels provider activity.

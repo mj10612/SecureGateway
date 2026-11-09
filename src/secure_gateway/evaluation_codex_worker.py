@@ -18,6 +18,7 @@ from secure_gateway.evaluation_worker import (
     MAX_WORKER_INPUT_BYTES, MAX_WORKER_OUTPUT_BYTES, capture_worker_process,
     strict_json, validate_request, validate_result,
 )
+from secure_gateway.platform_utils import in_process_group_leader
 
 
 def _prompt(request: dict) -> str:
@@ -106,9 +107,7 @@ def run_codex_worker(request: dict) -> dict:
         if key in allowed_env
     }
     inherited_group = (
-        os.name != "nt"
-        and os.environ.get("SECURE_GATEWAY_EVAL_GROUP") == "1"
-        and os.getpgrp() == os.getpid()  # type: ignore[attr-defined]
+        os.environ.get("SECURE_GATEWAY_EVAL_GROUP") == "1" and in_process_group_leader()
     )
     with tempfile.TemporaryDirectory(prefix="secure-gateway-eval-") as directory:
         root = Path(directory)

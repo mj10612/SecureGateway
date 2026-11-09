@@ -7,7 +7,7 @@ import time
 import pytest
 
 from secure_gateway.command_capture import capture_command
-from secure_gateway import command_capture
+from secure_gateway import platform_utils
 
 
 def test_group_permission_failure_still_terminates_and_reaps_child(monkeypatch):
@@ -24,9 +24,9 @@ def test_group_permission_failure_still_terminates_and_reaps_child(monkeypatch):
         kill=lambda: calls.append("kill"),
         wait=lambda: calls.append("wait"),
     )
-    monkeypatch.setattr(command_capture, "os", SimpleNamespace(name="posix", killpg=denied))
-    monkeypatch.setattr(command_capture, "signal", SimpleNamespace(SIGKILL=9))
-    command_capture._cancel(child)
+    monkeypatch.setattr(platform_utils, "os", SimpleNamespace(name="posix", killpg=denied))
+    monkeypatch.setattr(platform_utils, "signal", SimpleNamespace(SIGKILL=9))
+    platform_utils.cancel_process(child)
     assert calls == ["kill", "wait"]
 
 
