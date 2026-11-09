@@ -50,7 +50,7 @@ def strict_json(raw: str | bytes) -> Any:
 
 def validate_request(request: dict) -> bytes:
     """Validate the transport contract before launching any executable."""
-    allowed = {"role", "job_id", "model", "max_output_tokens", "messages", "criteria"}
+    allowed = {"role", "job_id", "model", "max_output_tokens", "messages", "criteria", "reasoning_effort"}
     if (
         not isinstance(request, dict)
         or set(request) - allowed
@@ -63,6 +63,8 @@ def validate_request(request: dict) -> bytes:
         or not 1 <= len(request["messages"]) <= 128
     ):
         raise ValueError("Invalid worker request.")
+    if 'reasoning_effort' in request and request['reasoning_effort'] not in {'low', 'medium', 'high', 'xhigh'}:
+        raise ValueError("Invalid reasoning effort.")
     for message in request["messages"]:
         if (
             not isinstance(message, dict)

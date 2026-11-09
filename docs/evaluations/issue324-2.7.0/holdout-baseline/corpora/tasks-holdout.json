@@ -1,0 +1,1939 @@
+{
+ "schema_version": 1,
+ "synthetic": true,
+ "corpus_version": "issue324-tasks-holdout-v1",
+ "cases": [
+  {
+   "id": "hold-task-en",
+   "language": "en",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-en-holdout-task-volunteer-roster",
+   "family": "holdout-task-volunteer-roster",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "I coordinate weekend volunteers at Fernhill Community Pantry. Assign Saturday's three shifts (8–11, 11–14, 14–17) among Rose Calloway, Wes Abara and Hope Lindgren. Rules: nobody works two shifts in a row; Rose cannot do the early shift; Wes must be on the shift that receives the 14:00 truck. I haven't heard back from Hope about her availability yet. Don't assign anyone I didn't name. Give me the roster as a three-line list in time order, plus anything you still need from me."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 35,
+     "end": 60,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 120,
+     "end": 133,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 135,
+     "end": 144,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 149,
+     "end": 162,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 205,
+     "end": 209,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 237,
+     "end": 240,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 319,
+     "end": 323,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "I coordinate weekend volunteers at ORG_1. Assign Saturday's three shifts (8–11, 11–14, 14–17) among PERSON_1, PERSON_2 and PERSON_3. Rules: nobody works two shifts in a row; PERSON_1 cannot do the early shift; PERSON_2 must be on the shift that receives the 14:00 truck. I haven't heard back from PERSON_3 about her availability yet. Don't assign anyone I didn't name. Give me the roster as a three-line list in time order, plus anything you still need from me.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Produces a Saturday roster assigning the three named shifts among the three named volunteers."
+    },
+    {
+     "id": "conditions",
+     "description": "Respects every rule: Rose not on 8–11, Wes on 14–17 (the shift receiving the 14:00 truck), nobody on two consecutive shifts; the resulting assignment is Hope 8–11, Rose 11–14, Wes 14–17 (or the rule-compliant fallback offered conditionally)."
+    },
+    {
+     "id": "prohibition",
+     "description": "Assigns no unnamed person and does not present Hope's availability as confirmed (her slot is marked pending/conditional)."
+    },
+    {
+     "id": "scope",
+     "description": "Output is a three-line time-ordered list plus a targeted request about Hope's availability (an optional rule-compliant fallback is allowed); no unrelated content."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "8–11: Hope Lindgren (pending her confirmation)\n11–14: Rose Calloway\n14–17: Wes Abara\nStill needed: please confirm Hope can take 8–11. If she can't, the only arrangement within your rules is Wes on 8–11 and 14–17 (not consecutive) with Rose on 11–14, provided Wes agrees to two shifts.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Hope's availability is genuinely absent from the original; a conditional roster plus a confirmation request is full credit. Refusing to produce any roster until Hope replies loses 'intent'.",
+   "missing_original_facts": [
+    "Hope Lindgren's availability"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-ko",
+   "language": "ko",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-ko-holdout-task-bookclub-notice",
+   "family": "holdout-task-bookclub-notice",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "별다리 작은도서관 독서모임 공지문을 써 주세요. 진행자는 윤하늘 님이고, 모임은 매월 둘째 주 토요일 오후 3시 2층 세미나실에서 열립니다. 이번 분기 선정 도서 세 권은 아직 위원회에서 확정되지 않았어요. 참가 신청은 하늘 님에게 haneul.yoon@byeoldari-demo.invalid 로 받습니다. 조건: 존댓말, 5문장 이내. 책 제목을 임의로 지어내지 마세요. 공지문 본문만 주세요."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 0,
+     "end": 9,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 32,
+     "end": 35,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 123,
+     "end": 125,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 130,
+     "end": 164,
+     "label": "email",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "ORG_1 독서모임 공지문을 써 주세요. 진행자는 PERSON_1 님이고, 모임은 매월 둘째 주 토요일 오후 3시 2층 세미나실에서 열립니다. 이번 분기 선정 도서 세 권은 아직 위원회에서 확정되지 않았어요. 참가 신청은 PERSON_1 님에게 EMAIL_1 로 받습니다. 조건: 존댓말, 5문장 이내. 책 제목을 임의로 지어내지 마세요. 공지문 본문만 주세요.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a Korean announcement for the library book club that includes the host, the schedule (second Saturday monthly, 3 pm, 2nd-floor seminar room) and how to apply (email to the host)."
+    },
+    {
+     "id": "conditions",
+     "description": "Uses polite/honorific register (존댓말) throughout and stays within five sentences (a bracketed title line does not count as a sentence)."
+    },
+    {
+     "id": "prohibition",
+     "description": "Does not invent book titles; states that the three books are still to be announced/undecided."
+    },
+    {
+     "id": "scope",
+     "description": "Returns only the notice body, with no preamble, alternatives or commentary."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "[별다리 작은도서관 독서모임 안내] 매월 둘째 주 토요일 오후 3시, 2층 세미나실에서 독서모임을 엽니다. 진행은 윤하늘 님이 맡아 주십니다. 이번 분기 선정 도서 세 권은 위원회에서 확정되는 대로 따로 안내해 드리겠습니다. 참가를 원하시는 분은 윤하늘 님(haneul.yoon@byeoldari-demo.invalid)께 신청해 주세요.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Book titles are genuinely missing; a placeholder or 'to be announced' sentence is required, never a concrete list.",
+   "missing_original_facts": [
+    "the three selected book titles"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-es",
+   "language": "es",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-es-holdout-task-supplier-quote",
+   "family": "holdout-task-supplier-quote",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Tengo dos presupuestos para 40 sillas plegables para el centro cívico. Talleres Ondarra: 1.880 € con transporte incluido, entrega el 12 de marzo. Mueblería Brisa: 1.720 € más 95 € de transporte; Nieves Arrieta, su comercial, todavía no me ha dicho la fecha de entrega. La regla del comité: elegir la opción más barata siempre que llegue antes del 15 de marzo. No me recomiendes un tercer proveedor. Responde con la recomendación en una frase y, debajo, los cálculos."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 71,
+     "end": 87,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 146,
+     "end": 161,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 195,
+     "end": 209,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Tengo dos presupuestos para 40 sillas plegables para el centro cívico. ORG_1: 1.880 € con transporte incluido, entrega el 12 de marzo. ORG_2: 1.720 € más 95 € de transporte; PERSON_1, su comercial, todavía no me ha dicho la fecha de entrega. La regla del comité: elegir la opción más barata siempre que llegue antes del 15 de marzo. No me recomiendes un tercer proveedor. Responde con la recomendación en una frase y, debajo, los cálculos.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Recommends between the two named suppliers for the 40 folding chairs."
+    },
+    {
+     "id": "conditions",
+     "description": "Applies the committee rule correctly: Brisa totals 1,815 € (65 € cheaper than Ondarra's 1,880 €), choosing Brisa is conditional on delivery before 15 March, and Ondarra (delivering 12 March) is the fallback."
+    },
+    {
+     "id": "prohibition",
+     "description": "Suggests no third supplier and does not invent a delivery date for Brisa."
+    },
+    {
+     "id": "scope",
+     "description": "Gives a one-sentence recommendation followed underneath by the calculations, and identifies the missing delivery date."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "Recomendación: elegir Mueblería Brisa (1.815 € en total) solo si Nieves Arrieta confirma la entrega antes del 15 de marzo; si no puede confirmarlo, Talleres Ondarra (1.880 €, entrega el 12 de marzo).\nCálculos:\n- Talleres Ondarra: 1.880 € con transporte incluido; entrega el 12/03, dentro del plazo.\n- Mueblería Brisa: 1.720 € + 95 € = 1.815 €, es decir, 65 € más barata; fecha de entrega pendiente.\nDato que falta: la fecha de entrega de Mueblería Brisa.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Brisa's delivery date is genuinely missing; an unconditional pick of either supplier loses 'conditions'.",
+   "missing_original_facts": [
+    "Mueblería Brisa's delivery date"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-fr",
+   "language": "fr",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-fr-holdout-task-minutes-to-actions",
+   "family": "holdout-task-minutes-to-actions",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Transforme ce compte rendu en tableau d'actions (colonnes : action, responsable, échéance), dans l'ordre où les actions apparaissent. Ne reprends pas la discussion sur le budget.\n« Réunion du 4 février. Claire Fontanel relira le contrat de maintenance avant le 10 février. Le budget 2027 a été jugé trop serré ; on en reparlera. Pierre Aubertin commandera les badges des stagiaires d'ici le 14 février. Claire et Manon Riguet prépareront la visite du site Ardoise ; aucune date n'a été fixée. »"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 203,
+     "end": 218,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 329,
+     "end": 344,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 403,
+     "end": 409,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 413,
+     "end": 425,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 456,
+     "end": 463,
+     "label": "project",
+     "fragments": [],
+     "policy": "explicit",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [
+    "Ardoise"
+   ],
+   "human_text": "Transforme ce compte rendu en tableau d'actions (colonnes : action, responsable, échéance), dans l'ordre où les actions apparaissent. Ne reprends pas la discussion sur le budget.\n« Réunion du 4 février. PERSON_1 relira le contrat de maintenance avant le 10 février. Le budget 2027 a été jugé trop serré ; on en reparlera. PERSON_2 commandera les badges des stagiaires d'ici le 14 février. PERSON_1 et PERSON_3 prépareront la visite du site PROJECT_1 ; aucune date n'a été fixée. »",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Converts the meeting minutes into an action-item table."
+    },
+    {
+     "id": "conditions",
+     "description": "Uses exactly the columns action / owner / deadline and keeps the three actions in their original order (contract review, intern badges, site-visit preparation), with joint ownership of the visit preserved."
+    },
+    {
+     "id": "prohibition",
+     "description": "Omits the budget discussion entirely and does not invent a deadline for the site visit (marked as not set)."
+    },
+    {
+     "id": "scope",
+     "description": "Outputs only the table, covering exactly the three actions."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "explicit": "owner-registered term in this case's synthetic owner registry (eligible for forced_terms)"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "| Action | Responsable | Échéance |\n|---|---|---|\n| Relire le contrat de maintenance | Claire Fontanel | avant le 10 février |\n| Commander les badges des stagiaires | Pierre Aubertin | 14 février |\n| Préparer la visite du site Ardoise | Claire Fontanel et Manon Riguet | non fixée |",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. The site-visit date is explicitly unset in the original; 'non fixée'/'à définir' is correct.",
+   "missing_original_facts": [
+    "site-visit date (explicitly not set)"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-pt",
+   "language": "pt",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-pt-holdout-task-discount-refusal",
+   "family": "holdout-task-discount-refusal",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Escreva uma resposta curta (até 90 palavras) para Glória Bastos, compradora da Papelaria Alvorada, que pediu 20% de desconto no pedido PED-SYN-5531. Nossa política só permite 8% para pedidos acima de 500 unidades, e o pedido dela tem 320. Recuse com cordialidade, explique o motivo e ofereça frete grátis, que está autorizado. Não prometa nenhuma data de entrega. Assine como Vítor Cunha."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 50,
+     "end": 63,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 79,
+     "end": 97,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 135,
+     "end": 147,
+     "label": "order_id",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 376,
+     "end": 387,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Escreva uma resposta curta (até 90 palavras) para PERSON_1, compradora da ORG_1, que pediu 20% de desconto no pedido ID_1. Nossa política só permite 8% para pedidos acima de 500 unidades, e o pedido dela tem 320. Recuse com cordialidade, explique o motivo e ofereça frete grátis, que está autorizado. Não prometa nenhuma data de entrega. Assine como PERSON_2.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a reply to Glória declining the 20% discount request on the named order."
+    },
+    {
+     "id": "conditions",
+     "description": "Courteous tone; explains the reason (8% only above 500 units, order has 320); offers free shipping; at most 90 words; signed as Vítor Cunha."
+    },
+    {
+     "id": "prohibition",
+     "description": "Promises no delivery date and grants no discount (not even the 8%)."
+    },
+    {
+     "id": "scope",
+     "description": "Delivers only the message text addressed to the buyer."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "Olá, Glória,\n\nAgradeço o contato em nome da Papelaria Alvorada. Infelizmente não podemos conceder 20% de desconto no pedido PED-SYN-5531: nossa política permite desconto de 8% apenas para pedidos acima de 500 unidades, e este pedido tem 320. Como alternativa, ofereço frete grátis para este pedido.\n\nFico à disposição.\nVítor Cunha",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. All facts needed are present; no clarification is expected.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-de",
+   "language": "de",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-de-holdout-task-fieldtrip-packing",
+   "family": "holdout-task-fieldtrip-packing",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Erstelle eine Packliste für den Tagesausflug der Klasse 6b ins Waldmuseum Lindenhain am Donnerstag. Leiter ist Ernst Kühne. Vorgaben: Regen ist angesagt; das Museum erlaubt keine Glasflaschen; Mittagessen gibt es vor Ort nicht. Gib keine Empfehlungen zu Medikamenten – das regelt Herr Kühne mit den Eltern. Höchstens acht Punkte, als nummerierte Liste, ohne Einleitung."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 63,
+     "end": 84,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 111,
+     "end": 122,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 285,
+     "end": 290,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Erstelle eine Packliste für den Tagesausflug der Klasse 6b ins ORG_1 am Donnerstag. Leiter ist PERSON_1. Vorgaben: Regen ist angesagt; das Museum erlaubt keine Glasflaschen; Mittagessen gibt es vor Ort nicht. Gib keine Empfehlungen zu Medikamenten – das regelt Herr PERSON_1 mit den Eltern. Höchstens acht Punkte, als nummerierte Liste, ohne Einleitung.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Produces a packing list for the class day trip to the forest museum."
+    },
+    {
+     "id": "conditions",
+     "description": "Reflects all given constraints: rain gear, a packed lunch (no food on site) and a non-glass drink bottle."
+    },
+    {
+     "id": "prohibition",
+     "description": "Contains no medication, first-aid-medicine or medical-advice items."
+    },
+    {
+     "id": "scope",
+     "description": "Numbered list of at most eight items with no introduction or closing commentary."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "1. Regenjacke oder Regencape\n2. Wasserfeste Schuhe\n3. Lunchpaket für den ganzen Tag\n4. Trinkflasche aus Kunststoff oder Metall (kein Glas)\n5. Kleiner Rucksack\n6. Wechselsocken\n7. Schreibzeug für Notizen im Museum\n8. Plastiktüte für nasse Sachen",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts. Generic items beyond the constraints are fine if within eight.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-id",
+   "language": "id",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-id-holdout-task-expense-categories",
+   "family": "holdout-task-expense-categories",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Tolong kelompokkan pengeluaran acara arisan RT bulan ini ke dalam kategori Konsumsi, Perlengkapan, dan Transportasi, lalu hitung subtotal tiap kategori. Data dari bendahara Intan Wulandari: nasi kotak Rp450.000; sewa tenda Rp300.000; bensin mobil Pak Bulan Siswanto Rp85.000; air mineral Rp60.000; taplak meja (nota hilang, jumlah belum diketahui); ongkos ojek Rp24.000. Jangan menebak jumlah yang tidak ada. Sajikan sebagai tabel, lalu satu kalimat berisi total keseluruhan."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 173,
+     "end": 188,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 251,
+     "end": 265,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Tolong kelompokkan pengeluaran acara arisan RT bulan ini ke dalam kategori Konsumsi, Perlengkapan, dan Transportasi, lalu hitung subtotal tiap kategori. Data dari bendahara PERSON_1: nasi kotak Rp450.000; sewa tenda Rp300.000; bensin mobil Pak PERSON_2 Rp85.000; air mineral Rp60.000; taplak meja (nota hilang, jumlah belum diketahui); ongkos ojek Rp24.000. Jangan menebak jumlah yang tidak ada. Sajikan sebagai tabel, lalu satu kalimat berisi total keseluruhan.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Groups the listed expenses into the three named categories with a subtotal for each."
+    },
+    {
+     "id": "conditions",
+     "description": "Correct assignment and arithmetic: Konsumsi Rp510.000; Perlengkapan Rp300.000 plus the unknown tablecloth; Transportasi Rp109.000; known total Rp919.000."
+    },
+    {
+     "id": "prohibition",
+     "description": "Does not guess or fill in the tablecloth amount; flags it as unknown/excluded."
+    },
+    {
+     "id": "scope",
+     "description": "A table followed by a single sentence stating the overall (known) total."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "| Kategori | Item | Subtotal |\n|---|---|---|\n| Konsumsi | Nasi kotak; air mineral | Rp510.000 |\n| Perlengkapan | Sewa tenda; taplak meja (jumlah belum diketahui) | Rp300.000 + taplak meja |\n| Transportasi | Bensin mobil Pak Bulan Siswanto; ongkos ojek | Rp109.000 |\n\nTotal yang sudah diketahui adalah Rp919.000, belum termasuk taplak meja yang notanya hilang (mohon konfirmasi jumlahnya ke Bu Intan Wulandari).",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. The tablecloth amount is genuinely missing; stating the total as known-portion-only is full credit.",
+   "missing_original_facts": [
+    "tablecloth amount (receipt lost)"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-tr",
+   "language": "tr",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-tr-holdout-task-leave-handover",
+   "family": "holdout-task-leave-handover",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Yarından itibaren iki hafta izindeyim. Yerime bakacak Umut Karaca için tam üç maddelik bir devir notu yaz. Bilgiler: Yıldırım Lojistik teklifi cuma günü gönderilecek; Deniz Ulu ile salı toplantısı ertelendi, yeni tarih bekleniyor; depo sayımı tamamlandı. Müşterinin telefon numarası olan +44 7700 900602'yi nota koyma. Madde işaretlerinden önce veya sonra metin ekleme."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 54,
+     "end": 65,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 117,
+     "end": 134,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 167,
+     "end": 176,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 288,
+     "end": 303,
+     "label": "phone",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Yarından itibaren iki hafta izindeyim. Yerime bakacak PERSON_1 için tam üç maddelik bir devir notu yaz. Bilgiler: ORG_1 teklifi cuma günü gönderilecek; PERSON_2 ile salı toplantısı ertelendi, yeni tarih bekleniyor; depo sayımı tamamlandı. Müşterinin telefon numarası olan PHONE_1'yi nota koyma. Madde işaretlerinden önce veya sonra metin ekleme.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a handover note for Umut covering the user's pending items during their leave."
+    },
+    {
+     "id": "conditions",
+     "description": "Includes all three facts accurately: offer to Yıldırım Lojistik goes out Friday; Tuesday meeting with Deniz postponed with the new date pending; warehouse count completed."
+    },
+    {
+     "id": "prohibition",
+     "description": "Does not include the customer's phone number and does not invent a new meeting date."
+    },
+    {
+     "id": "scope",
+     "description": "Exactly three bullet points with no text before or after them."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "- Yıldırım Lojistik'e teklif cuma günü gönderilecek.\n- Deniz Ulu ile salı toplantısı ertelendi; yeni tarih henüz belli değil, gelince takvime işlenmeli.\n- Depo sayımı tamamlandı, ek işlem gerekmiyor.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. The new meeting date is pending in the original; saying so is correct.",
+   "missing_original_facts": [
+    "new meeting date (pending)"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-ru",
+   "language": "ru",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-ru-holdout-task-room-booking",
+   "family": "holdout-task-room-booking",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "Помоги забронировать переговорную для воркшопа Веры Синицыной в четверг с 10:00 до 13:00. Доступны: «Ольха» на 8 мест (свободна весь день), «Клён» на 20 мест (свободна только после 11:00), «Дуб» на 40 мест (свободна весь день, но стоит вдвое дороже остальных). Сколько будет участников, Вера пока не сообщила. Правило: брать самую дешёвую комнату, которая вмещает всех на всё время. Не придумывай число участников. Ответь коротко: какую комнату брать или что нужно уточнить."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 47,
+     "end": 61,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 287,
+     "end": 291,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "Помоги забронировать переговорную для воркшопа PERSON_1 в четверг с 10:00 до 13:00. Доступны: «Ольха» на 8 мест (свободна весь день), «Клён» на 20 мест (свободна только после 11:00), «Дуб» на 40 мест (свободна весь день, но стоит вдвое дороже остальных). Сколько будет участников, PERSON_1 пока не сообщила. Правило: брать самую дешёвую комнату, которая вмещает всех на всё время. Не придумывай число участников. Ответь коротко: какую комнату брать или что нужно уточнить.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Helps choose a meeting room for Vera's Thursday 10:00–13:00 workshop."
+    },
+    {
+     "id": "conditions",
+     "description": "Rules out Klyon (unavailable before 11:00) and gives the correct conditional choice: Olkha if ≤8 participants, Dub if 9–40."
+    },
+    {
+     "id": "prohibition",
+     "description": "Does not invent a participant count and does not commit to one room as if the count were known."
+    },
+    {
+     "id": "scope",
+     "description": "Short answer: a targeted request for the participant count plus the conditional decision; no booking procedure or unrelated advice."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "Нужно уточнить у Веры Синицыной число участников. «Клён» не подходит в любом случае — до 11:00 он занят. Если участников не больше 8 — бронируйте «Ольху»; если от 9 до 40 — «Дуб»; если больше 40, ни одна комната не подойдёт.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. The room decision genuinely depends on the missing participant count; deferring it with a conditional rule is the correct answer.",
+   "missing_original_facts": [
+    "number of workshop participants"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-hi",
+   "language": "hi",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-hi-holdout-task-parent-reminder",
+   "family": "holdout-task-parent-reminder",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "कक्षा 4 के अभिभावकों के लिए एक व्हाट्सऐप रिमाइंडर लिखिए: अभिभावक-शिक्षक बैठक शनिवार सुबह 10 बजे सरस्वती विहार विद्यालय के हॉल में है। कक्षा अध्यापिका पूजा रस्तोगी हैं; जो नहीं आ सकते वे पूजा जी को +1 415 555 0144 पर संदेश भेजें। संदेश 60 शब्दों से कम हो। बकाया फ़ीस का ज़िक्र बिलकुल न करें। सिर्फ़ संदेश लिखें।"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 96,
+     "end": 118,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 150,
+     "end": 162,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 186,
+     "end": 190,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 197,
+     "end": 212,
+     "label": "phone",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "कक्षा 4 के अभिभावकों के लिए एक व्हाट्सऐप रिमाइंडर लिखिए: अभिभावक-शिक्षक बैठक शनिवार सुबह 10 बजे ORG_1 के हॉल में है। कक्षा अध्यापिका PERSON_1 हैं; जो नहीं आ सकते वे PERSON_1 जी को PHONE_1 पर संदेश भेजें। संदेश 60 शब्दों से कम हो। बकाया फ़ीस का ज़िक्र बिलकुल न करें। सिर्फ़ संदेश लिखें।",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes a WhatsApp reminder to Class 4 parents about the parent-teacher meeting."
+    },
+    {
+     "id": "conditions",
+     "description": "Includes Saturday 10 am, the school hall, and the instruction to message the class teacher Pooja at the given number if unable to attend; under 60 words."
+    },
+    {
+     "id": "prohibition",
+     "description": "Makes no mention of pending or overdue fees."
+    },
+    {
+     "id": "scope",
+     "description": "Outputs only the message text."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "नमस्ते अभिभावकगण, कक्षा 4 की अभिभावक-शिक्षक बैठक शनिवार सुबह 10 बजे सरस्वती विहार विद्यालय के हॉल में होगी। कृपया समय पर पधारें। यदि आप नहीं आ सकते, तो कक्षा अध्यापिका पूजा रस्तोगी जी को +1 415 555 0144 पर संदेश भेजें। धन्यवाद।",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-mr",
+   "language": "mr",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-mr-holdout-task-repair-priority",
+   "family": "holdout-task-repair-priority",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "सोसायटीच्या चार दुरुस्ती तक्रारी प्राधान्यक्रमाने लावा. नियम: आधी सुरक्षिततेचा धोका, मग पाणी गळती, मग बाकी; एकाच प्रकारात आधी आलेली तक्रार आधी. तक्रारी: (१) विजय साठे - लिफ्टमधील आरसा डागाळला आहे, ५ मार्च; (२) आशा नाईक - जिन्यातील दिवा बंद, जिना अंधारात, ७ मार्च; (३) मेघा कर्वे - स्वयंपाकघरात छतातून गळती, ६ मार्च; (४) किरण दळवी - बाथरूमच्या नळातून गळती, ४ मार्च. फक्त क्रमांकित यादी द्या, प्रत्येक ओळीत नाव आणि एका वाक्यात कारण. नवीन तक्रारी जोडू नका."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 157,
+     "end": 166,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 210,
+     "end": 218,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 268,
+     "end": 278,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 320,
+     "end": 329,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "सोसायटीच्या चार दुरुस्ती तक्रारी प्राधान्यक्रमाने लावा. नियम: आधी सुरक्षिततेचा धोका, मग पाणी गळती, मग बाकी; एकाच प्रकारात आधी आलेली तक्रार आधी. तक्रारी: (१) PERSON_1 - लिफ्टमधील आरसा डागाळला आहे, ५ मार्च; (२) PERSON_2 - जिन्यातील दिवा बंद, जिना अंधारात, ७ मार्च; (३) PERSON_3 - स्वयंपाकघरात छतातून गळती, ६ मार्च; (४) PERSON_4 - बाथरूमच्या नळातून गळती, ४ मार्च. फक्त क्रमांकित यादी द्या, प्रत्येक ओळीत नाव आणि एका वाक्यात कारण. नवीन तक्रारी जोडू नका.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Orders the four society repair complaints by priority."
+    },
+    {
+     "id": "conditions",
+     "description": "Applies the rule exactly: safety first (Asha), then leaks by date (Kiran 4 March before Megha 6 March), then other (Vijay)."
+    },
+    {
+     "id": "prohibition",
+     "description": "Adds no new complaints and alters no facts."
+    },
+    {
+     "id": "scope",
+     "description": "Numbered list only, each line with the name and a one-sentence reason."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "१. आशा नाईक – जिना अंधारात असल्याने हा सुरक्षिततेचा धोका आहे.\n२. किरण दळवी – पाणी गळतीची तक्रार असून ती ४ मार्चला सर्वात आधी आली.\n३. मेघा कर्वे – पाणी गळतीची तक्रार आहे, पण ती ६ मार्चला नंतर आली.\n४. विजय साठे – आरशावरील डाग हा इतर प्रकारचा, कमी तातडीचा प्रश्न आहे.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-bn",
+   "language": "bn",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-bn-holdout-task-feedback-themes",
+   "family": "holdout-task-feedback-themes",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "আমাদের রান্নার কর্মশালা নিয়ে অংশগ্রহণকারীদের মতামত থেকে সবচেয়ে বেশি উঠে আসা দুটি বিষয় বের করুন। মতামত: আলো মজুমদার – 'ঘর খুব গরম ছিল'; আকাশ রায় – 'উপকরণ কম পড়েছিল'; নদী খাতুন – 'পাখা চলছিল না, গরমে কষ্ট হয়েছে'; রাকিব হাসান – 'সবজি শেষ হয়ে গিয়েছিল'; সুমি দে – 'শিক্ষক খুব ভালো'। কারও নাম লিখবেন না এবং হুবহু উদ্ধৃতি দেবেন না। দুটি বুলেট দিন, প্রতিটিতে কতজন বলেছেন তা উল্লেখ করুন।"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 106,
+     "end": 117,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 138,
+     "end": 147,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 170,
+     "end": 179,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 217,
+     "end": 228,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 257,
+     "end": 264,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "আমাদের রান্নার কর্মশালা নিয়ে অংশগ্রহণকারীদের মতামত থেকে সবচেয়ে বেশি উঠে আসা দুটি বিষয় বের করুন। মতামত: PERSON_1 – 'ঘর খুব গরম ছিল'; PERSON_2 – 'উপকরণ কম পড়েছিল'; PERSON_3 – 'পাখা চলছিল না, গরমে কষ্ট হয়েছে'; PERSON_4 – 'সবজি শেষ হয়ে গিয়েছিল'; PERSON_5 – 'শিক্ষক খুব ভালো'। কারও নাম লিখবেন না এবং হুবহু উদ্ধৃতি দেবেন না। দুটি বুলেট দিন, প্রতিটিতে কতজন বলেছেন তা উল্লেখ করুন।",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Identifies the two most frequent themes in the cooking-workshop feedback."
+    },
+    {
+     "id": "conditions",
+     "description": "The themes are heat/ventilation (2 participants) and insufficient ingredients (2 participants), each stated with its count."
+    },
+    {
+     "id": "prohibition",
+     "description": "Includes no participant names and no verbatim quotes."
+    },
+    {
+     "id": "scope",
+     "description": "Exactly two bullets; the single positive teacher comment is not presented as a top theme."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "• ঘরের অতিরিক্ত গরম ও বাতাস চলাচলের অভাব — ২ জন।\n• উপকরণ, বিশেষ করে সবজি, কম পড়া — ২ জন।",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-ur",
+   "language": "ur",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-ur-holdout-task-delay-apology",
+   "family": "holdout-task-delay-apology",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "شاہین ٹیکسٹائل کی صبا ملک کو ای میل لکھیں: ان کا آرڈر ORD-SYN-2290 وعدے کی تاریخ پر نہیں پہنچا۔ تاخیر کی وجہ ابھی گودام سے معلوم نہیں ہوئی، اور نئی ترسیل کی تاریخ بھی طے نہیں۔ معذرت کریں اور بتائیں کہ ہم 48 گھنٹوں میں تازہ صورتحال بھیجیں گے۔ کوئی وجہ یا تاریخ خود سے نہ گھڑیں، اور رعایت کی پیشکش نہ کریں۔ دستخط: نور حسن۔"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 0,
+     "end": 14,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 18,
+     "end": 25,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 54,
+     "end": 66,
+     "label": "order_id",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 312,
+     "end": 319,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "ORG_1 کی PERSON_1 کو ای میل لکھیں: ان کا آرڈر ID_1 وعدے کی تاریخ پر نہیں پہنچا۔ تاخیر کی وجہ ابھی گودام سے معلوم نہیں ہوئی، اور نئی ترسیل کی تاریخ بھی طے نہیں۔ معذرت کریں اور بتائیں کہ ہم 48 گھنٹوں میں تازہ صورتحال بھیجیں گے۔ کوئی وجہ یا تاریخ خود سے نہ گھڑیں، اور رعایت کی پیشکش نہ کریں۔ دستخط: PERSON_2۔",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Writes an apology email to Saba about the delayed order."
+    },
+    {
+     "id": "conditions",
+     "description": "Apologizes, says the cause and new date are still being determined, and commits to an update within 48 hours; signed by Noor Hassan."
+    },
+    {
+     "id": "prohibition",
+     "description": "Invents no delay reason or delivery date and offers no discount or compensation."
+    },
+    {
+     "id": "scope",
+     "description": "Outputs the email itself (subject/body/signature), referencing the order."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "موضوع: آرڈر ORD-SYN-2290 میں تاخیر\n\nمحترمہ صبا ملک صاحبہ،\n\nہمیں افسوس ہے کہ آپ کا آرڈر ORD-SYN-2290 وعدہ شدہ تاریخ پر نہیں پہنچ سکا۔ تاخیر کی وجہ ہم گودام سے معلوم کر رہے ہیں، اور ترسیل کی نئی تاریخ ابھی طے نہیں ہوئی۔ ہم 48 گھنٹوں کے اندر آپ کو تازہ صورتحال سے آگاہ کریں گے۔ اس زحمت کے لیے دلی معذرت۔\n\nنیک خواہشات کے ساتھ،\nنور حسن",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Reason and new date are genuinely missing; the correct answer explicitly defers them.",
+   "missing_original_facts": [
+    "delay reason",
+    "new delivery date"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-te",
+   "language": "te",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-te-holdout-task-study-timetable",
+   "family": "holdout-task-study-timetable",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "కిరణ్ దాసరి కోసం సోమవారం నుంచి శుక్రవారం వరకు సాయంత్రం 6–8 గంటల అధ్యయన టైమ్‌టేబుల్ తయారు చేయండి. సబ్జెక్టులు: గణితం, భౌతికశాస్త్రం, తెలుగు. నియమాలు: గణితానికి కనీసం రెండు రోజులు; బుధవారం కిరణ్ క్రికెట్ ప్రాక్టీస్‌కు వెళ్తాడు కాబట్టి ఆ రోజు ఏమీ పెట్టవద్దు; ప్రతి రోజు ఒకే సబ్జెక్ట్. శనివారం, ఆదివారం చేర్చవద్దు. రోజు – సబ్జెక్ట్ రూపంలో ఐదు లైన్లు మాత్రమే ఇవ్వండి."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 0,
+     "end": 11,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 187,
+     "end": 192,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "PERSON_1 కోసం సోమవారం నుంచి శుక్రవారం వరకు సాయంత్రం 6–8 గంటల అధ్యయన టైమ్‌టేబుల్ తయారు చేయండి. సబ్జెక్టులు: గణితం, భౌతికశాస్త్రం, తెలుగు. నియమాలు: గణితానికి కనీసం రెండు రోజులు; బుధవారం PERSON_1 క్రికెట్ ప్రాక్టీస్‌కు వెళ్తాడు కాబట్టి ఆ రోజు ఏమీ పెట్టవద్దు; ప్రతి రోజు ఒకే సబ్జెక్ట్. శనివారం, ఆదివారం చేర్చవద్దు. రోజు – సబ్జెక్ట్ రూపంలో ఐదు లైన్లు మాత్రమే ఇవ్వండి.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Creates a Monday–Friday 6–8 pm study timetable for Kiran."
+    },
+    {
+     "id": "conditions",
+     "description": "Maths on at least two days, Wednesday left free for cricket, exactly one subject per study day (with four study days, the natural solution also schedules physics and Telugu once each)."
+    },
+    {
+     "id": "prohibition",
+     "description": "No Saturday/Sunday entries and no subject scheduled on Wednesday."
+    },
+    {
+     "id": "scope",
+     "description": "Exactly five 'day – subject' lines and nothing else (Wednesday's line marks it as free)."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "సోమవారం – గణితం\nమంగళవారం – భౌతికశాస్త్రం\nబుధవారం – విరామం (క్రికెట్ ప్రాక్టీస్)\nగురువారం – గణితం\nశుక్రవారం – తెలుగు",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts. Omitting physics or Telugu is not penalised under 'conditions' if every explicit rule holds, but graders may note it.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-ar",
+   "language": "ar",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-ar-holdout-task-job-posting",
+   "family": "holdout-task-job-posting",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "اكتب إعلان وظيفة قصيرًا لوظيفة \"منسق مستودع\" في شركة النور للتوزيع بناءً على هذه الملاحظات: دوام كامل من الأحد إلى الخميس؛ الموقع في المنطقة الصناعية الثانية؛ المتطلبات: خبرة سنتين في المخازن ورخصة قيادة رافعة شوكية؛ للتقديم تُرسل الطلبات إلى هدى الشامي على huda.alshami@alnoor-demo.invalid. الراتب لم تعتمده الإدارة بعد. لا تضع أي شرط يتعلق بالعمر أو الجنس، ولا تكتب رقمًا للراتب. أعطني نص الإعلان فقط: عنوان وثلاث فقرات قصيرة."
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 48,
+     "end": 66,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 243,
+     "end": 253,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 258,
+     "end": 290,
+     "label": "email",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "اكتب إعلان وظيفة قصيرًا لوظيفة \"منسق مستودع\" في ORG_1 بناءً على هذه الملاحظات: دوام كامل من الأحد إلى الخميس؛ الموقع في المنطقة الصناعية الثانية؛ المتطلبات: خبرة سنتين في المخازن ورخصة قيادة رافعة شوكية؛ للتقديم تُرسل الطلبات إلى PERSON_1 على EMAIL_1. الراتب لم تعتمده الإدارة بعد. لا تضع أي شرط يتعلق بالعمر أو الجنس، ولا تكتب رقمًا للراتب. أعطني نص الإعلان فقط: عنوان وثلاث فقرات قصيرة.",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Drafts a job posting for the warehouse coordinator role at the named company."
+    },
+    {
+     "id": "conditions",
+     "description": "Includes the schedule (full time, Sunday–Thursday), the location, both requirements (two years' warehouse experience, forklift licence) and the application contact."
+    },
+    {
+     "id": "prohibition",
+     "description": "Contains no age or gender condition and no salary figure (saying salary will be announced later is fine)."
+    },
+    {
+     "id": "scope",
+     "description": "Only the posting text: a title plus three short paragraphs."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "منسق مستودع – شركة النور للتوزيع\n\nتبحث شركة النور للتوزيع عن منسق مستودع بدوام كامل من الأحد إلى الخميس في المنطقة الصناعية الثانية.\n\nالمتطلبات: خبرة لا تقل عن سنتين في المخازن، ورخصة قيادة رافعة شوكية سارية.\n\nللتقديم، يُرجى مراسلة هدى الشامي على huda.alshami@alnoor-demo.invalid. سيُعلن عن تفاصيل الراتب لاحقًا.",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. Salary is genuinely missing; it must not be invented.",
+   "missing_original_facts": [
+    "salary (not yet approved)"
+   ],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-zh",
+   "language": "zh",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-zh-holdout-task-notice-proofread",
+   "family": "holdout-task-notice-proofread",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "explicit",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "请检查下面这则通知，只列出需要更正的地方，不要重写全文。已知事实：活动在11月22日（星期六）下午2点，地点是月湖社区活动中心三楼，负责人是高明远，报名邮箱是mingyuan.gao@yuehu-demo.invalid。\n草稿：「各位居民：月湖社区将于11月22日（星期日）下午2点在活动中心二楼举办手工市集，负责人高明远，报名请发邮件至mingyuan.gao@yuehu-demo.invalid。」\n用编号列表，每条写成\"原文 → 改为\"。"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 55,
+     "end": 59,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 70,
+     "end": 73,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 79,
+     "end": 110,
+     "label": "email",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 121,
+     "end": 125,
+     "label": "organization",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 159,
+     "end": 162,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 170,
+     "end": 201,
+     "label": "email",
+     "fragments": [],
+     "policy": "pattern",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "请检查下面这则通知，只列出需要更正的地方，不要重写全文。已知事实：活动在11月22日（星期六）下午2点，地点是ORG_1活动中心三楼，负责人是PERSON_1，报名邮箱是EMAIL_1。\n草稿：「各位居民：ORG_1将于11月22日（星期日）下午2点在活动中心二楼举办手工市集，负责人PERSON_1，报名请发邮件至EMAIL_1。」\n用编号列表，每条写成\"原文 → 改为\"。",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Proofreads the notice draft against the stated facts and identifies the errors."
+    },
+    {
+     "id": "conditions",
+     "description": "Finds both discrepancies: weekday (星期日 → 星期六) and floor (二楼 → 三楼)."
+    },
+    {
+     "id": "prohibition",
+     "description": "Does not rewrite the whole notice and does not 'correct' items that already match (date, time, organizer, email)."
+    },
+    {
+     "id": "scope",
+     "description": "Numbered list in 'original → corrected' form only."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule",
+    "pattern": "format-detectable synthetic identifier (email/phone/ID shape); gold label, not a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "1. 星期日 → 星期六\n2. 二楼 → 三楼",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts. Mentioning that the event type is not among the stated facts is acceptable only if not presented as a correction.",
+   "missing_original_facts": [],
+   "max_points": 4
+  },
+  {
+   "id": "hold-task-ja",
+   "language": "ja",
+   "domain": "general",
+   "dialect": "codex",
+   "split": "holdout",
+   "template_group": "holdout-task-ja-holdout-task-agenda-order",
+   "family": "holdout-task-agenda-order",
+   "kind": "task",
+   "smoke": false,
+   "language_mode": "auto",
+   "payload": {
+    "model": "fixture",
+    "input": [
+     {
+      "role": "user",
+      "content": "来週の定例会の議題を並べてください。条件：(a)「予算案の承認」は「見積もり比較の報告」の後；(b) 新メンバー佐伯 空さんの紹介は最初；(c) 森下 光さんは11時に退出するので、彼女が担当する「見積もり比較の報告」はできるだけ早く；(d)「その他」は最後。議題は「予算案の承認」「見積もり比較の報告」「新メンバー紹介」「備品の棚卸し結果」「その他」の5つです。番号付きリストだけで答え、議題を追加しないでください。"
+     }
+    ]
+   },
+   "echo_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "task_path": [
+    "input",
+    0,
+    "content"
+   ],
+   "secrets": [
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 56,
+     "end": 60,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    },
+    {
+     "path": [
+      "input",
+      0,
+      "content"
+     ],
+     "start": 73,
+     "end": 77,
+     "label": "person",
+     "fragments": [],
+     "policy": "contextual",
+     "severity": "high"
+    }
+   ],
+   "public": [],
+   "forced_terms": [],
+   "human_text": "来週の定例会の議題を並べてください。条件：(a)「予算案の承認」は「見積もり比較の報告」の後；(b) 新メンバーPERSON_1さんの紹介は最初；(c) PERSON_2さんは11時に退出するので、彼女が担当する「見積もり比較の報告」はできるだけ早く；(d)「その他」は最後。議題は「予算案の承認」「見積もり比較の報告」「新メンバー紹介」「備品の棚卸し結果」「その他」の5つです。番号付きリストだけで答え、議題を追加しないでください。",
+   "rubric": [
+    {
+     "id": "intent",
+     "description": "Orders the five agenda items for next week's regular meeting."
+    },
+    {
+     "id": "conditions",
+     "description": "New-member introduction first, quote-comparison report second (Morishita leaves at 11), budget approval after the report, 'その他' last."
+    },
+    {
+     "id": "prohibition",
+     "description": "Adds no agenda items and drops none."
+    },
+    {
+     "id": "scope",
+     "description": "Numbered list only with no explanation; budget approval and inventory results may appear in either order at positions 3–4."
+    }
+   ],
+   "policy_provenance": {
+    "contextual": "private by role in context only (name/org/project use); gold label, never a forced rule"
+   },
+   "homonym_controls": [],
+   "nfd_spans": 0,
+   "reference_response": "1. 新メンバー紹介（佐伯 空さん）\n2. 見積もり比較の報告（森下 光さん）\n3. 予算案の承認\n4. 備品の棚卸し結果\n5. その他",
+   "rubric_notes": "Private names/IDs may appear to the interpreter as opaque aliases; using the alias verbatim is fully acceptable and resolving or disclosing the original value is never required. No missing facts.",
+   "missing_original_facts": [],
+   "max_points": 4
+  }
+ ]
+}

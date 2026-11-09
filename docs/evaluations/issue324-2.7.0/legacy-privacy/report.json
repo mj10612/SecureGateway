@@ -1,0 +1,5621 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "3bf22eb5b3504df288f7c4f636e9819c",
+  "metadata": {
+    "package_version": "2.7.0",
+    "code_sha": "88e2a7a20a6b179577cba6ef2972d55b7fb0cbe2",
+    "source_hash": "b9001ae376ee06964fd941ce2fa7e71bc3f8e6affdad476a41e218086c580c7d",
+    "scoring_version": 2,
+    "corpus_version": "1.0.0",
+    "corpus_hash": "7823d6a30f394d64441ee96e1274d19aff718779aa97697975014dcd1eb92e0a",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "en-general-conditional-review": [
+          "AmberPebble"
+        ],
+        "en-defense-conditional-filing": [
+          "CedarLantern"
+        ],
+        "en-automotive-conditional-units": [],
+        "en-semiconductor-conditional-sample": [
+          "CoralSpindle"
+        ],
+        "ko-general-conditional-review": [],
+        "ko-defense-conditional-filing": [
+          "은빛등대"
+        ],
+        "ko-automotive-conditional-units": [
+          "자갈수레"
+        ],
+        "ko-semiconductor-conditional-sample": [
+          "새벽결정"
+        ],
+        "en-general-fenced-source": [],
+        "en-defense-fenced-source": [],
+        "en-automotive-fenced-source": [],
+        "en-semiconductor-fenced-source": [],
+        "ko-general-fenced-source": [],
+        "ko-defense-fenced-source": [],
+        "ko-automotive-fenced-source": [],
+        "ko-semiconductor-fenced-source": [],
+        "en-general-json-data": [
+          "SyntheticTernLedger"
+        ],
+        "ko-defense-json-data": [
+          "가상문서보관함"
+        ],
+        "en-defense-tool-arguments": [],
+        "ko-general-tool-arguments": [],
+        "en-automotive-tool-result": [],
+        "ko-semiconductor-tool-result": [],
+        "en-semiconductor-schema": [],
+        "ko-automotive-schema": [],
+        "en-general-normalization-alias": [],
+        "en-defense-contextual-harbor": [],
+        "en-automotive-contextual-drift": [],
+        "en-semiconductor-contextual-yield": [],
+        "ko-general-contextual-flow": [],
+        "ko-defense-contextual-boundary": [],
+        "ko-automotive-contextual-rotation": [],
+        "ko-semiconductor-contextual-crystal": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "cea6d865eba7e76a652b051dcd1de4fc5055b55cdbe0d535557ac74317216038",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "en",
+      "ko"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "en-general-conditional-review",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "regression",
+      "template_group": "conditional-review-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "For synthetic project private_symbol_2, propose two review steps only if I confirm the status is ready; otherwise ask whether it is ready. Do not run commands, and ask for clarification before proposing the steps."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "For synthetic project AmberPebble, propose two review steps only if I confirm the status is ready; otherwise ask whether it is ready. Do not run commands, and ask for clarification before proposing the steps.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.31199999999989814,
+      "timings_seconds": {
+        "request_transform": [
+          0.31199999999989814,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "AmberPebble"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 22,
+          "end": 33,
+          "label": "synthetic-project",
+          "fragments": [
+            "Amber",
+            "Pebble"
+          ],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 35,
+          "end": 59,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 60,
+          "end": 67,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 134,
+          "end": 153,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 159,
+          "end": 187,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-defense-conditional-filing",
+      "language": "en",
+      "domain": "defense",
+      "dialect": "claude",
+      "split": "regression",
+      "template_group": "conditional-review-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "For synthetic exercise private_symbol_1, compare two filing options only after the retention period is provided. Do not delete files; if the period is missing, ask for it before recommending an option."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "For synthetic exercise CedarLantern, compare two filing options only after the retention period is provided. Do not delete files; if the period is missing, ask for it before recommending an option.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.015000000001236913,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "CedarLantern"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 23,
+          "end": 35,
+          "label": "synthetic-project",
+          "fragments": [
+            "Cedar",
+            "Lantern"
+          ],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 37,
+          "end": 63,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 64,
+          "end": 74,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 109,
+          "end": 128,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 156,
+          "end": 173,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-automotive-conditional-units",
+      "language": "en",
+      "domain": "automotive",
+      "dialect": "codex",
+      "split": "regression",
+      "template_group": "conditional-review-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "For synthetic vehicle project drift, explain the test summary if units are specified; otherwise ask which units to use. Do not change private_symbol_2 values, and list assumptions before recommendations."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "For synthetic vehicle project drift, explain the test summary if units are specified; otherwise ask which units to use. Do not change calibration values, and list assumptions before recommendations.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.014999999999417923,
+      "timings_seconds": {
+        "request_transform": [
+          0.014999999999417923,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "calibration"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 30,
+          "end": 35,
+          "label": "synthetic-project",
+          "fragments": [
+            "drift"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 37,
+          "end": 61,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 86,
+          "end": 99,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 120,
+          "end": 152,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 175,
+          "end": 197,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-semiconductor-conditional-sample",
+      "language": "en",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "split": "regression",
+      "template_group": "conditional-review-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "For synthetic chip project private_symbol_1, summarize the private_symbol_2 yield report only if the sample size is stated. If it is missing, ask for the sample size; do not infer a value, and explain limits before suggesting the next check."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "For synthetic chip project CoralSpindle, summarize the simulated yield report only if the sample size is stated. If it is missing, ask for the sample size; do not infer a value, and explain limits before suggesting the next check.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "CoralSpindle",
+        "private_symbol_2": "simulated"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 27,
+          "end": 39,
+          "label": "synthetic-project",
+          "fragments": [
+            "Coral",
+            "Spindle"
+          ],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 77,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 78,
+          "end": 85,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 156,
+          "end": 176,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 182,
+          "end": 203,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-general-conditional-review",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "claude",
+      "split": "regression",
+      "template_group": "conditional-review-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 프로젝트 흐름의 상태가 private_symbol_1 private_symbol_2 경우에만 검토 단계 두 개를 제안해 주세요. 상태가 없으면 먼저 준비 여부를 private_symbol_3, 명령은 실행하지 마세요."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "가상 프로젝트 흐름의 상태가 준비됨으로 확인된 경우에만 검토 단계 두 개를 제안해 주세요. 상태가 없으면 먼저 준비 여부를 질문하고, 명령은 실행하지 마세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01599999999962165,
+      "timings_seconds": {
+        "request_transform": [
+          0.01599999999962165,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "준비됨으로",
+        "private_symbol_2": "확인된",
+        "private_symbol_3": "질문하고"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 8,
+          "end": 10,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 26,
+          "end": 30,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 31,
+          "end": 44,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 59,
+          "end": 71,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 75,
+          "end": 87,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-defense-conditional-filing",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "codex",
+      "split": "regression",
+      "template_group": "conditional-review-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 훈련 private_symbol_2 문서 보관 기간을 받은 뒤에만 정리 방법 두 개를 비교해 주세요. 보관 기간이 없으면 먼저 private_symbol_3, 파일을 삭제하거나 실제 기관의 자료를 private_symbol_4 마세요."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상 훈련 은빛등대의 문서 보관 기간을 받은 뒤에만 정리 방법 두 개를 비교해 주세요. 보관 기간이 없으면 먼저 질문하고, 파일을 삭제하거나 실제 기관의 자료를 추정하지 마세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "은빛등대의",
+        "private_symbol_3": "질문하고",
+        "private_symbol_4": "추정하지"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 6,
+          "end": 10,
+          "label": "synthetic-project",
+          "fragments": [
+            "은빛등대"
+          ],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 22,
+          "end": 28,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 29,
+          "end": 42,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 56,
+          "end": 65,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 98,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-automotive-conditional-units",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "claude",
+      "split": "regression",
+      "template_group": "conditional-review-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 차량 프로젝트 private_symbol_1 시험 결과는 단위가 private_symbol_2 경우에만 설명해 주세요. 단위가 없으면 먼저 어떤 private_symbol_3 private_symbol_4, private_symbol_5 private_symbol_6 말고 가정을 권고보다 앞에 private_symbol_7 주세요."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "가상 차량 프로젝트 자갈수레의 시험 결과는 단위가 명시된 경우에만 설명해 주세요. 단위가 없으면 먼저 어떤 단위인지 질문하고, 보정값은 바꾸지 말고 가정을 권고보다 앞에 적어 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "자갈수레의",
+        "private_symbol_2": "명시된",
+        "private_symbol_3": "단위인지",
+        "private_symbol_4": "질문하고",
+        "private_symbol_5": "보정값은",
+        "private_symbol_6": "바꾸지",
+        "private_symbol_7": "적어"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 11,
+          "end": 15,
+          "label": "synthetic-project",
+          "fragments": [
+            "자갈수레"
+          ],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 39,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 54,
+          "end": 67,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 71,
+          "end": 82,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 83,
+          "end": 94,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-semiconductor-conditional-sample",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "codex",
+      "split": "regression",
+      "template_group": "conditional-review-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 private_symbol_2 프로젝트 private_symbol_3 모의 private_symbol_4 보고서는 private_symbol_5 수가 있을 때만 요약해 주세요. private_symbol_5 수가 없으면 먼저 private_symbol_6 수치를 private_symbol_7 private_symbol_8, 다음 확인 사항보다 한계를 먼저 설명해 주세요."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상 반도체 프로젝트 새벽결정의 모의 수율 보고서는 표본 수가 있을 때만 요약해 주세요. 표본 수가 없으면 먼저 질문하고 수치를 추정하지 말며, 다음 확인 사항보다 한계를 먼저 설명해 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.014999999999417923,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "반도체",
+        "private_symbol_3": "새벽결정의",
+        "private_symbol_4": "수율",
+        "private_symbol_5": "표본",
+        "private_symbol_6": "질문하고",
+        "private_symbol_7": "추정하지",
+        "private_symbol_8": "말며"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 12,
+          "end": 16,
+          "label": "synthetic-project",
+          "fragments": [
+            "새벽결정"
+          ],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 29,
+          "end": 43,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 56,
+          "end": 65,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 68,
+          "end": 79,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 92,
+          "end": 101,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-general-fenced-source",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "fenced-python-source",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "private-function",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-literal",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Review this synthetic source and explain the return value.\n```python\ndef private_symbol_2(private_symbol_3):\n    return private_symbol_3 + \"private_symbol_4\"\n```"
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Review this synthetic source and explain the return value.\n```python\ndef ledger_quartz(quartz_sample):\n    return quartz_sample + \"SyntheticLedgerSeed\"\n```",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01599999999962165,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "ledger_quartz",
+        "private_symbol_3": "quartz_sample",
+        "private_symbol_4": "SyntheticLedgerSeed"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 73,
+          "end": 86,
+          "label": "private-function",
+          "fragments": [
+            "ledger",
+            "quartz"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 87,
+          "end": 100,
+          "label": "private-parameter",
+          "fragments": [
+            "quartz",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 114,
+          "end": 127,
+          "label": "private-parameter",
+          "fragments": [
+            "quartz",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 131,
+          "end": 150,
+          "label": "private-literal",
+          "fragments": [
+            "LedgerSeed"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 0,
+          "end": 58,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 62,
+          "end": 68,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 72,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 107,
+          "end": 113,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-defense-fenced-source",
+      "language": "en",
+      "domain": "defense",
+      "dialect": "claude",
+      "split": "development",
+      "template_group": "fenced-python-source",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "private-function",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-literal",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Review this synthetic source and explain the return value.\n```python\ndef private_symbol_1(private_symbol_2):\n    return private_symbol_2 + \"private_symbol_3\"\n```"
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "Review this synthetic source and explain the return value.\n```python\ndef filing_lantern(lantern_sample):\n    return lantern_sample + \"SyntheticFilingSeed\"\n```",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "filing_lantern",
+        "private_symbol_2": "lantern_sample",
+        "private_symbol_3": "SyntheticFilingSeed"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 73,
+          "end": 87,
+          "label": "private-function",
+          "fragments": [
+            "filing",
+            "lantern"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 102,
+          "label": "private-parameter",
+          "fragments": [
+            "lantern",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 116,
+          "end": 130,
+          "label": "private-parameter",
+          "fragments": [
+            "lantern",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 134,
+          "end": 153,
+          "label": "private-literal",
+          "fragments": [
+            "FilingSeed"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 58,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 62,
+          "end": 68,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 69,
+          "end": 72,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 109,
+          "end": 115,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-automotive-fenced-source",
+      "language": "en",
+      "domain": "automotive",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "fenced-python-source",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "private-function",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-literal",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Review this synthetic source and explain the return value.\n```python\ndef private_symbol_2(private_symbol_3):\n    return private_symbol_3 + \"private_symbol_4\"\n```"
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Review this synthetic source and explain the return value.\n```python\ndef calibration_mica(mica_sample):\n    return mica_sample + \"SyntheticCalibrationSeed\"\n```",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "calibration_mica",
+        "private_symbol_3": "mica_sample",
+        "private_symbol_4": "SyntheticCalibrationSeed"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 73,
+          "end": 89,
+          "label": "private-function",
+          "fragments": [
+            "calibration",
+            "mica"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 90,
+          "end": 101,
+          "label": "private-parameter",
+          "fragments": [
+            "mica",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 115,
+          "end": 126,
+          "label": "private-parameter",
+          "fragments": [
+            "mica",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 130,
+          "end": 154,
+          "label": "private-literal",
+          "fragments": [
+            "CalibrationSeed"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 0,
+          "end": 58,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 62,
+          "end": 68,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 72,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 108,
+          "end": 114,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-semiconductor-fenced-source",
+      "language": "en",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "split": "development",
+      "template_group": "fenced-python-source",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "private-function",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-literal",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Review this synthetic source and explain the return value.\n```python\ndef private_symbol_1(private_symbol_2):\n    return private_symbol_2 + \"private_symbol_3\"\n```"
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "Review this synthetic source and explain the return value.\n```python\ndef wafer_coral(coral_sample):\n    return coral_sample + \"SyntheticWaferSeed\"\n```",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "wafer_coral",
+        "private_symbol_2": "coral_sample",
+        "private_symbol_3": "SyntheticWaferSeed"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 73,
+          "end": 84,
+          "label": "private-function",
+          "fragments": [
+            "wafer",
+            "coral"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 85,
+          "end": 97,
+          "label": "private-parameter",
+          "fragments": [
+            "coral",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 111,
+          "end": 123,
+          "label": "private-parameter",
+          "fragments": [
+            "coral",
+            "sample"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 127,
+          "end": 145,
+          "label": "private-literal",
+          "fragments": [
+            "WaferSeed"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 58,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 62,
+          "end": 68,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 69,
+          "end": 72,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 104,
+          "end": 110,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-general-fenced-source",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "claude",
+      "split": "development",
+      "template_group": "fenced-python-source",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "private-function",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-literal",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "다음 가상 소스를 검토하고 private_symbol_1 설명해 주세요.\n```python\ndef private_symbol_2(private_symbol_3):\n    return private_symbol_3 + \"private_symbol_4\"\n```"
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "다음 가상 소스를 검토하고 반환값을 설명해 주세요.\n```python\ndef 가상문서정렬(가상문서표본):\n    return 가상문서표본 + \"합성문서시드\"\n```",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "반환값을",
+        "private_symbol_2": "가상문서정렬",
+        "private_symbol_3": "가상문서표본",
+        "private_symbol_4": "합성문서시드"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 49,
+          "label": "private-function",
+          "fragments": [
+            "문서정렬"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 56,
+          "label": "private-parameter",
+          "fragments": [
+            "문서표본"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 76,
+          "label": "private-parameter",
+          "fragments": [
+            "문서표본"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 86,
+          "label": "private-literal",
+          "fragments": [
+            "문서시드"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 28,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 32,
+          "end": 38,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 39,
+          "end": 42,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 63,
+          "end": 69,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-defense-fenced-source",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "fenced-python-source",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "private-function",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-literal",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "다음 가상 소스를 검토하고 private_symbol_2 설명해 주세요.\n```python\ndef private_symbol_3(private_symbol_4):\n    return private_symbol_4 + \"private_symbol_5\"\n```"
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "다음 가상 소스를 검토하고 반환값을 설명해 주세요.\n```python\ndef 가상훈련분류(가상훈련표본):\n    return 가상훈련표본 + \"합성훈련시드\"\n```",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "반환값을",
+        "private_symbol_3": "가상훈련분류",
+        "private_symbol_4": "가상훈련표본",
+        "private_symbol_5": "합성훈련시드"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 43,
+          "end": 49,
+          "label": "private-function",
+          "fragments": [
+            "훈련분류"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 50,
+          "end": 56,
+          "label": "private-parameter",
+          "fragments": [
+            "훈련표본"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 70,
+          "end": 76,
+          "label": "private-parameter",
+          "fragments": [
+            "훈련표본"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 80,
+          "end": 86,
+          "label": "private-literal",
+          "fragments": [
+            "훈련시드"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 0,
+          "end": 28,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 32,
+          "end": 38,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 39,
+          "end": 42,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 63,
+          "end": 69,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-automotive-fenced-source",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "claude",
+      "split": "development",
+      "template_group": "fenced-python-source",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "private-function",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-literal",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "다음 가상 소스를 검토하고 private_symbol_1 설명해 주세요.\n```python\ndef private_symbol_2(private_symbol_3):\n    return private_symbol_3 + \"private_symbol_4\"\n```"
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "다음 가상 소스를 검토하고 반환값을 설명해 주세요.\n```python\ndef 가상차량보정(가상차량표본):\n    return 가상차량표본 + \"합성차량시드\"\n```",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "반환값을",
+        "private_symbol_2": "가상차량보정",
+        "private_symbol_3": "가상차량표본",
+        "private_symbol_4": "합성차량시드"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 49,
+          "label": "private-function",
+          "fragments": [
+            "차량보정"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 56,
+          "label": "private-parameter",
+          "fragments": [
+            "차량표본"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 76,
+          "label": "private-parameter",
+          "fragments": [
+            "차량표본"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 86,
+          "label": "private-literal",
+          "fragments": [
+            "차량시드"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 28,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 32,
+          "end": 38,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 39,
+          "end": 42,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 63,
+          "end": 69,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-semiconductor-fenced-source",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "fenced-python-source",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "private-function",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-parameter",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "private-literal",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "다음 가상 소스를 검토하고 private_symbol_2 설명해 주세요.\n```python\ndef private_symbol_3(private_symbol_4):\n    return private_symbol_4 + \"private_symbol_5\"\n```"
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "다음 가상 소스를 검토하고 반환값을 설명해 주세요.\n```python\ndef 가상웨이퍼검토(가상웨이퍼표본):\n    return 가상웨이퍼표본 + \"합성웨이퍼시드\"\n```",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "반환값을",
+        "private_symbol_3": "가상웨이퍼검토",
+        "private_symbol_4": "가상웨이퍼표본",
+        "private_symbol_5": "합성웨이퍼시드"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 43,
+          "end": 50,
+          "label": "private-function",
+          "fragments": [
+            "웨이퍼검토"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 51,
+          "end": 58,
+          "label": "private-parameter",
+          "fragments": [
+            "웨이퍼표본"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 72,
+          "end": 79,
+          "label": "private-parameter",
+          "fragments": [
+            "웨이퍼표본"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 83,
+          "end": 90,
+          "label": "private-literal",
+          "fragments": [
+            "웨이퍼시드"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 0,
+          "end": 28,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 32,
+          "end": 38,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 39,
+          "end": 42,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 65,
+          "end": 71,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-general-json-data",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "regression",
+      "template_group": "raw-json-record",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "policy-project",
+          "policy": "explicit",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "{\"project\": \"private_symbol_2\", \"contact\": \"private_symbol_3\", \"approved\": false}"
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "{\"project\": \"SyntheticTernLedger\", \"contact\": \"ledger-owner@example.invalid\", \"approved\": false}",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "SyntheticTernLedger",
+        "private_symbol_3": "ledger-owner@example.invalid"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 13,
+          "end": 32,
+          "label": "policy-project",
+          "fragments": [
+            "TernLedger"
+          ],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 47,
+          "end": 75,
+          "label": "synthetic-email",
+          "fragments": [
+            "ledger-owner@example.invalid",
+            "ledger-owner"
+          ],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 90,
+          "end": 95,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-defense-json-data",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "claude",
+      "split": "regression",
+      "template_group": "raw-json-record",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "policy-project",
+          "policy": "explicit",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "{\"private_symbol_1\": \"private_symbol_2\", \"private_symbol_3\": \"private_symbol_4\", \"private_symbol_5\": private_symbol_6}"
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "{\"project\": \"가상문서보관함\", \"contact\": \"exercise-owner@example.invalid\", \"approved\": false}",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01599999999962165,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "project",
+        "private_symbol_2": "가상문서보관함",
+        "private_symbol_3": "contact",
+        "private_symbol_4": "exercise-owner@example.invalid",
+        "private_symbol_5": "approved",
+        "private_symbol_6": "false"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 13,
+          "end": 20,
+          "label": "policy-project",
+          "fragments": [
+            "문서보관함"
+          ],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 35,
+          "end": 65,
+          "label": "synthetic-email",
+          "fragments": [
+            "exercise-owner@example.invalid",
+            "exercise-owner"
+          ],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 85,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-defense-tool-arguments",
+      "language": "en",
+      "domain": "defense",
+      "dialect": "claude",
+      "split": "holdout",
+      "template_group": "native-tool-arguments",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-private-path",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "eval-defense-read",
+                "name": "Read",
+                "input": {
+                  "file_path": "private_symbol_1"
+                }
+              }
+            ]
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "/tmp/SyntheticCedarArchive/briefing.txt",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "/tmp/SyntheticCedarArchive/briefing.txt"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content",
+            0,
+            "input",
+            "file_path"
+          ],
+          "start": 0,
+          "end": 39,
+          "label": "synthetic-private-path",
+          "fragments": [
+            "SyntheticCedarArchive",
+            "briefing.txt"
+          ],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content",
+            0,
+            "name"
+          ],
+          "start": 0,
+          "end": 4,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-general-tool-arguments",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "native-tool-arguments",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-private-path",
+          "policy": "pattern",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-private-path",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "type": "function_call",
+            "call_id": "eval-general-read",
+            "name": "exec_command",
+            "arguments": "{\"cmd\":\"private_symbol_1 /private_symbol_2/private_symbol_3/private_symbol_4.private_symbol_5\",\"workdir\":\"private_symbol_6\"}"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "{\"cmd\":\"cat /tmp/가상별빛보관함/문서목록.txt\",\"workdir\":\"/tmp/가상별빛보관함\"}",
+      "roundtrip": false,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "cat",
+        "private_symbol_2": "tmp",
+        "private_symbol_3": "가상별빛보관함",
+        "private_symbol_4": "문서목록",
+        "private_symbol_5": "txt",
+        "private_symbol_6": "/tmp/가상별빛보관함"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "arguments"
+          ],
+          "start": 13,
+          "end": 34,
+          "label": "synthetic-private-path",
+          "fragments": [
+            "가상별빛보관함",
+            "문서목록.txt"
+          ],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "arguments"
+          ],
+          "start": 49,
+          "end": 61,
+          "label": "synthetic-private-path",
+          "fragments": [
+            "가상별빛보관함"
+          ],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "name"
+          ],
+          "start": 0,
+          "end": 12,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "arguments"
+          ],
+          "start": 9,
+          "end": 12,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-automotive-tool-result",
+      "language": "en",
+      "domain": "automotive",
+      "dialect": "codex",
+      "split": "regression",
+      "template_group": "native-tool-result",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "type": "function_call_output",
+            "call_id": "eval-vehicle-result",
+            "output": "{\"private_symbol_1\": \"private_symbol_2\", \"private_symbol_3\": \"private_symbol_4\", \"private_symbol_5\": \"private_symbol_2\", \"private_symbol_6\": private_symbol_7}"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "{\"project\": \"SyntheticMicaFixture\", \"owner\": \"vehicle-owner@example.invalid\", \"copied_from\": \"SyntheticMicaFixture\", \"complete\": true}",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "project",
+        "private_symbol_2": "SyntheticMicaFixture",
+        "private_symbol_3": "owner",
+        "private_symbol_4": "vehicle-owner@example.invalid",
+        "private_symbol_5": "copied_from",
+        "private_symbol_6": "complete",
+        "private_symbol_7": "true"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "output"
+          ],
+          "start": 13,
+          "end": 33,
+          "label": "synthetic-project",
+          "fragments": [
+            "MicaFixture"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "output"
+          ],
+          "start": 94,
+          "end": 114,
+          "label": "synthetic-project",
+          "fragments": [
+            "MicaFixture"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "output"
+          ],
+          "start": 46,
+          "end": 75,
+          "label": "synthetic-email",
+          "fragments": [
+            "vehicle-owner@example.invalid",
+            "vehicle-owner"
+          ],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "output"
+          ],
+          "start": 129,
+          "end": 133,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-semiconductor-tool-result",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "split": "regression",
+      "template_group": "native-tool-result",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-batch",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-batch",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "eval-wafer-result",
+                "name": "Read",
+                "input": {}
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "eval-wafer-result",
+                "content": "private_symbol_1 private_symbol_2 private_symbol_3 private_symbol_4 private_symbol_5 private_symbol_6-private_symbol_7@private_symbol_8.private_symbol_9 private_symbol_10. private_symbol_11 private_symbol_12 private_symbol_13 private_symbol_14."
+              }
+            ]
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "가상 반도체 표본 합성해오름배치의 연락처는 wafer-owner@example.invalid 입니다. 합성해오름배치는 검토 대기 상태입니다.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "가상",
+        "private_symbol_2": "반도체",
+        "private_symbol_3": "표본",
+        "private_symbol_4": "합성해오름배치의",
+        "private_symbol_5": "연락처는",
+        "private_symbol_6": "wafer",
+        "private_symbol_7": "owner",
+        "private_symbol_8": "example",
+        "private_symbol_9": "invalid",
+        "private_symbol_10": "입니다",
+        "private_symbol_11": "합성해오름배치는",
+        "private_symbol_12": "검토",
+        "private_symbol_13": "대기",
+        "private_symbol_14": "상태입니다"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            1,
+            "content",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 17,
+          "label": "synthetic-batch",
+          "fragments": [
+            "해오름배치"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            1,
+            "content",
+            0,
+            "content"
+          ],
+          "start": 57,
+          "end": 64,
+          "label": "synthetic-batch",
+          "fragments": [
+            "해오름배치"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            1,
+            "content",
+            0,
+            "content"
+          ],
+          "start": 24,
+          "end": 51,
+          "label": "synthetic-email",
+          "fragments": [
+            "wafer-owner@example.invalid",
+            "wafer-owner"
+          ],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content",
+            0,
+            "name"
+          ],
+          "start": 0,
+          "end": 4,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            1,
+            "content",
+            0,
+            "content"
+          ],
+          "start": 66,
+          "end": 77,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-semiconductor-schema",
+      "language": "en",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "split": "development",
+      "template_group": "native-tool-schema",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-schema-title",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [],
+        "tools": [
+          {
+            "name": "Read",
+            "description": "Read a local file using file_path.",
+            "input_schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "type": "object",
+              "title": "private_symbol_3",
+              "description": "Review the synthetic batch private_symbol_4 without changing values.",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "Review the synthetic batch SyntheticOpalWafer without changing values.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Read",
+        "private_symbol_2": "file_path",
+        "private_symbol_3": "SyntheticOpalSchema",
+        "private_symbol_4": "SyntheticOpalWafer"
+      },
+      "secrets": [
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "description"
+          ],
+          "start": 27,
+          "end": 45,
+          "label": "synthetic-project",
+          "fragments": [
+            "OpalWafer"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "title"
+          ],
+          "start": 0,
+          "end": 19,
+          "label": "synthetic-schema-title",
+          "fragments": [
+            "OpalSchema"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "$schema"
+          ],
+          "start": 0,
+          "end": 44,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "type"
+          ],
+          "start": 0,
+          "end": 6,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "input_schema",
+            "description"
+          ],
+          "start": 46,
+          "end": 69,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-automotive-schema",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "codex",
+      "split": "development",
+      "template_group": "native-tool-schema",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-schema-title",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [],
+        "tools": [
+          {
+            "type": "function",
+            "name": "Read",
+            "description": "Read a local file using file_path.",
+            "parameters": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "type": "object",
+              "title": "private_symbol_3",
+              "description": "private_symbol_4 모의 기록을 검토하고 값은 변경하지 마세요.",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상청록차량의 모의 기록을 검토하고 값은 변경하지 마세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Read",
+        "private_symbol_2": "file_path",
+        "private_symbol_3": "합성청록스키마",
+        "private_symbol_4": "가상청록차량의"
+      },
+      "secrets": [
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "description"
+          ],
+          "start": 0,
+          "end": 6,
+          "label": "synthetic-project",
+          "fragments": [
+            "청록차량"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "title"
+          ],
+          "start": 0,
+          "end": 7,
+          "label": "synthetic-schema-title",
+          "fragments": [
+            "청록스키마"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "$schema"
+          ],
+          "start": 0,
+          "end": 44,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "type"
+          ],
+          "start": 0,
+          "end": 6,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "tools",
+            0,
+            "parameters",
+            "description"
+          ],
+          "start": 20,
+          "end": 31,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-general-normalization-alias",
+      "language": "en",
+      "domain": "general",
+      "dialect": "claude",
+      "split": "holdout",
+      "template_group": "unicode-alias-task",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 synthetic project private_symbol_2 and treat its private_symbol_3 spelling private_symbol_4 as the same project. Explain the proposed document order, do not private_symbol_5 files, and ask for the missing priority before recommending a sequence."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "Review synthetic project CaféStencil and treat its decomposed spelling CaféStencil as the same project. Explain the proposed document order, do not rename files, and ask for the missing priority before recommending a sequence.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Review",
+        "private_symbol_2": "CaféStencil",
+        "private_symbol_3": "decomposed",
+        "private_symbol_4": "CaféStencil",
+        "private_symbol_5": "rename"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 25,
+          "end": 36,
+          "label": "synthetic-project",
+          "fragments": [
+            "Café",
+            "Stencil"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 71,
+          "end": 83,
+          "label": "synthetic-project",
+          "fragments": [
+            "Café",
+            "Stencil"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 91,
+          "end": 103,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 105,
+          "end": 140,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 142,
+          "end": 161,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 167,
+          "end": 202,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-defense-contextual-harbor",
+      "language": "en",
+      "domain": "defense",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-exercise",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "For the synthetic exercise harbor, explain the filing private_symbol_2 only after the document type is known. private_symbol_3 harbor only as an ordinary port word in the private_symbol_4, do not publish the briefing, and ask for the missing document type first."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "For the synthetic exercise harbor, explain the filing workflow only after the document type is known. Use harbor only as an ordinary port word in the glossary, do not publish the briefing, and ask for the missing document type first.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "workflow",
+        "private_symbol_3": "Use",
+        "private_symbol_4": "glossary"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 27,
+          "end": 33,
+          "label": "synthetic-exercise",
+          "fragments": [
+            "harbor"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 106,
+          "end": 112,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 35,
+          "end": 62,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 63,
+          "end": 73,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 160,
+          "end": 187,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 193,
+          "end": 232,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-automotive-contextual-drift",
+      "language": "en",
+      "domain": "automotive",
+      "dialect": "claude",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "For the synthetic vehicle project drift, compare the two measurements only after their units are known. private_symbol_1 drift as a general change over time, do not edit the data, and ask for missing units before comparing."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "For the synthetic vehicle project drift, compare the two measurements only after their units are known. Describe drift as a general change over time, do not edit the data, and ask for missing units before comparing.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Describe"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 39,
+          "label": "synthetic-project",
+          "fragments": [
+            "drift"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 113,
+          "end": 118,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 69,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 102,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 150,
+          "end": 170,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 176,
+          "end": 204,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "en-semiconductor-contextual-yield",
+      "language": "en",
+      "domain": "semiconductor",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Review the synthetic chip project yield and explain yield as the general ratio of passing samples to tested samples. Do not infer a result without counts; ask for the counts before calculating, and state the formula before any numerical answer."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Review the synthetic chip project yield and explain yield as the general ratio of passing samples to tested samples. Do not infer a result without counts; ask for the counts before calculating, and state the formula before any numerical answer.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 34,
+          "end": 39,
+          "label": "synthetic-project",
+          "fragments": [
+            "yield"
+          ],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 52,
+          "end": 57,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 73,
+          "end": 115,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 117,
+          "end": 153,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 155,
+          "end": 192,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 198,
+          "end": 222,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-general-contextual-flow",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 프로젝트 흐름의 문서 순서를 검토하고, private_symbol_2 작업 흐름은 쉬운 말로 설명해 주세요. 우선순위가 없으면 먼저 private_symbol_3, 파일 이름은 private_symbol_4 private_symbol_5 이유를 권고보다 앞에 private_symbol_6 주세요."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상 프로젝트 흐름의 문서 순서를 검토하고, 일반적인 작업 흐름은 쉬운 말로 설명해 주세요. 우선순위가 없으면 먼저 질문하고, 파일 이름은 바꾸지 말며 이유를 권고보다 앞에 적어 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "일반적인",
+        "private_symbol_3": "질문하고",
+        "private_symbol_4": "바꾸지",
+        "private_symbol_5": "말며",
+        "private_symbol_6": "적어"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 8,
+          "end": 10,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 33,
+          "end": 35,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 12,
+          "end": 21,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 52,
+          "end": 67,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 71,
+          "end": 84,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 85,
+          "end": 96,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-defense-contextual-boundary",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "claude",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-exercise",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 훈련 경계의 문서 분류 절차를 검토하고, private_symbol_1 분류 경계는 private_symbol_2 설명해 주세요. 문서 종류가 없으면 먼저 private_symbol_3, 외부에 게시하지 private_symbol_4 설명 뒤에 확인 목록을 제시해 주세요."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "가상 훈련 경계의 문서 분류 절차를 검토하고, 일반적인 분류 경계는 쉽게 설명해 주세요. 문서 종류가 없으면 먼저 질문하고, 외부에 게시하지 말며 설명 뒤에 확인 목록을 제시해 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "일반적인",
+        "private_symbol_2": "쉽게",
+        "private_symbol_3": "질문하고",
+        "private_symbol_4": "말며"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 6,
+          "end": 8,
+          "label": "synthetic-exercise",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 36,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 22,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 66,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 81,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 82,
+          "end": 93,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-automotive-contextual-rotation",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 차량 프로젝트 회전의 시험 기록을 검토하고, private_symbol_2 바퀴 회전은 private_symbol_3 설명해 주세요. 단위가 없으면 먼저 private_symbol_4, private_symbol_5 private_symbol_6 private_symbol_7 관찰과 추정을 private_symbol_8 주세요."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상 차량 프로젝트 회전의 시험 기록을 검토하고, 일반적인 바퀴 회전은 쉽게 설명해 주세요. 단위가 없으면 먼저 질문하고, 제어값을 바꾸지 말며 관찰과 추정을 구분해 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text",
+        "private_symbol_2": "일반적인",
+        "private_symbol_3": "쉽게",
+        "private_symbol_4": "질문하고",
+        "private_symbol_5": "제어값을",
+        "private_symbol_6": "바꾸지",
+        "private_symbol_7": "말며",
+        "private_symbol_8": "구분해"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 11,
+          "end": 13,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 36,
+          "end": 38,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 15,
+          "end": 24,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 52,
+          "end": 65,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 80,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 81,
+          "end": 91,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-semiconductor-contextual-crystal",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 private_symbol_1 프로젝트 결정의 모의 보고서를 검토하고, private_symbol_2 결정 구조는 private_symbol_3 설명해 주세요. private_symbol_4 수가 없으면 먼저 private_symbol_5, private_symbol_6 private_symbol_7 private_symbol_8 한계를 결론보다 먼저 private_symbol_9 주세요."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "가상 반도체 프로젝트 결정의 모의 보고서를 검토하고, 일반적인 결정 구조는 쉽게 설명해 주세요. 표본 수가 없으면 먼저 질문하고, 수율을 지어내지 말며 한계를 결론보다 먼저 적어 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "반도체",
+        "private_symbol_2": "일반적인",
+        "private_symbol_3": "쉽게",
+        "private_symbol_4": "표본",
+        "private_symbol_5": "질문하고",
+        "private_symbol_6": "수율을",
+        "private_symbol_7": "지어내지",
+        "private_symbol_8": "말며",
+        "private_symbol_9": "적어"
+      },
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 12,
+          "end": 14,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 35,
+          "end": 37,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 16,
+          "end": 26,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 54,
+          "end": 69,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 73,
+          "end": 84,
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 85,
+          "end": 96,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "completed",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 66,
+      "measured_sensitive": 66,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 57,
+      "full_exposures": 9,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.8636363636363636,
+      "observed_accuracy": 0.8636363636363636,
+      "requests_with_leak": 9,
+      "measured_requests": 32,
+      "total_requests": 32
+    },
+    "overmasking": {
+      "measured_public": 117,
+      "overmasked": 30,
+      "rate": 0.2564102564102564
+    },
+    "integrity": {
+      "roundtrip_passed": 31,
+      "semantic_roundtrip_passed": 32,
+      "replay_passed": 32,
+      "measured_requests": 32,
+      "response_failures": 0,
+      "payload_replay_passed": 32,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "elapsed_seconds": 3.5,
+  "performance": {
+    "request_transform_first_mapping_pass": {
+      "n": 32,
+      "p50": 0.0,
+      "p95": 0.014999999999417923,
+      "p99": 0.01599999999962165
+    },
+    "request_transform_replay": {
+      "n": 32,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "response_restore_first_mapping_pass": {
+      "n": 32,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "response_restore_replay": {
+      "n": 32,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    }
+  },
+  "breakdown": {
+    "language": {
+      "en": {
+        "privacy": {
+          "total_sensitive": 33,
+          "measured_sensitive": 33,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 29,
+          "full_exposures": 4,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8787878787878788,
+          "observed_accuracy": 0.8787878787878788,
+          "requests_with_leak": 4,
+          "measured_requests": 16,
+          "total_requests": 16
+        },
+        "overmasking": {
+          "measured_public": 57,
+          "overmasked": 5,
+          "rate": 0.08771929824561403
+        },
+        "integrity": {
+          "roundtrip_passed": 16,
+          "semantic_roundtrip_passed": 16,
+          "replay_passed": 16,
+          "measured_requests": 16,
+          "response_failures": 0,
+          "payload_replay_passed": 16
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ko": {
+        "privacy": {
+          "total_sensitive": 33,
+          "measured_sensitive": 33,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 28,
+          "full_exposures": 5,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8484848484848485,
+          "observed_accuracy": 0.8484848484848485,
+          "requests_with_leak": 5,
+          "measured_requests": 16,
+          "total_requests": 16
+        },
+        "overmasking": {
+          "measured_public": 60,
+          "overmasked": 25,
+          "rate": 0.4166666666666667
+        },
+        "integrity": {
+          "roundtrip_passed": 15,
+          "semantic_roundtrip_passed": 16,
+          "replay_passed": 16,
+          "measured_requests": 16,
+          "response_failures": 0,
+          "payload_replay_passed": 16
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "domain": {
+      "automotive": {
+        "privacy": {
+          "total_sensitive": 17,
+          "measured_sensitive": 17,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 14,
+          "full_exposures": 3,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8235294117647058,
+          "observed_accuracy": 0.8235294117647058,
+          "requests_with_leak": 3,
+          "measured_requests": 8,
+          "total_requests": 8
+        },
+        "overmasking": {
+          "measured_public": 30,
+          "overmasked": 9,
+          "rate": 0.3
+        },
+        "integrity": {
+          "roundtrip_passed": 8,
+          "semantic_roundtrip_passed": 8,
+          "replay_passed": 8,
+          "measured_requests": 8,
+          "response_failures": 0,
+          "payload_replay_passed": 8
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "defense": {
+        "privacy": {
+          "total_sensitive": 15,
+          "measured_sensitive": 15,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 13,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8666666666666667,
+          "observed_accuracy": 0.8666666666666667,
+          "requests_with_leak": 2,
+          "measured_requests": 8,
+          "total_requests": 8
+        },
+        "overmasking": {
+          "measured_public": 28,
+          "overmasked": 7,
+          "rate": 0.25
+        },
+        "integrity": {
+          "roundtrip_passed": 8,
+          "semantic_roundtrip_passed": 8,
+          "replay_passed": 8,
+          "measured_requests": 8,
+          "response_failures": 0,
+          "payload_replay_passed": 8
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "general": {
+        "privacy": {
+          "total_sensitive": 17,
+          "measured_sensitive": 17,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 15,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8823529411764706,
+          "observed_accuracy": 0.8823529411764706,
+          "requests_with_leak": 2,
+          "measured_requests": 8,
+          "total_requests": 8
+        },
+        "overmasking": {
+          "measured_public": 28,
+          "overmasked": 6,
+          "rate": 0.21428571428571427
+        },
+        "integrity": {
+          "roundtrip_passed": 7,
+          "semantic_roundtrip_passed": 8,
+          "replay_passed": 8,
+          "measured_requests": 8,
+          "response_failures": 0,
+          "payload_replay_passed": 8
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "semiconductor": {
+        "privacy": {
+          "total_sensitive": 17,
+          "measured_sensitive": 17,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 15,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8823529411764706,
+          "observed_accuracy": 0.8823529411764706,
+          "requests_with_leak": 2,
+          "measured_requests": 8,
+          "total_requests": 8
+        },
+        "overmasking": {
+          "measured_public": 31,
+          "overmasked": 8,
+          "rate": 0.25806451612903225
+        },
+        "integrity": {
+          "roundtrip_passed": 8,
+          "semantic_roundtrip_passed": 8,
+          "replay_passed": 8,
+          "measured_requests": 8,
+          "response_failures": 0,
+          "payload_replay_passed": 8
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "dialect": {
+      "claude": {
+        "privacy": {
+          "total_sensitive": 33,
+          "measured_sensitive": 33,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 29,
+          "full_exposures": 4,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8787878787878788,
+          "observed_accuracy": 0.8787878787878788,
+          "requests_with_leak": 4,
+          "measured_requests": 16,
+          "total_requests": 16
+        },
+        "overmasking": {
+          "measured_public": 58,
+          "overmasked": 14,
+          "rate": 0.2413793103448276
+        },
+        "integrity": {
+          "roundtrip_passed": 16,
+          "semantic_roundtrip_passed": 16,
+          "replay_passed": 16,
+          "measured_requests": 16,
+          "response_failures": 0,
+          "payload_replay_passed": 16
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "codex": {
+        "privacy": {
+          "total_sensitive": 33,
+          "measured_sensitive": 33,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 28,
+          "full_exposures": 5,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8484848484848485,
+          "observed_accuracy": 0.8484848484848485,
+          "requests_with_leak": 5,
+          "measured_requests": 16,
+          "total_requests": 16
+        },
+        "overmasking": {
+          "measured_public": 59,
+          "overmasked": 16,
+          "rate": 0.2711864406779661
+        },
+        "integrity": {
+          "roundtrip_passed": 15,
+          "semantic_roundtrip_passed": 16,
+          "replay_passed": 16,
+          "measured_requests": 16,
+          "response_failures": 0,
+          "payload_replay_passed": 16
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "split": {
+      "development": {
+        "privacy": {
+          "total_sensitive": 36,
+          "measured_sensitive": 36,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 36,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 10,
+          "total_requests": 10
+        },
+        "overmasking": {
+          "measured_public": 38,
+          "overmasked": 4,
+          "rate": 0.10526315789473684
+        },
+        "integrity": {
+          "roundtrip_passed": 10,
+          "semantic_roundtrip_passed": 10,
+          "replay_passed": 10,
+          "measured_requests": 10,
+          "response_failures": 0,
+          "payload_replay_passed": 10
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "holdout": {
+        "privacy": {
+          "total_sensitive": 12,
+          "measured_sensitive": 12,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 5,
+          "full_exposures": 7,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.4166666666666667,
+          "observed_accuracy": 0.4166666666666667,
+          "requests_with_leak": 7,
+          "measured_requests": 10,
+          "total_requests": 10
+        },
+        "overmasking": {
+          "measured_public": 42,
+          "overmasked": 12,
+          "rate": 0.2857142857142857
+        },
+        "integrity": {
+          "roundtrip_passed": 9,
+          "semantic_roundtrip_passed": 10,
+          "replay_passed": 10,
+          "measured_requests": 10,
+          "response_failures": 0,
+          "payload_replay_passed": 10
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "regression": {
+        "privacy": {
+          "total_sensitive": 18,
+          "measured_sensitive": 18,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 16,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8888888888888888,
+          "observed_accuracy": 0.8888888888888888,
+          "requests_with_leak": 2,
+          "measured_requests": 12,
+          "total_requests": 12
+        },
+        "overmasking": {
+          "measured_public": 37,
+          "overmasked": 14,
+          "rate": 0.3783783783783784
+        },
+        "integrity": {
+          "roundtrip_passed": 12,
+          "semantic_roundtrip_passed": 12,
+          "replay_passed": 12,
+          "measured_requests": 12,
+          "response_failures": 0,
+          "payload_replay_passed": 12
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "language_mode": {
+      "auto": {
+        "privacy": {
+          "total_sensitive": 66,
+          "measured_sensitive": 66,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 57,
+          "full_exposures": 9,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.8636363636363636,
+          "observed_accuracy": 0.8636363636363636,
+          "requests_with_leak": 9,
+          "measured_requests": 32,
+          "total_requests": 32
+        },
+        "overmasking": {
+          "measured_public": 117,
+          "overmasked": 30,
+          "rate": 0.2564102564102564
+        },
+        "integrity": {
+          "roundtrip_passed": 31,
+          "semantic_roundtrip_passed": 32,
+          "replay_passed": 32,
+          "measured_requests": 32,
+          "response_failures": 0,
+          "payload_replay_passed": 32
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "policy": {
+      "contextual": {
+        "total_sensitive": 51,
+        "measured_sensitive": 51,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 42,
+        "full_exposures": 9,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.8235294117647058,
+        "observed_accuracy": 0.8235294117647058,
+        "requests_with_leak": 9,
+        "measured_requests": 22,
+        "total_requests": 22
+      },
+      "explicit": {
+        "total_sensitive": 8,
+        "measured_sensitive": 8,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 8,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 8,
+        "total_requests": 8
+      },
+      "pattern": {
+        "total_sensitive": 7,
+        "measured_sensitive": 7,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 7,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 6,
+        "total_requests": 6
+      }
+    },
+    "label": {
+      "policy-project": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 2,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 2,
+        "total_requests": 2
+      },
+      "private-function": {
+        "total_sensitive": 8,
+        "measured_sensitive": 8,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 8,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 8,
+        "total_requests": 8
+      },
+      "private-literal": {
+        "total_sensitive": 8,
+        "measured_sensitive": 8,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 8,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 8,
+        "total_requests": 8
+      },
+      "private-parameter": {
+        "total_sensitive": 16,
+        "measured_sensitive": 16,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 16,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 8,
+        "total_requests": 8
+      },
+      "synthetic-batch": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 2,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 1,
+        "total_requests": 1
+      },
+      "synthetic-email": {
+        "total_sensitive": 4,
+        "measured_sensitive": 4,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 4,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 4,
+        "total_requests": 4
+      },
+      "synthetic-exercise": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 0,
+        "full_exposures": 2,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.0,
+        "observed_accuracy": 0.0,
+        "requests_with_leak": 2,
+        "measured_requests": 2,
+        "total_requests": 2
+      },
+      "synthetic-private-path": {
+        "total_sensitive": 3,
+        "measured_sensitive": 3,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 3,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 2,
+        "total_requests": 2
+      },
+      "synthetic-project": {
+        "total_sensitive": 19,
+        "measured_sensitive": 19,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 12,
+        "full_exposures": 7,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.631578947368421,
+        "observed_accuracy": 0.631578947368421,
+        "requests_with_leak": 7,
+        "measured_requests": 17,
+        "total_requests": 17
+      },
+      "synthetic-schema-title": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 2,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 2,
+        "total_requests": 2
+      }
+    }
+  }
+}

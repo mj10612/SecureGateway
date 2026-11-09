@@ -16,12 +16,15 @@ from tempfile import TemporaryDirectory
 from threading import Thread
 import time
 from urllib.request import ProxyHandler, Request, build_opener
+from urllib.error import HTTPError
 import uuid
 
 from secure_gateway import __version__
 from secure_gateway.gateway import PrivacyGateway
+from secure_gateway.engine.natural_languages import SUPPORTED_LANGUAGES
 
 SCHEMA_VERSION = 1
+SCORING_VERSION = 2
 PROFILES = ('smoke', 'standard', 'release')
 
 
@@ -64,8 +67,10 @@ def validate_corpus(data):
         if group in groups and groups[group] != split:
             raise ValueError('A template group crosses corpus splits.')
         groups[group] = split
-        if case.get('language') not in {'en', 'ko'} or case.get('domain') not in {'general', 'defense', 'automotive', 'semiconductor'}:
+        if case.get('language') not in SUPPORTED_LANGUAGES - {'auto'} or case.get('domain') not in {'general', 'defense', 'automotive', 'semiconductor'}:
             raise ValueError('Unsupported corpus language/domain.')
+        if case.get('language_mode', 'auto') not in {'auto', 'explicit'}:
+            raise ValueError('Unsupported corpus language mode.')
         if case.get('dialect') not in {'claude', 'codex'} or not isinstance(case.get('payload'), dict):
             raise ValueError('Invalid request dialect/payload.')
         if len(json.dumps(case['payload']).encode()) > 128 * 1024:
@@ -80,6 +85,7 @@ def validate_corpus(data):
         for name in ('secrets', 'public'):
             if not isinstance(case.get(name), list):
                 raise ValueError('Missing source spans.')
+            span_keys = set()
             for span in case[name]:
                 try:
                     text = at(case['payload'], span['path'])
@@ -90,6 +96,10 @@ def validate_corpus(data):
                     valid = False
                 if not valid:
                     raise ValueError('Invalid source span.')
+                identity = (tuple(span['path']), start, end)
+                if identity in span_keys:
+                    raise ValueError('Duplicate source span occurrence.')
+                span_keys.add(identity)
                 if name == 'secrets':
                     fragments = span.get('fragments')
                     if (not isinstance(fragments, list) or any(not isinstance(s, str) or len(s) < 2 or s not in text[start:end] for s in fragments)
@@ -179,7 +189,7 @@ def write_json(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + '.' + uuid.uuid4().hex + '.tmp')
     try:
-        with temporary.open('x', encoding='utf-8') as stream:
+        with temporary.open('x', encoding='utf-8', newline='\n') as stream:
             if os.name != 'nt':
                 temporary.chmod(0o600)
             json.dump(value, stream, ensure_ascii=False, indent=2, allow_nan=False)
@@ -199,13 +209,17 @@ def _metadata(data, profile):
     settings = {'natural_language': 'auto', 'prose_mode': 'content_words', 'mask_numbers': False,
                 'forced_terms': {c['id']: c['forced_terms'] for c in select_cases(data, profile)},
                 'domain_dictionary_toggles': dict(DEFAULTS), 'domain_dictionary_manifest': catalog().version}
+    if any('language_mode' in c for c in select_cases(data, profile)):
+        settings['case_language_modes'] = {c['id']: c.get('language_mode', 'auto') for c in select_cases(data, profile)}
     source_hash = digest({str(p.relative_to(Path(__file__).parent)): hashlib.sha256(p.read_bytes()).hexdigest()
                           for p in sorted(Path(__file__).parent.rglob('*')) if p.is_file() and p.suffix in {'.py', '.json'}})
     return {'package_version': __version__, 'code_sha': sha, 'source_hash': source_hash,
-            'scoring_version': 1, 'corpus_version': data['corpus_version'],
+            'scoring_version': SCORING_VERSION, 'corpus_version': data['corpus_version'],
             'corpus_hash': digest(data), 'settings': settings, 'settings_hash': digest(settings),
             'profile': profile, 'python': platform.python_version(), 'platform': platform.platform(),
-            'languages_measured': ['ko', 'en'], 'other_languages': 'not_measured',
+            'languages_measured': sorted({c['language'] for c in select_cases(data, profile)}),
+            'languages_not_measured': sorted((SUPPORTED_LANGUAGES - {'auto'}) - {c['language'] for c in select_cases(data, profile)}),
+            'other_languages': 'not_measured',
             'scope': 'synthetic loopback HTTP; not native client/provider certification'}
 
 
@@ -257,7 +271,8 @@ def _capture_case(case, max_seconds=40):
 
     with _serving(ThreadingHTTPServer(('127.0.0.1', 0), Provider)) as provider:
         origin = f'http://127.0.0.1:{provider.server_port}'
-        gateway = PrivacyGateway(('127.0.0.1', 0), uuid.uuid4().hex, {'claude': origin, 'codex': origin})
+        gateway = PrivacyGateway(('127.0.0.1', 0), uuid.uuid4().hex, {'claude': origin, 'codex': origin},
+                                 natural_language=case['language'] if case.get('language_mode') == 'explicit' else 'auto')
         gateway.mask_rules = tuple(case['forced_terms'])
         session = gateway.get_session(case['dialect'])
         timings: dict[str, list[float]] = {'request_transform': [], 'response_restore': []}
@@ -281,31 +296,43 @@ def _capture_case(case, max_seconds=40):
                               {'Content-Type': 'application/json', 'X-SecureGateway-Token': gateway.token,
                                'Authorization': 'Bearer sk-ant-oat01-synthetic' if agent == 'claude' else 'Bearer eyJsynthetic'})
             opener = build_opener(ProxyHandler({}))
+            def receive():
+                try:
+                    with opener.open(request, timeout=max(.001, min(20, deadline - time.monotonic()))) as response:
+                        return json.load(response), response.status
+                except HTTPError as exc:
+                    # Privacy is still measurable when the actual provider
+                    # received a payload but local restoration/save failed.
+                    # Preserve that integrity failure instead of discarding
+                    # the capture or certifying a roundtrip.
+                    if not captured:
+                        raise
+                    return None, exc.code
             begin = time.monotonic()
-            with opener.open(request, timeout=max(.001, min(20, deadline - time.monotonic()))) as response:
-                answer = json.load(response)
+            answer, response_status = receive()
             first_seconds = time.monotonic() - begin
             if time.monotonic() >= deadline:
                 raise TimeoutError('Case budget exhausted.')
-            with opener.open(request, timeout=max(.001, min(20, deadline - time.monotonic()))) as response:
-                replay_answer = json.load(response)
+            replay_answer, replay_status = receive()
             if len(captured) != 2:
                 raise ValueError('Provider capture missing.')
             view = _source_keys(captured[0], gateway.get_session(agent))
             alias_originals = {m.surrogate: m.original for m in session.session.reverse_store.values()}
-            restored = answer['content'][0]['text']
+            restored = answer['content'][0]['text'] if answer is not None else None
             source_echo = at(case['payload'], echo_path)
-            exact = restored == source_echo
+            exact = response_status == 200 and restored == source_echo
             semantic = exact
-            if not exact and echo_path[-1] == 'arguments':
+            if not exact and isinstance(restored, str) and echo_path[-1] == 'arguments':
                 try:
                     semantic = json.loads(restored) == json.loads(source_echo)
                 except (ValueError, TypeError):
                     semantic = False
             result = {'outbound': captured[0], 'restored_echo': restored, 'roundtrip': exact,
                       'semantic_roundtrip': semantic,
-                      'replay': captured[0] == captured[1] and answer == replay_answer, 'http_seconds': first_seconds,
-                      'timings_seconds': timings}
+                      'replay': response_status == replay_status == 200 and captured[0] == captured[1] and answer == replay_answer,
+                      'payload_replay': captured[0] == captured[1], 'response_status': response_status,
+                      'replay_response_status': replay_status, 'http_seconds': first_seconds,
+                      'timings_seconds': timings, 'grading_alias_bindings': alias_originals}
             scores: dict[str, list] = {'secrets': [], 'public': []}
             paths = {tuple(s['path']) for s in case['secrets'] + case['public']}
             # Preserve annotation ordering so comparisons identify the same occurrence.
@@ -350,7 +377,7 @@ def _privacy_metrics(cases):
     secrets = [s for c in measured for s in c['secrets']]
     public = [s for c in measured for s in c['public']]
     total = sum(c['sensitive_count'] for c in cases)
-    protected = sum(not s['full_exposure'] and not s['partial_exposure'] for s in secrets)
+    protected = sum(not s['full_exposure'] and not s['partial_exposure'] and not s.get('alignment_ambiguous', False) for s in secrets)
     return {'privacy': {'total_sensitive': total, 'measured_sensitive': len(secrets), 'unmeasured_sensitive': total - len(secrets),
                         'fully_protected': protected, 'full_exposures': sum(s['full_exposure'] for s in secrets),
                         'partial_exposures': sum(s['partial_exposure'] for s in secrets),
@@ -363,7 +390,9 @@ def _privacy_metrics(cases):
                             'rate': sum(s['overmasked'] for s in public) / len(public) if public else None},
             'integrity': {'roundtrip_passed': sum(c['roundtrip'] for c in measured),
                           'semantic_roundtrip_passed': sum(c['semantic_roundtrip'] for c in measured),
-                          'replay_passed': sum(c['replay'] for c in measured), 'measured_requests': len(measured)},
+                          'replay_passed': sum(c['replay'] for c in measured), 'measured_requests': len(measured),
+                          'response_failures': sum(c.get('response_status', 200) != 200 for c in measured),
+                          'payload_replay_passed': sum(c.get('payload_replay', c['replay']) for c in measured)},
             'comprehension': {'status': 'not_measured'}}
 
 
@@ -389,6 +418,8 @@ def run_privacy(data, *, output_dir, profile='smoke', max_seconds=300):
               'metadata': _metadata(data, profile), 'cases': results, 'status': 'running'}
     for case in select_cases(data, profile):
         result = {k: case[k] for k in ('id', 'language', 'domain', 'dialect', 'split', 'template_group')}
+        result['language_mode'] = case.get('language_mode', 'auto')
+        result['sensitive_annotations'] = [{k: span.get(k) for k in ('label', 'policy', 'severity')} for span in case['secrets']]
         result['sensitive_count'] = len(case['secrets'])
         result['status'] = 'budget_exhausted'
         if time.monotonic() - begin < max_seconds:
@@ -417,7 +448,18 @@ def run_privacy(data, *, output_dir, profile='smoke', max_seconds=300):
                     'n': len(values), **{p: values[min(len(values) - 1, int((len(values) - 1) * q))]
                                         for p, q in [('p50', .5), ('p95', .95), ('p99', .99)]}}
     report['breakdown'] = {name: {value: _privacy_metrics([c for c in results if c[name] == value])
-                                for value in sorted({c[name] for c in results})} for name in ('language', 'domain', 'dialect')}
+                                for value in sorted({c[name] for c in results})} for name in ('language', 'domain', 'dialect', 'split', 'language_mode')}
+    for name in ('policy', 'label'):
+        values = sorted({s[name] for c in results for s in c['sensitive_annotations'] if isinstance(s.get(name), str)})
+        report['breakdown'][name] = {}
+        for value in values:
+            subset = []
+            for case in results:
+                count = sum(s.get(name) == value for s in case['sensitive_annotations'])
+                if count:
+                    subset.append({**case, 'sensitive_count': count,
+                                   'secrets': [s for s in case.get('secrets', []) if s.get(name) == value]})
+            report['breakdown'][name][value] = _privacy_metrics(subset)['privacy']
     save_report(report, output_dir)
     return report
 
@@ -425,6 +467,8 @@ def run_privacy(data, *, output_dir, profile='smoke', max_seconds=300):
 def compare_reports(baseline, candidate):
     if baseline.get('schema_version') != 1 or candidate.get('schema_version') != 1 or baseline.get('suite') != candidate.get('suite'):
         raise ValueError('Incompatible report schemas/suites.')
+    if baseline.get('metadata', {}).get('scoring_version') != candidate.get('metadata', {}).get('scoring_version'):
+        raise ValueError('Incompatible reports: scoring_version')
     for key in ('corpus_hash', 'settings_hash', 'profile'):
         if (not isinstance(baseline.get('metadata', {}).get(key), str) or not baseline['metadata'][key]
                 or baseline['metadata'].get(key) != candidate.get('metadata', {}).get(key)):
@@ -445,8 +489,8 @@ def compare_reports(baseline, candidate):
                 if before.get(check) is True and after.get(check) is not True:
                     integrity_regressions.append({'case_id': after['id'], 'check': check})
             for i, (a, b) in enumerate(zip(before['secrets'], after['secrets'])):
-                was = a['full_exposure'] or a['partial_exposure']
-                now = b['full_exposure'] or b['partial_exposure']
+                was = a['full_exposure'] or a['partial_exposure'] or a.get('alignment_ambiguous', False)
+                now = b['full_exposure'] or b['partial_exposure'] or b.get('alignment_ambiguous', False)
                 item = {'case_id': after['id'], 'occurrence': i}
                 if now:
                     (existing if was else new).append(item)

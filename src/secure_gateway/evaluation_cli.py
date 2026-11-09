@@ -5,6 +5,7 @@ import shutil
 import sys
 
 import click
+from secure_gateway.evaluation_reliable_cli import reliable
 
 
 @click.group(invoke_without_command=True)
@@ -109,3 +110,6 @@ def compare(ctx, baseline, candidate, output_dir):
             ctx.exit(1)
     except (ValueError, OSError, KeyError, TypeError) as exc:
         raise click.ClickException(str(exc)) from None
+
+
+evaluate.add_command(reliable)

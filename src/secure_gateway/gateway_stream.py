@@ -8,7 +8,8 @@ import queue
 import re
 import socket
 import time
-from threading import Event, Thread
+from threading import Event, Lock, Thread
+from typing import Any
 
 
 class EventRestorer:
@@ -143,15 +144,37 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
             except queue.Full:
                 continue
 
+    # `reading` is true only while the reader is inside an upstream read. A
+    # cancelled relay hands the buffered file to the reader when a read is in
+    # flight, because closing it inline waits on the same buffer lock.
+    state_lock = Lock()
+    reader_state: dict[str, Any] = {"reading": False, "owned_file": None}
+
     def read():
         try:
-            while not cancelled.is_set():
-                chunk = upstream.read1(65536) if hasattr(upstream, "read1") else upstream.read(65536)
+            while True:
+                with state_lock:
+                    if cancelled.is_set():
+                        return
+                    reader_state["reading"] = True
+                try:
+                    chunk = upstream.read1(65536) if hasattr(upstream, "read1") else upstream.read(65536)
+                finally:
+                    with state_lock:
+                        reader_state["reading"] = False
                 put(chunk)
                 if not chunk:
                     return
         except Exception as exc:
             put(exc)
+        finally:
+            with state_lock:
+                owned_file = reader_state["owned_file"]
+            if owned_file is not None:
+                try:
+                    owned_file.close()
+                except (OSError, ValueError):
+                    pass
 
     handler.send_response(200)
     handler.send_header("Content-Type", "text/event-stream")
@@ -229,12 +252,12 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
     finally:
         cancelled.set()
         interrupted_raw = False
+        fp = getattr(upstream, "fp", None)
+        raw = getattr(fp, "raw", None)
+        upstream_socket = getattr(raw, "_sock", None)
         if worker.is_alive():
             # Interrupt read1 before close(): buffered file close may otherwise
             # wait for the reader's lock for the entire upstream socket timeout.
-            fp = getattr(upstream, "fp", None)
-            raw = getattr(fp, "raw", None)
-            upstream_socket = getattr(raw, "_sock", None)
             if upstream_socket is not None and raw is not None:
                 try:
                     upstream_socket.shutdown(socket.SHUT_RDWR)
@@ -248,6 +271,15 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
                     interrupted_raw = True
                 except OSError:
                     pass
+        with state_lock:
+            # A kernel wakeup is not guaranteed on every platform (observed on
+            # macOS runners): a still-blocked read1 keeps the buffer lock. Detach
+            # that file so this close and the owner's later close cannot wait for
+            # the upstream timeout; the reader closes it once its read returns.
+            detached = reader_state["reading"] and fp is not None and upstream_socket is not None
+            if detached:
+                reader_state["owned_file"] = fp
+                upstream.fp = None
         try:
             upstream.close()
         except (OSError, ValueError):
@@ -255,6 +287,7 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 
             # intentionally interrupted raw stream can already be closed.
             if not interrupted_raw:
                 raise
-        worker.join(timeout=1)
+        if not detached:
+            worker.join(timeout=1)
         if handler.audit_metadata is not None:
             handler.audit_metadata["output_bytes"] = handler.stream_metrics["output_bytes"]

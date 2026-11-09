@@ -1,0 +1,47 @@
+{
+  "package_version": "2.7.0",
+  "evidence_class": "unit/integration bookkeeping, not actual model task-response scores",
+  "full_suite": {
+    "executor": "Claude Orca task_85ee15f3169d",
+    "command": "python -B -m pytest tests -q -p no:cacheprovider -x",
+    "passed": 4534,
+    "skipped": 287,
+    "seconds": 731.65,
+    "wrapper_exit": 1,
+    "wrapper_exit_reason": "Post-test git-status comparison saw coordinator-created holdout ledger; rtk pytest passed."
+  },
+  "later_cli_checks": {
+    "command": "uv run pytest tests/test_reliable_cli.py -q -Werror",
+    "passed": 2
+  },
+  "stream_targeted_checks": {
+    "command": "uv run pytest tests/test_stream_edges.py tests/test_incremental_gateway.py tests/test_gateway_connection_close.py -q -Werror",
+    "passed": 47
+  },
+  "static_checks": [
+    "ruff src tests examples: clean",
+    "mypy src: clean"
+  ],
+  "version_checks": {
+    "cli": "2.7.0",
+    "package": "2.7.0",
+    "MCP": "2.7.0",
+    "lock": "uv lock --check --offline passed"
+  },
+  "platform": "win32",
+  "python": "3.11.15",
+  "source_file_sha256": {
+    "src/secure_gateway/evaluation_reliable.py": "619aa7002e8526c67edcba3e53781036ea44bfc34597501b12356025bcc9d18f",
+    "tests/test_reliable_evaluation.py": "9837b9795a976c882c2d3e7546a5db8c34bc471297659c2948c2a30e3ca0a08c",
+    "tests/test_reliable_evaluation_guards.py": "02dd19eb3f0899a34e14b82da56f66ae8fbe3c720f7d4e09552995b156794424",
+    "tests/test_reliable_cli.py": "20581d905b1bfecfae541a73e5442f0959824220ab0190401799d8c4f5ca3cc1",
+    "src/secure_gateway/evaluation_reliable_cli.py": "6417f5a1b03281a7e904f62051704514442a6235dfba9e2662e9a62fd6d0d95e",
+    "src/secure_gateway/gateway_stream.py": "cc7692e4cf9c8e98e3216e2441f58b0b73dff2babc8176bff829022b46e7169c",
+    "tests/test_stream_edges.py": "34394ee5eb633566769c73b30c4acfb5389cd6c068928600c9424f9f0f045651"
+  },
+  "limitations": [
+    "Full local suite ran on Windows; macOS kernel cancellation behaviour requires remote CI.",
+    "Native model evaluation is recorded separately.",
+    "Source-distribution install/upgrade checks pending in this record."
+  ]
+}

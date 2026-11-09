@@ -130,6 +130,8 @@ def run_codex_worker(request: dict) -> dict:
             "-c", "web_search=\"disabled\"",
             "-c", "features.multi_agent=false", "-",
         ]
+        if request.get('reasoning_effort'):
+            command[-1:-1] = ['-c', 'model_reasoning_effort=' + json.dumps(request['reasoning_effort'])]
         events = capture_worker_process(
             command, _prompt(request).encode("utf-8"), timeout=300,
             cwd=workspace, env=child_env, new_process_group=not inherited_group,
@@ -153,6 +155,7 @@ def run_codex_worker(request: dict) -> dict:
             "isolation_limits": ["same OS user", "shared subscription auth", "no hard filesystem jail"],
             "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
             "max_output_tokens": request["max_output_tokens"],
+            "requested_reasoning_effort": request.get('reasoning_effort', 'cli_default_unverified'),
             "adapter_source_sha256": sha256(Path(__file__).read_bytes()).hexdigest(),
             "task_response_mode": "answer_visible_task" if request["role"] == "interpret" else "independent_grade",
         },

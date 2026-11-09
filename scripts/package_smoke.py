@@ -289,6 +289,12 @@ assert find_spec('secure_router') is None
 assert any(e.name == 'secure-gateway' and e.value == 'secure_gateway.cli:main'
            for e in distribution('secure-gateway').entry_points)
 assert json.loads(get_privacy_status())['version'] == __version__
+from secure_gateway.evaluation_cli import evaluate
+from secure_gateway.evaluation_reliable import verify_reference_audit
+from secure_gateway.evaluation_statistics import repeated_statistics
+assert 'reliable' in evaluate.commands
+assert 'supplement-grades' in evaluate.commands['reliable'].commands
+assert callable(verify_reference_audit) and callable(repeated_statistics)
 from secure_gateway.evaluation import load_corpus, select_cases
 assert len(select_cases(load_corpus(), 'smoke')) == 8
 for name in ('index.html', 'app.js', 'style.css', 'favicon.svg'):

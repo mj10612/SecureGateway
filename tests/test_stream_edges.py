@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
 import json
-from threading import Event, Thread
+from threading import Event, Lock, Thread
 from types import SimpleNamespace
 import urllib.request
 
@@ -216,3 +216,82 @@ def test_disconnected_client_releases_admission_before_idle_upstream_finishes():
                 worker.join(3)
                 upstream.close()
             assert not worker.is_alive()
+
+
+def test_cancellation_does_not_wait_for_reader_buffer_lock_when_socket_wakeup_is_missed():
+    """Model a platform where shutdown/close does not wake an in-flight recv.
+
+    http.client closes its BufferedReader under the same lock read1 holds, so a
+    cancelled relay must not close that file inline. The reader thread owns the
+    final close and the response itself becomes immediately closable.
+    """
+    in_read, disconnected, unblock, file_closed = Event(), Event(), Event(), Event()
+
+    class UnwakeableSocket:
+        def shutdown(self, _how):
+            pass  # deliberately ineffective, like a missed kernel wakeup
+
+    class LockedFile:
+        def __init__(self):
+            self.lock = Lock()
+            self.raw = SimpleNamespace(_sock=UnwakeableSocket(), close=lambda: None)
+
+        def read1(self, _size):
+            with self.lock:
+                in_read.set()
+                unblock.wait(10)
+                return b""
+
+        def close(self):
+            with self.lock:
+                file_closed.set()
+
+    class Response:
+        def __init__(self):
+            self.fp = LockedFile()
+
+        def read1(self, size):
+            fp = self.fp
+            return b"" if fp is None else fp.read1(size)
+
+        def close(self):
+            fp, self.fp = self.fp, None
+            if fp is not None:
+                fp.close()
+
+    class DisconnectedClient(BytesIO):
+        def write(self, body):
+            if b"gateway waiting" in body and in_read.is_set():
+                disconnected.set()
+                raise BrokenPipeError("client disconnected")
+            return super().write(body)
+
+    upstream = Response()
+    relay_done, owner_closed = Event(), Event()
+
+    def relay():
+        try:
+            relay_stream(handler(DisconnectedClient()), upstream, GatewaySession(), heartbeat=0.01)
+        except BrokenPipeError:
+            pass
+        finally:
+            relay_done.set()
+
+    def owner_exit():
+        upstream.close()  # what `with upstream_response:` does after relay_stream
+        owner_closed.set()
+
+    worker = Thread(target=relay, daemon=True)
+    worker.start()
+    try:
+        assert in_read.wait(5) and disconnected.wait(5)
+        # Before the fix this cannot complete until `unblock`, whatever the timeout.
+        assert relay_done.wait(5), "relay waited for the blocked reader's buffer lock"
+        closer = Thread(target=owner_exit, daemon=True)
+        closer.start()
+        assert owner_closed.wait(5), "response close waited for the blocked reader"
+        assert not unblock.is_set() and not file_closed.is_set()
+    finally:
+        unblock.set()
+        worker.join(5)
+    assert file_closed.wait(5), "reader thread did not close the handed-off file"

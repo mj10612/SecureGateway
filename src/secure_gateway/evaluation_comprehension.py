@@ -13,18 +13,44 @@ from secure_gateway.evaluation import at, digest, save_report, select_cases, wri
 from secure_gateway.evaluation_worker import execute_worker
 
 
+GRADING_POLICY_V2 = (
+    'Grade the actual saved answer semantically, not exact reference wording or keywords. '
+    'When the original lacks facts required for a concrete decision, credit a targeted clarification '
+    'and a useful conditional draft/outline if appropriate; do not demand an unavailable item list, '
+    'measurement, name or value. Deferring only that decision without inventing facts is correct. '
+    'Require the other supported work, requested order, prohibitions and output scope. '
+    'Do not accept blanket refusal merely because names are opaque. Treat supplied aliases as stable '
+    'references; owner-only alias bindings clarify identity, never a requirement to reveal originals. '
+    'The reference response illustrates attainable full credit, not the only valid answer. '
+    'Enforce explicit length and structure limits without tolerance. Unless the task says otherwise, '
+    'count words as whitespace-separated tokens containing letters or digits, ignoring standalone '
+    'list markers; include requested titles, greetings and signatures in whole-message word limits. '
+    'Count characters as NFC Unicode codepoints including spaces and punctuation. Sentence endings '
+    'include . ! ? and their native-script equivalents, excluding periods in decimals, emails or '
+    'abbreviations; title lines, salutations and fixed sign-offs are not separate sentences. '
+    'Count nonempty lines/items; a clarification must fit the allowed structure and length. '
+    'Do not improve or regenerate the answer. Cite the saved answer or its omission. No tools.'
+)
+
+
 def _jsonl(path, rows):
     path = Path(path)
-    path.write_text(''.join(json.dumps(row, ensure_ascii=False) + '\n' for row in rows), encoding='utf-8')
+    path.write_text(''.join(json.dumps(row, ensure_ascii=False) + '\n' for row in rows), encoding='utf-8', newline='\n')
     if __import__('os').name != 'nt':
         path.chmod(0o600)
 
 
-def prepare_comprehension(data, baseline, candidate, *, output_dir, model, profile='smoke', repeats=1, max_output_tokens=1024):
+def prepare_comprehension(data, baseline, candidate, *, output_dir, model, profile='smoke', repeats=1, max_output_tokens=1024,
+                          all_tasks=False, variants=('original', 'human', 'baseline', 'candidate'),
+                          grading_policy_version=1, reasoning_effort=None):
     from secure_gateway.evaluation import validate_corpus
     validate_corpus(data)
     if not isinstance(model, str) or not model or not 1 <= repeats <= 10 or not 64 <= max_output_tokens <= 8192:
         raise ValueError('Invalid model/repeat/output budget.')
+    if (not variants or len(set(variants)) != len(variants) or set(variants) - {'original', 'human', 'baseline', 'candidate'}
+            or grading_policy_version not in {1, 2}
+            or reasoning_effort is not None and reasoning_effort not in {'low', 'medium', 'high', 'xhigh'}):
+        raise ValueError('Invalid variants/grading policy/reasoning configuration.')
     output_dir = Path(output_dir)
     if (output_dir / 'manifest.json').exists():
         raise ValueError('Prepared run already exists; resume or use a new directory.')
@@ -34,7 +60,9 @@ def prepare_comprehension(data, baseline, candidate, *, output_dir, model, profi
     if baseline['metadata']['settings_hash'] != candidate['metadata']['settings_hash']:
         raise ValueError('Incompatible privacy settings.')
     limit = {'smoke': 1, 'standard': 4, 'release': 8}[profile]
-    cases = [c for c in select_cases(data, profile) if c['rubric']][:limit]
+    cases = [c for c in select_cases(data, profile) if c['rubric']]
+    if not all_tasks:
+        cases = cases[:limit]
     if not cases:
         raise ValueError('No comprehension tasks in selection.')
     records = [{c['id']: c for c in r['cases']} for r in (baseline, candidate)]
@@ -43,10 +71,13 @@ def prepare_comprehension(data, baseline, candidate, *, output_dir, model, profi
         if any(case['id'] not in arm or arm[case['id']]['status'] != 'completed' for arm in records):
             raise ValueError('Missing captured HTTP task.')
         for repeat in range(repeats):
-            for variant in ('original', 'human', 'baseline', 'candidate'):
+            for variant in variants:
                 text = (at(case['payload'], case['task_path']) if variant == 'original' else case['human_text'] if variant == 'human'
                         else at(records[variant == 'candidate'][case['id']]['outbound'], case['task_path']))
-                payload = records[variant == 'candidate'][case['id']]['outbound']
+                # Controls use the actual source instructions. The gateway's
+                # masked-context instructions belong only to its outbound arms.
+                payload = (case['payload'] if variant in {'original', 'human'}
+                           else records[variant == 'candidate'][case['id']]['outbound'])
                 system = payload.get('system', payload.get('instructions', ''))
                 if isinstance(system, list):
                     system = '\n'.join(s.get('text', '') for s in system)
@@ -55,9 +86,18 @@ def prepare_comprehension(data, baseline, candidate, *, output_dir, model, profi
                 messages = [{'role': 'system', 'content': system}, {'role': 'user', 'content': text}]
                 request = {'role': 'interpret', 'job_id': uuid.uuid4().hex, 'model': model,
                            'max_output_tokens': max_output_tokens, 'messages': messages}
+                if reasoning_effort is not None:
+                    request['reasoning_effort'] = reasoning_effort
+                # Reference answers are audited separately, not shown as an
+                # answer key to graders of independently generated responses.
+                context = {key: case[key] for key in ('rubric_notes', 'missing_original_facts') if key in case}
+                if variant in {'baseline', 'candidate'}:
+                    context['alias_bindings'] = records[variant == 'candidate'][case['id']].get('grading_alias_bindings', {})
                 jobs.append({'job_id': request['job_id'], 'case_id': case['id'], 'variant': variant, 'repeat': repeat,
                              'request': request, 'input_hash': digest(request), 'original': at(case['payload'], case['task_path']),
-                             'criteria': case['rubric'], 'language': case['language'], 'domain': case['domain']})
+                             'criteria': case['rubric'], 'language': case['language'], 'domain': case['domain'],
+                             'split': case['split'], 'template_group': case['template_group'],
+                             'grading_policy_version': grading_policy_version, 'grading_context': context})
     secrets.SystemRandom().shuffle(jobs)
     state = {'schema_version': 1, 'jobs': jobs, 'responses': {}, 'grades': {}, 'errors': [], 'attempts': 0,
              'metadata': {**candidate['metadata'], 'profile': profile, 'model': model, 'repeats': repeats,
@@ -65,6 +105,8 @@ def prepare_comprehension(data, baseline, candidate, *, output_dir, model, profi
                           'candidate_code_sha': candidate['metadata']['code_sha'],
                           'same_engine_capture': baseline['run_id'] == candidate['run_id'],
                           'max_output_tokens': max_output_tokens,
+                          'variants': list(variants), 'grading_policy_version': grading_policy_version,
+                          'reasoning_effort': reasoning_effort or 'cli_default_unverified',
                           'token_limit': 'Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.',
                           'import_provenance': 'External records are caller-attested, not cryptographically verified.',
                           'isolation': 'Fresh context/cwd; same OS user, no hard filesystem jail.'}}
@@ -113,7 +155,7 @@ def _validate_grades(record, job, response):
 
 
 def _grade_request(job, response):
-    return {'role': 'grade', 'job_id': job['job_id'], 'model': job['request']['model'],
+    request = {'role': 'grade', 'job_id': job['job_id'], 'model': job['request']['model'],
             'max_output_tokens': job['request']['max_output_tokens'], 'criteria': job['criteria'],
             'messages': [{'role': 'system', 'content': 'Grade the saved response against each supplied criterion. '
                           'Judge semantic correctness, actions, conditions and prohibitions. Opaque aliases need not reveal originals. '
@@ -121,6 +163,14 @@ def _grade_request(job, response):
                           'Evidence must cite the actual response or explain its omission. Do not use tools.'},
                          {'role': 'user', 'content': json.dumps({'original': job['original'], 'criteria': job['criteria'],
                                                                'model_input': job['request']['messages'], 'response': response['response']}, ensure_ascii=False)}]}
+    if job.get('grading_policy_version') == 2:
+        request['messages'][0]['content'] = GRADING_POLICY_V2
+        data = json.loads(request['messages'][1]['content'])
+        data['owner_grading_context'] = job.get('grading_context', {})
+        request['messages'][1]['content'] = json.dumps(data, ensure_ascii=False)
+    if job['request'].get('reasoning_effort'):
+        request['reasoning_effort'] = job['request']['reasoning_effort']
+    return request
 
 
 def _metrics(rows):
@@ -207,6 +257,7 @@ def continue_comprehension(output_dir, *, responses_path=None, grades_path=None,
         row = {'id': f"{job['case_id']}:{job['variant']}:{job['repeat']}",
                **{k: job[k] for k in ('job_id', 'case_id', 'variant', 'repeat', 'language', 'domain')},
                'criteria_count': len(job['criteria']), 'input_hash': job['input_hash'], 'status': 'not_measured'}
+        row.update({key: job[key] for key in ('split', 'template_group') if key in job})
         if job_id in state['responses']:
             response = state['responses'][job_id]
             row.update(response=response['response'], response_hash=digest(response['response']), execution=response['execution'], status='ungraded')
@@ -224,10 +275,13 @@ def continue_comprehension(output_dir, *, responses_path=None, grades_path=None,
     report = {'schema_version': 1, 'suite': 'comprehension', 'status': 'completed' if metrics['status'] == 'measured' else 'incomplete',
               'metadata': state['metadata'], 'cases': rows, 'errors': state['errors'], 'attempts': state['attempts'],
               'metrics': {'privacy': {'status': 'measured_separately_in_HTTP_reports'}, 'comprehension': metrics,
-                          'variants': {v: _metrics([r for r in rows if r['variant'] == v]) for v in ('original', 'human', 'baseline', 'candidate')}}}
+                          'variants': {v: _metrics([r for r in rows if r['variant'] == v])
+                                       for v in state['metadata'].get('variants', ['original', 'human', 'baseline', 'candidate'])}}}
     paired: dict = {'improved': [], 'regressed': [], 'unchanged': [], 'unmeasured_pairs': 0}
     grouped = {(r['case_id'], r['repeat'], r['variant']): r for r in rows}
     for key in {(r['case_id'], r['repeat']) for r in rows}:
+        if key + ('baseline',) not in grouped or key + ('candidate',) not in grouped:
+            continue
         a, b = grouped[key + ('baseline',)], grouped[key + ('candidate',)]
         if not a.get('grades') or not b.get('grades'):
             paired['unmeasured_pairs'] += 1
@@ -237,6 +291,9 @@ def continue_comprehension(output_dir, *, responses_path=None, grades_path=None,
             name = 'unchanged' if ag[grade['id']] == grade['passed'] else 'improved' if grade['passed'] else 'regressed'
             paired[name].append({'case_id': key[0], 'repeat': key[1], 'criterion': grade['id']})
     report['paired'] = paired
+    if state['metadata'].get('grading_policy_version') == 2:
+        from secure_gateway.evaluation_statistics import repeated_statistics
+        report['repeated_statistics'] = repeated_statistics(rows, expected_repeats=state['metadata']['repeats'])
     report['elapsed_seconds'] = time.monotonic() - begin
     save_report(report, output_dir)
     return report
