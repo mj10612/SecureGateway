@@ -1,0 +1,388 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "f895901a7b2e4f0d9ec18a1a68506b41",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "153b4a41f354ce30a270f618aa09ad0f4e6441b4f28e07fe95eadb196b1e7e46",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-313-ko-1": [],
+        "holdout-313-en-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "d33991e5bbc03bf13355e5c5e2feb8b22a889629b14797fd3f97a022e7732686",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "holdout-313-ko-1",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 private_symbol_2 일정의 이름은 private_symbol_3입니다. 다음 영문 지시는 그대로 private_symbol_4 주세요: \"private_symbol_5 the two private_symbol_6 private_symbol_7 private_symbol_8. private_symbol_9 for the private_symbol_10 private_symbol_11 before private_symbol_12 them. Do not book a private_symbol_13.\" 답변은 이번 주 private_symbol_2 private_symbol_14 두 개의 비교로 private_symbol_15 한국어로 써 주세요."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "http_seconds": 0.01599999999962165,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 15,
+          "end": 18,
+          "label": "schedule_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 47,
+          "end": 159,
+          "label": "quoted_instruction",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 161,
+          "end": 202,
+          "label": "scope",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-en-1",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "The private_symbol_1 inspection route is named private_symbol_2. private_symbol_3 this quoted instruction: \"private_symbol_4 the checks for the two supplied stations. If a station address is absent, ask before private_symbol_5 the visit. Do not dispatch anyone.\" private_symbol_6 in private_symbol_7 and cover only tomorrow private_symbol_8’s draft route."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "http_seconds": 0.016000000000531145,
+      "timings_seconds": {
+        "request_transform": [
+          0.016000000000531145,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 53,
+          "label": "route_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 223,
+          "label": "quoted_instruction",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 225,
+          "end": 289,
+          "label": "scope",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "completed",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 2,
+      "measured_sensitive": 2,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 2,
+      "full_exposures": 0,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 1.0,
+      "observed_accuracy": 1.0,
+      "requests_with_leak": 0,
+      "measured_requests": 2,
+      "total_requests": 2
+    },
+    "overmasking": {
+      "measured_public": 4,
+      "overmasked": 4,
+      "rate": 1.0
+    },
+    "integrity": {
+      "roundtrip_passed": 2,
+      "semantic_roundtrip_passed": 2,
+      "replay_passed": 2,
+      "measured_requests": 2,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "elapsed_seconds": 0.4220000000004802,
+  "performance": {
+    "request_transform_first_mapping_pass": {
+      "n": 2,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "request_transform_replay": {
+      "n": 2,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "response_restore_first_mapping_pass": {
+      "n": 2,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "response_restore_replay": {
+      "n": 2,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    }
+  },
+  "breakdown": {
+    "language": {
+      "en": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 2,
+          "overmasked": 2,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ko": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 2,
+          "overmasked": 2,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "domain": {
+      "general": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 2,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 2,
+          "total_requests": 2
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 4,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 2,
+          "semantic_roundtrip_passed": 2,
+          "replay_passed": 2,
+          "measured_requests": 2
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "dialect": {
+      "codex": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 2,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 2,
+          "total_requests": 2
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 4,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 2,
+          "semantic_roundtrip_passed": 2,
+          "replay_passed": 2,
+          "measured_requests": 2
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    }
+  }
+}

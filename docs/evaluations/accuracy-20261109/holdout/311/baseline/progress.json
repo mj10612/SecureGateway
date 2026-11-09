@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "da8193b8b1994532b40044b7472ac1e2",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "da956cabe2d3f6703ad1a18c0a773a9cec6943b154a2c31ca2dad29f117494c2",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-311-en-1": [],
+        "holdout-311-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "4d2d7fdb602d23b75af3ddc2c8d59925af2ca9d434cea1b945c82a67e30d5db6",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "holdout-311-en-1",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h311-editorial-role-card",
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\nThe two names above are private_symbol_5 fixture names. Write a private_symbol_6 note using the role labels private_symbol_1 and private_symbol_3. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the private_symbol_6 for this single draft only."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 17,
+          "label": "reviewer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 35,
+          "label": "document_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 8,
+          "label": "role_label",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 18,
+          "end": 26,
+          "label": "role_label",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 153,
+          "label": "intent",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 154,
+          "end": 231,
+          "label": "condition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 232,
+          "end": 276,
+          "label": "prohibition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 277,
+          "end": 325,
+          "label": "scope",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h311-archive-role-card",
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\n위 두 값은 가상의 private_symbol_5 이름입니다. private_symbol_1와 private_symbol_6 역할 표기를 살려 보관 private_symbol_7 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 private_symbol_8, 없으면 먼저 private_symbol_9 주세요. 개별 이름을 private_symbol_10 보관이 private_symbol_11 쓰지 마세요. 이 문서 한 건의 private_symbol_7 절차만 설명해 주세요."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "http_seconds": 0.01599999999962165,
+      "timings_seconds": {
+        "request_transform": [
+          0.01599999999962165,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 13,
+          "label": "reviewer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 24,
+          "end": 27,
+          "label": "document_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 8,
+          "label": "role_label",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 14,
+          "end": 22,
+          "label": "role_label",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 99,
+          "label": "intent",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 100,
+          "end": 137,
+          "label": "condition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 138,
+          "end": 167,
+          "label": "prohibition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 168,
+          "end": 193,
+          "label": "scope",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "running",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 4,
+      "measured_sensitive": 4,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 4,
+      "full_exposures": 0,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 1.0,
+      "observed_accuracy": 1.0,
+      "requests_with_leak": 0,
+      "measured_requests": 2,
+      "total_requests": 2
+    },
+    "overmasking": {
+      "measured_public": 12,
+      "overmasked": 10,
+      "rate": 0.8333333333333334
+    },
+    "integrity": {
+      "roundtrip_passed": 2,
+      "semantic_roundtrip_passed": 2,
+      "replay_passed": 2,
+      "measured_requests": 2
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  }
+}

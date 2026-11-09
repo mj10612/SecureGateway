@@ -1,0 +1,436 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "dddff9c0aed544fc8aa726c21aace370",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "d145ecdf526ffc10c3a5f02569a093e882ef3d07abbc018aa78bae346e8fe98f",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-316-en-1": [],
+        "holdout-316-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "be82709596ce601e350c30361a5a7169df273dd5dc2bf93fcb9db2ebab37f69e",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "holdout-316-en-1",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h316-local-correction-draft",
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "For private_symbol_1-A, my earlier explicit correction private_symbol_2 the fictional project name private_symbol_3 as private_symbol_4 in private_symbol_5. Outline a checklist for private_symbol_6 the display stand. private_symbol_7 dimensions only after the confirmed measurements arrive; otherwise ask for them. Do not expose the corrected private_symbol_4 name or cut any material. private_symbol_8 that correction only within private_symbol_1-A and cover this stand’s draft checklist only."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "For workspace-A, my earlier explicit correction marked the fictional project name Clover as private in English. Outline a checklist for assembling the display stand. Use dimensions only after the confirmed measurements arrive; otherwise ask for them. Do not expose the corrected private name or cut any material. Apply that correction only within workspace-A and cover this stand’s draft checklist only.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "http_seconds": 0.01599999999962165,
+      "timings_seconds": {
+        "request_transform": [
+          0.01599999999962165,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 82,
+          "end": 88,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 112,
+          "end": 165,
+          "label": "intent",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 166,
+          "end": 250,
+          "label": "condition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 251,
+          "end": 312,
+          "label": "prohibition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 313,
+          "end": 403,
+          "label": "scope",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "holdout-316-ko-1",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h316-local-correction-supply",
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1-private_symbol_2에서 내가 앞서 private_symbol_3 private_symbol_4 private_symbol_5 가상 이름은 구름이며 한국어 작업에만 private_symbol_6. 전시 private_symbol_7 분류할 기준을 작성해 주세요. 보관 규정이 private_symbol_8 그 규정만 private_symbol_9, 아직 없으면 먼저 private_symbol_10 주세요. private_symbol_4 이름을 private_symbol_11 물품을 private_symbol_12 마세요. 이 정정은 private_symbol_1-private_symbol_2에만 private_symbol_13 이번 전시의 분류 기준만 private_symbol_14 주세요."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "workspace-A에서 내가 앞서 명시적으로 정정한 비공개 가상 이름은 구름이며 한국어 작업에만 적용합니다. 전시 소모품을 분류할 기준을 작성해 주세요. 보관 규정이 오면 그 규정만 사용하고, 아직 없으면 먼저 요청해 주세요. 정정한 이름을 공개하거나 물품을 폐기하지 마세요. 이 정정은 workspace-A에만 적용하고 이번 전시의 분류 기준만 다뤄 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "http_seconds": 0.016000000000531145,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 43,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 62,
+          "end": 86,
+          "label": "intent",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 87,
+          "end": 127,
+          "label": "condition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 128,
+          "end": 155,
+          "label": "prohibition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 156,
+          "end": 202,
+          "label": "scope",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "completed",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 2,
+      "measured_sensitive": 2,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 1,
+      "full_exposures": 1,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.5,
+      "observed_accuracy": 0.5,
+      "requests_with_leak": 1,
+      "measured_requests": 2,
+      "total_requests": 2
+    },
+    "overmasking": {
+      "measured_public": 8,
+      "overmasked": 8,
+      "rate": 1.0
+    },
+    "integrity": {
+      "roundtrip_passed": 2,
+      "semantic_roundtrip_passed": 2,
+      "replay_passed": 2,
+      "measured_requests": 2,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "elapsed_seconds": 0.39099999999962165,
+  "performance": {
+    "request_transform_first_mapping_pass": {
+      "n": 2,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "request_transform_replay": {
+      "n": 2,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "response_restore_first_mapping_pass": {
+      "n": 2,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "response_restore_replay": {
+      "n": 2,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    }
+  },
+  "breakdown": {
+    "language": {
+      "en": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 4,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ko": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 0,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.0,
+          "observed_accuracy": 0.0,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 4,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "domain": {
+      "general": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.5,
+          "observed_accuracy": 0.5,
+          "requests_with_leak": 1,
+          "measured_requests": 2,
+          "total_requests": 2
+        },
+        "overmasking": {
+          "measured_public": 8,
+          "overmasked": 8,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 2,
+          "semantic_roundtrip_passed": 2,
+          "replay_passed": 2,
+          "measured_requests": 2
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "dialect": {
+      "codex": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.5,
+          "observed_accuracy": 0.5,
+          "requests_with_leak": 1,
+          "measured_requests": 2,
+          "total_requests": 2
+        },
+        "overmasking": {
+          "measured_public": 8,
+          "overmasked": 8,
+          "rate": 1.0
+        },
+        "integrity": {
+          "roundtrip_passed": 2,
+          "semantic_roundtrip_passed": 2,
+          "replay_passed": 2,
+          "measured_requests": 2
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    }
+  }
+}

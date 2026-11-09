@@ -713,7 +713,14 @@ class MaskingEngine:
                        r"(?P<alias_run>(?<![A-Za-z0-9_])(?:private_symbol_\d+){2,}"
                        r"(?![A-Za-z0-9_]))|(?P<numeric>" + NUMERIC_ALIAS_RUN.pattern + ")")
             syntax = StrategyGenerator.get_pattern(strategy).pattern.split(r"|\b", 1)[0]
-            aliases = [syntax, r"(?<![A-Za-z0-9_])(?:smcp_(?:ID|NUM|LIT)|private_symbol)_\d+(?![A-Za-z0-9_])"]
+            # Models commonly derive identifiers with ASCII letter/underscore
+            # affixes (test_<alias>, <alias>_v2). Restore the issued binding in
+            # place while preserving those affixes. Consume the complete digit
+            # sequence: unknown alias 10 must never fall back to issued alias 1.
+            # An issued 10 is indistinguishable from 1 + "0" on the wire; only
+            # its exact full binding can be honored. Registered nonstandard
+            # spellings precede this fallback and retain their whole mapping.
+            aliases = [syntax, r"(?<![0-9])(?:smcp_(?:ID|NUM|LIT)|private_symbol)_\d+(?![0-9])"]
             pattern += "|(?P<alias>" + "|".join(alternatives + aliases) + ")"
             if normalize_particles:
                 pattern += r"(?P<particle>(?:으로|이랑|이나|은|는|을|를|과|와|이|가|로|랑|나)(?:부터|도|만|는|의)?(?=\s|[.,!?]|$))?"
@@ -724,10 +731,9 @@ class MaskingEngine:
             reserved_alias = re.compile(r"(?:smcp_(?:ID|NUM|LIT)|private_symbol)_\d+", re.IGNORECASE)
 
             def check_unrestored(start: int, end: int) -> None:
-                # A model can append/prepend identifier characters to an alias.
-                # Boundary-aware substitution deliberately leaves those strings
-                # alone, but strict restoration must not silently execute them.
-                # Scan only original-input gaps: valid registered identifier
+                # Unsupported numeric prefixes or unrecognized reserved forms
+                # must not silently execute. Scan only original-input gaps:
+                # valid registered identifier
                 # spellings and restored originals can themselves contain the
                 # reserved syntax and must never be interpreted a second time.
                 for token in identifier_tokens.finditer(masked_text, start, end):

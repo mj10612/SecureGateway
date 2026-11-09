@@ -190,6 +190,7 @@ def write_json(path, value):
 
 
 def _metadata(data, profile):
+    from secure_gateway.domain_dictionaries import catalog, DEFAULTS
     try:
         sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], stderr=subprocess.DEVNULL,
                                       cwd=Path(__file__).parent, timeout=3).decode().strip()
@@ -197,9 +198,9 @@ def _metadata(data, profile):
         sha = None
     settings = {'natural_language': 'auto', 'prose_mode': 'content_words', 'mask_numbers': False,
                 'forced_terms': {c['id']: c['forced_terms'] for c in select_cases(data, profile)},
-                'domain_dictionary_toggles': 'unsupported (#307)'}
+                'domain_dictionary_toggles': dict(DEFAULTS), 'domain_dictionary_manifest': catalog().version}
     source_hash = digest({str(p.relative_to(Path(__file__).parent)): hashlib.sha256(p.read_bytes()).hexdigest()
-                          for p in sorted(Path(__file__).parent.rglob('*.py'))})
+                          for p in sorted(Path(__file__).parent.rglob('*')) if p.is_file() and p.suffix in {'.py', '.json'}})
     return {'package_version': __version__, 'code_sha': sha, 'source_hash': source_hash,
             'scoring_version': 1, 'corpus_version': data['corpus_version'],
             'corpus_hash': digest(data), 'settings': settings, 'settings_hash': digest(settings),
@@ -373,7 +374,7 @@ def save_report(report, output_dir):
                'The two quality axes are independent. Missing measurements are not successes.', '',
                '```json', json.dumps(report['metrics'], ensure_ascii=False, indent=2), '```', '',
                'Synthetic corpus only; results are not real-world disclosure probabilities.',
-               'Domain dictionary toggles (#307), untested languages and native-client paths are not certified.']
+               'Recorded domain settings apply to this run only; untested languages and native-client paths are not certified.']
     (output_dir / 'summary.md').write_text('\n'.join(summary) + '\n', encoding='utf-8')
 
 

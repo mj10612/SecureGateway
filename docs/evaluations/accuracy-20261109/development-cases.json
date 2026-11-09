@@ -1,0 +1,2050 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-development-20261109-v1",
+  "synthetic": true,
+  "purpose": "development-only candidate diagnostics; not untouched holdout or final quality evidence",
+  "source": "Known issue examples and docs/EXPERIMENT_PROTOCOL_20261109.md, read after candidate implementation.",
+  "cases": [
+    {
+      "id": "309-ko-shelf",
+      "issue_number": 309,
+      "template_group": "development-309-ko-shelf",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "전시 계획 새솔Qzx를 검토해줘. 표지가 손상된 책은 제외하고 접착식 표지는 붙이자는 제안을 하지 마세요. 선반 높이를 모르면 먼저 물어보세요. 원본은 삭제하지 마세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 6,
+          "end": 11,
+          "label": "private-plan",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Review the exhibition plan."
+        },
+        {
+          "id": "conditions",
+          "description": "Exclude damaged covers and do not suggest adhesive covers."
+        },
+        {
+          "id": "prohibition",
+          "description": "Ask for shelf height if unknown before choosing placement."
+        },
+        {
+          "id": "scope",
+          "description": "Do not delete the original."
+        }
+      ],
+      "human_text": "전시 계획 [PRIVATE_1]를 검토해줘. 표지가 손상된 책은 제외하고 접착식 표지는 붙이자는 제안을 하지 마세요. 선반 높이를 모르면 먼저 물어보세요. 원본은 삭제하지 마세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "309-ko-approval",
+      "issue_number": 309,
+      "template_group": "development-309-ko-approval",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "프로젝트 별무리Qzx를 검토하되 승인되기 전에는 배포하지 마세요. 준비 여부를 모르면 먼저 확인 질문 하나만 해주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 5,
+          "end": 11,
+          "label": "private-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Review the project."
+        },
+        {
+          "id": "conditions",
+          "description": "Deployment requires prior approval."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not deploy before approval."
+        },
+        {
+          "id": "scope",
+          "description": "Ask exactly one readiness clarification when unknown."
+        }
+      ],
+      "human_text": "프로젝트 [PRIVATE_1]를 검토하되 승인되기 전에는 배포하지 마세요. 준비 여부를 모르면 먼저 확인 질문 하나만 해주세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "310-en-name",
+      "issue_number": 310,
+      "template_group": "development-310-en-name",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "Project name: margin. If its checklist is incomplete, ask which item is missing before drafting a review plan. Do not run commands."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 14,
+          "end": 20,
+          "label": "private-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 13
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 22,
+          "end": 52
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 54,
+          "end": 79
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 109
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 111,
+          "end": 130
+        }
+      ],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Recognizes that a review plan is the eventual requested action."
+        },
+        {
+          "id": "conditions",
+          "description": "Keeps the incomplete-checklist prerequisite before drafting."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not run commands or claim to run them."
+        },
+        {
+          "id": "scope",
+          "description": "Asks which checklist item is missing rather than guessing the hidden project identity."
+        }
+      ],
+      "human_text": "Project name: private_symbol_1. If its checklist is incomplete, ask which item is missing before drafting a review plan. Do not run commands.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "310-ko-name",
+      "issue_number": 310,
+      "template_group": "development-310-ko-name",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "고객사 이름: 초록. 수령 확인이 없으면 먼저 확인 방법을 물어봐 주세요. 확인 전에는 문서를 보내지 말고 두 문장으로 답하세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 8,
+          "end": 10,
+          "label": "private-customer",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Address receipt confirmation."
+        },
+        {
+          "id": "conditions",
+          "description": "Missing receipt confirmation requires a question."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not send the document before confirmation."
+        },
+        {
+          "id": "scope",
+          "description": "Ask how to confirm receipt using two sentences."
+        }
+      ],
+      "human_text": "고객사 이름: [PRIVATE_1]. 수령 확인이 없으면 먼저 확인 방법을 물어봐 주세요. 확인 전에는 문서를 보내지 말고 두 문장으로 답하세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "311-en-role",
+      "issue_number": 311,
+      "template_group": "development-311-en-role",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "Reviewer: MirelQzx. Document: AspenQzx. Ask the reviewer to check the document only after approval; do not ask the document to approve itself."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 18,
+          "label": "private-person",
+          "fragments": [
+            "Mirel"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 30,
+          "end": 38,
+          "label": "private-document",
+          "fragments": [
+            "Aspen"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 9
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 20,
+          "end": 29
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 40,
+          "end": 78
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 79,
+          "end": 98
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 100,
+          "end": 141
+        }
+      ],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Assigns the checking action to the reviewer."
+        },
+        {
+          "id": "conditions",
+          "description": "Approval is a prerequisite for checking."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not request self-approval by the document."
+        },
+        {
+          "id": "scope",
+          "description": "Maintains the reviewer-as-actor and document-as-object relationship without guessing originals."
+        }
+      ],
+      "human_text": "Reviewer: private_symbol_1. Document: private_symbol_2. Ask the reviewer to check the document only after approval; do not ask the document to approve itself.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "local_policy": {
+        "allow_roles": true
+      }
+    },
+    {
+      "id": "311-ko-role",
+      "issue_number": 311,
+      "template_group": "development-311-ko-role",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "받는 사람: 다온Qzx. 검토 문서: 누리Qzx. 먼저 사람에게 일정 확인 질문을 하고 문서는 보내지 마세요. 질문 하나만 작성하세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 7,
+          "end": 12,
+          "label": "private-person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 21,
+          "end": 26,
+          "label": "private-document",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Ask a schedule clarification."
+        },
+        {
+          "id": "conditions",
+          "description": "The question is directed to the person."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not send the document."
+        },
+        {
+          "id": "scope",
+          "description": "Write exactly one question."
+        }
+      ],
+      "human_text": "받는 사람: [PRIVATE_1]. 검토 문서: [PRIVATE_2]. 먼저 사람에게 일정 확인 질문을 하고 문서는 보내지 마세요. 질문 하나만 작성하세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "local_policy": {
+        "allow_roles": true
+      }
+    },
+    {
+      "id": "312-en-device",
+      "issue_number": 312,
+      "template_group": "development-312-en-device",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "Prepare a verification plan from the supplied device record. Confirm the serial with the owner before any reset; do not reset it.\nRecord: {\"device_serial\":\"000812405\",\"firmware_version\":\"3.12\",\"retry_count\":3}"
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 156,
+          "end": 165,
+          "label": "private-device-serial",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 27
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 61,
+          "end": 94
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 95,
+          "end": 111
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 113,
+          "end": 128
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 167,
+          "end": 192
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 193,
+          "end": 208
+        }
+      ],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Prepares or scopes a device verification plan."
+        },
+        {
+          "id": "conditions",
+          "description": "Requires owner confirmation of the serial before a reset."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not reset the device or claim a reset."
+        },
+        {
+          "id": "scope",
+          "description": "Refers to the protected device without interpreting alias digits as its actual serial."
+        }
+      ],
+      "human_text": "Prepare a verification plan from the supplied device record. Confirm the serial with the owner before any reset; do not reset it.\nRecord: {\"device_serial\":\"private_symbol_1\",\"firmware_version\":\"3.12\",\"retry_count\":3}",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "coverage_notes": [
+        "Record is JSON encoded inside source text; this case alone does not certify typed JSON scalar conversion or tool arguments."
+      ]
+    },
+    {
+      "id": "312-ko-customer",
+      "issue_number": 312,
+      "template_group": "development-312-ko-customer",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "고객번호: 00481275\n반복횟수: 3\n고객번호의 실제 숫자는 추측하지 말고 검토 절차만 설명하세요. 승인 전에는 원본을 변경하지 마세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 6,
+          "end": 14,
+          "label": "private-customer-number",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Explain review procedure only."
+        },
+        {
+          "id": "conditions",
+          "description": "Keep normal loop count distinct from private customer identifier."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not infer the hidden customer number."
+        },
+        {
+          "id": "scope",
+          "description": "Do not modify the original before approval."
+        }
+      ],
+      "human_text": "고객번호: [PRIVATE_1]\n반복횟수: 3\n고객번호의 실제 숫자는 추측하지 말고 검토 절차만 설명하세요. 승인 전에는 원본을 변경하지 마세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "coverage_notes": [
+        "Record is JSON encoded inside source text; typed integer restoration needs a separate integrity control."
+      ]
+    },
+    {
+      "id": "313-ko-en",
+      "issue_number": 313,
+      "template_group": "development-313-ko-en",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "다음 영어 지침의 금지 사항만 한국어로 두 개 적어 주세요:\n\"Do not replace the original. Do not publish until the reviewer confirms.\"\n프로젝트명은 EmberQzx입니다."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 116,
+          "end": 124,
+          "label": "private-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Answer in Korean."
+        },
+        {
+          "id": "conditions",
+          "description": "Preserve the reviewer-confirmation prerequisite."
+        },
+        {
+          "id": "prohibition",
+          "description": "State no original replacement and no premature publication."
+        },
+        {
+          "id": "scope",
+          "description": "List exactly two prohibitions."
+        }
+      ],
+      "human_text": "다음 영어 지침의 금지 사항만 한국어로 두 개 적어 주세요:\n\"Do not replace the original. Do not publish until the reviewer confirms.\"\n프로젝트명은 [PRIVATE_1]입니다.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "313-en-ko",
+      "issue_number": 313,
+      "template_group": "development-313-en-ko",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "Write one clarification question in English for this Korean instruction: \"크기를 모르면 먼저 물어보고, 확인 전에는 배치하지 마세요.\"\nThe private document is CobaltQzx."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 133,
+          "end": 142,
+          "label": "private-document",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Write a clarification question in English."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for the missing size."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not place before confirmation."
+        },
+        {
+          "id": "scope",
+          "description": "Exactly one necessary question."
+        }
+      ],
+      "human_text": "Write one clarification question in English for this Korean instruction: \"크기를 모르면 먼저 물어보고, 확인 전에는 배치하지 마세요.\"\nThe private document is [PRIVATE_1].",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "314-en-vocabulary",
+      "issue_number": 314,
+      "template_group": "development-314-en-vocabulary",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "The internal initiative is called still. Check its readiness; if the owner has not confirmed, ask for confirmation. Do not deploy it."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 39,
+          "label": "private-initiative",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 60
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 62,
+          "end": 92
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 94,
+          "end": 114
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 116,
+          "end": 132
+        }
+      ],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Recognizes a readiness-check task for the initiative."
+        },
+        {
+          "id": "conditions",
+          "description": "Owner confirmation is a prerequisite to proceeding."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not deploy or claim deployment."
+        },
+        {
+          "id": "scope",
+          "description": "Asks for confirmation without demanding or guessing the hidden name."
+        }
+      ],
+      "human_text": "The internal initiative is called private_symbol_1. Check its readiness; if the owner has not confirmed, ask for confirmation. Do not deploy it.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "314-ko-vocabulary",
+      "issue_number": 314,
+      "template_group": "development-314-ko-vocabulary",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "비공개 제품 이름은 나란히입니다. 먼저 검토 순서를 설명하되, 승인 여부를 모르면 확인 질문 하나만 해 주세요. 원본을 수정하지 마세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 11,
+          "end": 14,
+          "label": "private-product",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Address review order."
+        },
+        {
+          "id": "conditions",
+          "description": "Unknown approval requires clarification first."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not modify the original."
+        },
+        {
+          "id": "scope",
+          "description": "Ask exactly one necessary question."
+        }
+      ],
+      "human_text": "비공개 제품 이름은 [PRIVATE_1]입니다. 먼저 검토 순서를 설명하되, 승인 여부를 모르면 확인 질문 하나만 해 주세요. 원본을 수정하지 마세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "315-en-instruction",
+      "issue_number": 315,
+      "template_group": "development-315-en-instruction",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "Compare AmberOptionQzx and CedarOptionQzx as named options. If readiness is unknown, ask one question before recommending either. Do not guess their original names."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 8,
+          "end": 22,
+          "label": "private-option",
+          "fragments": [
+            "AmberOption"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 27,
+          "end": 41,
+          "label": "private-option",
+          "fragments": [
+            "CedarOption"
+          ],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 7
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 42,
+          "end": 58
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 60,
+          "end": 83
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 85,
+          "end": 128
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 130,
+          "end": 163
+        }
+      ],
+      "forced_terms": [
+        "AmberOptionQzx",
+        "CedarOptionQzx"
+      ],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Recognizes an eventual comparison between two distinct named options."
+        },
+        {
+          "id": "conditions",
+          "description": "Readiness must be clarified before recommending either option."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not guess hidden identities or prematurely recommend an option."
+        },
+        {
+          "id": "scope",
+          "description": "Asks a single readiness question."
+        }
+      ],
+      "human_text": "Compare private_symbol_1 and private_symbol_2 as named options. If readiness is unknown, ask one question before recommending either. Do not guess their original names.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "coverage_notes": [
+        "Explicit forced bindings stabilize masked task bytes for instruction-only A/B/C comparisons; actual instructions must still be captured."
+      ]
+    },
+    {
+      "id": "315-ko-instruction",
+      "issue_number": 315,
+      "template_group": "development-315-ko-instruction",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "초롱Qzx의 검토 단계만 정리하세요. 승인 전 배포는 금지입니다. 비용 7750의 실제 금액이 필요한 합계는 추측하지 마세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 5,
+          "label": "private-project",
+          "fragments": [],
+          "policy": "explicit",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 40,
+          "end": 44,
+          "label": "private-amount",
+          "fragments": [],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [
+        "초롱Qzx",
+        "7750"
+      ],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Provide review steps only."
+        },
+        {
+          "id": "conditions",
+          "description": "Deployment requires approval."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not deploy."
+        },
+        {
+          "id": "scope",
+          "description": "Recognize a hidden amount prevents an exact total; do not guess."
+        }
+      ],
+      "human_text": "[PRIVATE_1]의 검토 단계만 정리하세요. 승인 전 배포는 금지입니다. 비용 [PRIVATE_2]의 실제 금액이 필요한 합계는 추측하지 마세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "coverage_notes": [
+        "Explicit bindings are an instruction-only control, not evidence of automatic number classification."
+      ]
+    },
+    {
+      "id": "316-en-correction",
+      "issue_number": 316,
+      "template_group": "development-316-en-correction",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "Check meadow's release notes. Ask whether review is complete before drafting next steps; do not publish."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 6,
+          "end": 12,
+          "label": "private-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 5
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 15,
+          "end": 28
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 30,
+          "end": 60
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 61,
+          "end": 87
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 89,
+          "end": 103
+        }
+      ],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Recognizes release-note review as the task."
+        },
+        {
+          "id": "conditions",
+          "description": "Review completion must be checked before next-step drafting."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not publish or claim publication."
+        },
+        {
+          "id": "scope",
+          "description": "Asks whether review is complete before providing next steps."
+        }
+      ],
+      "human_text": "Check private_symbol_1's release notes. Ask whether review is complete before drafting next steps; do not publish.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "local_policy": {
+        "trusted_project": "workspace-A",
+        "workspace": "workspace-A",
+        "language": "en",
+        "policyrecords": [
+          {
+            "term": "meadow",
+            "project": "workspace-A",
+            "language": "en",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      },
+      "coverage_notes": [
+        "Local policy registration is explicit external information; do not score as unassisted automatic name detection."
+      ]
+    },
+    {
+      "id": "316-ko-correction",
+      "issue_number": 316,
+      "template_group": "development-316-ko-correction",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "고요의 점검 기록을 요약하되, 확인되지 않은 값은 먼저 질문하고 원본은 삭제하지 마세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 2,
+          "label": "private-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Summarize inspection records."
+        },
+        {
+          "id": "conditions",
+          "description": "Clarify unconfirmed values first."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not delete the original."
+        },
+        {
+          "id": "scope",
+          "description": "Ask a targeted clarification without demanding hidden identity."
+        }
+      ],
+      "human_text": "[PRIVATE_1]의 점검 기록을 요약하되, 확인되지 않은 값은 먼저 질문하고 원본은 삭제하지 마세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "local_policy": {
+        "trusted_project": "workspace-B",
+        "workspace": "workspace-B",
+        "language": "ko",
+        "policyrecords": [
+          {
+            "term": "고요",
+            "project": "workspace-B",
+            "language": "ko",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      },
+      "coverage_notes": [
+        "Trusted workspace binding must come from the local caller, never from a self-declared field in the task."
+      ]
+    },
+    {
+      "id": "317-en-table",
+      "issue_number": 317,
+      "template_group": "development-317-en-table",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "| Project | Customer | State | Next action |\n|---|---|---|---|\n| SilverQzx | OrielQzx | waiting approval | ask reviewer; do not send |\n| CedarQzx | ValeQzx | approved | prepare draft only |\nGive the next action for the waiting row only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 65,
+          "end": 74,
+          "label": "private-project",
+          "fragments": [
+            "Silver"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 77,
+          "end": 85,
+          "label": "private-customer",
+          "fragments": [
+            "Oriel"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 137,
+          "end": 145,
+          "label": "private-project",
+          "fragments": [
+            "Cedar"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 148,
+          "end": 155,
+          "label": "private-customer",
+          "fragments": [
+            "Vale"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 2,
+          "end": 42
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 104
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 107,
+          "end": 132
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 190,
+          "end": 235
+        }
+      ],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Selects the next action from the waiting row."
+        },
+        {
+          "id": "conditions",
+          "description": "Recognizes that the selected row awaits approval."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not send the document or perform the approved-row action."
+        },
+        {
+          "id": "scope",
+          "description": "Targets the waiting row with the proper protected project/customer references only."
+        }
+      ],
+      "human_text": "| Project | Customer | State | Next action |\n|---|---|---|---|\n| private_symbol_1 | private_symbol_2 | waiting approval | ask reviewer; do not send |\n| private_symbol_3 | private_symbol_4 | approved | prepare draft only |\nGive the next action for the waiting row only.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "317-ko-form",
+      "issue_number": 317,
+      "template_group": "development-317-ko-form",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "고객사: 물결Qzx\n검토상태: 미확인\n다음행동: 먼저 승인 여부 질문\n금지사항: 원본 삭제 금지\n요청: 확인 질문 하나만 작성"
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 5,
+          "end": 10,
+          "label": "private-customer",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Ask about approval."
+        },
+        {
+          "id": "conditions",
+          "description": "Recognize the unconfirmed status."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not delete the original."
+        },
+        {
+          "id": "scope",
+          "description": "Write one confirmation question."
+        }
+      ],
+      "human_text": "고객사: [PRIVATE_1]\n검토상태: 미확인\n다음행동: 먼저 승인 여부 질문\n금지사항: 원본 삭제 금지\n요청: 확인 질문 하나만 작성",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      }
+    },
+    {
+      "id": "318-en-bundle",
+      "issue_number": 318,
+      "template_group": "development-318-en-bundle",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "Project: AsterQzx; Customer: BrookQzx; Site: NorthQuayQzx; Due: 2034-04-18; State: waiting approval\nGive one next step; ask about approval and do not dispatch."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 9,
+          "end": 17,
+          "label": "private-project",
+          "fragments": [
+            "Aster"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 29,
+          "end": 37,
+          "label": "private-customer",
+          "fragments": [
+            "Brook"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 45,
+          "end": 57,
+          "label": "private-site",
+          "fragments": [
+            "NorthQuay"
+          ],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 64,
+          "end": 74,
+          "label": "private-exact-due",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 76,
+          "end": 99
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 100,
+          "end": 118
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 120,
+          "end": 138
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 143,
+          "end": 158
+        }
+      ],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Provides or scopes one next step."
+        },
+        {
+          "id": "conditions",
+          "description": "Identifies approval as pending and necessary."
+        },
+        {
+          "id": "prohibition",
+          "description": "Does not dispatch or claim dispatch."
+        },
+        {
+          "id": "scope",
+          "description": "Asks about approval without requiring hidden customer/site/date identity."
+        }
+      ],
+      "human_text": "Project: private_symbol_1; Customer: private_symbol_2; Site: private_symbol_3; Due: private_symbol_4; State: waiting approval\nGive one next step; ask about approval and do not dispatch.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "local_policy": {
+        "document_sha256": "95f040798d7333e864562cd29c2c655c80252db19a883c541c65314d0d60a05e",
+        "scope": [
+          0,
+          99
+        ],
+        "required_fields": [
+          "Customer",
+          "Site",
+          "Due"
+        ],
+        "protect_fields": [
+          "Customer",
+          "Site",
+          "Due"
+        ]
+      },
+      "coverage_notes": [
+        "Bundle policy is supplied explicitly for this document and scope. Project privacy remains a separate baseline gold annotation."
+      ]
+    },
+    {
+      "id": "318-ko-bundle",
+      "issue_number": 318,
+      "template_group": "development-318-ko-bundle",
+      "split": "development",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": "프로젝트: 해솔Qzx; 고객: 여울Qzx; 지역: 서쪽부두Qzx; 납기: 2035-09-23; 상태: 확인 대기\n확인할 사항만 두 개 적고 원본이나 일정을 변경하지 마세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 6,
+          "end": 11,
+          "label": "private-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 17,
+          "end": 22,
+          "label": "private-customer",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 35,
+          "label": "private-site",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 51,
+          "label": "private-exact-due",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "smoke": false,
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "List necessary confirmations."
+        },
+        {
+          "id": "conditions",
+          "description": "Recognize pending confirmation."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not change original or schedule."
+        },
+        {
+          "id": "scope",
+          "description": "Exactly two confirmation items."
+        }
+      ],
+      "human_text": "프로젝트: [PRIVATE_1]; 고객: [PRIVATE_2]; 지역: [PRIVATE_3]; 납기: [PRIVATE_4]; 상태: 확인 대기\n확인할 사항만 두 개 적고 원본이나 일정을 변경하지 마세요.",
+      "provenance": {
+        "use": "development-only",
+        "source": "issue examples and predeclared screening protocol",
+        "independence": "Written after candidate implementation; must not be reported as untouched holdout."
+      },
+      "local_policy": {
+        "document_sha256": "f60e935739311541488e328dd40cf0c9b56c4c4ab4603c800fdfd418fadccc31",
+        "scope": [
+          0,
+          62
+        ],
+        "required_fields": [
+          "고객",
+          "지역",
+          "납기"
+        ],
+        "protect_fields": [
+          "고객",
+          "지역",
+          "납기"
+        ]
+      },
+      "coverage_notes": [
+        "No raw sensitive field values may be included in external policy hints or model-facing instructions."
+      ]
+    }
+  ]
+}

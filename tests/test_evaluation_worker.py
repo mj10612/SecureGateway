@@ -206,6 +206,8 @@ def test_codex_adapter_uses_fresh_context_and_records_usage(tmp_path, monkeypatc
         assert 'OPENAI_API_KEY' not in os.environ
         prompt = sys.stdin.read()
         assert 'Explain the supplied sentence.' in prompt
+        assert 'Return only your answer to the supplied task as plain text.' in prompt
+        assert 'Return only your interpretation' not in prompt
         assert 'SECRET_ANSWER_KEY' not in prompt
         assert 'AUTH_SECRET' not in prompt
         pathlib.Path(args[args.index('--output-last-message') + 1]).write_text('Meaning preserved.', encoding='utf-8')

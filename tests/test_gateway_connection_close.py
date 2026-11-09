@@ -1,6 +1,7 @@
 ﻿"""Early HTTP rejection must survive POST bytes arriving after the headers."""
 
 from io import BytesIO
+from http.client import HTTPResponse
 import socket
 from threading import Thread
 import time
@@ -42,15 +43,28 @@ def test_delayed_rejected_post_preserves_complete_401(local_gateway, size, heade
             "POST /claude/v1/messages HTTP/1.1\r\nHost: localhost\r\n"
             f"Content-Length: {size}\r\n{headers}\r\n"
         ).encode())
-        time.sleep(0.01)
-        client.sendall(b"x" * size)
-        response = b""
-        while block := client.recv(65536):
-            response += block
-    head, body = response.split(b"\r\n\r\n", 1)
-    assert head.startswith(b"HTTP/1.0 401 ")
-    lengths = [line for line in head.split(b"\r\n") if line.lower().startswith(b"content-length:")]
-    assert len(body) == int(lengths[0].split(b":", 1)[1])
+        # A rejected caller is not entitled to upload the complete body after
+        # the bounded drain expires. Read the response concurrently, as a real
+        # HTTP client can, so a late-upload reset does not obscure a complete
+        # already-published 401 on a loaded runner.
+        def upload():
+            time.sleep(0.01)
+            try:
+                client.sendall(b"x" * size)
+            except OSError:
+                pass
+        writer = Thread(target=upload)
+        writer.start()
+        response = HTTPResponse(client)
+        try:
+            response.begin()
+            assert response.status == 401
+            body = response.read()
+            assert len(body) == int(response.getheader("Content-Length"))
+        finally:
+            writer.join(timeout=2)
+            response.close()
+        assert not writer.is_alive()
     assert b"error" in body
 
 

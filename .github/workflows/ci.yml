@@ -40,7 +40,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         run: |
           secure-gateway evaluate --suite privacy --profile release --output-dir "${{ runner.temp }}/sg-evaluation"
-          secure-gateway evaluate compare --baseline docs/evaluations/issue308-v2.5.0/privacy/report.json --candidate "${{ runner.temp }}/sg-evaluation/report.json"
+          secure-gateway evaluate compare --baseline docs/evaluations/domains-2.6.0/privacy-harness-corrected/report.json --candidate "${{ runner.temp }}/sg-evaluation/report.json"
 
       - name: Lint
         run: python -m ruff check src tests examples
@@ -112,9 +112,16 @@ jobs:
       - name: Build current and immutable previous artifacts
         shell: bash
         run: |
-          mkdir -p "${RUNNER_TEMP}/sg-previous" "${RUNNER_TEMP}/sg-previous-dist"
-          git archive aa18f93 | tar -x -C "${RUNNER_TEMP}/sg-previous"
-          uv build "${RUNNER_TEMP}/sg-previous" --wheel --out-dir "${RUNNER_TEMP}/sg-previous-dist"
+          python - <<'PY'
+          import io, os, pathlib, subprocess, tarfile
+          temporary = pathlib.Path(os.environ['RUNNER_TEMP'])
+          previous = temporary / 'sg-previous'
+          previous.mkdir(parents=True, exist_ok=True)
+          snapshot = subprocess.check_output(['git', 'archive', '940a84ccd12eda792bb7876073c62a3ef36ee284'])
+          with tarfile.open(fileobj=io.BytesIO(snapshot)) as archive:
+              archive.extractall(previous, filter='data')
+          subprocess.run(['uv', 'build', str(previous), '--wheel', '--out-dir', str(temporary / 'sg-previous-dist')], check=True)
+          PY
           uv build
       - name: Require native clients and installed upgrade lifecycle
         shell: bash
@@ -126,4 +133,4 @@ jobs:
             export SECURE_GATEWAY_CLAUDE_BINARY="$(python -c "import os,pathlib; print(next(pathlib.Path(os.environ['SG_NPM_ROOT']).rglob('claude.exe')))")"
             export SECURE_GATEWAY_CODEX_BINARY="$(python -c "import os,pathlib; print(next(pathlib.Path(os.environ['SG_NPM_ROOT']).rglob('codex.exe')))")"
           fi
-          python scripts/package_smoke.py --require-native --upgrade-from "${RUNNER_TEMP}/sg-previous-dist/secure_gateway-2.5.1-py3-none-any.whl"
+          python scripts/package_smoke.py --require-native --upgrade-from "${RUNNER_TEMP}/sg-previous-dist/secure_gateway-2.5.2-py3-none-any.whl"

@@ -13,6 +13,7 @@ GUIDANCE = {
     "unsupported_request_fields": "The client sent unsupported request fields; update the gateway or use a supported client version.",
     "unsupported_claude_attribution": "The Claude client attribution format is unsupported; use a supported client version.",
     "invalid_request": "The request failed privacy validation; inspect supported request formats without sharing private payloads.",
+    "conversation_capacity": "All conversation slots are busy, or persistent session storage is unavailable; retry after active requests finish or reset idle sessions.",
 }
 
 _REASONS = {

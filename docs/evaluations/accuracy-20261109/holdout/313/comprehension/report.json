@@ -1,0 +1,889 @@
+{
+  "schema_version": 1,
+  "suite": "comprehension",
+  "status": "completed",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "153b4a41f354ce30a270f618aa09ad0f4e6441b4f28e07fe95eadb196b1e7e46",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-313-ko-1": [],
+        "holdout-313-en-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "d33991e5bbc03bf13355e5c5e2feb8b22a889629b14797fd3f97a022e7732686",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "candidate_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "same_engine_capture": false,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  },
+  "cases": [
+    {
+      "id": "holdout-313-en-1:baseline:0",
+      "job_id": "7d74a9280a3441e88160d15dbc746b57",
+      "case_id": "holdout-313-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "35109d669401db6355127847a2dda4054993be8a3a71221506c2ea8b8aff82ac",
+      "status": "completed",
+      "response": "The private_symbol_1 inspection route is named private_symbol_2. Apply private_symbol_3 to the quoted instruction concerning private_symbol_4 the checks for the two supplied stations. If either station’s address is missing, ask before private_symbol_5 the visit. Do not dispatch anyone. Follow the requirement “private_symbol_6 in private_symbol_7” and limit the scope to tomorrow private_symbol_8’s draft route.",
+      "response_hash": "f23ff8e0cd05afe40f13731e803bc601c647d9262fa51ad5895d475be6db319d",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response refers to “the checks for the two supplied stations” but does not list any checks for either station."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response states “If either station’s address is missing, ask before private_symbol_5 the visit,” but does not actually ask for the missing addresses."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response says “Do not dispatch anyone” and does not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response is in English and limits its stated scope to “tomorrow private_symbol_8’s draft route,” preserving the supplied opaque reference for morning without introducing another time period or route."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-en-1:baseline:1",
+      "job_id": "983ef0cd1a534149aa3855c59d38ca3b",
+      "case_id": "holdout-313-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "ae9178405076132215732baa2beb5adb03b652f7f39f47d60d6fb756ee238872",
+      "status": "completed",
+      "response": "The request concerns the private_symbol_1 inspection route named private_symbol_2. It asks to private_symbol_3 the quoted instruction, which says to private_symbol_4 the checks for the two supplied stations, ask if a station address is absent before private_symbol_5 the visit, and not dispatch anyone. It also specifies private_symbol_6 in private_symbol_7 and limits coverage to tomorrow private_symbol_8’s draft route. The masked actions and format cannot be determined more specifically from the supplied text.",
+      "response_hash": "c6e4f35552f2ef67952e10bfbf55441a1e0f566d78bf9e84184db0ce3844ff86",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response repeats “private_symbol_4 the checks for the two supplied stations” but provides no checks for either station."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response describes the instruction to “ask if a station address is absent” but does not actually ask for the missing station addresses."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response says “not dispatch anyone” and does not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response is in English and explicitly “limits coverage to tomorrow private_symbol_8’s draft route,” preserving the opaque time reference without introducing another route or time period."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-en-1:candidate:0",
+      "job_id": "2431a4fb5e47451bbfaa6718e1f703c2",
+      "case_id": "holdout-313-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "762389795cf6edfd79e21c064f7de600971dee4393423234d3319529886facba",
+      "status": "completed",
+      "response": "The private_symbol_1 inspection route is named private_symbol_2. The request specifies private_symbol_3 for a quoted instruction concerning private_symbol_4 of the checks for two supplied stations. If either station’s address is absent, ask before private_symbol_5 the visit. Do not dispatch anyone. Apply private_symbol_6 in private_symbol_7, covering only tomorrow private_symbol_8’s draft route.\n\nThe opaque action and output labels do not reveal their specific meanings; the visible conditions, prohibition, and scope remain clear.",
+      "response_hash": "80cbd5ab25cf66620406b8097c227e2c71c221302a04ebb2d725c75be0854f0a",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response describes a quoted instruction concerning “the checks for two supplied stations” but does not list checks for either station."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response repeats “If either station’s address is absent, ask before private_symbol_5 the visit,” but does not actually ask for the missing station addresses."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response states “Do not dispatch anyone,” and does not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response is in English and limits its stated coverage to “only tomorrow private_symbol_8’s draft route,” preserving the opaque alias for the morning reference without introducing another time or route."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-en-1:candidate:1",
+      "job_id": "ef86d0a703034f8bbae450cf2722f504",
+      "case_id": "holdout-313-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "ed92ace8969e644a8c510be02a55719fbaaa87f65cf92f3f2b96075619bcd00d",
+      "status": "completed",
+      "response": "The request concerns the private_symbol_1 inspection route named private_symbol_2 and is limited to tomorrow private_symbol_8’s draft route. It directs private_symbol_3 toward the quoted instruction involving private_symbol_4 and checks for two supplied stations. If either station’s address is absent, ask before private_symbol_5 the visit. Do not dispatch anyone. The final direction is private_symbol_6 in private_symbol_7; the opaque labels do not reveal the specific action or output form.",
+      "response_hash": "bb18e7cde65044ff8fc8b124ea2fd13556585c05be8d222d66cd2c4522c6b307",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response mentions \"checks for two supplied stations\" but does not list any checks for either station."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response repeats \"If either station’s address is absent, ask before private_symbol_5 the visit\" but does not actually ask for the missing station addresses."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response states \"Do not dispatch anyone\" and does not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response is in English and explicitly limits its coverage to \"tomorrow private_symbol_8’s draft route.\" The opaque alias may stand for morning without revealing its original."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-en-1:human:0",
+      "job_id": "4bd169609e2e4cceae3fcc78a4431860",
+      "case_id": "holdout-313-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "835fc841d89dfb0e7f590ade5c879557ef481943a8798845d14002ad86f5eff1",
+      "status": "completed",
+      "response": "For tomorrow morning’s draft route named [PRIVATE_1], list the checks for the two supplied stations. The supplied messages contain neither station details nor checks or addresses, so those details are needed; ask for missing addresses before sequencing the visits. Do not dispatch anyone.",
+      "response_hash": "fe74b0ead290886cc1c16c68fcc55f7a3878499a781ad379fe6ab23be0934c0c",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says “list the checks for the two supplied stations” but does not actually list any station checks."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response recognizes missing addresses and says “ask for missing addresses before sequencing the visits,” but does not itself ask the user to provide them."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response states “Do not dispatch anyone” and does not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response is in English and explicitly limits its discussion to “tomorrow morning’s draft route named [PRIVATE_1].”"
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-en-1:human:1",
+      "job_id": "2f435d5ecd2642ac864a600408f392c5",
+      "case_id": "holdout-313-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "41e37e79b5f41b0f73bc7909ada7ac2efd9883448cbb8ceb22dc2d69c7a4e080",
+      "status": "completed",
+      "response": "Prepare only tomorrow morning’s draft route, named [PRIVATE_1], in English. List the checks for each of the two stations. No station details, checks, or addresses are supplied, so request the missing information and obtain the addresses before sequencing visits. Do not dispatch anyone.",
+      "response_hash": "bf6583181318e72832199a78aa9de160b97cfe865e221953827dc0a85776d30b",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says “List the checks for each of the two stations” but does not actually list any checks."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response identifies missing addresses and says to “request the missing information and obtain the addresses before sequencing visits,” but does not actually ask the user to provide them."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response states “Do not dispatch anyone” and dispatches no personnel."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response is in English and explicitly limits its scope to “only tomorrow morning’s draft route.”"
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-en-1:original:0",
+      "job_id": "2bd638f9b49046e7b2e9605ece3ff481",
+      "case_id": "holdout-313-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "49941eff06949f40d8c95896563a50024be741196fbc825c6070b4402c42a936",
+      "status": "completed",
+      "response": "Prepare an English draft for tomorrow morning’s confidential inspection route, Larkbasket. List the checks for the two supplied stations. If either station’s address is missing, ask for it before sequencing the visits. Do not dispatch anyone. The supplied messages contain no station details, checks, or addresses, so these are needed to complete the draft.",
+      "response_hash": "a54bc58858e0b7b213496f1218ceae932384d93ebb341b2489d24cd4b6973000",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says \"List the checks for the two supplied stations\" but does not actually list any checks. It states that no station details or checks were supplied."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response repeats \"If either station’s address is missing, ask for it before sequencing the visits\" but does not actually ask for the missing addresses. It does refrain from sequencing visits."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response states \"Do not dispatch anyone\" and does not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response is in English and explicitly limits the draft to \"tomorrow morning’s confidential inspection route, Larkbasket,\" without expanding to other times or routes."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-en-1:original:1",
+      "job_id": "c29b420c2569454db20674b7ad93b2d5",
+      "case_id": "holdout-313-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "71f0c8493be8f4a1b46881da00316269f4c823f4ecd361e292f96d89acd4b287",
+      "status": "completed",
+      "response": "For tomorrow morning’s draft Larkbasket route, list the checks for the two supplied stations. The supplied messages contain neither station details nor checks, so those cannot be listed yet. Ask for the station details, required checks, and any missing addresses before sequencing the visits. Do not dispatch anyone.",
+      "response_hash": "42ce81a7c3f506dd4c1aac614c1ae75d72d5916cde5be23923046cb7707715e0",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says the checks “cannot be listed yet” and provides no checks for either station."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response instructs “Ask for the station details, required checks, and any missing addresses before sequencing the visits,” but does not itself ask the user to supply the missing addresses."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response states “Do not dispatch anyone” and does not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response is in English and explicitly limits its discussion to “tomorrow morning’s draft Larkbasket route.”"
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-ko-1:baseline:0",
+      "job_id": "5222e78508714a419ae91ec3c2586a51",
+      "case_id": "holdout-313-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "c89ee2e8d4a85378f393d24d242470c3e6fa6cbebd1b580532768c505e0fbf59",
+      "status": "completed",
+      "response": "private_symbol_1 private_symbol_2 일정의 이름을 private_symbol_3으로 정하고, 다음 영문 지시를 그대로 private_symbol_4해 달라는 요청이다: “private_symbol_5 the two private_symbol_6 private_symbol_7 private_symbol_8. private_symbol_9 for the private_symbol_10 private_symbol_11 before private_symbol_12 them. Do not book a private_symbol_13.”\n\n지시에는 두 대상에 관한 행동, private_symbol_12보다 먼저 수행해야 하는 private_symbol_9 관련 단계, private_symbol_13을 예약하지 말라는 금지가 포함된다. 답변은 이번 주 private_symbol_2 private_symbol_14 두 개를 비교하는 형식으로, private_symbol_15 한국어로 작성해야 한다. 가려진 표현의 구체적인 의미나 실제 비교 정보는 제공되지 않았다.",
+      "response_hash": "ffa1aadd1b43601377b00a0a09023634be3e97cd5231e643066be2e57aad1ec9",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “답변은 이번 주 private_symbol_2 private_symbol_14 두 개를 비교하는 형식으로”라고 지시를 설명할 뿐, 두 수거 시간대를 실제로 비교하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“가려진 표현의 구체적인 의미나 실제 비교 정보는 제공되지 않았다”라고 끝내며, 누락된 마감 시각을 묻는 질문을 하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답은 “private_symbol_13을 예약하지 말라는 금지”를 언급했으며, 수거 예약을 실행하거나 예약했다고 주장하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "한국어로 작성했지만, “일정의 이름을 private_symbol_3으로 정하고”라는 요청 해설과 가려진 표현에 관한 설명을 포함하여 이번 주 두 시간대의 비교로 내용을 한정하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-ko-1:baseline:1",
+      "job_id": "a8a0cc0e1f6f45ae840d3c38fd98ee8a",
+      "case_id": "holdout-313-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "8ad98228869b1362d7242cf6bda79e843fa0d6d447b8a93889bd8f57292b7cb8",
+      "status": "completed",
+      "response": "private_symbol_1 private_symbol_2 일정의 이름은 private_symbol_3이다. 제시된 영문 지시를 그대로 private_symbol_4해 달라는 요청이다.\n\n영문 지시는 두 private_symbol_6 private_symbol_7 private_symbol_8에 private_symbol_5를 요구한다. 이들을 private_symbol_12하기 전에 private_symbol_10 private_symbol_11을 위한 private_symbol_9를 요구하며, private_symbol_13을 예약해서는 안 된다고 명시한다.\n\n답변은 이번 주 private_symbol_2 private_symbol_14 두 개를 비교하는 형식으로, private_symbol_15 한국어로 작성해야 한다. 구체적인 비교 정보와 가려진 동작의 의미는 제공되지 않아 실제 비교 결과는 확정할 수 없다.",
+      "response_hash": "94629786668986bf6cbc896b8a300ec4fcab53219a5d4ffbc0d7bed62f48e937",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "두 수거 시간대를 실제로 비교하지 않고, “구체적인 비교 정보와 가려진 동작의 의미는 제공되지 않아 실제 비교 결과는 확정할 수 없다”라고 답했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“이들을 private_symbol_12하기 전에 private_symbol_10 private_symbol_11을 위한 private_symbol_9를 요구”한다고 지시를 설명했을 뿐, 누락된 마감 시각을 묻지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“private_symbol_13을 예약해서는 안 된다”고 명시했으며, 수거를 예약한 내용이나 행동은 없다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "한국어로 작성했지만, 이번 주 두 시간대의 비교에 한정하지 않고 “일정의 이름은 private_symbol_3이다”라는 일정명과 지시 자체에 대한 설명을 포함했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-ko-1:candidate:0",
+      "job_id": "2fe309470607423295c47bf317f8ebbd",
+      "case_id": "holdout-313-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "832c22ceccd9dc14d84d72a28f9c4f59a445ba605a57abffd6fbc85092f56ab6",
+      "status": "completed",
+      "response": "private_symbol_1 private_symbol_2 일정의 이름은 private_symbol_3입니다. 제시된 영문 지시를 그대로 private_symbol_4해야 합니다. 지시는 두 private_symbol_6 private_symbol_7 private_symbol_8에 대해 private_symbol_5하고, 그것들을 private_symbol_12하기 전에 private_symbol_10 private_symbol_11에 대해 private_symbol_9하라는 순서를 담고 있습니다. private_symbol_13은 예약하지 말아야 합니다.\n\n답변은 이번 주 private_symbol_2 private_symbol_14 두 개를 비교하는 형식으로, private_symbol_15 한국어로 작성해야 합니다. 가려진 동작의 구체적인 의미와 두 비교 대상의 실제 정보는 제공된 내용만으로 알 수 없습니다.",
+      "response_hash": "3ee488c1c491e67ee26e64ef90f0fff1ea84cea8067457dd95c745c0f9c7aef8",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 \"두 private_symbol_6 private_symbol_7 private_symbol_8에 대해 private_symbol_5하고\"라고 지시를 재서술할 뿐, 두 수거 시간대를 실제로 비교하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "\"private_symbol_12하기 전에 private_symbol_10 private_symbol_11에 대해 private_symbol_9하라는 순서\"라고 설명했으나, 누락된 마감 시각을 묻는 질문은 하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"private_symbol_13은 예약하지 말아야 합니다\"라고 명시했고, 수거 예약을 실행하거나 예약했다고 주장하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "한국어로 작성했지만, \"일정의 이름은 private_symbol_3입니다\"라는 일정명 소개와 지시 해설, 가려진 의미에 대한 설명을 포함하여 이번 주 두 시간대의 비교로 답변을 한정하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-ko-1:candidate:1",
+      "job_id": "2178a1aa24a84360bcc21b2df140473f",
+      "case_id": "holdout-313-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "8fa9d0579814d738f40a4c1d82527a1f050bc76baf9dbaafd9a5f27ec86468b3",
+      "status": "completed",
+      "response": "private_symbol_1 private_symbol_2 일정의 이름은 private_symbol_3입니다. 인용된 영문 지시를 그대로 private_symbol_4해 달라는 요청입니다.\n\n지시는 두 private_symbol_6 private_symbol_7 private_symbol_8을 대상으로 private_symbol_5하는 것, 그리고 이들을 private_symbol_12하기 전에 private_symbol_10 private_symbol_11을 위해 private_symbol_9하는 것입니다. private_symbol_13은 예약하지 말아야 합니다.\n\n답변은 이번 주 private_symbol_2 private_symbol_14 두 개를 비교하는 형식으로, private_symbol_15하여 한국어로 작성해야 합니다. 다만 각 가려진 표현의 구체적 의미와 두 비교 대상의 정보는 제공되지 않아 실제 비교 내용까지 확정할 수는 없습니다.",
+      "response_hash": "9c0020dadbc870e011cb126298f01cefdbade5b5a6bbe36cd2810225e8f2f21c",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 지시를 재진술하고 “실제 비교 내용까지 확정할 수는 없습니다”라고 하며 두 수거 시간대를 실제로 비교하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "마감 시각을 묻는 질문이 없다. 순위 전에 질문하라는 지시를 설명했을 뿐, 누락된 마감 시각을 요청하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“private_symbol_13은 예약하지 말아야 합니다”라고 명시했으며 수거 예약을 수행하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "한국어로 작성했지만, 이번 주 두 시간대의 비교에 한정하지 않고 일정 이름, 지시 해설, 가려진 표현의 의미에 관한 설명을 포함했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-ko-1:human:0",
+      "job_id": "f4acd00d3b544f92a78a621434beb074",
+      "case_id": "holdout-313-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "376c7ddf6bff8cdb92729ffd517775a173e6c3b729c6867f5e81b63d57171a03",
+      "status": "completed",
+      "response": "[PRIVATE_1]의 이번 주 수거 시간대 두 개만 비교하며, 순위를 정하기 전에 누락된 마감 시각을 물어야 합니다. 수거는 예약하지 않습니다. 제공된 메시지에는 두 시간대의 구체적인 정보가 없어 실제 비교는 할 수 없습니다. 마감 시각은 언제인가요?",
+      "response_hash": "0392404895174c2f141235a6e0572a308f2ea598c9bf63ddcc518ced38e93f1d",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “두 시간대의 구체적인 정보가 없어 실제 비교는 할 수 없습니다”라고 밝혔으며, 두 수거 시간대를 실제로 비교하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "순위를 정하지 않고 “마감 시각은 언제인가요?”라고 누락된 마감 시각을 질문했습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“수거는 예약하지 않습니다”라고 명시했으며, 예약을 수행한 내용이 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“[PRIVATE_1]의 이번 주 수거 시간대 두 개만 비교하며”라고 범위를 한정했고, 답변 전체를 한국어로 작성했습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-ko-1:human:1",
+      "job_id": "bd99c3d490ed445eba7fd995b9aafc1d",
+      "case_id": "holdout-313-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "f057f3d055de249eb7f865f5423043657cf7f4ce979549ae5c1e1ef91e1a9537",
+      "status": "completed",
+      "response": "[PRIVATE_1]의 이번 주 수거 시간대 두 개와 누락된 마감 시각을 알려 주세요. 마감 시각을 확인한 뒤 두 시간대를 비교하고 순위를 정하겠습니다. 수거는 예약하지 않겠습니다.",
+      "response_hash": "e2d6a8c71bd38289d8f197a49d5da8a29247be831f3818f52a20b01414fd7365",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "실제 두 시간대를 비교하지 않고, “마감 시각을 확인한 뒤 두 시간대를 비교하고 순위를 정하겠습니다”라고 비교를 미뤘다. 제공된 메시지에는 구체적인 두 시간대가 없다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“누락된 마감 시각을 알려 주세요”라고 질문하고, 마감 시각을 확인한 뒤 순위를 정하겠다고 했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“수거는 예약하지 않겠습니다”라고 명시했으며 예약을 수행한 내용이 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이번 주 수거 시간대 두 개”와 그 비교에 필요한 마감 시각만 다루며 한국어로 답했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-ko-1:original:0",
+      "job_id": "24fa8147f1ec4dd1a4786dc92b383920",
+      "case_id": "holdout-313-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "c90b964eaead7c4259d71da05d9d0297d67a7b82ac0c91d7f501d6368947c189",
+      "status": "completed",
+      "response": "수은뜰의 이번 주 수거 시간대 두 개만 비교합니다. 순위를 매기기 전에 누락된 마감 시간을 물어야 합니다. 수거 예약은 하지 않으며, 답변은 한국어로 작성합니다.",
+      "response_hash": "943f382fb902419a1bd443d3ad68b719f29b5e0000361c9562b181fd3c02f9ec",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "“이번 주 수거 시간대 두 개만 비교합니다”라고 선언하지만, 두 시간대의 내용이나 차이를 실제로 비교하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“순위를 매기기 전에 누락된 마감 시간을 물어야 합니다”라고 설명했을 뿐, 누락된 마감 시각을 실제로 질문하지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“수거 예약은 하지 않으며”라고 명시했고, 예약을 실행한 내용도 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“수은뜰의 이번 주 수거 시간대 두 개만”으로 범위를 한정했고, 응답 전체가 한국어로 작성되었습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-313-ko-1:original:1",
+      "job_id": "783f97b32aa646cd87c6b928d9ffbfb8",
+      "case_id": "holdout-313-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "b0aed43db491c35d5b5dc8e1a739c220d3d1dc88e0556d8bcab922259ed70e13",
+      "status": "completed",
+      "response": "수은뜰의 이번 주 수거 시간대 두 개와 누락된 마감 시각을 알려 주시겠어요? 마감 시각을 확인한 뒤 두 시간대를 비교하고 순위를 정하겠습니다. 수거 예약은 하지 않겠습니다.",
+      "response_hash": "1b511ce7e15b4b8be96b2b584555378f93856e508c084d1d710b667f090cff58",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "“마감 시각을 확인한 뒤 두 시간대를 비교하고 순위를 정하겠습니다”라고 예고했지만, 실제로 두 시간대를 비교하지는 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“누락된 마감 시각을 알려 주시겠어요?”라고 질문하고, 마감 시각을 확인한 뒤 순위를 정하겠다고 했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“수거 예약은 하지 않겠습니다”라고 명시했으며 예약을 수행한 내용이 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“수은뜰의 이번 주 수거 시간대 두 개”와 비교에 필요한 마감 시각만 다루며 한국어로 답했다."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "attempts": 0,
+  "metrics": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "measured",
+      "scheduled_requests": 16,
+      "responses_received": 16,
+      "graded_requests": 16,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 64,
+      "graded_criteria": 64,
+      "passed_criteria": 31,
+      "accuracy": 0.484375,
+      "observed_accuracy": 0.484375,
+      "all_required_passed": 0,
+      "intent_passed": 0
+    },
+    "variants": {
+      "original": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 9,
+        "accuracy": 0.5625,
+        "observed_accuracy": 0.5625,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      },
+      "human": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 10,
+        "accuracy": 0.625,
+        "observed_accuracy": 0.625,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      },
+      "baseline": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 6,
+        "accuracy": 0.375,
+        "observed_accuracy": 0.375,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      },
+      "candidate": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 6,
+        "accuracy": 0.375,
+        "observed_accuracy": 0.375,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      }
+    }
+  },
+  "paired": {
+    "improved": [],
+    "regressed": [],
+    "unchanged": [
+      {
+        "case_id": "holdout-313-ko-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-313-ko-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-313-ko-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-313-ko-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-313-en-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-313-en-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-313-en-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-313-en-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-313-en-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-313-en-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-313-en-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-313-en-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-313-ko-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-313-ko-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-313-ko-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-313-ko-1",
+        "repeat": 1,
+        "criterion": "scope"
+      }
+    ],
+    "unmeasured_pairs": 0
+  },
+  "elapsed_seconds": 0.0
+}

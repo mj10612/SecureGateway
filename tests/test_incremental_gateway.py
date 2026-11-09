@@ -119,3 +119,75 @@ def test_mask_cache_invalidates_when_protected_rules_change():
     assert session.mask("please read the report") == first
     session.forced_rules = lambda: ("read",)
     assert "read" not in session.mask("please read the report")
+
+
+def test_long_conversation_reuses_old_messages_after_new_alias(monkeypatch):
+    session = GatewaySession()
+    transformed = []
+    original = session._mask_unforced
+
+    def track(text, code=False, language="auto"):
+        transformed.append(text)
+        return original(text, code, language)
+
+    monkeypatch.setattr(session, "_mask_unforced", track)
+    messages = [{"role": "user", "content": f"please review hidden_function_{index:04d}()"}
+                for index in range(320)]
+    session.request({"model": "fixture", "input": messages}, dialect="responses")
+    transformed.clear()
+    session.request({"model": "fixture", "input": messages + [
+        {"role": "user", "content": "please review newly_added_function()"}
+    ]}, dialect="responses")
+    assert not set(transformed).intersection(message["content"] for message in messages)
+
+
+def test_cache_invalidates_public_text_when_new_mapping_protects_it():
+    session = GatewaySession()
+    text = "please read the report"
+    assert session.mask(text) == text
+    session.mask("read", code=True)
+    masked = session.mask(text)
+    assert "read" not in masked
+    assert session.restore(masked) == text
+
+
+def test_cache_checks_private_dependencies_inside_possessive_suffixes():
+    session = GatewaySession()
+    text = "please review plan's report"
+    before = session.mask(text)
+    session.values("'s")
+    after = session.mask(text)
+    fresh = GatewaySession()
+    fresh.mask(text)
+    fresh.values("'s")
+    expected = fresh.mask(text)
+    assert before != after
+    assert after == expected
+
+
+def test_cache_evicts_least_recent_entry_without_clearing_everything():
+    session = GatewaySession()
+    session.mask("keep_private()", code=True)
+    keep = next(iter(session._mask_cache))
+    for index in range(400):
+        session.mask(f"private_function_{index:04d}()", code=True)
+    assert keep in session._mask_cache
+    # Force the byte budget while staying below the single-entry budget.
+    for index in range(6):
+        session.mask(" " * 480_000 + f"large_private_{index}()", code=True)
+    assert keep not in session._mask_cache
+    assert len(session._mask_cache) > 1
+    assert session._mask_cache_bytes <= 4 * 1024 * 1024
+
+
+def test_cache_keeps_recently_used_entry_under_byte_pressure():
+    session = GatewaySession()
+    texts = [" " * 480_000 + f"large_private_{index}()" for index in range(5)]
+    for text in texts[:4]:
+        session.mask(text, code=True)
+    first, second = list(session._mask_cache)[:2]
+    session.mask(texts[0], code=True)
+    session.mask(texts[4], code=True)
+    assert first in session._mask_cache
+    assert second not in session._mask_cache
+    assert len(session._mask_cache) == 4

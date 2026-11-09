@@ -1,0 +1,2511 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-holdout-20261109-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-309-ko-1",
+      "issue_number": 309,
+      "template_group": "h309-cabinet-capacity",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 16,
+          "end": 19,
+          "label": "laboratory_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 24,
+          "end": 54,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 55,
+          "end": 92,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 93,
+          "end": 124,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 125,
+          "end": 157,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "human_text": "비공개 실험실의 임시 이름은 [PRIVATE_1]입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-309-ko-2",
+      "issue_number": 309,
+      "template_group": "h309-shift-permission",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 12,
+          "end": 16,
+          "label": "operation_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 21,
+          "end": 49,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 100,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 101,
+          "end": 137,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 138,
+          "end": 165,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "human_text": "내부 운영안의 별칭은 [PRIVATE_1]입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-310-en-1",
+      "issue_number": 310,
+      "template_group": "h310-gift-batch",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "The confidential project is named Meadow. Draft a packing checklist for its sample gift boxes. Use a batch size only after I provide the confirmed count; otherwise ask for it. Do not invent quantities or place an order. Cover packing steps for one trial batch only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 40,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 42,
+          "end": 94,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 95,
+          "end": 175,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 176,
+          "end": 219,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 220,
+          "end": 265,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Draft a packing checklist for sample gift boxes."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for the confirmed batch count before using any quantity."
+        },
+        {
+          "id": "prohibition",
+          "description": "Invent no quantities and place no order."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the answer to packing one trial batch."
+        }
+      ],
+      "human_text": "The confidential project is named [PRIVATE_1]. Draft a packing checklist for its sample gift boxes. Use a batch size only after I provide the confirmed count; otherwise ask for it. Do not invent quantities or place an order. Cover packing steps for one trial batch only.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-310-ko-1",
+      "issue_number": 310,
+      "template_group": "h310-seed-envelope",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "이 비공개 연구의 이름은 보리입니다. 씨앗 봉투를 정리할 점검 목록을 써 주세요. 품종 목록을 받은 경우에만 분류 항목을 정하고, 목록이 없으면 먼저 요청해 주세요. 품종을 만들어 내거나 봉투 라벨을 변경하지 마세요. 오늘 받은 봉투 묶음 하나만 다뤄 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 14,
+          "end": 16,
+          "label": "research_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 21,
+          "end": 45,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 46,
+          "end": 92,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 93,
+          "end": 121,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 122,
+          "end": 145,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "씨앗 봉투 정리 점검 목록을 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "품종 목록이 없으면 요청하고 받은 목록만으로 분류한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "품종을 꾸며내거나 실제 라벨을 변경하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "오늘 받은 봉투 묶음 하나만 다룬다."
+        }
+      ],
+      "human_text": "이 비공개 연구의 이름은 [PRIVATE_1]입니다. 씨앗 봉투를 정리할 점검 목록을 써 주세요. 품종 목록을 받은 경우에만 분류 항목을 정하고, 목록이 없으면 먼저 요청해 주세요. 품종을 만들어 내거나 봉투 라벨을 변경하지 마세요. 오늘 받은 봉투 묶음 하나만 다뤄 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-311-en-1",
+      "issue_number": 311,
+      "template_group": "h311-editorial-role-card",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 17,
+          "label": "reviewer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 35,
+          "label": "document_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 8,
+          "label": "role_label"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 18,
+          "end": 26,
+          "label": "role_label"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 153,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 154,
+          "end": 231,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 232,
+          "end": 276,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 277,
+          "end": 325,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "human_text": "Reviewer: [PRIVATE_1]\nDocument: [PRIVATE_2]\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "smoke": true,
+      "local_policy": {
+        "allow_roles": true
+      }
+    },
+    {
+      "id": "holdout-311-ko-1",
+      "issue_number": 311,
+      "template_group": "h311-archive-role-card",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 13,
+          "label": "reviewer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 24,
+          "end": 27,
+          "label": "document_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 8,
+          "label": "role_label"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 14,
+          "end": 22,
+          "label": "role_label"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 99,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 100,
+          "end": 137,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 138,
+          "end": 167,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 168,
+          "end": 193,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "human_text": "Reviewer: [PRIVATE_1]\nDocument: [PRIVATE_2]\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "smoke": true,
+      "local_policy": {
+        "allow_roles": true
+      }
+    },
+    {
+      "id": "holdout-312-en-1",
+      "issue_number": 312,
+      "template_group": "h312-device-retry",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 33,
+          "end": 41,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 59,
+          "end": 68,
+          "label": "customer_number",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 85,
+          "end": 95,
+          "label": "account_number",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 111,
+          "end": 120,
+          "label": "device_number",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 121,
+          "end": 187,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 188,
+          "end": 260,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 261,
+          "end": 348,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 349,
+          "end": 395,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "human_text": "Confidential synthetic customer: [PRIVATE_1]\nCustomer number: [PRIVATE_2]\nAccount number: [PRIVATE_3]\nDevice number: [PRIVATE_4]\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-312-ko-1",
+      "issue_number": 312,
+      "template_group": "h312-account-counter",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 15,
+          "end": 18,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 26,
+          "end": 35,
+          "label": "customer_number",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 53,
+          "label": "account_number",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 61,
+          "end": 70,
+          "label": "device_number",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 71,
+          "end": 127,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 128,
+          "end": 176,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 177,
+          "end": 212,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 213,
+          "end": 238,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "human_text": "가상의 비공개 고객 이름: [PRIVATE_1]\n고객 번호: [PRIVATE_2]\n계정 번호: [PRIVATE_3]\n장치 번호: [PRIVATE_4]\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-313-ko-1",
+      "issue_number": 313,
+      "template_group": "h313-quoted-english-sort",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 15,
+          "end": 18,
+          "label": "schedule_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 47,
+          "end": 159,
+          "label": "quoted_instruction"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 161,
+          "end": 202,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        }
+      ],
+      "human_text": "비공개 수거 일정의 이름은 [PRIVATE_1]입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-313-en-1",
+      "issue_number": 313,
+      "template_group": "h313-quoted-english-inspection",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 53,
+          "label": "route_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 223,
+          "label": "quoted_instruction"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 225,
+          "end": 289,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        }
+      ],
+      "human_text": "The confidential inspection route is named [PRIVATE_1]. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-314-en-1",
+      "issue_number": 314,
+      "template_group": "h314-ordinary-current",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "In this fictional confidential workspace, Current is a private project name. In the phrase \"current revision\", current is an ordinary adjective. Compare the two supplied layouts for the current revision. Recommend one only after a page limit is supplied; ask if it is missing. Do not disclose the project name or edit the layouts. Discuss the current revision of the cover page only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 42,
+          "end": 49,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 92,
+          "end": 108,
+          "label": "ordinary_word"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 145,
+          "end": 203,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 204,
+          "end": 276,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 277,
+          "end": 330,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 331,
+          "end": 383,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Compare two cover layouts while preserving the ordinary phrase current revision."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a page limit before recommending one layout."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal no project name and make no layout edits."
+        },
+        {
+          "id": "scope",
+          "description": "Discuss the cover page of the current revision only."
+        }
+      ],
+      "human_text": "In this fictional confidential workspace, [PRIVATE_1] is a private project name. In the phrase \"current revision\", current is an ordinary adjective. Compare the two supplied layouts for the current revision. Recommend one only after a page limit is supplied; ask if it is missing. Do not disclose the project name or edit the layouts. Discuss the current revision of the cover page only.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-314-ko-1",
+      "issue_number": 314,
+      "template_group": "h314-ordinary-garam",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "가상 비공개 프로젝트 이름은 마루입니다. \"마루를 닦는 순서\"에서 마루는 일반적인 바닥을 뜻합니다. 마루를 닦는 순서를 두 가지 청소 방식으로 비교해 주세요. 바닥 재질이 주어지면 적합성을 설명하고, 없으면 먼저 재질을 물어봐 주세요. 프로젝트 이름을 공개하거나 세제를 혼합하라고 권하지 마세요. 입구 바닥 한 구역의 청소 순서만 다뤄 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 16,
+          "end": 18,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 24,
+          "end": 33,
+          "label": "ordinary_word"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 56,
+          "end": 88,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 89,
+          "end": 131,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 132,
+          "end": 165,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 166,
+          "end": 192,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "일반 명사 마루를 보존하며 두 청소 방식의 순서를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "바닥 재질이 없으면 질문한 뒤 적합성을 설명한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 프로젝트 이름을 노출하거나 세제 혼합을 권하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "입구 바닥 한 구역의 순서만 다룬다."
+        }
+      ],
+      "human_text": "가상 비공개 프로젝트 이름은 [PRIVATE_1]입니다. \"마루를 닦는 순서\"에서 마루는 일반적인 바닥을 뜻합니다. 마루를 닦는 순서를 두 가지 청소 방식으로 비교해 주세요. 바닥 재질이 주어지면 적합성을 설명하고, 없으면 먼저 재질을 물어봐 주세요. 프로젝트 이름을 공개하거나 세제를 혼합하라고 권하지 마세요. 입구 바닥 한 구역의 청소 순서만 다뤄 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-315-en-1",
+      "issue_number": 315,
+      "template_group": "h315-budget-reasoning",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Confidential fictional workshop: Kestrelfen. Its approved token budget is 730 credits, and its reserve is 190 credits. Explain which supplied plan fits by reasoning from the budget and reserve, using aliases for private names and values. If either plan cost is missing, ask for both costs before choosing. Do not reconstruct or repeat the private literals, and do not spend anything. Compare the two proposed plans for this workshop only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 33,
+          "end": 43,
+          "label": "workshop_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 74,
+          "end": 85,
+          "label": "budget_value",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 106,
+          "end": 117,
+          "label": "reserve_value",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 119,
+          "end": 237,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 238,
+          "end": 305,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 306,
+          "end": 383,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 384,
+          "end": 438,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Reason about budget and reserve using aliases to compare the two plans."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for both plan costs before choosing if either is absent."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not reconstruct private literals or spend funds."
+        },
+        {
+          "id": "scope",
+          "description": "Compare only the two workshop plans."
+        }
+      ],
+      "human_text": "Confidential fictional workshop: [PRIVATE_1]. Its approved token budget is [PRIVATE_2], and its reserve is [PRIVATE_3]. Explain which supplied plan fits by reasoning from the budget and reserve, using aliases for private names and values. If either plan cost is missing, ask for both costs before choosing. Do not reconstruct or repeat the private literals, and do not spend anything. Compare the two proposed plans for this workshop only.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-315-ko-1",
+      "issue_number": 315,
+      "template_group": "h315-temperature-reasoning",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "비공개 모의 보관함 이름은 해솔자루입니다. 하한은 섭씨 7도, 상한은 섭씨 13도입니다. 비공개 이름과 수치는 대체 표기로 유지하면서 주어진 두 센서 기록이 허용 범위에 드는지 판단하는 방법을 설명해 주세요. 센서 기록이나 단위가 없으면 판정 전에 먼저 요청해 주세요. 가려진 원문을 복원하거나 실제 보관함 설정을 바꾸지 마세요. 이번 기록 두 개의 판정 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 15,
+          "end": 19,
+          "label": "cabinet_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 33,
+          "label": "lower_limit",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 39,
+          "end": 45,
+          "label": "upper_limit",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 116,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 117,
+          "end": 150,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 151,
+          "end": 184,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 185,
+          "end": 211,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "대체 표기를 사용해 두 센서 기록의 허용 범위 판정 방법을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "기록이나 단위가 없으면 판정 전에 요청한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "원문을 복원하거나 실제 설정을 바꾸지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 기록 두 개의 판정 절차에 한정한다."
+        }
+      ],
+      "human_text": "비공개 모의 보관함 이름은 [PRIVATE_1]입니다. 하한은 [PRIVATE_2], 상한은 [PRIVATE_3]입니다. 비공개 이름과 수치는 대체 표기로 유지하면서 주어진 두 센서 기록이 허용 범위에 드는지 판단하는 방법을 설명해 주세요. 센서 기록이나 단위가 없으면 판정 전에 먼저 요청해 주세요. 가려진 원문을 복원하거나 실제 보관함 설정을 바꾸지 마세요. 이번 기록 두 개의 판정 절차만 설명해 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-316-en-1",
+      "issue_number": 316,
+      "template_group": "h316-local-correction-draft",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "For workspace-A, my earlier explicit correction marked the fictional project name Clover as private in English. Outline a checklist for assembling the display stand. Use dimensions only after the confirmed measurements arrive; otherwise ask for them. Do not expose the corrected private name or cut any material. Apply that correction only within workspace-A and cover this stand’s draft checklist only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 82,
+          "end": 88,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 112,
+          "end": 165,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 166,
+          "end": 250,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 251,
+          "end": 312,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 313,
+          "end": 403,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Outline a display stand assembly checklist."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for confirmed measurements before using dimensions."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no corrected private name and cut no material."
+        },
+        {
+          "id": "scope",
+          "description": "Apply the local correction within workspace-A and cover one stand draft only."
+        }
+      ],
+      "human_text": "For workspace-A, my earlier explicit correction marked the fictional project name [PRIVATE_1] as private in English. Outline a checklist for assembling the display stand. Use dimensions only after the confirmed measurements arrive; otherwise ask for them. Do not expose the corrected private name or cut any material. Apply that correction only within workspace-A and cover this stand’s draft checklist only.",
+      "smoke": true,
+      "local_policy": {
+        "trusted_project": "workspace-A",
+        "workspace": "workspace-A",
+        "language": "en",
+        "policyrecords": [
+          {
+            "term": "Clover",
+            "project": "workspace-A",
+            "language": "en",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "holdout-316-ko-1",
+      "issue_number": 316,
+      "template_group": "h316-local-correction-supply",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "workspace-A에서 내가 앞서 명시적으로 정정한 비공개 가상 이름은 구름이며 한국어 작업에만 적용합니다. 전시 소모품을 분류할 기준을 작성해 주세요. 보관 규정이 오면 그 규정만 사용하고, 아직 없으면 먼저 요청해 주세요. 정정한 이름을 공개하거나 물품을 폐기하지 마세요. 이 정정은 workspace-A에만 적용하고 이번 전시의 분류 기준만 다뤄 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 43,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 62,
+          "end": 86,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 87,
+          "end": 127,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 128,
+          "end": 155,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 156,
+          "end": 202,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "전시 소모품 분류 기준을 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 규정이 없으면 요청하며 받은 규정만 사용한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "정정한 비공개 이름을 공개하거나 물품을 폐기하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "workspace-A의 한국어 작업에 정정을 적용하며 이번 전시만 다룬다."
+        }
+      ],
+      "human_text": "workspace-A에서 내가 앞서 명시적으로 정정한 비공개 가상 이름은 [PRIVATE_1]이며 한국어 작업에만 적용합니다. 전시 소모품을 분류할 기준을 작성해 주세요. 보관 규정이 오면 그 규정만 사용하고, 아직 없으면 먼저 요청해 주세요. 정정한 이름을 공개하거나 물품을 폐기하지 마세요. 이 정정은 workspace-A에만 적용하고 이번 전시의 분류 기준만 다뤄 주세요.",
+      "smoke": true,
+      "local_policy": {
+        "trusted_project": "workspace-A",
+        "workspace": "workspace-A",
+        "language": "ko",
+        "policyrecords": [
+          {
+            "term": "구름",
+            "project": "workspace-A",
+            "language": "ko",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "holdout-317-en-1",
+      "issue_number": 317,
+      "template_group": "h317-table-and-dispatch",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Confidential synthetic dispatch record:\n| Customer | Site |\n| --- | --- |\n| Velmora | Orchard Quay |\nDispatch code: DX-618405\nSummarize the checks required before releasing the package described in the table and key-value line. Ask for the inspection result if it has not been supplied. Do not expose the record values or mark the package as released. Cover this single package and retain the field labels only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 76,
+          "end": 83,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 86,
+          "end": 98,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 116,
+          "end": 125,
+          "label": "dispatch_code",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 126,
+          "end": 227,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 228,
+          "end": 286,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 287,
+          "end": 351,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 352,
+          "end": 411,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Summarize checks for the package represented by a table and a key-value line."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for the inspection result when absent."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private record values and do not mark release complete."
+        },
+        {
+          "id": "scope",
+          "description": "Cover one package while retaining public field labels only."
+        }
+      ],
+      "human_text": "Confidential synthetic dispatch record:\n| Customer | Site |\n| --- | --- |\n| [PRIVATE_1] | [PRIVATE_2] |\nDispatch code: [PRIVATE_3]\nSummarize the checks required before releasing the package described in the table and key-value line. Ask for the inspection result if it has not been supplied. Do not expose the record values or mark the package as released. Cover this single package and retain the field labels only.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-317-ko-1",
+      "issue_number": 317,
+      "template_group": "h317-table-and-storage",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "가상의 비공개 보관 기록입니다.\n| 고객 | 보관 장소 |\n| --- | --- |\n| 푸른비늘 | 자운선반 |\n접수 코드: IN-537206\n표와 키-값 줄의 항목을 참고해 보관 전 확인할 사항을 정리해 주세요. 수량 확인 결과가 없으면 먼저 요청해 주세요. 기록의 비공개 값을 노출하거나 입고 완료로 표시하지 마세요. 이 접수 한 건만 다루고 항목 이름은 유지해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 49,
+          "end": 53,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 56,
+          "end": 60,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 79,
+          "label": "intake_code",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 119,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 120,
+          "end": 145,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 146,
+          "end": 179,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 180,
+          "end": 209,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "표와 키-값 기록을 바탕으로 보관 전 확인 사항을 정리한다."
+        },
+        {
+          "id": "conditions",
+          "description": "수량 확인 결과가 없으면 먼저 요청한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 값을 드러내거나 입고 완료로 표시하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "해당 접수 한 건만 다루며 항목 이름을 유지한다."
+        }
+      ],
+      "human_text": "가상의 비공개 보관 기록입니다.\n| 고객 | 보관 장소 |\n| --- | --- |\n| [PRIVATE_1] | [PRIVATE_2] |\n접수 코드: [PRIVATE_3]\n표와 키-값 줄의 항목을 참고해 보관 전 확인할 사항을 정리해 주세요. 수량 확인 결과가 없으면 먼저 요청해 주세요. 기록의 비공개 값을 노출하거나 입고 완료로 표시하지 마세요. 이 접수 한 건만 다루고 항목 이름은 유지해 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-318-en-1",
+      "issue_number": 318,
+      "template_group": "h318-scoped-transfer-record",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Customer: Rovenset\nSite: Brindle Pier\nDue: 2032-04-19\n\nThe record ends above. This request is outside the record. Draft a reminder checklist for the grouped Customer, Site, and Due record. Ask whether delivery is approved before proposing a reminder date. Do not expose any grouped field value or send a reminder. Use the confidentiality policy only for that record. The words Customer, Site, and Due here are public field labels."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 18,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 25,
+          "end": 37,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 53,
+          "label": "due_value",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 55,
+          "end": 113,
+          "label": "scope_boundary"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 114,
+          "end": 188,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 189,
+          "end": 255,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 256,
+          "end": 313,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 314,
+          "end": 430,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Draft a reminder checklist for the grouped record while retaining field labels."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask about delivery approval before proposing a reminder date."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal no grouped values and send no reminder."
+        },
+        {
+          "id": "scope",
+          "description": "Apply confidentiality to the exact record scope only."
+        }
+      ],
+      "human_text": "Customer: [PRIVATE_1]\nSite: [PRIVATE_2]\nDue: [PRIVATE_3]\n\nThe record ends above. This request is outside the record. Draft a reminder checklist for the grouped Customer, Site, and Due record. Ask whether delivery is approved before proposing a reminder date. Do not expose any grouped field value or send a reminder. Use the confidentiality policy only for that record. The words Customer, Site, and Due here are public field labels.",
+      "smoke": true,
+      "local_policy": {
+        "document_sha256": "f69e53b7624b47a7f17feb99ce1dd70d9b2c1488295e90d43eb6dd9b5682f029",
+        "scope": [
+          0,
+          54
+        ],
+        "required_fields": [
+          "Customer",
+          "Site",
+          "Due"
+        ],
+        "protect_fields": [
+          "Customer",
+          "Site",
+          "Due"
+        ]
+      }
+    },
+    {
+      "id": "holdout-318-ko-1",
+      "issue_number": 318,
+      "template_group": "h318-scoped-return-record",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "고객: 여울초롱\n장소: 초록나루\n기한: 2033-08-26\n\n기록은 위에서 끝납니다. 이 요청은 기록 밖에 있습니다. 고객·장소·기한을 묶은 기록에 대한 반납 점검 목록을 작성해 주세요. 반납 승인이 확인되기 전에는 날짜를 제안하지 말고 먼저 승인 여부를 물어봐 주세요. 묶인 항목의 값을 노출하거나 반납 알림을 보내지 마세요. 기밀 정책은 위 기록에만 적용해 주세요. 여기서 고객, 장소, 기한은 공개 항목 이름입니다."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 4,
+          "end": 8,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 13,
+          "end": 17,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 22,
+          "end": 32,
+          "label": "due_value",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 65,
+          "label": "scope_boundary"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 66,
+          "end": 104,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 105,
+          "end": 151,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 152,
+          "end": 183,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 184,
+          "end": 235,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "묶인 기록에 대한 반납 점검 목록을 작성하며 항목 이름을 유지한다."
+        },
+        {
+          "id": "conditions",
+          "description": "날짜를 제안하기 전에 반납 승인 여부를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "묶인 항목 값을 노출하거나 반납 알림을 보내지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "기밀 정책은 위 기록의 정확한 범위에만 적용한다."
+        }
+      ],
+      "human_text": "고객: [PRIVATE_1]\n장소: [PRIVATE_2]\n기한: [PRIVATE_3]\n\n기록은 위에서 끝납니다. 이 요청은 기록 밖에 있습니다. 고객·장소·기한을 묶은 기록에 대한 반납 점검 목록을 작성해 주세요. 반납 승인이 확인되기 전에는 날짜를 제안하지 말고 먼저 승인 여부를 물어봐 주세요. 묶인 항목의 값을 노출하거나 반납 알림을 보내지 마세요. 기밀 정책은 위 기록에만 적용해 주세요. 여기서 고객, 장소, 기한은 공개 항목 이름입니다.",
+      "smoke": true,
+      "local_policy": {
+        "document_sha256": "12b244904a05a093c10e255fe011b729c07ae1387c2033db78ffb4b9e5eff90e",
+        "scope": [
+          0,
+          33
+        ],
+        "required_fields": [
+          "고객",
+          "장소",
+          "기한"
+        ],
+        "protect_fields": [
+          "고객",
+          "장소",
+          "기한"
+        ]
+      }
+    }
+  ]
+}

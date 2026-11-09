@@ -8,7 +8,7 @@ Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENA
 
 *17개 자연어·24개 코드 언어를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-2.5.2-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
 [![CI](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml)
@@ -63,6 +63,12 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 ## Supported Versions
 
+2.6.0에는 분야별 보호 사전과 관리자 개별 On/Off를 추가했습니다. 방산은 기본 On이며,
+하위 구성품·공개 장비/모델·사업명을 포함합니다. 자동차와 반도체는 선택할 수 있습니다.
+[사전 출처·실제 수량·검수 범위](docs/DICTIONARY_SOURCES.md)와
+[설정·보호 정책](docs/GATEWAY.md#domain-protection-dictionaries-260)을 확인하세요.
+긴 대화의 캐시 재처리, 별칭 파생 이름의 복원 실패, 256개 대화 이후의 세션 용량 문제도 수정했습니다.
+
 2.4.2에서는 설치 후 바뀐 사용자 설정을 보존하며 게이트웨이를 제거하도록 수정했습니다.
 다른 Orca 계정에 동기화된 설정 정리와 `gateway uninstall --force-clean` 복구도 지원합니다.
 
@@ -74,7 +80,7 @@ This is heuristic masking, not a proof of anonymity, cryptographic zero knowledg
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureGateway | **2.5.2** |
+| SecureGateway | **2.6.0** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |

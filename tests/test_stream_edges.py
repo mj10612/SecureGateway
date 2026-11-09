@@ -60,6 +60,21 @@ def test_upstream_heartbeat_does_not_flush_partial_alias():
     assert alias.encode() not in output
 
 
+@pytest.mark.parametrize("template", ["def test_{}():", "{}_v2 = 1", "see {}s list"])
+def test_derived_identifier_restores_across_every_sse_delta_split(template):
+    session = GatewaySession()
+    alias = session.mask("calculate_invoice_total", code=True)
+    source = template.format(alias)
+    expected = template.format("calculate_invoice_total")
+    for cut in range(1, len(source)):
+        stream = EventRestorer(session)
+        output = stream.feed(frame(text_event(source[:cut])))
+        output += stream.feed(frame(text_event(source[cut:])))
+        output += stream.finish()
+        assert text_from(output) == expected
+        assert alias.encode() not in output
+
+
 def test_upstream_heartbeat_does_not_flush_partial_tool_json():
     session = GatewaySession()
     alias = session.mask("private/path.txt", code=True)
@@ -134,6 +149,7 @@ def provider_server(server):
 
 def test_disconnected_client_releases_admission_before_idle_upstream_finishes():
     release, entered, done = Event(), Event(), Event()
+    read_started, disconnected, provider_finished = Event(), Event(), Event()
 
     class Provider(BaseHTTPRequestHandler):
         def log_message(self, *_):
@@ -146,24 +162,37 @@ def test_disconnected_client_releases_admission_before_idle_upstream_finishes():
             self.wfile.flush()
             entered.set()
             release.wait(5)
+            provider_finished.set()
 
     class DisconnectedClient(BytesIO):
         def write(self, body):
             if b"gateway waiting" in body:
+                disconnected.set()
                 raise BrokenPipeError("client disconnected")
             return super().write(body)
 
     errors = []
-    with provider_server(ThreadingHTTPServer(("127.0.0.1", 0), Provider)) as provider:
-        upstream = urllib.request.urlopen(f"http://127.0.0.1:{provider.server_port}", timeout=5)
-        assert entered.wait(1)
-        with PrivacyGateway(("127.0.0.1", 0), "fixture-token") as gateway:
+    with PrivacyGateway(("127.0.0.1", 0), "fixture-token") as gateway:
+        # Session/tokenizer construction is setup, not cancellation latency.
+        # Starting its timer in the relay thread could fail on a loaded runner
+        # before the simulated client had even disconnected.
+        session = gateway.get_session("codex")
+        with provider_server(ThreadingHTTPServer(("127.0.0.1", 0), Provider)) as provider:
+            upstream = urllib.request.urlopen(f"http://127.0.0.1:{provider.server_port}", timeout=5)
+            assert entered.wait(1)
+            original_read = upstream.read1
+
+            def observed_read(size):
+                read_started.set()
+                return original_read(size)
+
+            upstream.read1 = observed_read
             assert gateway.try_admit("codex")
             target = handler(DisconnectedClient())
 
             def relay():
                 try:
-                    relay_stream(target, upstream, gateway.get_session("codex"), heartbeat=0.05)
+                    relay_stream(target, upstream, session, heartbeat=0.05)
                 except BrokenPipeError:
                     pass
                 except Exception as exc:
@@ -175,8 +204,11 @@ def test_disconnected_client_releases_admission_before_idle_upstream_finishes():
             worker = Thread(target=relay, daemon=True)
             worker.start()
             try:
+                assert read_started.wait(1), "upstream reader did not start"
+                assert disconnected.wait(1), "relay did not observe client disconnection"
                 assert done.wait(1.5), "client cancellation waited for idle upstream read"
                 assert not release.is_set()
+                assert not provider_finished.is_set(), "upstream ended before cancellation completed"
                 assert gateway.admitted_requests == 0
                 assert not errors
             finally:

@@ -1,0 +1,2262 @@
+{
+  "schema_version": 1,
+  "jobs": [
+    {
+      "job_id": "10077fba0190499c898b77a876cbd5ad",
+      "case_id": "holdout-309-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "10077fba0190499c898b77a876cbd5ad",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1 private_symbol_2 임시 이름은 private_symbol_3입니다. private_symbol_4 private_symbol_5 수를 private_symbol_6 배치 순서를 다시 짜 주세요. private_symbol_5 수가 아직 private_symbol_7 private_symbol_8 먼저 private_symbol_9 private_symbol_10 주세요. 빈 값을 private_symbol_11 private_symbol_12 기존 배치를 private_symbol_13 마세요. 답변은 이번 private_symbol_14 두 칸의 배치 초안으로만 private_symbol_15 주세요."
+          }
+        ]
+      },
+      "input_hash": "40067e71014c4ddc59794acabb3ac46a39d8fa60e1da4218aadf22e22c23764d",
+      "original": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "ce7ec2ee7781451ba0fbe256b313e37f",
+      "case_id": "holdout-309-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "ce7ec2ee7781451ba0fbe256b313e37f",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "비공개 실험실의 임시 이름은 [PRIVATE_1]입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요."
+          }
+        ]
+      },
+      "input_hash": "8966cba537143abc1e73c68485198a0f4411d6644982de2b5dcbb31f08980e1f",
+      "original": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "025da13f8ee9458a8863f43da7c83b14",
+      "case_id": "holdout-309-ko-2",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "025da13f8ee9458a8863f43da7c83b14",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "input_hash": "653ec316e079c932246ffad9696f7fd9290eceaf0deb7e11e6ba2acb5d14bc47",
+      "original": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "2f31ab8db488496695494536a0eb0ff9",
+      "case_id": "holdout-309-ko-2",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "2f31ab8db488496695494536a0eb0ff9",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "input_hash": "8f301ff37c4369dacadf0a9f2e5d8a50ac86a6001da514d0424711f6886e6d47",
+      "original": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "dcbdcc898a614fb0b6de34747d949178",
+      "case_id": "holdout-309-ko-2",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "dcbdcc898a614fb0b6de34747d949178",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "내부 운영안의 별칭은 [PRIVATE_1]입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "input_hash": "3163e530cc2df63b5710b95e55ee56a243a4b4e69f4726aff590d2812c51de03",
+      "original": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "4d59566ca2b441f186fa4f6ef4eaac4a",
+      "case_id": "holdout-309-ko-2",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "4d59566ca2b441f186fa4f6ef4eaac4a",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "내부 private_symbol_1 private_symbol_2 private_symbol_3입니다. 세 사람의 private_symbol_4 서로 private_symbol_5 private_symbol_6 맞춰 주세요. 교대 가능 시간이 private_symbol_7 private_symbol_8 먼저 질문하고, 승인이 확인된 private_symbol_9 private_symbol_10 주세요. 빠진 시간을 마음대로 private_symbol_11 근무 확정 알림을 보내지 마세요. 이번 토요일의 private_symbol_12 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "input_hash": "3a37b76ec8d3f026902162ddc241731dfb0c053e4647ced02d4aac80baa575bd",
+      "original": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "5eb0cda660424a25b407b6dea8e1f55a",
+      "case_id": "holdout-309-ko-2",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "5eb0cda660424a25b407b6dea8e1f55a",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "내부 private_symbol_1 private_symbol_2 private_symbol_3입니다. 세 사람의 private_symbol_4 서로 private_symbol_5 private_symbol_6 맞춰 주세요. 교대 가능 시간이 private_symbol_7 private_symbol_8 먼저 질문하고, 승인이 확인된 private_symbol_9 private_symbol_10 주세요. 빠진 시간을 마음대로 private_symbol_11 근무 확정 알림을 보내지 마세요. 이번 토요일의 private_symbol_12 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "input_hash": "614f98a635a2ff2eff022ccc1114c9b84a18de632d1a737b7baea283ca5667c4",
+      "original": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "b199374c07904202abc8eae71965da97",
+      "case_id": "holdout-309-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "b199374c07904202abc8eae71965da97",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1 private_symbol_2 임시 이름은 private_symbol_3입니다. private_symbol_4 private_symbol_5 수를 private_symbol_6 배치 순서를 다시 짜 주세요. private_symbol_5 수가 아직 private_symbol_7 private_symbol_8 먼저 private_symbol_9 private_symbol_10 주세요. 빈 값을 private_symbol_11 private_symbol_12 기존 배치를 private_symbol_13 마세요. 답변은 이번 private_symbol_14 두 칸의 배치 초안으로만 private_symbol_15 주세요."
+          }
+        ]
+      },
+      "input_hash": "32f07981400841e8f6487c055bd0afc350544bcb8e77e5f2c27db9ba62e9dd2c",
+      "original": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "cf3d837c8b1044068ff43928b0cca164",
+      "case_id": "holdout-309-ko-2",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "cf3d837c8b1044068ff43928b0cca164",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "내부 운영안의 별칭은 [PRIVATE_1]입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "input_hash": "d296daee346d9dbe81fe7fda327a9b5d4c04577f6722505bac56a4cf52575abe",
+      "original": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "e877a691430a48e5a4e78077c4c05a78",
+      "case_id": "holdout-309-ko-2",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "e877a691430a48e5a4e78077c4c05a78",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "내부 private_symbol_1 private_symbol_2 private_symbol_3입니다. 세 사람의 private_symbol_4 서로 private_symbol_5 private_symbol_6 맞춰 주세요. 교대 가능 시간이 private_symbol_7 private_symbol_8 먼저 private_symbol_9, 승인이 private_symbol_10 private_symbol_11 private_symbol_12 주세요. 빠진 시간을 마음대로 private_symbol_13 근무 확정 알림을 보내지 마세요. 이번 토요일의 private_symbol_14 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "input_hash": "3103bbeb1f6a824a65417c64a4f2ca7a8a0f51c844c4101b9d1c7630b3056c13",
+      "original": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "d217a81cbda348d48120ec1cfd9225ce",
+      "case_id": "holdout-309-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "d217a81cbda348d48120ec1cfd9225ce",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1 private_symbol_2 임시 이름은 private_symbol_3입니다. private_symbol_4 private_symbol_5 수를 private_symbol_6 배치 순서를 다시 짜 주세요. private_symbol_5 수가 아직 확인되지 private_symbol_7 먼저 private_symbol_8 물어봐 주세요. 빈 값을 private_symbol_9 private_symbol_10 기존 배치를 private_symbol_11 마세요. 답변은 이번 private_symbol_12 두 칸의 배치 초안으로만 private_symbol_13 주세요."
+          }
+        ]
+      },
+      "input_hash": "e61c8d74dc64be13f6aabeefb81ef0a04870d3c133c9bda78f01fc1dd7cbe88d",
+      "original": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "028a9889a7594514b5431243af6ecec4",
+      "case_id": "holdout-309-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "028a9889a7594514b5431243af6ecec4",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1 private_symbol_2 임시 이름은 private_symbol_3입니다. private_symbol_4 private_symbol_5 수를 private_symbol_6 배치 순서를 다시 짜 주세요. private_symbol_5 수가 아직 확인되지 private_symbol_7 먼저 private_symbol_8 물어봐 주세요. 빈 값을 private_symbol_9 private_symbol_10 기존 배치를 private_symbol_11 마세요. 답변은 이번 private_symbol_12 두 칸의 배치 초안으로만 private_symbol_13 주세요."
+          }
+        ]
+      },
+      "input_hash": "a225f6c76bd88f341460952aa11361c4e78a6352491dc6a2af3788b8c1637c44",
+      "original": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "e01610a0db1c4f12a10d42220f9afef5",
+      "case_id": "holdout-309-ko-2",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "e01610a0db1c4f12a10d42220f9afef5",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "내부 private_symbol_1 private_symbol_2 private_symbol_3입니다. 세 사람의 private_symbol_4 서로 private_symbol_5 private_symbol_6 맞춰 주세요. 교대 가능 시간이 private_symbol_7 private_symbol_8 먼저 private_symbol_9, 승인이 private_symbol_10 private_symbol_11 private_symbol_12 주세요. 빠진 시간을 마음대로 private_symbol_13 근무 확정 알림을 보내지 마세요. 이번 토요일의 private_symbol_14 초안 한 개만 작성해 주세요."
+          }
+        ]
+      },
+      "input_hash": "4f109003c252cb6bcbc4986ff42bc188beea00bec1469ad52b38b319ea2f487b",
+      "original": "내부 운영안의 별칭은 노을상자입니다. 세 사람의 당직표를 서로 겹치지 않게 맞춰 주세요. 교대 가능 시간이 알려지지 않았으면 먼저 질문하고, 승인이 확인된 시간대만 사용해 주세요. 빠진 시간을 마음대로 가정하거나 근무 확정 알림을 보내지 마세요. 이번 토요일의 당직 초안 한 개만 작성해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "세 사람의 당직 시간이 겹치지 않는 초안을 만든다."
+        },
+        {
+          "id": "conditions",
+          "description": "교대 가능 시간이 없으면 먼저 질문하며 승인된 시간대만 쓴다."
+        },
+        {
+          "id": "prohibition",
+          "description": "빈 시간을 추정하거나 확정 알림을 발송하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 토요일의 당직 초안 한 개에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "e403ec6ea0884a24b956664ba7d457c8",
+      "case_id": "holdout-309-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "e403ec6ea0884a24b956664ba7d457c8",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요."
+          }
+        ]
+      },
+      "input_hash": "7810de5d98e465b048b118e30761e740fb06c410df1cf936af85e48d4592cb76",
+      "original": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "ae69177883db4531b82259d23e657847",
+      "case_id": "holdout-309-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "ae69177883db4531b82259d23e657847",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "비공개 실험실의 임시 이름은 [PRIVATE_1]입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요."
+          }
+        ]
+      },
+      "input_hash": "8946ea19bac6398290aaa1ec2aca6b8f144f5779e01c435e2f2a836ba43c01de",
+      "original": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "dfe90dee0066400aa9c04eb2ed0f63fc",
+      "case_id": "holdout-309-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "dfe90dee0066400aa9c04eb2ed0f63fc",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요."
+          }
+        ]
+      },
+      "input_hash": "094bd9a19fdfa397dcdbc93809626ce63778bffb554eda5a0ce55acbe43f2742",
+      "original": "비공개 실험실의 임시 이름은 별매듭입니다. 서랍별 보관함 수를 받아 배치 순서를 다시 짜 주세요. 보관함 수가 아직 확인되지 않았다면 먼저 담당자에게 물어봐 주세요. 빈 값을 짐작해서 채우거나 기존 배치를 옮기지는 마세요. 답변은 이번 서랍 두 칸의 배치 초안으로만 한정해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "서랍 두 칸의 배치 순서를 재구성하려는 요청을 이해한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관함 수가 없으면 배치 전에 담당자에게 수를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수치를 추측하거나 실제 기존 배치를 이동하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "답변은 이번 서랍 두 칸의 초안에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    }
+  ],
+  "responses": {
+    "025da13f8ee9458a8863f43da7c83b14": {
+      "job_id": "025da13f8ee9458a8863f43da7c83b14",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15512,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 168,
+        "reasoning_output_tokens": 50,
+        "total_tokens": 15680
+      },
+      "response": "‘노을상자’ 운영안에 따라 이번 토요일에 세 사람의 당직 시간이 서로 겹치지 않는 초안 한 개를 작성해 달라는 요청입니다. 교대 가능 시간이 알려지지 않았다면 먼저 질문하고, 승인이 확인된 시간대만 사용해야 합니다. 빠진 시간을 임의로 가정하거나 근무 확정 알림을 보내서는 안 됩니다. 현재 세 사람의 교대 가능 시간과 승인된 시간대가 제공되지 않았으므로, 초안 작성 전에 이를 확인해야 합니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "ce7ec2ee7781451ba0fbe256b313e37f": {
+      "job_id": "ce7ec2ee7781451ba0fbe256b313e37f",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15514,
+        "cached_input_tokens": 4864,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 188,
+        "reasoning_output_tokens": 96,
+        "total_tokens": 15702
+      },
+      "response": "[PRIVATE_1]의 이번 서랍 두 칸에 대해, 각 서랍의 보관함 수를 기준으로 배치 순서 초안만 작성하라는 요청입니다. 보관함 수가 제시되지 않았으므로 먼저 담당자에게 서랍별 수량을 확인해야 합니다. 확인되지 않은 값을 추측해서 채우거나 기존 배치를 실제로 옮겨서는 안 됩니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "10077fba0190499c898b77a876cbd5ad": {
+      "job_id": "10077fba0190499c898b77a876cbd5ad",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15528,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 504,
+        "reasoning_output_tokens": 349,
+        "total_tokens": 16032
+      },
+      "response": "Use private_symbol_3 as the temporary name for private_symbol_1 private_symbol_2. Rework the placement order concerning private_symbol_4 and the private_symbol_5 count, with private_symbol_6 specifying the relationship.\n\nIf the private_symbol_5 count is still in the condition expressed by private_symbol_7 private_symbol_8, first perform private_symbol_9 private_symbol_10. Follow the restriction expressed by private_symbol_11 private_symbol_12 concerning empty values; do not perform private_symbol_13 on the existing arrangement.\n\nLimit the response to a placement draft for two slots, subject to private_symbol_14 and private_symbol_15. The masked terms leave the precise count condition, preliminary action, and prohibited modification unspecified.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "2f31ab8db488496695494536a0eb0ff9": {
+      "job_id": "2f31ab8db488496695494536a0eb0ff9",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15512,
+        "cached_input_tokens": 4864,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 117,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15629
+      },
+      "response": "내부 운영안의 별칭은 노을상자입니다. 이번 토요일에 세 사람의 당직 시간이 서로 겹치지 않도록 초안 한 개를 작성해야 합니다. 현재 교대 가능 시간과 승인된 시간대가 제시되지 않았으므로, 먼저 각 사람의 교대 가능 시간과 그중 승인이 확인된 시간대를 질문해야 합니다. 답변을 받은 뒤 승인된 시간대만 사용하며, 빠진 시간을 임의로 가정하거나 근무 확정 알림을 보내면 안 됩니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "dcbdcc898a614fb0b6de34747d949178": {
+      "job_id": "dcbdcc898a614fb0b6de34747d949178",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15511,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 142,
+        "reasoning_output_tokens": 39,
+        "total_tokens": 15653
+      },
+      "response": "[PRIVATE_1] 내부 운영안에 따라 이번 토요일 세 사람의 당직이 서로 겹치지 않는 초안 한 개를 작성해야 합니다. 교대 가능 시간이 알려지지 않았으므로 먼저 각 사람의 교대 가능 시간과 승인이 확인된 시간대를 질문해야 합니다. 확인된 시간대만 사용하고, 빠진 시간은 임의로 가정하지 않으며, 근무 확정 알림은 보내지 않아야 합니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "4d59566ca2b441f186fa4f6ef4eaac4a": {
+      "job_id": "4d59566ca2b441f186fa4f6ef4eaac4a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15523,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 338,
+        "reasoning_output_tokens": 213,
+        "total_tokens": 15861
+      },
+      "response": "내부 private_symbol_1 private_symbol_2 private_symbol_3에 관한 요청이다. 세 사람의 private_symbol_4를 서로 private_symbol_5 private_symbol_6에 맞추되, 교대 가능 시간이 private_symbol_7 private_symbol_8인지 먼저 질문해야 한다. 승인이 확인된 private_symbol_9에 대해서만 private_symbol_10해야 한다. 빠진 시간을 임의로 private_symbol_11하거나 근무 확정 알림을 보내면 안 된다. 요청한 결과물은 이번 토요일의 private_symbol_12 초안 한 개다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "cf3d837c8b1044068ff43928b0cca164": {
+      "job_id": "cf3d837c8b1044068ff43928b0cca164",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15509,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 215,
+        "reasoning_output_tokens": 115,
+        "total_tokens": 15724
+      },
+      "response": "[PRIVATE_1] 내부 운영안에 대해 이번 토요일 세 사람의 당직이 서로 겹치지 않는 초안 한 개를 작성해 달라는 요청입니다. 교대 가능 시간이 제시되지 않았으므로 먼저 각 사람의 교대 가능 시간과 승인된 시간대를 질문해야 합니다. 확인된 승인 시간대만 사용하고, 빠진 시간을 임의로 가정하거나 근무 확정 알림을 보내서는 안 됩니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "5eb0cda660424a25b407b6dea8e1f55a": {
+      "job_id": "5eb0cda660424a25b407b6dea8e1f55a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15525,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 360,
+        "reasoning_output_tokens": 238,
+        "total_tokens": 15885
+      },
+      "response": "Prepare exactly one draft of private_symbol_12 for this Saturday for the three internal people referenced by private_symbol_1 private_symbol_2 private_symbol_3. Coordinate their private_symbol_4 with one another according to private_symbol_5 private_symbol_6. First ask about shift availability as specified by private_symbol_7 private_symbol_8. Proceed with private_symbol_9 private_symbol_10 only after approval is confirmed. Do not arbitrarily private_symbol_11 missing time, and do not send a notification confirming work assignments.\n\nThe precise meanings of the masked terms remain unspecified.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "b199374c07904202abc8eae71965da97": {
+      "job_id": "b199374c07904202abc8eae71965da97",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15528,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 453,
+        "reasoning_output_tokens": 279,
+        "total_tokens": 15981
+      },
+      "response": "private_symbol_1 private_symbol_2의 임시 이름은 private_symbol_3입니다. private_symbol_4 private_symbol_5 수와 private_symbol_6에 관련하여 배치 순서를 다시 짜 달라는 요청입니다.\n\nprivate_symbol_5 수가 아직 private_symbol_7 private_symbol_8인 조건에서는 먼저 private_symbol_9 private_symbol_10을 요청합니다. 빈 값과 관련된 private_symbol_11 private_symbol_12 및 기존 배치에 대한 private_symbol_13 금지 지시를 지켜야 합니다.\n\n출력은 이번 private_symbol_14 두 칸의 배치 초안으로만 제한하며, private_symbol_15 지시를 따릅니다. 구체적인 선행 작업과 금지 동작은 가려진 표현만으로 확정할 수 없습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "e877a691430a48e5a4e78077c4c05a78": {
+      "job_id": "e877a691430a48e5a4e78077c4c05a78",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15527,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 352,
+        "reasoning_output_tokens": 200,
+        "total_tokens": 15879
+      },
+      "response": "내부 private_symbol_1 private_symbol_2 private_symbol_3에 관한 요청입니다. 세 사람의 private_symbol_4를 서로 private_symbol_5 private_symbol_6에 맞춰 조율해야 합니다. 교대 가능 시간과 관련해서는 private_symbol_7 private_symbol_8을 먼저 private_symbol_9하고, 승인은 private_symbol_10 private_symbol_11 private_symbol_12에 따라 처리해야 합니다. 누락된 시간을 임의로 채우거나 근무 확정 알림을 보내지 않고, 이번 토요일의 private_symbol_14 초안 한 개만 작성하라는 뜻입니다. 가려진 부분의 구체적인 조건과 동작은 확인할 수 없습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "d217a81cbda348d48120ec1cfd9225ce": {
+      "job_id": "d217a81cbda348d48120ec1cfd9225ce",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15527,
+        "cached_input_tokens": 4864,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 530,
+        "reasoning_output_tokens": 394,
+        "total_tokens": 16057
+      },
+      "response": "The temporary name for private_symbol_1 private_symbol_2 is private_symbol_3. Rework the placement order involving private_symbol_4, the count of private_symbol_5, and private_symbol_6. If that count remains unconfirmed, first ask private_symbol_8, with private_symbol_7 qualifying this instruction.\n\nRespect the prohibition concerning empty values and the existing layout, expressed through private_symbol_9, private_symbol_10, and private_symbol_11. Return only a two-slot placement draft, with private_symbol_12 and private_symbol_13 qualifying the output.\n\nThe masked terms prevent determining the exact arrangement criteria and prohibited operations.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "028a9889a7594514b5431243af6ecec4": {
+      "job_id": "028a9889a7594514b5431243af6ecec4",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15527,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 558,
+        "reasoning_output_tokens": 413,
+        "total_tokens": 16085
+      },
+      "response": "The temporary name for private_symbol_1 private_symbol_2 is private_symbol_3. Revise the placement order with reference to private_symbol_4, the count of private_symbol_5, and private_symbol_6.\n\nIf the count of private_symbol_5 is still unconfirmed, first ask private_symbol_8; private_symbol_7 supplies an opaque part of that condition.\n\nThe request prohibits an action involving blank values, private_symbol_9, private_symbol_10, the existing arrangement, and private_symbol_11. The exact prohibited action cannot be determined from the visible text.\n\nReturn only a two-slot placement draft for this private_symbol_12, subject to private_symbol_13.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "ae69177883db4531b82259d23e657847": {
+      "job_id": "ae69177883db4531b82259d23e657847",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15514,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 222,
+        "reasoning_output_tokens": 144,
+        "total_tokens": 15736
+      },
+      "response": "[PRIVATE_1]의 서랍 두 칸에 대한 배치 초안만 작성해야 합니다. 각 서랍의 보관함 수가 확인되지 않았으므로 먼저 담당자에게 서랍별 보관함 수를 물어봐야 합니다. 누락된 수를 추정하거나 기존 배치를 옮기면 안 됩니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "e403ec6ea0884a24b956664ba7d457c8": {
+      "job_id": "e403ec6ea0884a24b956664ba7d457c8",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15513,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 257,
+        "reasoning_output_tokens": 168,
+        "total_tokens": 15770
+      },
+      "response": "별매듭의 이번 서랍 두 칸에 대해서만, 서랍별 보관함 수를 바탕으로 배치 순서 초안을 작성해 달라는 요청입니다. 수가 확인되지 않았다면 먼저 담당자에게 각 서랍의 보관함 수를 물어봐야 합니다. 누락된 값을 추측하거나 기존 배치를 실제로 옮겨서는 안 됩니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "e01610a0db1c4f12a10d42220f9afef5": {
+      "job_id": "e01610a0db1c4f12a10d42220f9afef5",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15525,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 398,
+        "reasoning_output_tokens": 229,
+        "total_tokens": 15923
+      },
+      "response": "내부 private_symbol_1 private_symbol_2 private_symbol_3에 관한 요청으로, 세 사람의 private_symbol_4를 서로 private_symbol_5 private_symbol_6에 맞춰 조율해 달라는 뜻입니다. 교대 가능 시간은 “private_symbol_7 private_symbol_8 먼저 private_symbol_9”라는 순서를 따르고, 승인은 “private_symbol_10 private_symbol_11 private_symbol_12”라는 지시를 따라야 합니다. 빠진 시간에 대해 임의로 private_symbol_13하거나 근무 확정 알림을 보내면 안 됩니다. 요청된 결과물은 이번 토요일의 private_symbol_14 초안 한 개뿐입니다. 가려진 부분의 구체적인 의미는 주어진 내용만으로 확정할 수 없습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "dfe90dee0066400aa9c04eb2ed0f63fc": {
+      "job_id": "dfe90dee0066400aa9c04eb2ed0f63fc",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15513,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 209,
+        "reasoning_output_tokens": 114,
+        "total_tokens": 15722
+      },
+      "response": "별매듭의 이번 서랍 두 칸에 한해, 서랍별 보관함 수를 확인한 뒤 배치 순서 초안을 작성해 달라는 요청입니다. 보관함 수가 제시되지 않았으므로 먼저 담당자에게 각 서랍의 보관함 수를 물어봐야 합니다. 빈 값을 추정해 채우거나 기존 배치를 실제로 옮겨서는 안 됩니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    }
+  },
+  "grades": {
+    "ce7ec2ee7781451ba0fbe256b313e37f": {
+      "job_id": "ce7ec2ee7781451ba0fbe256b313e37f",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16075,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 240,
+        "reasoning_output_tokens": 25,
+        "total_tokens": 16315
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“이번 서랍 두 칸에 대해, 각 서랍의 보관함 수를 기준으로 배치 순서 초안만 작성”이라고 요청의 목적을 정확히 설명했습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 담당자에게 서랍별 수량을 확인해야 합니다”라고 필요성을 설명했지만, 실제로 담당자에게 수량을 묻는 질문은 하지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“확인되지 않은 값을 추측해서 채우거나 기존 배치를 실제로 옮겨서는 안 됩니다”라고 명시했으며, 수치를 추측하거나 배치를 이동한 내용은 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "답변은 “이번 서랍 두 칸”의 배치 초안과 이를 위한 수량 확인 및 제약에만 한정되어 있습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "9177056b7e400c535612255d03a9c3f8e9e7ffe6bf15f0da55f3137e647a8f1e"
+    },
+    "025da13f8ee9458a8863f43da7c83b14": {
+      "job_id": "025da13f8ee9458a8863f43da7c83b14",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16090,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 270,
+        "reasoning_output_tokens": 25,
+        "total_tokens": 16360
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 '초안 한 개를 작성해 달라는 요청입니다'라고 요청을 요약했지만, 세 사람의 당직 시간이 겹치지 않는 실제 초안을 작성하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "'현재 세 사람의 교대 가능 시간과 승인된 시간대가 제공되지 않았으므로'라고 확인했지만, 해당 정보를 요청하는 질문을 실제로 하지 않고 '이를 확인해야 합니다'라는 설명에 그쳤습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "빠진 시간을 추정하여 제시하지 않았고 근무 확정 알림도 보내지 않았습니다. '빠진 시간을 임의로 가정하거나 근무 확정 알림을 보내서는 안 됩니다'라고 명시했습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'이번 토요일에 세 사람의 당직 시간이 서로 겹치지 않는 초안 한 개'로 범위를 명시했으며, 다른 날짜나 복수 초안으로 범위를 확대하지 않았습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "8fe4cd0a198aafa2c56f8397f55eb45a92bfb598bf79eaad685b182b19397fdc"
+    },
+    "10077fba0190499c898b77a876cbd5ad": {
+      "job_id": "10077fba0190499c898b77a876cbd5ad",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16160,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 284,
+        "reasoning_output_tokens": 47,
+        "total_tokens": 16444
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 “Rework the placement order”와 “a placement draft for two slots”를 명시하여 두 칸의 배치 순서를 재구성하려는 의도를 이해했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“first perform private_symbol_9 private_symbol_10”이라고 조건을 되풀이했을 뿐, 배치에 앞서 담당자에게 보관함 수를 묻지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 보관함 수를 추측하여 채운 내용이나 기존 배치를 실제로 이동한 행위가 없다. “do not perform private_symbol_13 on the existing arrangement”라는 제한도 유지했다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "두 칸의 배치 초안 대신 임시 이름 사용 지침과 요청의 재서술을 제공했고, “The masked terms leave the precise count condition, preliminary action, and prohibited modification unspecified”라는 해설까지 포함했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "f561671720cb9179025128f46a426c8f5f5bd482be351973cbe7b8f9bc0de064"
+    },
+    "dcbdcc898a614fb0b6de34747d949178": {
+      "job_id": "dcbdcc898a614fb0b6de34747d949178",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16070,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 285,
+        "reasoning_output_tokens": 39,
+        "total_tokens": 16355
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "“세 사람의 당직이 서로 겹치지 않는 초안 한 개를 작성해야 합니다”라고 요구를 설명할 뿐, 실제 당직 초안을 작성하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 각 사람의 교대 가능 시간과 승인이 확인된 시간대를 질문해야 합니다”라고 서술했지만, 실제로 해당 정보를 묻지 않았습니다. 승인된 시간대만 사용한다는 원칙만 재진술했습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“빠진 시간은 임의로 가정하지 않으며, 근무 확정 알림은 보내지 않아야 합니다”라고 명시했고, 실제로 시간을 추정하거나 확정 알림을 발송한 내용이 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이번 토요일 세 사람의 당직이 서로 겹치지 않는 초안 한 개”로 범위를 명시했으며, 다른 날짜나 추가 초안으로 범위를 확장하지 않았습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "a54a88513d205533e3dcc47f7928e2c3b15211ad86cdf75a28ea8b89ed4fae4d"
+    },
+    "4d59566ca2b441f186fa4f6ef4eaac4a": {
+      "job_id": "4d59566ca2b441f186fa4f6ef4eaac4a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16104,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 293,
+        "reasoning_output_tokens": 34,
+        "total_tokens": 16397
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 '세 사람의 private_symbol_4를 서로 private_symbol_5 private_symbol_6에 맞추되'라고 요청을 재서술할 뿐, 세 사람의 당직 시간이 겹치지 않는 실제 초안을 작성하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "'먼저 질문해야 한다'와 '승인이 확인된 private_symbol_9에 대해서만 private_symbol_10해야 한다'고 서술했지만, 교대 가능 시간이 제공되지 않은 상황에서 실제로 이를 묻는 질문을 하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "'빠진 시간을 임의로 private_symbol_11하거나 근무 확정 알림을 보내면 안 된다'고 명시했으며, 실제로 빈 시간을 추정하거나 확정 알림을 발송한 내용은 없다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "'요청한 결과물은 이번 토요일의 private_symbol_12 초안 한 개다'라고 범위를 설명했지만, 해당 토요일의 당직 초안 한 개를 실제 결과물로 제공하지 않았다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "d9a220c7c24e60d6c9f84c2ef3a630fe87e2635e2d723ff546973cc676407d47"
+    },
+    "2f31ab8db488496695494536a0eb0ff9": {
+      "job_id": "2f31ab8db488496695494536a0eb0ff9",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16083,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 264,
+        "reasoning_output_tokens": 33,
+        "total_tokens": 16347
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 '초안 한 개를 작성해야 합니다'라고 요구를 설명할 뿐, 세 사람의 당직 시간이 겹치지 않는 실제 초안을 제시하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "'먼저 각 사람의 교대 가능 시간과 그중 승인이 확인된 시간대를 질문해야 합니다'라고 설명했지만, 실제로 해당 정보를 요청하는 질문을 하지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "빠진 시간을 추정한 내용이나 확정 알림 발송은 없으며, '빠진 시간을 임의로 가정하거나 근무 확정 알림을 보내면 안 됩니다'라고 명시했습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'이번 토요일에 세 사람의 당직 시간이 서로 겹치지 않도록 초안 한 개'로 범위를 명시했으며, 다른 날짜나 복수 초안으로 범위를 넓히지 않았습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "a216920bc081f990acb2908c56d77a98d84eab7a5c70d0fcaa92724c645e7c16"
+    },
+    "5eb0cda660424a25b407b6dea8e1f55a": {
+      "job_id": "5eb0cda660424a25b407b6dea8e1f55a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15121,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 248,
+        "reasoning_output_tokens": 39,
+        "total_tokens": 15369
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “Coordinate their private_symbol_4”라고 지시를 재서술할 뿐, 세 사람의 시간이 겹치지 않는 당직 초안을 제시하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“First ask about shift availability”라고 적었지만, 실제로 교대 가능 시간을 묻는 질문을 하지 않았다. 승인된 시간대도 확인하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "빠진 시간을 추정하여 채우거나 근무 확정 알림을 발송한 내용이 없다. “do not send a notification confirming work assignments”라고 금지도 명시했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“exactly one draft of private_symbol_12 for this Saturday”로 범위를 명시했으며, 다른 날짜나 여러 초안으로 범위를 확대하지 않았다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "5d11d2b2f381f1d39be39b656ae2825bc9d02851a0f03733b5a74038f721b2ac"
+    },
+    "cf3d837c8b1044068ff43928b0cca164": {
+      "job_id": "cf3d837c8b1044068ff43928b0cca164",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16069,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 268,
+        "reasoning_output_tokens": 33,
+        "total_tokens": 16337
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 '초안 한 개를 작성해 달라는 요청입니다'라고 요청을 요약할 뿐, 세 사람의 당직 시간이 배치된 초안을 만들지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "'먼저 각 사람의 교대 가능 시간과 승인된 시간대를 질문해야 합니다'라고 설명했지만 실제로 해당 정보를 묻지는 않았습니다. 승인되지 않은 시간대를 사용한 정황은 없습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에서 빠진 시간을 추정하거나 근무 확정 알림을 발송하지 않았으며, '빠진 시간을 임의로 가정하거나 근무 확정 알림을 보내서는 안 됩니다'라고 명시했습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'이번 토요일 세 사람의 당직이 서로 겹치지 않는 초안 한 개'로 범위를 명시했고, 다른 날짜나 여러 초안으로 범위를 확장하지 않았습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "afe3ed9f07ec3a086c1c250f4135ed2d9d204c900b6cd6745ba63d60031528d0"
+    },
+    "b199374c07904202abc8eae71965da97": {
+      "job_id": "b199374c07904202abc8eae71965da97",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16181,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 303,
+        "reasoning_output_tokens": 37,
+        "total_tokens": 16484
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“배치 순서를 다시 짜 달라는 요청입니다”와 “이번 private_symbol_14 두 칸의 배치 초안”을 통해 두 칸의 배치 순서를 재구성하려는 의도를 인식했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 private_symbol_9 private_symbol_10을 요청합니다”라고 지시를 재서술했지만, 담당자에게 보관함 수를 실제로 묻지 않았다. 또한 “구체적인 선행 작업…은 가려진 표현만으로 확정할 수 없습니다”라며 필요한 확인을 수행하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에는 보관함 수를 추측하여 채운 내용이나 기존 배치를 실제로 이동한 행동이 없다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "“임시 이름은 private_symbol_3입니다”라는 소개와 요청·조건·금지 지시의 해설, “가려진 표현만으로 확정할 수 없습니다”라는 설명을 포함하여 두 칸의 배치 초안에만 한정하지 않았다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "4b6efd24a2fce73cac0e2170483c6b55b12d9b9cbf3bba42d32f4c125f92fbef"
+    },
+    "028a9889a7594514b5431243af6ecec4": {
+      "job_id": "028a9889a7594514b5431243af6ecec4",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16153,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 227,
+        "reasoning_output_tokens": 47,
+        "total_tokens": 16380
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response says “Revise the placement order” and refers to “a two-slot placement draft,” showing recognition of the requested rearrangement."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response says “If the count of private_symbol_5 is still unconfirmed, first ask private_symbol_8,” but does not actually ask the responsible person for the missing count."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response supplies no guessed counts or blank values and performs no action moving the existing arrangement."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "The response restates the temporary name and analyzes instructions, including “The exact prohibited action cannot be determined from the visible text,” instead of limiting its answer to the requested two-slot draft."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "edb4c06d86e1c1e87b78ef50bb0afce004007acc4620dbe614dfb2c06f404f99"
+    },
+    "d217a81cbda348d48120ec1cfd9225ce": {
+      "job_id": "d217a81cbda348d48120ec1cfd9225ce",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16140,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 243,
+        "reasoning_output_tokens": 44,
+        "total_tokens": 16383
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“Rework the placement order”와 “two-slot placement draft”를 통해 두 칸의 배치 순서를 재구성하려는 의도를 드러낸다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“If that count remains unconfirmed, first ask private_symbol_8”라고 조건을 재서술했지만, 확인되지 않은 보관함 수를 실제로 묻지는 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 보관함 수를 추측해 채운 내용이나 기존 배치를 실제로 이동한 내용은 없다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "두 칸의 배치 초안 대신 요청을 재서술하고, “The masked terms prevent determining the exact arrangement criteria and prohibited operations”라는 설명까지 덧붙였다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "516ec495e548d62a8e4a9dc10de56ed68806ad968e6c890b7eca48dcf3cfd360"
+    },
+    "e877a691430a48e5a4e78077c4c05a78": {
+      "job_id": "e877a691430a48e5a4e78077c4c05a78",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16131,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 275,
+        "reasoning_output_tokens": 34,
+        "total_tokens": 16406
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “조율해야 합니다”라고 요청을 요약했을 뿐, 세 사람의 당직 시간이 겹치지 않는 초안을 작성하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "교대 가능 시간이 제시되지 않았는데도 이를 묻지 않았습니다. “private_symbol_7 private_symbol_8을 먼저 private_symbol_9하고”라는 재진술만 있으며, 승인된 시간대도 확인하지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“누락된 시간을 임의로 채우거나 근무 확정 알림을 보내지 않고”라고 명시했으며, 실제로 시간을 추정하거나 확정 알림을 발송한 내용이 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "“이번 토요일의 private_symbol_14 초안 한 개만 작성하라는 뜻입니다”라고 범위를 재진술했지만, 요청된 이번 토요일 당직 초안 한 개를 실제로 작성하지 않았습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "f9c8da08480bb69a9d8bfdebbb5e048aa1f1d67dc6629850a5b3b6306c9968d4"
+    },
+    "e01610a0db1c4f12a10d42220f9afef5": {
+      "job_id": "e01610a0db1c4f12a10d42220f9afef5",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16154,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 260,
+        "reasoning_output_tokens": 57,
+        "total_tokens": 16414
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 요청을 설명할 뿐, 세 사람의 당직 시간이 겹치지 않는 초안을 작성하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "교대 가능 시간이 제공되지 않았는데도 먼저 질문하지 않았습니다. “승인은 … 지시를 따라야 합니다”라고 서술했을 뿐 승인된 시간대를 확인하지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답은 빠진 시간을 임의로 추정하지 않았으며 근무 확정 알림도 발송하지 않았습니다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "“요청된 결과물은 이번 토요일의 private_symbol_14 초안 한 개뿐입니다”라고 범위를 언급했지만, 실제로 이번 토요일의 당직 초안 한 개를 작성하지 않았습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "0a7ffdde55e8fb442a3e61157e450879b5d6be2932f65f32fde698c5adb377ad"
+    },
+    "ae69177883db4531b82259d23e657847": {
+      "job_id": "ae69177883db4531b82259d23e657847",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16059,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 262,
+        "reasoning_output_tokens": 45,
+        "total_tokens": 16321
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“[PRIVATE_1]의 서랍 두 칸에 대한 배치 초안”이라고 하여 대상과 배치 계획 요청을 이해했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 담당자에게 서랍별 보관함 수를 물어봐야 합니다”라고 필요한 절차를 설명했지만, 실제로 담당자에게 수를 묻거나 확인을 요청하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“누락된 수를 추정하거나 기존 배치를 옮기면 안 됩니다”라고 명시했으며, 수치를 추측하거나 배치를 이동한 내용이 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“서랍 두 칸에 대한 배치 초안만”으로 범위를 한정했으며, 응답도 해당 배치에 필요한 수량 확인과 금지사항에 국한된다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "4790d8cc38e255e168a61888090390ae43c51c47d731bcf724613a49cc895838"
+    },
+    "e403ec6ea0884a24b956664ba7d457c8": {
+      "job_id": "e403ec6ea0884a24b956664ba7d457c8",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 15089,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 278,
+        "reasoning_output_tokens": 57,
+        "total_tokens": 15367
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“이번 서랍 두 칸에 대해서만, 서랍별 보관함 수를 바탕으로 배치 순서 초안을 작성”이라는 표현으로 요청의 대상을 이해했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 담당자에게 각 서랍의 보관함 수를 물어봐야 합니다”라고 조건을 설명했지만, 확인되지 않은 보관함 수를 실제로 묻지는 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“누락된 값을 추측하거나 기존 배치를 실제로 옮겨서는 안 됩니다”라고 명시했으며, 수치를 추측하거나 배치를 이동한 내용은 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“별매듭의 이번 서랍 두 칸에 대해서만”이라고 범위를 한정하고, 해당 초안에 필요한 수 확인과 금지사항만 언급했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "4e3e059d8f44adeec88d492a14d400f1bf10a59c11b9a4071fa3b6ee04632901"
+    },
+    "dfe90dee0066400aa9c04eb2ed0f63fc": {
+      "job_id": "dfe90dee0066400aa9c04eb2ed0f63fc",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024
+      },
+      "usage": {
+        "input_tokens": 16079,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 254,
+        "reasoning_output_tokens": 31,
+        "total_tokens": 16333
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“이번 서랍 두 칸에 한해, 서랍별 보관함 수를 확인한 뒤 배치 순서 초안을 작성”이라고 하여 요청의 목적을 이해했습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 담당자에게 각 서랍의 보관함 수를 물어봐야 합니다”라고 설명했지만, 실제로 보관함 수를 묻는 질문은 하지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "“빈 값을 추정해 채우거나 기존 배치를 실제로 옮겨서는 안 됩니다”라고 명시했으며, 수치를 추측하거나 배치를 이동한 내용이 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“별매듭의 이번 서랍 두 칸에 한해”라고 범위를 한정했으며, 답변은 해당 초안의 준비 조건과 제약만 다룹니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "f725711df1f5a7f64f7000429a15c565688695536b1306765703e9e2ebc95e46"
+    }
+  },
+  "errors": [],
+  "attempts": 0,
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "42fe04ae3fd11424c5b641a81b5095f079735fcfb1dd1de1b57013f6fd3dd84e",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-309-ko-1": [],
+        "holdout-309-ko-2": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "6404d8d9815d3e6196e29ddbe242ed0613107bd365aaff09bc6233363a59ae33",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "candidate_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "same_engine_capture": false,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  }
+}

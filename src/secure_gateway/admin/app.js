@@ -129,7 +129,7 @@ async function load() {
 }
 $("login-form").addEventListener("submit", async (event) => {
   event.preventDefault(); generation++; resetExport(); token = $("token").value.trim();
-  if (await load()) { $("token").value = ""; $("login-error").textContent = ""; $("login").hidden = true; $("dashboard").hidden = false; await loadRules(); }
+  if (await load()) { $("token").value = ""; $("login-error").textContent = ""; $("login").hidden = true; $("dashboard").hidden = false; await loadRules(); await loadDomainPolicy(); }
 });
 $("logout").addEventListener("click", () => {
   token = ""; generation++; resetExport(); offset = 0; $("rows").replaceChildren(); $("detail-fields").replaceChildren();
@@ -202,5 +202,57 @@ $("filters").addEventListener("change", () => { offset = 0; resetExport(); load(
 $("filters").addEventListener("reset", () => { offset = 0; resetExport(); setTimeout(load, 0); });
 $("previous").addEventListener("click", () => { offset = Math.max(0, offset - limit); load(); });
 $("next").addEventListener("click", () => { offset += limit; load(); });
+let domainOffset = 0;
+const domainNames = {defense: "방산", automotive: "자동차", semiconductor: "반도체"};
+async function domainRequest(path, options = {}) {
+  const response = await fetch(path, {...options, headers: {"Content-Type": "application/json", "X-SecureGateway-Token": token}, cache: "no-store"});
+  if (!response.ok) throw new Error("분야 사전 요청에 실패했습니다. 진행 중인 요청과 저장 상태를 확인하세요.");
+  return response.json();
+}
+function renderDomainPolicy(data) {
+  $("domain-toggles").replaceChildren(...data.domains.map((domain) => {
+    const label = element("label"), input = element("input");
+    input.type = "checkbox"; input.name = domain.id; input.checked = data.enabled[domain.id];
+    label.append(input, document.createTextNode(`${domainNames[domain.id]} · v${domain.version} · 활성 보호 ${domain.active_concepts}개 / 전체 항목 ${domain.concept_count}개`));
+    return label;
+  }));
+}
+async function loadDomainPolicy() {
+  const current = generation;
+  try {
+    const data = await domainRequest("/admin/api/domain-policy");
+    if (current !== generation) return;
+    renderDomainPolicy(data);
+    $("domain-policy-status").textContent = "현재 적용 정책: " + data.policy_version.slice(0, 12) + (data.source === "defaults" ? " · 초기 기본값" : data.persistent ? " · 저장된 설정" : " · 메모리에만 적용");
+    await searchDomain();
+  } catch (error) { if (current === generation) $("domain-policy-status").textContent = error.message; }
+}
+$("domain-policy-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const current = generation;
+  const enabled = Object.fromEntries(Object.keys(domainNames).map((id) => [id, $("domain-policy-form").elements.namedItem(id).checked]));
+  try {
+    const data = await domainRequest("/admin/api/domain-policy", {method: "POST", body: JSON.stringify({enabled})});
+    if (current !== generation) return;
+    renderDomainPolicy(data); $("domain-policy-status").textContent = "저장하고 적용했습니다. 기존 별칭은 유지됩니다.";
+  } catch (error) { if (current === generation) $("domain-policy-status").textContent = error.message; }
+});
+async function searchDomain() {
+  const current = generation;
+  try {
+    const params = new URLSearchParams({domain: $("domain-search").value, query: $("domain-query").value, offset: domainOffset, limit: 25});
+    const data = await domainRequest("/admin/api/domain-terms?" + params);
+    if (current !== generation) return;
+    $("domain-results").replaceChildren(element("p", `${data.total}개 중 ${data.offset + 1}부터 · v${data.version}`), ...data.entries.map((entry) => {
+      const item = element("p", entry.forms.map((form) => form.text).join(" / "));
+      item.append(element("small", entry.activation_status === "active-editorial-core" ? " · 활성 전문/구성품 용어" : entry.activation_status === "active-source-label" ? " · 활성 공개 장비·사업·기술명" : " · 검수 대기: 보호 미적용"));
+      return item;
+    }));
+    $("domain-previous").disabled = domainOffset === 0;
+    $("domain-next").disabled = domainOffset + 25 >= data.total;
+  } catch (error) { if (current === generation) $("domain-results").textContent = error.message; }
+}
+$("domain-search-form").addEventListener("submit", (event) => { event.preventDefault(); domainOffset = 0; searchDomain(); });
+$("domain-previous").addEventListener("click", () => { domainOffset = Math.max(0, domainOffset - 25); searchDomain(); });
+$("domain-next").addEventListener("click", () => { domainOffset += 25; searchDomain(); });
 $("close-details").addEventListener("click", () => $("details").close());
 setInterval(() => { if (token && $("auto-refresh").checked && !document.hidden && !$("dashboard").hidden) load(); }, 10000);

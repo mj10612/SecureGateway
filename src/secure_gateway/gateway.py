@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from contextlib import ExitStack, nullcontext
 from contextvars import ContextVar
-from collections import deque
+from collections import OrderedDict, deque
 from copy import deepcopy
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -23,7 +23,7 @@ import sqlite3
 import time
 import unicodedata
 from threading import Condition, RLock
-from typing import Any
+from typing import Any, Callable, Iterator
 from secure_gateway import __version__
 from secure_gateway.context_model import ContextModel, load_context_model, MAX_CONTEXT_CHARS
 import urllib.error
@@ -55,7 +55,8 @@ from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHO
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
 from secure_gateway.session import PrivacySession
 from secure_gateway.gateway_stream import relay_stream
-from secure_gateway.gateway_errors import public_request_error
+from secure_gateway.gateway_errors import GatewayRequestError, public_request_error
+from secure_gateway.domain_dictionaries import catalog as domain_catalog, DEFAULTS as DOMAIN_DEFAULTS, protect_chunks
 
 LIMIT = 16 * 1024 * 1024
 
@@ -509,6 +510,18 @@ _private_prose: ContextVar[bool] = ContextVar("private_gateway_prose", default=F
 
 class SharedEngine(MaskingEngine):
     """One alias for an original in prompts, code, paths and tool results."""
+    domain_spans: Callable | None = None
+    _domain_depth = 0
+
+    def _chunks(self, text, terms, language="en", literal_aliases=None):
+        if self._domain_depth or self.domain_spans is None:
+            return super()._chunks(text, terms, language, literal_aliases)
+        self._domain_depth += 1
+        try:
+            chunks = super()._chunks(text, terms, language, literal_aliases)
+            return protect_chunks(text, chunks, self.domain_spans(text))
+        finally:
+            self._domain_depth -= 1
 
     def __init__(self, mapping_limit=100_000, **restore_limits):
         super().__init__(**restore_limits)
@@ -627,9 +640,10 @@ class GatewaySession:
         self.active_requests = 0
         self.encryption: SnapshotEncryption | None = None
         self.forced_rules = lambda: ()
-        self._mask_cache: dict[tuple, str] = {}
+        self._mask_cache: OrderedDict[tuple, str] = OrderedDict()
         self._mask_cache_bytes = 0
         self.storage_key: str | None = None
+        self.domain_policy_version = ""
 
     def _opaque_key(self, block):
         stable = {
@@ -779,22 +793,40 @@ class GatewaySession:
             return self.engine._get_or_create_surrogate(text, TokenType.LITERAL,
                 s.generator, s.forward_store, s.reverse_store, code=True)
 
+    def _mask_cache_key(self, text: str, code: bool, language: str) -> tuple:
+        # A new private value can change an earlier public interpretation, but
+        # unrelated allocations must not invalidate the complete conversation.
+        # Include embedded originals too: protected possessive suffixes and
+        # fragments can affect masking without a whole-input word boundary.
+        dependencies = sha256()
+        for original in sorted(self.session.forward_store.originals_in(text, embedded=True)):
+            encoded = original.encode("utf-8")
+            dependencies.update(len(encoded).to_bytes(8, "big"))
+            dependencies.update(encoded)
+        return (text, code, language, self.natural_language, self.prose_mode,
+                self.mask_numbers, self.sql_dialect, self.common_words, id(self.context_model),
+                tuple(self.forced_rules()), self.domain_policy_version,
+                getattr(self.engine, "cache_epoch", 0), dependencies.digest())
+
+    @staticmethod
+    def _mask_cache_entry_bytes(key: tuple, result: str) -> int:
+        return len(key[0].encode("utf-8")) + len(result.encode("utf-8")) + 256
+
     def mask(self, text: str, code: bool = False, language: str = "auto") -> str:
-        # Cache only within this private session, with every policy/mapping
-        # dependency in the key. New aliases invalidate prior interpretations.
-        key: tuple = (text, code, language, self.natural_language, self.prose_mode,
-               tuple(self.forced_rules()), getattr(self.engine, "cache_epoch", 0), len(self.session.forward_store))
+        key = self._mask_cache_key(text, code, language)
         cached = self._mask_cache.get(key)
         if cached is not None:
+            self._mask_cache.move_to_end(key)
             return cached
         result = self._force_mask(self._mask_unforced(text, code, language))
-        key = (*key[:-2], getattr(self.engine, "cache_epoch", 0), len(self.session.forward_store))
-        size = len(text.encode()) + len(result.encode())
+        key = self._mask_cache_key(text, code, language)
+        size = self._mask_cache_entry_bytes(key, result)
         if size <= 1024 * 1024:
-            if self._mask_cache_bytes + size > 4 * 1024 * 1024 or len(self._mask_cache) >= 256:
-                self._mask_cache.clear()
-                self._mask_cache_bytes = 0
             if key not in self._mask_cache:
+                while self._mask_cache and (self._mask_cache_bytes + size > 4 * 1024 * 1024
+                                           or len(self._mask_cache) >= 4096):
+                    old_key, old_result = self._mask_cache.popitem(last=False)
+                    self._mask_cache_bytes -= self._mask_cache_entry_bytes(old_key, old_result)
                 self._mask_cache[key] = result
                 self._mask_cache_bytes += size
         return result
@@ -1934,12 +1966,28 @@ class PrivacyGateway(ThreadingHTTPServer):
             raise ValueError("Unsupported SQL dialect.")
         self.sql_dialect = sql_dialect
         self.sessions_lock = RLock()
-        self.provider_locks = {agent: RLock() for agent in self.upstreams}
+        # The capacity bound is global: all providers must serialize registry
+        # mutations. This lock is released before masking or provider I/O.
+        self.provider_locks = {agent: self.sessions_lock for agent in self.upstreams}
         self.state_dir = state_dir
+        self._snapshot_scan: Iterator[Path] = iter(())
+        self._next_snapshot_cleanup = 0.0
         if state_dir:
             state_dir.mkdir(parents=True, exist_ok=True)
             state_dir.chmod(0o700)
+            self._snapshot_scan = iter(state_dir.glob("*-symbols-v2.enc"))
         self.rules_path = state_dir / "mask-rules.enc" if state_dir else None
+        self.domain_catalog = domain_catalog()
+        self.domain_policy = dict(DOMAIN_DEFAULTS)
+        self.domain_policy_origin = "defaults"
+        self.domain_policy_path = state_dir / "domain-policy.enc" if state_dir else None
+        if self.domain_policy_path and self.domain_policy_path.exists():
+            with self.domain_policy_path.open("rb") as policy_stream:
+                encrypted_policy = policy_stream.read(16385)
+            if len(encrypted_policy) > 16384:
+                raise ValueError("Domain policy size exceeded")
+            self.domain_policy = self.validate_domain_policy(json.loads(decrypt_snapshot_bytes(encrypted_policy, token)))
+            self.domain_policy_origin = "saved"
         self.mask_rules = ()
         if self.rules_path and self.rules_path.exists():
             with self.rules_path.open("rb") as stream:
@@ -1955,6 +2003,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                 self.audit.recover_incomplete(apply=True)
                 self.audit.retention(apply=True)
             super().__init__(address, GatewayHandler)
+            self.cleanup_expired_snapshots()
         except BaseException:
             if self.audit is not None:
                 self.audit.close()
@@ -1991,6 +2040,33 @@ class PrivacyGateway(ThreadingHTTPServer):
             atomic_bytes(self.rules_path, SnapshotEncryption(self.token).encrypt(payload))
             self.mask_rules = rules
         return rules
+
+    @staticmethod
+    def validate_domain_policy(value):
+        if not isinstance(value, dict) or set(value) != set(DOMAIN_DEFAULTS) or any(type(item) is not bool for item in value.values()):
+            raise ValueError("Invalid domain policy")
+        return dict(value)
+
+    def domain_status(self):
+        return {**self.domain_catalog.status(self.domain_policy),
+                "source": self.domain_policy_origin, "persistent": self.domain_policy_path is not None}
+
+    def set_domain_policy(self, value):
+        policy = self.validate_domain_policy(value)
+        with self.admission:
+            if self.admitted_requests:
+                raise ValueError("Requests are active")
+            if self.domain_policy_path:
+                from secure_gateway.gateway_install import atomic_bytes
+                atomic_bytes(self.domain_policy_path, SnapshotEncryption(self.token).encrypt(json.dumps(policy).encode()))
+            self.domain_policy = policy
+            self.domain_policy_origin = "saved" if self.domain_policy_path else "memory"
+            for session in list(self.sessions.values()):
+                with session.lock:
+                    session._mask_cache.clear()
+                    session._mask_cache_bytes = 0
+                    session.domain_policy_version = self.domain_catalog.version + json.dumps(policy, sort_keys=True)
+        return self.domain_status()
 
     def audit_error_diagnostics(self):
         with self.admission:
@@ -2065,13 +2141,68 @@ class PrivacyGateway(ThreadingHTTPServer):
                 "audit_error_counts": self.audit_error_diagnostics(),
                 "audit_completion_retries": self.audit.completion_retries.diagnostics() if self.audit else None}
 
-    def get_session(self, agent, conversation=None):
+    def _remove_snapshot(self, key):
+        if self.state_dir:
+            path = self.state_dir / f"{key}-symbols-v2.enc"
+            path.unlink(missing_ok=True)
+            path.with_suffix(".opaque.json").unlink(missing_ok=True)
+
+    def cleanup_expired_snapshots(self):
+        """Bounded maintenance: authenticate old snapshots before deleting them.
+
+        The mtime is only a cheap prefilter, never evidence of expiry. Scan a
+        rotating batch so large state directories do not stall every request.
+        Damaged or foreign snapshots are preserved for explicit recovery.
+        """
+        if not self.state_dir:
+            return
+        with self.sessions_lock:
+            now = time.time()
+            self._next_snapshot_cleanup = time.monotonic() + 60
+            decrypted = 0
+            for _ in range(32):
+                try:
+                    path = next(self._snapshot_scan)
+                except StopIteration:
+                    self._snapshot_scan = iter(self.state_dir.glob("*-symbols-v2.enc"))
+                    break
+                except OSError:
+                    break
+                key = path.name.removesuffix("-symbols-v2.enc")
+                if key in self.sessions or not any(key == agent or re.fullmatch(re.escape(agent) + r"-[a-f0-9]{64}", key) for agent in self.upstreams):
+                    continue
+                try:
+                    if path.is_symlink() or path.stat().st_mtime > now - 86400:
+                        continue
+                    decrypted += 1
+                    try:
+                        loaded = load_session(path, self.token, "gateway")
+                    except SessionExpiredError:
+                        self._remove_snapshot(key)
+                    else:
+                        loaded.clear()
+                except (OSError, ValueError):
+                    pass
+                if decrypted >= 2:
+                    break
+
+    def _drop_session(self, key, session):
+        session.session.clear()
+        session._mask_cache.clear()
+        session._mask_cache_bytes = 0
+        session.opaque.clear()
+        session.encryption = None
+        del self.sessions[key]
+
+    def get_session(self, agent, conversation=None, *, pin=False):
         key = agent
         if conversation:
             if not isinstance(conversation, str) or len(conversation.encode()) > 2048:
                 raise ValueError("Invalid conversation identity.")
             key += "-" + sha256((self.token + "\0" + agent + "\0" + conversation).encode()).hexdigest()
         with self.provider_locks[agent]:
+            if time.monotonic() >= self._next_snapshot_cleanup:
+                self.cleanup_expired_snapshots()
             current = self.sessions.get(key)
             if current is not None:
                 # Serialize with an in-flight request before dropping state.
@@ -2079,24 +2210,32 @@ class PrivacyGateway(ThreadingHTTPServer):
                     if not current.session.generator.closed and (
                         current.active_requests or not current.session.is_expired()
                     ):
+                        if pin:
+                            current.active_requests += 1
+                        current.session.touch()
                         return current
                     # An always-on daemon must apply the same idle TTL as a
                     # restarted one: drop expired aliases and reasoning
                     # provenance instead of silently reusing (and reviving)
                     # them via save().
-                    current.session.clear()
-                    current.opaque.clear()
-                    current.encryption = None
-                del self.sessions[key]
+                    self._remove_snapshot(key)
+                    self._drop_session(key, current)
             if len(self.sessions) >= 256:
                 for old_key, old_session in list(self.sessions.items()):
                     with old_session.lock:
                         if not old_session.active_requests and old_session.session.is_expired():
-                            old_session.session.clear()
-                            old_session._mask_cache.clear()
-                            del self.sessions[old_key]
+                            self._remove_snapshot(old_key)
+                            self._drop_session(old_key, old_session)
                 if len(self.sessions) >= 256:
-                    raise ValueError("Conversation capacity reached; reset idle sessions.")
+                    candidates = [(value.session.last_accessed, old_key, value) for old_key, value in self.sessions.items() if not value.active_requests]
+                    if not self.state_dir or not candidates:
+                        raise GatewayRequestError("conversation_capacity")
+                    _, old_key, old_session = min(candidates, key=lambda value: value[0])
+                    with old_session.lock:
+                        # Persist without touching its idle TTL. On failure the
+                        # live session remains intact and the request fails.
+                        self._persist_session(old_key, old_session)
+                        self._drop_session(old_key, old_session)
             path = (
                 self.state_dir / f"{key}-symbols-v2.enc" if self.state_dir else None
             )
@@ -2105,6 +2244,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                 try:
                     saved = load_session(path, self.token, "gateway")
                 except SessionExpiredError:
+                    self._remove_snapshot(key)
                     saved = None
             session = GatewaySession(saved, self.mapping_limit, mask_numbers=self.mask_numbers,
                                      natural_language=self.natural_language, sql_dialect=self.sql_dialect,
@@ -2114,6 +2254,8 @@ class PrivacyGateway(ThreadingHTTPServer):
                                      context_model=self.context_model,
                                      **self.restore_limits)
             session.forced_rules = lambda: self.mask_rules
+            session.engine.domain_spans = lambda text: self.domain_catalog.spans(text, self.domain_policy)
+            session.domain_policy_version = self.domain_catalog.version + json.dumps(self.domain_policy, sort_keys=True)
             session.storage_key = key
             # Reasoning provenance is only meaningful while the matching alias
             # table is alive. Expired/missing snapshots start fresh, so stale
@@ -2129,6 +2271,8 @@ class PrivacyGateway(ThreadingHTTPServer):
                     raise ValueError("Invalid persisted reasoning state.")
                 session.opaque = set(digests)
             self.sessions[key] = session
+            if pin:
+                session.active_requests += 1
             return session
 
     def save(self, agent, session):
@@ -2141,6 +2285,10 @@ class PrivacyGateway(ThreadingHTTPServer):
             session.opaque.clear()
             return
         session.session.touch()
+        self._persist_session(agent, session)
+
+    def _persist_session(self, agent, session):
+        """Write idle state as-is; eviction must not extend its lifetime."""
         if self.state_dir:
             path = self.state_dir / f"{session.storage_key or agent}-symbols-v2.enc"
             if session.encryption is None:
@@ -2413,6 +2561,10 @@ class GatewayHandler(BaseHTTPRequestHandler):
         if self.path == "/admin/api/mask-rules":
             save_mask_rules(self)
             return
+        if self.path == "/admin/api/domain-policy":
+            from secure_gateway.gateway_admin import save_domain_policy
+            save_domain_policy(self)
+            return
         if not self.authorized():
             self.send_body(401, b'{"error":"Unauthorized"}')
             return
@@ -2512,6 +2664,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
         timings: dict[str, Any] = {"provider": agent}
         request_started = time.perf_counter()
         stage_started = request_started
+        session = None
         if meta is not None:
             meta["credential_ref"] = anonymous_ref(self.server.token, "credential", auth)
             if agent == "codex":
@@ -2546,7 +2699,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             conversation = self.headers.get("session_id") or self.headers.get("X-SecureGateway-Session")
             if conversation:
                 conversation = self.headers.get("chatgpt-account-id", "") + "\0" + conversation
-            session = self.server.get_session(agent, conversation)
+            session = self.server.get_session(agent, conversation, pin=True)
             stage_started = time.perf_counter()
             with session.lock:
                 timings["mask_lock_wait_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
@@ -2563,123 +2716,118 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 timings["mask_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                 if meta is not None:
                     meta["new_aliases"] = max(0, len(session.session.forward_store) - before)
-                session.active_requests += 1
                 session.session.touch()
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": auth,
+                "Accept": "text/event-stream"
+                if masked.get("stream")
+                else "application/json",
+            }
+            for key in (
+                ()
+                if agent in API_AUTH_PREFIXES
+                else (
+                    "anthropic-version",
+                    "anthropic-beta",
+                    "chatgpt-account-id",
+                    "OpenAI-Beta",
+                    "User-Agent",
+                    "originator",
+                    "session_id",
+                    "x-codex-beta-features",
+                )
+            ):
+                if self.headers.get(key):
+                    headers[key] = self.headers[key]
+            masked_data = strict_json_dumps(masked, ensure_ascii=False).encode()
+            if meta is not None:
+                meta["masked_bytes"] = len(masked_data)
+            request = urllib.request.Request(
+                self.server.upstreams[agent] + path + ("?" + query if query else ""),
+                data=masked_data,
+                headers=headers,
+            )
+            # Disable redirects and environment proxies: credentials stay at the fixed origin.
+            opener = urllib.request.build_opener(
+                urllib.request.ProxyHandler({}), NoRedirect()
+            )
             try:
-                headers = {
-                    "Content-Type": "application/json",
-                    "Authorization": auth,
-                    "Accept": "text/event-stream"
-                    if masked.get("stream")
-                    else "application/json",
-                }
-                for key in (
-                    ()
-                    if agent in API_AUTH_PREFIXES
-                    else (
-                        "anthropic-version",
-                        "anthropic-beta",
-                        "chatgpt-account-id",
-                        "OpenAI-Beta",
-                        "User-Agent",
-                        "originator",
-                        "session_id",
-                        "x-codex-beta-features",
-                    )
-                ):
-                    if self.headers.get(key):
-                        headers[key] = self.headers[key]
-                masked_data = strict_json_dumps(masked, ensure_ascii=False).encode()
                 if meta is not None:
-                    meta["masked_bytes"] = len(masked_data)
-                request = urllib.request.Request(
-                    self.server.upstreams[agent] + path + ("?" + query if query else ""),
-                    data=masked_data,
-                    headers=headers,
-                )
-                # Disable redirects and environment proxies: credentials stay at the fixed origin.
-                opener = urllib.request.build_opener(
-                    urllib.request.ProxyHandler({}), NoRedirect()
-                )
+                    meta["upstream_attempted"] = 1
+                    meta["outcome"] = "transport_error"
+                stage_started = time.perf_counter()
+                upstream_response = opener.open(request, timeout=600)
+                timings["upstream_headers_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
+            except urllib.error.HTTPError:
+                raise
+            except (OSError, http.client.HTTPException) as exc:
+                reason = getattr(exc, "reason", exc)
+                status = 504 if isinstance(reason, (TimeoutError, socket.timeout)) else 502
+                self.send_body(status, b'{"error":"Upstream transport unavailable"}')
+                return
+            with upstream_response as upstream:
+                self.capture_response_headers(upstream.headers)
+                content_type = upstream.headers.get("Content-Type", "application/json")
+                if masked.get("stream") and content_type.split(";", 1)[0].strip().lower() == "text/event-stream":
+                    try:
+                        persisted_state = None
+                        def persist_completion():
+                            nonlocal persisted_state
+                            with session.lock:
+                                state = (len(session.session.forward_store),
+                                         getattr(session.engine, "cache_epoch", 0), frozenset(session.opaque))
+                                if state != persisted_state:
+                                    save_started = time.perf_counter()
+                                    self.server.save(agent, session)
+                                    timings["save_ms"] = timings.get("save_ms", 0) + round((time.perf_counter() - save_started) * 1000, 2)
+                                    persisted_state = state
+                        relay_stream(self, upstream, session, dialect, limit=LIMIT, before_complete=persist_completion)
+                        timings["first_event_ms"] = self.stream_metrics["first_event_ms"]
+                        timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
+                        persist_completion()
+                    except (ValueError, TypeError, KeyError, OSError, http.client.HTTPException):
+                        if meta is not None:
+                            meta["status"] = 502
+                            meta["outcome"] = "stream_error"
+                        # Headers have already been sent. Close rather than
+                        # forge a successful completion or send a second HTTP response.
+                        self.close_connection = True
+                    return
                 try:
-                    if meta is not None:
-                        meta["upstream_attempted"] = 1
-                        meta["outcome"] = "transport_error"
-                    stage_started = time.perf_counter()
-                    upstream_response = opener.open(request, timeout=600)
-                    timings["upstream_headers_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
-                except urllib.error.HTTPError:
-                    raise
+                    body = upstream.read(LIMIT + 1)
+                    timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
+                    if len(body) <= LIMIT and getattr(upstream, "length", None) not in (None, 0):
+                        raise http.client.IncompleteRead(body)
                 except (OSError, http.client.HTTPException) as exc:
                     reason = getattr(exc, "reason", exc)
-                    status = 504 if isinstance(reason, (TimeoutError, socket.timeout)) else 502
+                    status = 504 if isinstance(reason, TimeoutError) else 502
                     self.send_body(status, b'{"error":"Upstream transport unavailable"}')
                     return
-                with upstream_response as upstream:
-                    self.capture_response_headers(upstream.headers)
-                    content_type = upstream.headers.get("Content-Type", "application/json")
-                    if masked.get("stream") and content_type.split(";", 1)[0].strip().lower() == "text/event-stream":
-                        try:
-                            persisted_state = None
-                            def persist_completion():
-                                nonlocal persisted_state
-                                with session.lock:
-                                    state = (len(session.session.forward_store),
-                                             getattr(session.engine, "cache_epoch", 0), frozenset(session.opaque))
-                                    if state != persisted_state:
-                                        save_started = time.perf_counter()
-                                        self.server.save(agent, session)
-                                        timings["save_ms"] = timings.get("save_ms", 0) + round((time.perf_counter() - save_started) * 1000, 2)
-                                        persisted_state = state
-                            relay_stream(self, upstream, session, dialect, limit=LIMIT, before_complete=persist_completion)
-                            timings["first_event_ms"] = self.stream_metrics["first_event_ms"]
-                            timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
-                            persist_completion()
-                        except (ValueError, TypeError, KeyError, OSError, http.client.HTTPException):
-                            if meta is not None:
-                                meta["status"] = 502
-                                meta["outcome"] = "stream_error"
-                            # Headers have already been sent. Close rather than
-                            # forge a successful completion or send a second HTTP response.
-                            self.close_connection = True
-                        return
-                    try:
-                        body = upstream.read(LIMIT + 1)
-                        timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
-                        if len(body) <= LIMIT and getattr(upstream, "length", None) not in (None, 0):
-                            raise http.client.IncompleteRead(body)
-                    except (OSError, http.client.HTTPException) as exc:
-                        reason = getattr(exc, "reason", exc)
-                        status = 504 if isinstance(reason, TimeoutError) else 502
-                        self.send_body(status, b'{"error":"Upstream transport unavailable"}')
-                        return
-                    if len(body) > LIMIT:
-                        self.send_body(502, b'{"error":"Upstream response size limit exceeded"}')
-                        return
-                    content_type = upstream.headers.get(
-                        "Content-Type", "application/json"
-                    )
-                    if masked.get("stream") and body.startswith(
-                        (b"event:", b"data:", b":")
-                    ):
-                        content_type = "text/event-stream"
-                    with session.lock:
-                        stage_started = time.perf_counter()
-                        if meta is not None:
-                            meta["outcome"] = "restore_error"
-                        try:
-                            restored = session.response(body, content_type, dialect=dialect)
-                            timings["restore_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
-                        except (ValueError, TypeError, AttributeError, KeyError, RecursionError):
-                            self.send_body(502, b'{"error":"Upstream response could not be safely restored"}')
-                            return
-                        stage_started = time.perf_counter()
-                        self.server.save(agent, session)
-                        timings["save_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
-                self.send_body(200, restored, content_type)
-            finally:
+                if len(body) > LIMIT:
+                    self.send_body(502, b'{"error":"Upstream response size limit exceeded"}')
+                    return
+                content_type = upstream.headers.get(
+                    "Content-Type", "application/json"
+                )
+                if masked.get("stream") and body.startswith(
+                    (b"event:", b"data:", b":")
+                ):
+                    content_type = "text/event-stream"
                 with session.lock:
-                    session.active_requests -= 1
+                    stage_started = time.perf_counter()
+                    if meta is not None:
+                        meta["outcome"] = "restore_error"
+                    try:
+                        restored = session.response(body, content_type, dialect=dialect)
+                        timings["restore_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
+                    except (ValueError, TypeError, AttributeError, KeyError, RecursionError):
+                        self.send_body(502, b'{"error":"Upstream response could not be safely restored"}')
+                        return
+                    stage_started = time.perf_counter()
+                    self.server.save(agent, session)
+                    timings["save_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
+            self.send_body(200, restored, content_type)
         except urllib.error.HTTPError as exc:
             if meta is not None:
                 meta["outcome"] = "upstream_rejected"
@@ -2702,6 +2850,9 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 strict_json_dumps(public_request_error(exc)).encode(),
             )
         finally:
+            if session is not None:
+                with session.lock:
+                    session.active_requests -= 1
             timings["total_ms"] = round((time.perf_counter() - request_started) * 1000, 2)
             with self.server.admission:
                 self.server.recent_timings.append(timings)

@@ -63,8 +63,8 @@ class SessionMappings(dict[str, TokenMapping]):
             node = node.setdefault(char, {})
         node[None] = original
 
-    def originals_in(self, text: str, *, cjk: bool = False) -> set[str]:
-        """Scan existing originals using cached failure transitions."""
+    def originals_in(self, text: str, *, cjk: bool = False, embedded: bool = False) -> set[str]:
+        """Scan originals; embedded mode also finds dependency-only substrings."""
         if self._original_automaton is None:
             if self._original_trie is None:
                 self._original_trie = {}
@@ -115,7 +115,7 @@ class SessionMappings(dict[str, TokenMapping]):
                 original = terminal[match]
                 assert original is not None
                 start = position + 1 - len(original)
-                if not text[start].isspace() and (start == 0 or not re.match(boundary, text[start - 1])):
+                if embedded or (not text[start].isspace() and (start == 0 or not re.match(boundary, text[start - 1]))):
                     found.add(original)
                 match = output[match]
         return found

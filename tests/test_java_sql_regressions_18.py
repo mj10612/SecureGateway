@@ -43,7 +43,9 @@ def test_java_unicode_identifiers_native_and_snapshot(strategy, source, tmp_path
         work.mkdir()
         path = work / "Probe.java"
         path.write_text(code, encoding="utf-8")
-        result = subprocess.run([javac, str(path)], capture_output=True, text=True, timeout=30)
+        # Cold JDK startup on hosted Windows runners can exceed 30 seconds;
+        # compilation remains bounded and both originals/masked sources run.
+        result = subprocess.run([javac, str(path)], capture_output=True, text=True, timeout=60)
         assert result.returncode == 0, result.stderr
     exact(e, s, masked, source)
     path = tmp_path / "java.enc"

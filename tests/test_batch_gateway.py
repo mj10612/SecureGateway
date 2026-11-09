@@ -460,7 +460,7 @@ def test_local_state_io_failure_returns_500_and_releases_slot(live_gateway, monk
     gateway, state, request = live_gateway
     method = 'get_session' if stage == 'load' else 'save'
     original = getattr(gateway, method)
-    def fail(*args):
+    def fail(*args, **kwargs):
         raise OSError('SecretCustomer private disk path')
     monkeypatch.setattr(gateway, method, fail)
     status, body, _ = request()

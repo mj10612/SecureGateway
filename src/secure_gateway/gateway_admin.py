@@ -51,6 +51,26 @@ def handle_admin(handler):
     if not handler.authorized():
         handler.send_body(401, b'{"error":"Unauthorized"}')
         return True
+    if url.path == "/admin/api/domain-policy":
+        if url.query:
+            handler.send_body(400, b'{"error":"Invalid request"}')
+        else:
+            handler.send_body(200, json.dumps(handler.server.domain_status()).encode())
+        return True
+    if url.path == "/admin/api/domain-terms":
+        try:
+            if len(url.query) > 1024:
+                raise ValueError("Query budget")
+            params = parse_qs(url.query, keep_blank_values=True, strict_parsing=True)
+            if set(params) - {"domain", "query", "limit", "offset"} or any(len(v) != 1 for v in params.values()):
+                raise ValueError("Invalid filters")
+            data = {key: values[0] for key, values in params.items()}
+            result = handler.server.domain_catalog.page(data.get("domain"), data.get("query", ""),
+                                                       int(data.get("limit", "50")), int(data.get("offset", "0")))
+            handler.send_body(200, json.dumps(result, ensure_ascii=False).encode())
+        except (ValueError, TypeError):
+            handler.send_body(400, b'{"error":"Invalid dictionary filters"}')
+        return True
     if url.path == "/admin/api/mask-rules":
         if url.query:
             handler.send_body(400, b'{"error":"Invalid request"}')
@@ -141,3 +161,33 @@ def save_mask_rules(handler):
         handler.send_body(200, json.dumps({"rules": rules}, ensure_ascii=False).encode())
     except (ValueError, OSError, UnicodeError):
         handler.send_body(400, b'{"error":"Invalid rules or active requests"}')
+
+
+def save_domain_policy(handler):
+    """Local-origin, authenticated, bounded atomic policy replacement."""
+    port = handler.server.server_port
+    hosts = {f"127.0.0.1:{port}", f"localhost:{port}"}
+    origin = handler.headers.get("Origin")
+    if handler.headers.get("Host") not in hosts or (origin is not None and origin not in {"http://" + host for host in hosts}):
+        handler.send_body(403, b'{"error":"Local origin required"}')
+        return
+    if not handler.authorized():
+        handler.send_body(401, b'{"error":"Unauthorized"}')
+        return
+    try:
+        if handler.headers.get("Transfer-Encoding") or handler.headers.get("Content-Encoding"):
+            raise ValueError("Unsupported encoding")
+        length = int(handler.headers.get("Content-Length", "0"))
+        if not 0 < length <= 4096:
+            raise ValueError("Body budget")
+        raw = handler.rfile.read(length)
+        handler._request_body_consumed = True
+        if len(raw) != length:
+            raise ValueError("Incomplete body")
+        payload = json.loads(raw)
+        if not isinstance(payload, dict) or set(payload) != {"enabled"}:
+            raise ValueError("Invalid policy")
+        result = handler.server.set_domain_policy(payload["enabled"])
+        handler.send_body(200, json.dumps(result).encode())
+    except (ValueError, OSError, UnicodeError):
+        handler.send_body(400, b'{"error":"Invalid policy, storage failure or active requests"}')

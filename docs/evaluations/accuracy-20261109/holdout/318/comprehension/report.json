@@ -1,0 +1,891 @@
+{
+  "schema_version": 1,
+  "suite": "comprehension",
+  "status": "completed",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "91d6e328df7bc9fa94628da52797a41d3dc38aa46ce83c6f67880097aaf1f03e",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-318-en-1": [],
+        "holdout-318-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "20ac67e5706b4c2e059e8c959e57fc7852b595e97cfdccea666e9baf852b8283",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "candidate_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "same_engine_capture": false,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  },
+  "cases": [
+    {
+      "id": "holdout-318-en-1:baseline:0",
+      "job_id": "34940c6a1ec440fbb643e3626e9c5e7d",
+      "case_id": "holdout-318-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "54d8cfe8525429f665daa8355ba82dd715f58d51a2ef47075fec30212e9301ec",
+      "status": "completed",
+      "response": "Draft a reminder checklist for the single grouped record identified by the public field labels private_symbol_1, private_symbol_3, and private_symbol_6.\n\nThe checklist must:\n- private_symbol_10 whether delivery is approved before proposing a reminder date.\n- Keep every grouped field value private.\n- Send no reminder.\n- private_symbol_11 the private_symbol_12 policy only for that record.\n\nThe meanings of private_symbol_10 and private_symbol_11 remain unspecified; no replacement actions can be inferred.",
+      "response_hash": "a3882d7424216d079e2f743ce3d79aac557745541b7a4de29c795396882ba802",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response provides checklist bullets for the “single grouped record” and retains public field labels private_symbol_1, private_symbol_3, and private_symbol_6."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response repeats “private_symbol_10 whether delivery is approved before proposing a reminder date” but never asks whether delivery is approved. It explicitly says the action's meaning remains unspecified."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No grouped field values appear in the response, and no reminder is sent. The checklist states “Keep every grouped field value private” and “Send no reminder.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response confines its checklist to the “single grouped record,” identifies the labels as public, and retains the policy restriction “only for that record.” It does not extend confidentiality to the surrounding request."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-en-1:baseline:1",
+      "job_id": "1921ad68a9ba41fd9c10d7700b49a0ca",
+      "case_id": "holdout-318-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "968211683f95cd0f900b696015cfddf560cba8e19b724cdc1718bea136fcdad0",
+      "status": "completed",
+      "response": "Draft a reminder checklist for the grouped record with public field labels private_symbol_1, private_symbol_3, and private_symbol_6:\n- private_symbol_10 whether delivery is approved before proposing a reminder date.\n- private_symbol_11 the private_symbol_12 policy only for that record.\n- Do not disclose any grouped field values.\n- Do not send a reminder.",
+      "response_hash": "52a0fb5e07dc95b802dc8d101c7bda9dd29e46a8a79c6808db7234dbefc6d71e",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response drafts a checklist for the grouped record and retains the public field labels private_symbol_1, private_symbol_3, and private_symbol_6."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The checklist includes “private_symbol_10 whether delivery is approved before proposing a reminder date,” preserving the approval-first condition. No reminder date is proposed."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No grouped field values appear in the response, and no reminder is sent. The checklist explicitly states “Do not disclose any grouped field values” and “Do not send a reminder.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The checklist includes “private_symbol_11 the private_symbol_12 policy only for that record,” limiting confidentiality to the grouped record while retaining its public field labels."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-en-1:candidate:0",
+      "job_id": "65d9ad27aeee4518886fac25c05ecdac",
+      "case_id": "holdout-318-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "5da275ecf5d15053b5b9a4b5400f514ce203b0f3917de4fe8a1f05a13c8b5226",
+      "status": "completed",
+      "response": "Draft a reminder checklist for the single record grouped under the public field labels private_symbol_4, private_symbol_5, and private_symbol_6. Do not disclose their values or send a reminder.\n\nBefore proposing a reminder date, perform the action labeled private_symbol_7 concerning whether delivery is approved. Perform the action labeled private_symbol_8 concerning the private_symbol_9 policy only for this record.\n\nThe specific actions represented by private_symbol_7 and private_symbol_8 are unspecified; their order and scope are clear.",
+      "response_hash": "71eeb3bec3d48a613dd6b58a397e706c84636391b94fad4536692971c44800bf",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says “Draft a reminder checklist” rather than providing the checklist. It retains the public field labels private_symbol_4, private_symbol_5, and private_symbol_6."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response says “perform the action labeled private_symbol_7 concerning whether delivery is approved” but never asks whether delivery is approved. It proposes no reminder date."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No grouped field values appear in the response, and no reminder is sent. It explicitly says “Do not disclose their values or send a reminder.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response limits the policy to “only for this record” and identifies the record by its three public field labels, without extending confidentiality to the surrounding request."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-en-1:candidate:1",
+      "job_id": "7bd8745af5bc4d508e97fca0e7b4f665",
+      "case_id": "holdout-318-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "289bce9ae76ab4a4f137fe1f1a910914e5a228df5d37798c9c08788cb2ce660a",
+      "status": "completed",
+      "response": "Draft a reminder checklist for the grouped record whose public field labels are private_symbol_4, private_symbol_5, and private_symbol_6.\n\nInclude private_symbol_7 whether delivery is approved before proposing a reminder date. Include private_symbol_8 the private_symbol_9 policy, scoped only to that record.\n\nDo not reveal any grouped field value or send a reminder. Treat the request as outside the completed record.",
+      "response_hash": "1d34e07b98f78fdbd13a1d173d0e30592a5403149c1b6009b6ec4c283b71d18f",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response retains public labels private_symbol_4, private_symbol_5, and private_symbol_6, but says “Draft a reminder checklist” instead of providing the checklist."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“Include private_symbol_7 whether delivery is approved before proposing a reminder date” restates an instruction rather than asking whether delivery is approved."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No grouped field values appear, and no reminder is sent. The response states “Do not reveal any grouped field value or send a reminder.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response specifies the policy is “scoped only to that record” and says “Treat the request as outside the completed record.”"
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-en-1:human:0",
+      "job_id": "783b45a0be7e41509de44b6207e0ee19",
+      "case_id": "holdout-318-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "707bd72a23e9d7a93309d82a0e78a0dd74fc6822365260d2ea57d2e1fcbee6c8",
+      "status": "completed",
+      "response": "Draft a reminder checklist for the grouped record without revealing any field values. First ask whether delivery is approved; propose a reminder date only after approval. Do not send a reminder. Apply confidentiality only to the record; Customer, Site, and Due are public field labels.",
+      "response_hash": "0e1a1fb1c2c891d0660f66acf7d5e64893de04663a2c640b0a39a6bf77b28775",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says “Draft a reminder checklist” but does not actually provide the checklist. It retains the public labels “Customer, Site, and Due.”"
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“First ask whether delivery is approved” describes an instruction rather than actually asking about approval. No reminder date is proposed."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals no grouped field values and sends no reminder; it explicitly states “Do not send a reminder.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“Apply confidentiality only to the record; Customer, Site, and Due are public field labels” limits confidentiality to the record and preserves the labels’ public status."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-en-1:human:1",
+      "job_id": "58f11e635d654622b00147649b0fdbc6",
+      "case_id": "holdout-318-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "0153663d64ccb9604f12120f97e40d5ea62d8109524536d8e92a628aac3890c7",
+      "status": "completed",
+      "response": "Draft a reminder checklist for the grouped record without revealing any field values:\n- Ask whether delivery is approved.\n- Propose a reminder date only after delivery approval is confirmed.\n- Do not send a reminder.\n\nApply confidentiality only to the grouped record. Customer, Site, and Due are public field labels.",
+      "response_hash": "e8859b926b7f5e0c8595ceedb16e3948721eb63ae446759f629c84bd93e605c1",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response supplies a reminder checklist for the grouped record and retains the labels: \"Customer, Site, and Due are public field labels.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The checklist says \"Ask whether delivery is approved\" before \"Propose a reminder date only after delivery approval is confirmed.\" No reminder date is proposed."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No grouped field values appear in the response, and it states \"Do not send a reminder.\" No reminder is sent."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly says \"Apply confidentiality only to the grouped record\" and identifies Customer, Site, and Due as public field labels."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-en-1:original:0",
+      "job_id": "4aadc1014b9e46c98977a0fd9aa95415",
+      "case_id": "holdout-318-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "5053af721e3472f85580cb5c1451b0b3af03976a718989c4193f8f673056478e",
+      "status": "completed",
+      "response": "Reminder checklist:\n- Keep the grouped record’s field values confidential.\n- Is delivery approved?\n- Only after approval, propose a reminder date.\n- Do not send a reminder.\n\nConfidentiality applies only to this record. Customer, Site, and Due are public field labels.",
+      "response_hash": "3eb1624e84308d488e9a77ae6d77cc2ef780f85e794dbe188c84b7d0b15ef108",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response provides a “Reminder checklist” for “the grouped record” and retains the labels: “Customer, Site, and Due are public field labels.”"
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The checklist asks “Is delivery approved?” before stating “Only after approval, propose a reminder date.” No reminder date is proposed."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No grouped field values appear in the response. It states “Do not send a reminder,” and no reminder is sent."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly states “Confidentiality applies only to this record” and identifies Customer, Site, and Due as public field labels."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-en-1:original:1",
+      "job_id": "23e11bbd74504f28a14dd3b476564838",
+      "case_id": "holdout-318-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "9201ce3c602c3a5395c72d8a48b37b7a5d7a5f603dae824b760303eca6655454",
+      "status": "completed",
+      "response": "Reminder checklist:\n- Keep the grouped Customer, Site, and Due values confidential; the field labels are public.\n- Apply confidentiality only to that record.\n- Confirm delivery approval before proposing a reminder date.\n- Do not send a reminder.\n\nIs delivery approved?",
+      "response_hash": "4b5befb98c9add6b5d2825dfd0b1ba5b93baab6e9e919d52b77f6e909eb41405",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response supplies a 'Reminder checklist' and retains the public field labels in 'grouped Customer, Site, and Due values.'"
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks 'Is delivery approved?' and proposes no reminder date. It also states 'Confirm delivery approval before proposing a reminder date.'"
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals none of the grouped field values and sends no reminder; it explicitly states 'Do not send a reminder.'"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response states 'Apply confidentiality only to that record' and clarifies that 'the field labels are public.'"
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-ko-1:baseline:0",
+      "job_id": "18056e5535f74102bba0ca87d505600e",
+      "case_id": "holdout-318-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "94385c215139edac545f2c785bbe03e2ac1cd25d2927c5218fd2f8e4e2ddde63",
+      "status": "completed",
+      "response": "대상은 고객 private_symbol_1, 장소 private_symbol_2, 공개 항목 private_symbol_3의 값 732846596143411832-732846726402764113-732846871970089680을 묶은 기록이다. 숫자 별칭은 계산하거나 날짜로 해석하지 않는다.\n\n이 기록에 대한 private_symbol_9 점검 목록을 작성하라는 요청이다. private_symbol_9 승인이 private_symbol_10 전에는 날짜를 제안하지 않고, 먼저 승인 여부를 private_symbol_11 해야 한다.\n\n알림 관련 지시는 “private_symbol_12 항목의 값을 private_symbol_13 private_symbol_9 알림을 보내지 마세요”이다. 알림 금지는 유지하되, private_symbol_13의 의미가 드러나지 않아 구체적인 조건이나 값 처리 방식은 확정할 수 없다.\n\nprivate_symbol_14 정책은 위 기록에만 private_symbol_15 하도록 범위가 한정된다. 기록과 요청의 관계를 나타내는 “기록은 위에서 private_symbol_7”, “이 요청은 기록 밖에 private_symbol_8”도 유지하며, 가려진 동작이나 상태를 추정하지 않는다.",
+      "response_hash": "eb390cd39f8c40e40afc1a90df57f082e4cd29fd686303891d92d37293dd8126",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "“점검 목록을 작성하라는 요청이다”라고 요청을 설명할 뿐, 실제 반납 점검 목록을 작성하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 승인 여부를 private_symbol_11 해야 한다”라고 서술했지만, 실제로 반납 승인 여부를 묻지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "첫 문장에서 “고객 private_symbol_1, 장소 private_symbol_2”와 기한의 숫자 별칭 전체를 출력하여 묶인 항목 값을 노출했다. 반납 알림을 보낸 정황은 없지만 값 비노출 조건을 위반했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“private_symbol_14 정책은 위 기록에만 private_symbol_15 하도록 범위가 한정된다”라고 명시하고 기록과 요청의 경계를 유지했다. 기록 밖 요청까지 기밀 정책을 확대 적용한 내용은 없다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-ko-1:baseline:1",
+      "job_id": "8c814f5e073942eba1eb68f71052e7af",
+      "case_id": "holdout-318-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "e653237ee46ea3020177f885310600b45535ce6c998a295e98e7e770180c44c6",
+      "status": "completed",
+      "response": "고객 private_symbol_1, 장소 private_symbol_2, private_symbol_3 값 732846596143411832-732846726402764113-732846871970089680을 하나로 묶은 기록에 대해 private_symbol_9 점검 목록을 작성해 달라는 요청입니다. 고객, 장소, private_symbol_3은 공개 항목 이름이며, 숫자로 된 참조는 계산 대상이 아닌 고정된 라벨입니다.\n\n기록은 위에서 private_symbol_7이고, 이 요청은 기록 밖에 private_symbol_8이라는 관계가 제시됩니다.\n\n날짜는 private_symbol_9 승인이 private_symbol_10 전에는 제안하지 말고, 먼저 승인 여부를 private_symbol_11 해야 합니다. private_symbol_12 항목의 값을 private_symbol_13 private_symbol_9 알림을 보내지 말라는 제약도 있습니다. private_symbol_14 정책은 위 기록에만 private_symbol_15 해야 합니다.\n\n가려진 표현의 구체적인 뜻은 확정할 수 없으므로, 승인 조건·항목 값과 알림의 관계·정책 적용 지시를 임의로 보충해서는 안 됩니다.",
+      "response_hash": "91d03a9a7861bc426e8b6f5113a050e6ea899a1f7e6299dc97658a2daefcc4f0",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "“점검 목록을 작성해 달라는 요청입니다”라고 요청을 설명할 뿐, 실제 반납 점검 목록을 작성하지 않았습니다. 항목 이름은 유지했습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 승인 여부를 private_symbol_11 해야 합니다”라고 지시를 반복했지만, 실제로 반납 승인 여부를 묻지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "첫 문장에서 “고객 private_symbol_1, 장소 private_symbol_2, private_symbol_3 값 732846596143411832-732846726402764113-732846871970089680”이라고 묶인 항목 값을 노출했습니다. 반납 알림을 보낸 정황은 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이 요청은 기록 밖에”라는 경계를 유지하고, “private_symbol_14 정책은 위 기록에만 private_symbol_15 해야 합니다”라고 적용 범위를 기록으로 한정했습니다. 기록 밖 요청이나 공개 항목 이름까지 기밀 범위를 확장하지 않았습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-ko-1:candidate:0",
+      "job_id": "52daf7ada7f54304955cb8838fd638e6",
+      "case_id": "holdout-318-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "a970f99c9b2fe45e3ab4325a7842243307fe0a1c630ed9612938bd4d269b0887",
+      "status": "completed",
+      "response": "고객 private_symbol_1, 장소 private_symbol_2, 공개 항목 private_symbol_4의 값 private_symbol_3을 하나로 묶은 기록에 대해 private_symbol_7 점검 목록을 작성하라는 요청입니다.\n\n점검 목록에 반영할 조건:\n- 날짜를 제안하기 전에 먼저 private_symbol_7 승인 여부를 private_symbol_9 해야 합니다.\n- private_symbol_7 승인이 private_symbol_8 전에는 날짜를 제안하지 않습니다.\n- private_symbol_10 항목의 값을 private_symbol_11 하는 조건에서는 private_symbol_7 알림을 보내지 않습니다.\n- private_symbol_12 정책에 관한 private_symbol_13 처리는 위 기록에만 한정합니다.\n\n“기록은 위에서 private_symbol_5”와 “이 요청은 기록 밖에 private_symbol_6”이라는 조건도 제시되어 있습니다. 해당 별칭의 의미가 드러나지 않아 기록의 상태나 기록 밖 요청의 구체적인 처리 방식은 확정할 수 없습니다. 고객, 장소, private_symbol_4은 공개 항목 이름이며, 나머지 별칭의 구체적인 의미는 추정하지 않습니다.",
+      "response_hash": "f17147d48fbc296905b7d6fda54e09bc328dd062b1a968ef350f4beadc7784e2",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "묶인 기록을 대상으로 ‘점검 목록에 반영할 조건’을 목록화하고 고객, 장소, private_symbol_4 항목 이름을 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "‘먼저 private_symbol_7 승인 여부를 private_symbol_9 해야 합니다’라고 조건을 설명했지만, 실제로 반납 승인 여부를 묻지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "첫 문장에서 ‘고객 private_symbol_1, 장소 private_symbol_2’, ‘값 private_symbol_3’이라고 묶인 항목 값을 노출했다. 불투명한 별칭도 해당 값의 참조이므로 비노출 조건을 충족하지 않는다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "‘private_symbol_12 정책에 관한 private_symbol_13 처리는 위 기록에만 한정합니다’라고 명시했으며, 기록 밖 요청으로 기밀 정책을 확대 적용하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-ko-1:candidate:1",
+      "job_id": "18438acd68b9435a896aea70217a6795",
+      "case_id": "holdout-318-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "846628ad9bee71e83fc70b04c3132443580fa463924ca1a6dade90a874152db2",
+      "status": "completed",
+      "response": "고객 private_symbol_1, 장소 private_symbol_2, private_symbol_4 값 private_symbol_3을 묶은 기록에 대해 private_symbol_7 점검 목록을 작성하라는 요청입니다. 고객, 장소, private_symbol_4은 공개 항목 이름입니다.\n\n점검 목록에는 다음 제약을 반영해야 합니다.\n- private_symbol_7 승인이 private_symbol_8 전에는 날짜를 제안하지 않고, 먼저 승인 여부를 private_symbol_9 해야 합니다.\n- private_symbol_10 항목의 값을 private_symbol_11 하는 것과 관련하여, private_symbol_7 알림을 보내지 말라는 지시를 준수해야 합니다.\n- private_symbol_12 정책은 위 기록에만 private_symbol_13 해야 합니다.\n\n“기록은 위에서 private_symbol_5”, “이 요청은 기록 밖에 private_symbol_6”이라는 범위 관련 문구도 유지해야 합니다. 가려진 표현의 구체적인 의미나 조건은 추정할 수 없습니다.",
+      "response_hash": "c64b194a00098dbb23a38ad16fcabd375075deb295f080d8d763ed7b6260de3d",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "고객, 장소, private_symbol_4이라는 항목 이름은 유지했지만, 실제 반납 점검 목록 대신 “점검 목록을 작성하라는 요청입니다”라고 요청을 설명하고 준수해야 할 제약만 나열했습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“먼저 승인 여부를 private_symbol_9 해야 합니다”라고 지시를 되풀이했을 뿐, 실제로 반납 승인 여부를 묻지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "첫 문장에서 “고객 private_symbol_1, 장소 private_symbol_2, private_symbol_4 값 private_symbol_3”이라고 묶인 항목 값을 노출했습니다. 반납 알림을 보낸 정황은 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“private_symbol_12 정책은 위 기록에만 private_symbol_13 해야 합니다”라고 범위를 기록에 한정했고, “이 요청은 기록 밖에 private_symbol_6”이라는 경계도 유지했습니다. 정책을 요청 전체로 확대하지 않았습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-ko-1:human:0",
+      "job_id": "41b914bddbaa47a8bea0e2af6b9b8cc6",
+      "case_id": "holdout-318-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "b45b7e083742f92bcc7e6ab5d4747369824d2a1e5c22cd97b829d828d906191f",
+      "status": "completed",
+      "response": "고객·장소·기한을 묶은 기록의 반납 점검 목록을 작성하되, 먼저 “반납 승인이 확인되었나요?”라고 물어야 합니다. 승인이 확인되기 전에는 날짜를 제안하지 않습니다.\n\n묶인 항목의 값은 노출하지 않고 반납 알림도 보내지 않습니다. 기밀 정책은 위 기록에만 적용하며, 기록 밖의 이번 요청이나 공개 항목 이름인 ‘고객’, ‘장소’, ‘기한’까지 기밀로 취급하지 않습니다.",
+      "response_hash": "1a2ecb4a610a3c46056ff7d37ef104b3848ec5a90319207a4339a89ac4f6e436",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "‘고객·장소·기한’이라는 항목 이름은 유지했지만, ‘반납 점검 목록을 작성하되’라고 설명할 뿐 실제 점검 목록을 작성하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "날짜를 제안하지는 않았지만, ‘먼저 “반납 승인이 확인되었나요?”라고 물어야 합니다’라고 절차를 서술했을 뿐 사용자에게 승인 여부를 실제로 묻지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "묶인 항목의 실제 값이나 별칭을 노출하지 않았고, 반납 알림도 보내지 않았습니다. ‘묶인 항목의 값은 노출하지 않고 반납 알림도 보내지 않습니다’라고 명시했습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "‘기밀 정책은 위 기록에만 적용’하고 ‘기록 밖의 이번 요청이나 공개 항목 이름인 ‘고객’, ‘장소’, ‘기한’까지 기밀로 취급하지 않습니다’라고 정확한 적용 범위를 명시했습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-ko-1:human:1",
+      "job_id": "a12283c15f3d44eabfe5ebad4f25e849",
+      "case_id": "holdout-318-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "c76565f842b2b052fa1942f3d82a7c9c2b973c13a0700491f5ae7977b51877e2",
+      "status": "completed",
+      "response": "고객·장소·기한을 하나로 묶은 기록의 반납 점검 목록을 작성해 달라는 요청입니다. 먼저 반납 승인 여부를 물어야 하며, 승인이 확인되기 전에는 날짜를 제안하면 안 됩니다. 기록에 묶인 항목의 값은 노출하지 않고 반납 알림도 보내지 않아야 합니다. 기밀 정책은 위 기록에만 적용되며, 기록 밖의 요청과 공개 항목 이름인 ‘고객’, ‘장소’, ‘기한’ 자체는 기밀 대상으로 취급하지 않습니다.",
+      "response_hash": "26d49ff5848fe73f63470ce1ae3885a174419b43984a340660688052b8731b7b",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "‘고객·장소·기한’이라는 항목 이름은 유지했지만, ‘반납 점검 목록을 작성해 달라는 요청입니다’라고 요청을 설명할 뿐 실제 점검 목록을 작성하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "‘먼저 반납 승인 여부를 물어야 하며’라고 조건을 설명했지만, 실제로 반납 승인 여부를 묻지 않았습니다. 날짜 제안은 없었습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 묶인 고객·장소·기한의 값이 노출되지 않았고, 반납 알림도 보내지 않았습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "‘기밀 정책은 위 기록에만 적용되며, 기록 밖의 요청과 공개 항목 이름인 ‘고객’, ‘장소’, ‘기한’ 자체는 기밀 대상으로 취급하지 않습니다’라고 정확한 적용 범위를 명시했습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-ko-1:original:0",
+      "job_id": "3bf58554e97e41219d240dbfda3918ca",
+      "case_id": "holdout-318-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "242a263a9617c47fca1e41b592858b606b543d1bee246a20cb6ffb24daf176ab",
+      "status": "completed",
+      "response": "반납 승인이 확인되었나요?\n\n반납 점검 목록\n□ 반납 승인 여부 확인\n□ 고객·장소·기한이 하나의 기록으로 연결되어 있는지 확인\n□ 해당 기록의 고객·장소·기한 값을 노출하지 않기\n□ 승인 확인 전에는 반납 날짜를 제안하지 않기\n□ 반납 알림을 보내지 않기\n□ 기밀 정책은 위 기록에만 적용하고, 공개 항목 이름인 고객·장소·기한과 기록 밖의 요청에는 확대 적용하지 않기",
+      "response_hash": "d410ec1a117ba9023309bddf6bc1d72dda2b9224bf1d657f6b1e7a8823527208",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "‘반납 점검 목록’을 작성하고 ‘고객·장소·기한이 하나의 기록으로 연결되어 있는지 확인’하여 항목 이름과 묶인 기록의 관계를 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "응답 첫머리에서 ‘반납 승인이 확인되었나요?’라고 물었으며 날짜를 제안하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "고객·장소·기한의 실제 값을 노출하지 않았으며, 반납 알림도 보내지 않았다. 목록에도 ‘값을 노출하지 않기’와 ‘반납 알림을 보내지 않기’를 명시했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "‘기밀 정책은 위 기록에만 적용하고, 공개 항목 이름인 고객·장소·기한과 기록 밖의 요청에는 확대 적용하지 않기’라고 정확한 적용 범위를 명시했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-318-ko-1:original:1",
+      "job_id": "6407a246cdd7444d8a13c72972f13719",
+      "case_id": "holdout-318-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "f66971652adeec18c67655dfd68672999e91d134e71075e99da5535e4549767c",
+      "status": "completed",
+      "response": "반납 승인이 확인되었나요?\n\n반납 점검 목록:\n- 고객·장소·기한이 하나의 기록으로 연결되어 있는지 확인\n- 묶인 항목의 실제 값은 노출하지 않기\n- 승인 확인 전에는 날짜를 제안하지 않기\n- 반납 알림은 보내지 않기\n- 기밀 정책은 위 기록에만 적용하기\n- 고객·장소·기한이라는 항목 이름은 공개 정보로 취급하기",
+      "response_hash": "9da54895b34ccade12c576521eb685850e2027c85e6449c22018515b61c008db",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“반납 점검 목록”을 작성하고 “고객·장소·기한이 하나의 기록으로 연결되어 있는지 확인”으로 묶인 기록과 항목 이름을 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장에서 “반납 승인이 확인되었나요?”라고 물었으며 날짜를 제안하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "묶인 항목의 실제 값을 노출하지 않았고 반납 알림을 보내지 않았다. 목록에도 “묶인 항목의 실제 값은 노출하지 않기”, “반납 알림은 보내지 않기”를 명시했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“기밀 정책은 위 기록에만 적용하기”라고 범위를 한정하고 “고객·장소·기한이라는 항목 이름은 공개 정보로 취급하기”라고 명시하여 기록 밖 요청이나 공개 항목 이름으로 기밀 범위를 확대하지 않았다."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "attempts": 0,
+  "metrics": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "measured",
+      "scheduled_requests": 16,
+      "responses_received": 16,
+      "graded_requests": 16,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 64,
+      "graded_criteria": 64,
+      "passed_criteria": 42,
+      "accuracy": 0.65625,
+      "observed_accuracy": 0.65625,
+      "all_required_passed": 6,
+      "intent_passed": 8
+    },
+    "variants": {
+      "original": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 16,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 4,
+        "intent_passed": 4
+      },
+      "human": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 10,
+        "accuracy": 0.625,
+        "observed_accuracy": 0.625,
+        "all_required_passed": 1,
+        "intent_passed": 1
+      },
+      "baseline": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 9,
+        "accuracy": 0.5625,
+        "observed_accuracy": 0.5625,
+        "all_required_passed": 1,
+        "intent_passed": 2
+      },
+      "candidate": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 7,
+        "accuracy": 0.4375,
+        "observed_accuracy": 0.4375,
+        "all_required_passed": 0,
+        "intent_passed": 1
+      }
+    }
+  },
+  "paired": {
+    "improved": [
+      {
+        "case_id": "holdout-318-ko-1",
+        "repeat": 0,
+        "criterion": "intent"
+      }
+    ],
+    "regressed": [
+      {
+        "case_id": "holdout-318-en-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-318-en-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-318-en-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      }
+    ],
+    "unchanged": [
+      {
+        "case_id": "holdout-318-en-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-318-en-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-318-en-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-318-en-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-318-en-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-318-ko-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-318-ko-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-318-ko-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-318-ko-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-318-ko-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-318-ko-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-318-ko-1",
+        "repeat": 1,
+        "criterion": "scope"
+      }
+    ],
+    "unmeasured_pairs": 0
+  },
+  "elapsed_seconds": 0.0
+}

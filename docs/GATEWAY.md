@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.5.2 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.6.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -188,6 +188,56 @@ must be removed manually if the installation record is lost.
 
 ## Shared aliases and automatic results
 
+### Domain protection dictionaries (2.6.0)
+
+The authenticated admin dashboard has independent **Defense / Automotive /
+Semiconductor** toggles and paged term search. Defense is **On** for a fresh or
+previously unconfigured installation; automotive and semiconductor are Off.
+An explicitly saved Off survives restart and upgrade. Policy files are encrypted
+in the gateway's state directory. Existing private aliases are retained when a
+domain is disabled; Off stops additional dictionary matching, not all masking.
+Requests in progress prevent policy updates. A failed save leaves the previous
+policy active, and missing/corrupt packaged data blocks startup rather than
+quietly switching protection off.
+
+The packaged source-category policy protects **19,473 defense**, **6,510
+automotive**, and **2,191 semiconductor** concepts. Defense includes named
+platforms/models, **149 explicitly compiled subcomponent concepts** and **785
+public project/program concepts**, including official DARPA programs and Korean
+system/project labels. Counts distinguish concepts, translations/matching forms,
+source labels and pending classification phrases. They are not counts of
+independently specialist-certified concepts. Short model/acronym spellings use
+case-sensitive boundaries; long phrases support separator/case normalization.
+Original spellings and offsets are kept for exact restoration.
+
+Examples of protected component categories include RF/sensors, seeker/radome,
+actuators/servo drives, power distribution, processor/FPGA boards, connectors and
+harnesses, navigation, structural parts, cooling, fuzes and data buses. Public
+model/project labels include KF-21/IF-X, K9, F-16, LongShot and Manta Ray. An
+unpublished internal project name cannot be obtained from public sources: add
+it to the existing explicit local masking rules. A project named like an ordinary
+word may still require an explicit rule outside recognized public-name context.
+
+The dictionary describes a user-selected protection policy, not a legal secrecy
+classification. Source category membership can contain translation or inclusion
+errors; broad protection can overmask dual-use terms. Automatically extracted
+incomplete CPC phrases remain browse-only. See [sources and exact counts](DICTIONARY_SOURCES.md)
+for reuse terms, exclusions, category coverage and review limitations.
+
+The shared read-only index is built once, then scans each original text using
+bounded Aho–Corasick transitions and compact coordinate arrays. It never downloads
+data or runs a model during a request. Overlapping protected spans form a union;
+URL/email/source opaque spans retain their complete protection. Work-budget
+exhaustion rejects a request rather than truncating protection. Only per-session
+private alias/cache state is retained, and toggle changes invalidate those caches.
+
+GET `/admin/api/domain-policy` returns effective/default/saved status and policy
+version; POST the same endpoint with `{"enabled":{"defense":true,"automotive":false,
+"semiconductor":false}}` replaces the policy. GET `/admin/api/domain-terms?domain=defense&query=radar&limit=25&offset=0`
+returns at most 100 entries per page with source/review metadata. Existing token
+and same-origin requirements apply. Term definitions, prompts and user secrets
+are not included in audit logs.
+
 ### Conversation isolation and diagnostics (2.5.2)
 
 Codex's `session_id` header selects an account-scoped conversation table. Other
@@ -211,8 +261,10 @@ provenance and generic invalid requests. Existing signed conversations require a
 new session rather than silently discarding reasoning/tool history. Images remain
 blocked: unmasked passthrough is not introduced by this compatibility fix.
 
-Strict restoration checks altered reserved spellings in the original response
-before substitution, including ASCII prefixes/suffixes. Restored originals are
+Restoration checks reserved spellings in the original response before substitution.
+From 2.6.0, issued aliases with ASCII letter/underscore prefixes or suffixes are
+restored inside derived identifiers (`test_<alias>`, `<alias>_v2`). Unknown full
+alias numbers and unsupported numeric prefixes are still rejected. Restored originals are
 not rescanned because legitimate paths/source literals can contain alias-looking
 text. Exact registered alias 10 is never guessed to mean alias 1 plus `0`; model
 selection of another valid issued alias remains a semantic error that cannot be
@@ -338,13 +390,18 @@ exactly masked and are not restored for display. Only blocks previously emitted 
 gateway can be replayed. Codex may omit an empty reasoning `content` list on replay; that
 empty field is normalized for provenance checking. Ciphertext, summaries and nonempty
 content remain validated.
-Claude/Codex have separate tables, shared across this installation's conversations/accounts;
-requests per agent are serialized. Use separate configurations/ports for separate trust domains.
+Providers have separate tables. Codex session headers additionally select an
+account-scoped conversation table; clients without a supported session header
+share the legacy provider table. Masking/restoration lock only their own table;
+upstream network waits do not hold that lock. Use separate configurations/ports
+for separate trust domains.
 
 Encrypted snapshots reuse SecureGateway's authenticated encryption and password KDF. They preserve
 aliases across daemon restart. Reasoning provenance stores only hashes. Snapshots expire after
 24 hours idle; the running daemon and a restarted daemon both drop expired aliases and
-provenance (files are not automatically deleted). Expired/corrupt reasoning state blocks
+provenance. From 2.6.0, bounded startup/periodic maintenance authenticates old
+snapshots before deleting expired snapshot/provenance files. Damaged or foreign
+files are retained for explicit recovery. Expired/corrupt reasoning state blocks
 replay; start a fresh conversation/reset state rather than bypass masking. POSIX private file
 modes are applied; Windows uses inherited user ACLs. The key/local token resides alongside
 snapshots, so this does not protect against another process with access to that user's files.
@@ -431,18 +488,29 @@ Claude의 기존 429는 식별 블록 처리 오류였고, 정상 요청의 거�
 
 새 Hook을 등록하지 않습니다. 운영체제 사용자 로그인 시 백그라운드로 자동 실행합니다.
 해제는 `secure-gateway gateway uninstall`이며, 설치 뒤 사용자가 수정한 설정은 덮어쓰지 않습니다.
-스트리밍 전체를 모아 복원하므로 표시가 늦어질 수 있습니다. 서명·암호화된 추론은 가명 상태를
+텍스트 스트림은 별칭 경계를 확인하며 순차 복원하고, 도구 JSON은 완성·검증 후 전달합니다. 서명·암호화된 추론은 가명 상태를
 유지합니다. 이미지·원격 첨부·미지원 요청은 차단합니다. 별도 도구 통신·텔레메트리는 보호 범위에
 포함되지 않으며, 문법·코드 구조·알고리즘이 남으므로 완전한 익명성을 보장하지 않습니다.
 
 
 ## Recovery, concurrency, and supported constraints
 
-Alias transformation and encrypted snapshot writes are serialized per provider; waiting
-for the upstream network does not hold the alias lock or block another provider. Each
-provider keeps its own in-memory snapshot encryption context, deriving the key once;
+Alias transformation and encrypted snapshot writes are serialized per conversation;
+waiting for the upstream network does not hold the alias lock. Each conversation
+keeps its own in-memory snapshot encryption context, deriving the key once;
 ordinary encrypted files still decrypt with the configured token. Expiry/reset/shutdown
 release that context. In-flight requests retain their alias table until restoration ends.
+
+In 2.6.0 the 256-table memory bound evicts the least recently used idle table to
+encrypted storage without extending its TTL. Resuming that conversation reloads
+its mappings and reasoning provenance. Active requests are pinned before masking
+and never evicted. Without persistent state, or if every table is active, the
+fixed `conversation_capacity` diagnostic asks the caller to retry/reset idle
+state rather than discarding mappings. Storage failure preserves the live table.
+Conversation caching is a 4,096-entry/4MiB session-local LRU. New unrelated aliases
+retain old entries; input-relevant private mappings, metadata and policy changes
+invalidate affected interpretations. Cache budgets are retained-text accounting,
+not a whole-process RSS guarantee.
 
 The default mapping limit is 100,000. Set `mapping_limit` to a positive integer in the
 local gateway JSON configuration, or use `gateway run --mapping-limit 200000` for a

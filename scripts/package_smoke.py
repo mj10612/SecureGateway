@@ -76,7 +76,9 @@ from secure_gateway.gateway import PrivacyGateway
 from secure_gateway.gateway_install import healthy, installation_path, load_config
 
 work = Path.cwd().resolve()
-home = Path(os.environ['USERPROFILE'])
+# macOS /var and Windows runner short names can differ from the canonical paths
+# recorded in the installation manifest. Classify host files by file identity.
+home = Path(os.environ['USERPROFILE']).resolve()
 config = home / 'state/config.json'
 codex = home / '.codex/config.toml'
 claude = home / '.claude/settings.json'
@@ -206,7 +208,8 @@ if stage in ('finish', 'all'):
         cli('gateway', 'ensure', '--config', str(config))
         assert health_data(settings)['version'] == __version__
         manifest = json.loads(installation_path(config).read_text(encoding='utf-8'))
-        startup = [Path(name) for name in manifest['files'] if name not in (str(codex), str(claude))]
+        hosts = {codex.resolve(), claude.resolve()}
+        startup = [Path(name) for name in manifest['files'] if Path(name).resolve() not in hosts]
         cli('gateway', 'uninstall', '--config', str(config))
         assert not healthy(settings)
         assert not installation_path(config).exists()

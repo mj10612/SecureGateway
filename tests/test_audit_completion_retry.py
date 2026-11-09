@@ -101,7 +101,13 @@ def test_shutdown_flush_does_not_resurrect_or_overwrite_completed_rows(tmp_path,
 
 def test_shutdown_flush_retention_keeps_live_requests(tmp_path, monkeypatch):
     monkeypatch.setattr(CompletionRetries, "DELAYS", (30.0,))
+    # This test checks retention/ownership, not the 50ms maintenance budget.
+    # A loaded CI worker can consume that budget before SQLite is scheduled;
+    # production deliberately defers maintenance in that case (covered below).
+    monkeypatch.setattr(CompletionRetries, "SHUTDOWN_GRACE", 5.0)
     store = AuditStore(tmp_path / "audit.sqlite", max_records=1)
+    maintenance = store._completion_maintenance
+    monkeypatch.setattr(store, "_completion_maintenance", lambda _: maintenance(time.monotonic() + 5.0))
     try:
         old = begin(store)
         with locked(store, monkeypatch), pytest.raises(sqlite3.OperationalError):

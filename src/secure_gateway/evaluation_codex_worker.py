@@ -6,6 +6,7 @@ shared; fresh cwd and ignored configuration are not a hard filesystem jail.
 """
 
 import json
+from hashlib import sha256
 import os
 from pathlib import Path
 import shutil
@@ -35,7 +36,13 @@ def _prompt(request: dict) -> str:
             + json.dumps(request["criteria"], ensure_ascii=False)
         )
     else:
-        prompt += "\nReturn only your interpretation as plain text."
+        prompt += (
+            "\nReturn only your answer to the supplied task as plain text. "
+            "Perform the requested response, including a clarification question when needed; "
+            "do not merely paraphrase what the request means. "
+            "If an unavailable tool or hidden fact prevents an action, state that specific limitation "
+            "and complete the parts supported by the visible messages."
+        )
     return prompt
 
 
@@ -146,6 +153,8 @@ def run_codex_worker(request: dict) -> dict:
             "isolation_limits": ["same OS user", "shared subscription auth", "no hard filesystem jail"],
             "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
             "max_output_tokens": request["max_output_tokens"],
+            "adapter_source_sha256": sha256(Path(__file__).read_bytes()).hexdigest(),
+            "task_response_mode": "answer_visible_task" if request["role"] == "interpret" else "independent_grade",
         },
     }
     if usage is not None:

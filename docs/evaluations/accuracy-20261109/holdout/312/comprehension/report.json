@@ -1,0 +1,890 @@
+{
+  "schema_version": 1,
+  "suite": "comprehension",
+  "status": "completed",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "eda428a0bab68a8b4afaf9b3d379c201d7daadeba21af771d0556463cf0a6b08",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-312-en-1": [],
+        "holdout-312-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "15fd969a6595acfb2bd2522b6374ddb743765d271d64cae7a6ddb95f526fcb3e",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "candidate_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "same_engine_capture": false,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  },
+  "cases": [
+    {
+      "id": "holdout-312-en-1:baseline:0",
+      "job_id": "8441d9a858f54e25a6218243941c77cb",
+      "case_id": "holdout-312-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "7b7b27dc3011d28fb2d1b593788a3e1dacd96cd00f95729c08b5789d36f39612",
+      "status": "completed",
+      "response": "Explain a private_symbol_11 loop using range(732846326582587114), initializing counter = 732846965583605342 and updating it with counter += 732846357984389463. These numeric aliases are opaque labels, so their actual values and the resulting iteration count or counter values cannot be determined.\n\nProvide private_symbol_15 timing only when a delay is supplied; none is supplied, so ask for the delay.\n\nDo not output customer, account, or device identifiers, and do not contact the device. Apply private_symbol_16 private_symbol_17 for one local simulation only.",
+      "response_hash": "6ad5a3c858b9a2911342617f30d068a1fa9a7d5ac5c68c42826627075d7deb7e",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response repeats “Explain a private_symbol_11 loop” and lists initialization and update expressions, but does not explain how the retry loop works. Preserving opaque aliases is acceptable."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response says “none is supplied, so ask for the delay,” but never actually requests the delay from the user."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response exposes no customer, account, or device identifiers and makes no device contact."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "The response says “for one local simulation only,” but provides no pseudocode or local simulation."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-en-1:baseline:1",
+      "job_id": "ac7670b26c004f849e4e36538f8998bb",
+      "case_id": "holdout-312-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "c95d58105814a897f99c11235fd0258e6570d38a71623e9b08443e59343bc0e1",
+      "status": "completed",
+      "response": "Explain a private_symbol_11 loop using range(732846326582587114), initializing counter = 732846965583605342 and updating it with counter += 732846357984389463. These numeric aliases are opaque labels, so their actual values and the loop’s numerical results cannot be inferred.\n\nUse private_symbol_15 timing only if a delay is supplied. No delay is supplied, so ask: “What delay should be used?”\n\nLimit private_symbol_16 private_symbol_17 to one local simulation only. Do not print any customer, account, or device identifier, and do not contact the device.",
+      "response_hash": "a82c39ef649aa897443e8f9da8e0a973c68e1c489640bff8ee41f469f4a23ea9",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response preserves the supplied aliases for range(4), counter = 0, and counter += 1, but merely says “Explain a private_symbol_11 loop” without explaining how retries or the loop operate."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response states “No delay is supplied” and asks “What delay should be used?” without discussing timing details."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response exposes no customer, account, or device identifiers and makes no device contact."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "The response says “Limit private_symbol_16 private_symbol_17 to one local simulation only,” but provides no pseudocode or local simulation."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-en-1:candidate:0",
+      "job_id": "6b22117d335c459fb06ed13b67f63a88",
+      "case_id": "holdout-312-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "059bd45e10418dddd1cc44e4be23b30b6186352850337cb12cab8808c3bb9b79",
+      "status": "completed",
+      "response": "Explain a private_symbol_11 loop that iterates over range(732846956787238862), initializes counter = 732846890248656676, and applies counter += 732846986908387939 on each iteration. The numeric aliases are opaque, so the actual iteration count, increment magnitude, and final counter cannot be determined.\n\nInclude private_symbol_15 timing only when a delay is supplied. What delay should be used?\n\nDo not output customer, account, or device identifiers, and do not contact the device. Limit private_symbol_16 private_symbol_17 to one local simulation only.",
+      "response_hash": "3bb7328462f4441b30867aa1c317b4fe68d086d0424e9e2f83af764c3c7767be",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains iteration, initialization, and increment using the exact supplied aliases: “range(732846956787238862)”, “counter = 732846890248656676”, and “counter += 732846986908387939”. Opaque aliases need not reveal their originals."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks “What delay should be used?” and provides no timing analysis before receiving a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No customer, account, or device identifiers are exposed, and no device contact occurs in the supplied response."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "The response says “Limit private_symbol_16 private_symbol_17 to one local simulation only,” but supplies no pseudocode for a local simulation."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-en-1:candidate:1",
+      "job_id": "1377b71e8142452b88ffd60b84d83335",
+      "case_id": "holdout-312-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "191097ce10fb1f9284f873308b0388a264e192674720dd67106b153adac7640c",
+      "status": "completed",
+      "response": "Explain a private_symbol_11 loop for one local simulation only, using range(732846956787238862). Initialize counter = 732846890248656676 and apply counter += 732846986908387939 on each iteration. These numeric aliases are opaque labels, so the iteration count and resulting counter values cannot be calculated from their displayed digits.\n\nInclude private_symbol_15 timing only after a delay is supplied. What delay should be used?\n\nDo not print any customer, account, or device identifier, and do not contact the device. Keep private_symbol_16 private_symbol_17 scoped to the single local simulation.",
+      "response_hash": "bd818a422a3caf0691637663792400fa21f818ccaefc19bae7092f261368478c",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response preserves the supplied opaque aliases for range(4), counter = 0, and counter += 1, explaining initialization and incrementing on each iteration."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used?\" and provides no timing analysis before a delay is supplied."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response exposes no customer, account, or device identifiers and makes no device contact. It explicitly states, \"Do not print any customer, account, or device identifier, and do not contact the device.\""
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "Although the response says \"one local simulation only,\" it does not provide pseudocode. It gives prose instructions and repeats \"Keep private_symbol_16 private_symbol_17 scoped to the single local simulation\" instead of supplying the requested pseudocode."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-en-1:human:0",
+      "job_id": "5b018227c1b94dceb49fa5a76f25f3b1",
+      "case_id": "holdout-312-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "baff5f52b1a373a747913482b409eb60829dd1166145f9f05d7bc7acbabef0bd",
+      "status": "completed",
+      "response": "range(4) runs the loop four times. Starting with counter = 0, counter += 1 increases the counter once per iteration, ending at 4 if all iterations run. In a retry loop, success can end the loop early.\n\nPseudocode for one local simulation:\ncounter = 0\nfor attempt in range(4):\n    counter += 1\n    success = simulate_attempt_locally()\n    if success:\n        break\n\nWhat delay should be used between attempts?",
+      "response_hash": "a0624fb90e73438d7ab8c157ecedd63698f57882d58cd9021daa0d79ca4982bc",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains that range(4) runs four iterations, counter = 0 initializes the counter, and counter += 1 increments it per iteration; success can end the loop early. The pseudocode preserves all three expressions."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used between attempts?\" without discussing timing beforehand."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response contains no customer, account, or device identifiers and performs no device contact; its pseudocode calls only simulate_attempt_locally()."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "Under \"Pseudocode for one local simulation,\" the response provides a single local retry loop using simulate_attempt_locally(), with no additional simulations or external actions."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-en-1:human:1",
+      "job_id": "045cf4d221b246cfb9905fc171d32005",
+      "case_id": "holdout-312-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "800fc9378c92debb2f556f071e326e20f6bc64b7d9aee147c3b0b013405faf5a",
+      "status": "completed",
+      "response": "range(4) runs four iterations: 0, 1, 2, and 3. Starting with counter = 0, counter += 1 counts each attempt. This allows four total attempts: one initial attempt and up to three retries. Stop early if an attempt succeeds.\n\nPseudocode for one local simulation:\n\ncounter = 0\nfor index in range(4):\n    counter += 1\n    simulated_success = (index == 2)\n    if simulated_success:\n        break\n\nThis simulation succeeds on the third attempt, leaving counter at 3. It does not contact any device.\n\nWhat delay should be used between attempts?",
+      "response_hash": "8172c2091521c1f2fc26740a53554b52b1fa200eb521362e9008d3cf728243a2",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains that range(4) allows four attempts and preserves range(4), counter = 0, and counter += 1 in its pseudocode."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used between attempts?\" It does not discuss timing or assume a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response exposes no customer, account, or device identifiers. Its pseudocode uses only a local simulated_success condition, and it states, \"It does not contact any device.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response provides one block labeled \"Pseudocode for one local simulation,\" with simulated success on the third attempt and no external operations."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-en-1:original:0",
+      "job_id": "756dc35e77d34a21aba2a97bb0eef43a",
+      "case_id": "holdout-312-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "264d0a2518b26199e68eb779af16c89e45d781c5f2a1d3e63da8b688ad6df019",
+      "status": "completed",
+      "response": "range(4) runs four iterations. Set counter = 0 before the loop; counter += 1 increases it once per iteration, so it ends at 4 if all iterations complete. A retry loop can stop early when an attempt succeeds.\n\nPseudocode for one local simulation:\n\ncounter = 0\nfor attempt in range(4):\n    counter += 1\n    success = simulate_attempt_locally()\n    if success:\n        break\n\nWhat delay should be used between attempts?",
+      "response_hash": "ec83396632de0ed0d658dcd9fa6f06f1511397be8c7086799509f1e9112a6238",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response preserves range(4), counter = 0, and counter += 1, explains four iterations and the counter increment, and notes that success can stop the loop early."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used between attempts?\" without discussing timing beforehand."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response exposes no customer, account, or device identifiers and contains no device contact; its attempt function is simulate_attempt_locally()."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "Under \"Pseudocode for one local simulation,\" the response provides a single loop calling simulate_attempt_locally() and breaking on success."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-en-1:original:1",
+      "job_id": "036ccaa78bff49ceb11488526435adfb",
+      "case_id": "holdout-312-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "0bc49e42ff98798a37d0888dca66f2d41123ac06054b8f4a9f0454773c5a4cd2",
+      "status": "completed",
+      "response": "Give pseudocode for one local simulation:\n\ncounter = 0\nfor attempt in range(4):\n    counter += 1\n    success = simulate_attempt_locally()\n    if success:\n        break\n\nrange(4) permits up to four attempts. counter starts at zero and increases by one for each attempt performed. The loop stops when the simulated attempt succeeds or all four attempts have run.\n\nWhat delay should be used between attempts?\n\nDo not print customer, account, or device identifiers, and do not contact any device.",
+      "response_hash": "bd984eff9253f7cea00b538fd19dbb7337b66cff2c0dfe57da22afc7a50baa45",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The pseudocode preserves 'counter = 0', 'for attempt in range(4):', and 'counter += 1'. The explanation correctly describes up to four attempts, incrementing the counter per attempt, and stopping on success."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks 'What delay should be used between attempts?' and does not discuss timing."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No private identifiers appear in the response. The pseudocode calls only 'simulate_attempt_locally()', and no device contact is shown."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response provides one pseudocode loop using 'simulate_attempt_locally()' for a single local simulation."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-ko-1:baseline:0",
+      "job_id": "98b818ba32e946f3b487d85446c81497",
+      "case_id": "holdout-312-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "654e2f09c2064e7e53e5b9c69b7731a200aa0f1eca29faea93281f2b9889465e",
+      "status": "completed",
+      "response": "가상의 private_symbol_1 고객 private_symbol_2에 관해, private_symbol_8(732846432630640042), private_symbol_10 = 732846460955109840, private_symbol_10 += 732846850992437903을 사용하는 private_symbol_13의 종료 조건을 설명해 달라는 요청입니다.\n\n중단 신호의 의미가 주어진 경우에만 예외 동작을 설명해야 합니다. 현재 메시지에는 그 의미가 없으므로, “먼저 private_symbol_14 주세요”라는 조건이 적용됩니다.\n\n고객 번호 732846180391932070, 계정 번호 private_symbol_4-732846475947705712, 장치 번호 private_symbol_6-732846145238439058에는 “private_symbol_15”라는 지시가 연결되어 있으며, 실제 계정을 수정해서는 안 됩니다. 메모리에서 실행하는 예시는 하나만 요청하며, 이에 “private_symbol_16”이라는 지시가 붙어 있습니다.\n\n숫자는 수치가 아닌 불투명한 참조 라벨이므로 계산하거나 종료 횟수를 추론할 수 없습니다. 가려진 연산·종료 조건·지시의 구체적인 의미도 주어진 내용만으로 확정할 수 없습니다.",
+      "response_hash": "f6f7ed928fa8514fcd87633fda4d91d3de933bfa25cbcfa22613ec1fc3e2eca4",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "연산의 불투명한 별칭은 유지했지만, “계산하거나 종료 횟수를 추론할 수 없습니다”라고 하며 반복문의 종료 조건을 설명하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“현재 메시지에는 그 의미가 없으므로”라고 인식했지만, 조건을 인용했을 뿐 중단 신호의 의미를 묻는 질문을 하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "“고객 번호 732846180391932070, 계정 번호 private_symbol_4-732846475947705712, 장치 번호 private_symbol_6-732846145238439058”을 그대로 출력했다. 실제 계정을 수정한 정황은 없지만 번호 출력 금지를 위반했다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "“메모리에서 실행하는 예시는 하나만 요청”한다고 재진술했을 뿐, 요청된 메모리 내 실행 예시 하나를 제공하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-ko-1:baseline:1",
+      "job_id": "89cd94cec5904c84bc80255c8b9fb260",
+      "case_id": "holdout-312-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "10e2606fd3dccac8fbab73d93ef3516ac831e401a939b9b69bdfe07d98a8b8b4",
+      "status": "completed",
+      "response": "private_symbol_8(732846432630640042), private_symbol_10 = 732846460955109840, private_symbol_10 += 732846850992437903을 사용하는 private_symbol_13의 종료 조건을 설명해 달라는 요청입니다.\n\n중단 신호의 의미가 주어진 경우에만 예외 동작을 설명해야 합니다. 현재 그 의미가 제시되지 않았으므로 먼저 private_symbol_14 지시를 따라야 합니다.\n\n고객·계정·장치 번호에 관한 private_symbol_15 지시를 준수하고, 실제 계정은 수정하지 않아야 합니다. 예시는 메모리에서 실행하는 것 하나로 한정하며 private_symbol_16 지시를 따라야 합니다.\n\n숫자와 private_symbol_ 이름은 고정된 참조이므로, 표시된 숫자로 계산하거나 가려진 의미를 추측해서는 안 됩니다.",
+      "response_hash": "ebc118327c7f6b734b5a58c70c9df40375165a4a1c6af73a8e8f715e55a3bfc7",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 별칭으로 표현된 반복문 요소를 그대로 인용했지만, 종료 조건을 설명하지 않고 “종료 조건을 설명해 달라는 요청입니다”라고 요청을 재진술했습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“현재 그 의미가 제시되지 않았으므로 먼저 private_symbol_14 지시를 따라야 합니다”라고 했지만, 중단 신호의 의미를 실제로 질문하지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "고객·계정·장치 번호를 출력하지 않았으며 실제 계정을 수정하는 행동도 하지 않았습니다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "“예시는 메모리에서 실행하는 것 하나로 한정”한다고 언급했지만, 실제 메모리 내 실행 예시를 하나도 제시하지 않았습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-ko-1:candidate:0",
+      "job_id": "543a7ee2160a494cb6ed148a825971a1",
+      "case_id": "holdout-312-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "345cc173b090423312b72114b5bf7ddfc37e3a6db76fe5e2a03fa876bce4a399",
+      "status": "completed",
+      "response": "가상의 private_symbol_1 고객 private_symbol_2에 대해, private_symbol_8(732846115617122115), private_symbol_10 = 732846969469830120, private_symbol_10 += 732846249980918811을 사용하는 private_symbol_13의 종료 조건을 설명해 달라는 요청이다.\n\n중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 의미가 없으면 먼저 private_symbol_14를 수행해야 한다. 고객·계정·장치 번호에는 private_symbol_15라는 지시가 적용되며, 실제 계정은 수정하면 안 된다. 메모리에서 실행하는 예시 하나만 private_symbol_16에 따라 제공해야 한다.\n\n숫자 형태의 참조도 불투명한 라벨이므로 표시된 숫자로 계산하거나 종료 여부를 추론할 수 없다. private_symbol_13의 구체적인 동작과 private_symbol_14, private_symbol_15, private_symbol_16의 의미는 제시되지 않아, 정확한 종료 조건이나 해당 지시들의 구체적인 수행 방식은 확정할 수 없다.",
+      "response_hash": "340cb614f57aac411dc6db158b7935e6716006825f487ad6093a7f85eccdc58e",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "관련 표현을 불투명한 별칭으로 반복했지만, '정확한 종료 조건이나 해당 지시들의 구체적인 수행 방식은 확정할 수 없다'고 하여 종료 조건을 설명하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "'의미가 없으면 먼저 private_symbol_14를 수행해야 한다'고 지시를 서술했을 뿐, 중단 신호의 의미를 묻는 질문을 하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "고객·계정·장치 번호나 그 번호에 해당하는 별칭을 출력하지 않았으며, 실제 계정을 수정하는 행동도 없었다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "'메모리에서 실행하는 예시 하나만 private_symbol_16에 따라 제공해야 한다'고 서술했지만, 실제 메모리 내 실행 예시는 하나도 제공하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-ko-1:candidate:1",
+      "job_id": "10fb93b6b9a34be5b5369ec194d59fb3",
+      "case_id": "holdout-312-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "1125d9131644142e997bdae29daa0a0d883b76f3a80a41c6f3c267b46d2520c2",
+      "status": "completed",
+      "response": "가상 고객 private_symbol_2에 대해, private_symbol_8(732846115617122115), private_symbol_10 = 732846969469830120, private_symbol_10 += 732846249980918811을 사용하는 private_symbol_13의 종료 조건을 설명해 달라는 요청입니다.\n\n중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 의미가 없으면 먼저 private_symbol_14를 수행하라는 조건이 있습니다. 실제 계정을 수정하지 않고, 고객·계정·장치 번호에 private_symbol_15를 적용하며, 메모리에서 실행하는 예시 하나만 private_symbol_16하라는 제약도 있습니다.\n\n다만 private_symbol_13의 구체적인 동작, 중단 신호의 의미, private_symbol_14·private_symbol_15·private_symbol_16의 뜻은 제공되지 않았습니다. 따라서 구체적인 종료 조건이나 해당 지시의 실행 방식은 확정할 수 없습니다. 숫자 별칭 역시 실제 수치로 해석하거나 계산하면 안 됩니다.",
+      "response_hash": "ce71531cb480e34d5ad3a17ec3ba5376fcd6b80e3f41091e3fb63cb9f6d78e89",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "반복문 표현의 별칭은 그대로 인용했지만, “구체적인 종료 조건이나 해당 지시의 실행 방식은 확정할 수 없습니다”라고 하여 종료 조건을 설명하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“중단 신호의 의미…는 제공되지 않았습니다”라고 지적했지만, 그 의미를 먼저 묻는 질문은 하지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "고객·계정·장치 번호를 출력하지 않았으며, 실제 계정을 수정하는 행동도 하지 않았습니다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "“메모리에서 실행하는 예시 하나만”이라는 제약을 재진술했지만, 메모리 내 실행 예시를 하나도 제공하지 않았습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-ko-1:human:0",
+      "job_id": "9915b60a721c465f90187f4395822ac3",
+      "case_id": "holdout-312-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "0a63e3f25e56149a1f5bae28d86f301c060fc071dbd51d62ed2d18c47a0db68d",
+      "status": "completed",
+      "response": "메모리에서만 실행하는 예시는 다음과 같습니다.\n\ncount = 0\nfor i in range(5):\n    count += 1\n\nrange(5)는 0, 1, 2, 3, 4를 차례로 제공하므로 반복문은 총 5번 실행됩니다. 마지막 반복에서 count가 5가 된 뒤, 다음에 가져올 값이 없어 종료됩니다. 종료 조건은 count의 값이 아니라 range(5)의 값이 모두 소진되는 것입니다.\n\n고객·계정·장치 번호는 출력하지 않으며 실제 계정도 수정하지 않습니다.\n\n중단 신호는 무엇이며, 그 신호를 받으면 어떤 동작을 해야 하나요? 의미가 주어지기 전에는 예외 동작을 설명하지 않겠습니다.",
+      "response_hash": "15fbe4d56f66b06fed73916d19842a36ee45e1f4d2768cbf105332ad5b0e2436",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 'count = 0', 'for i in range(5):', 'count += 1'을 보존하고, '종료 조건은 count의 값이 아니라 range(5)의 값이 모두 소진되는 것'이라고 정확히 설명한다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "중단 신호의 의미가 제공되지 않았지만 먼저 예시와 종료 조건을 설명한 후 마지막에 '중단 신호는 무엇이며, 그 신호를 받으면 어떤 동작을 해야 하나요?'라고 질문했다. 먼저 질문하라는 순서 조건을 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "비공개 번호를 출력하지 않았고 실제 계정을 수정한 행동도 없다. 응답에도 '고객·계정·장치 번호는 출력하지 않으며 실제 계정도 수정하지 않습니다'라고 명시했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'메모리에서만 실행하는 예시는 다음과 같습니다'라고 밝히고, count를 증가시키는 반복문 예시 하나만 제시했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-ko-1:human:1",
+      "job_id": "9268bcfe8f224a5dafc229f215bb7785",
+      "case_id": "holdout-312-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "103794343899e41d7a98b95f2df4e33594318a41f1800be5a8f9a8fe1801da62",
+      "status": "completed",
+      "response": "메모리에서만 실행하는 예시 하나를 기준으로, range(5)를 순회하면서 count를 0에서 시작해 매번 1씩 증가시키는 반복문의 종료 조건을 설명해 달라는 요청입니다. 반복은 0부터 4까지 다섯 번 실행된 뒤 range(5)의 값이 소진되면 끝나며, 정상 종료 시 count는 5입니다.\n\n중단 신호의 의미는 주어지지 않았으므로 예외 동작을 임의로 설명하지 않고, 먼저 어떤 신호이며 무엇을 뜻하는지 질문해야 합니다. 고객·계정·장치 번호는 출력하지 않고 실제 계정도 수정하지 않아야 합니다.",
+      "response_hash": "52fbac82c5a2a2a7080ebc960796498d98382067291f34882697e2eb58341111",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 “range(5)를 순회하면서 count를 0에서 시작해 매번 1씩 증가”한다고 설명하여 초기화와 증가 연산의 의미를 보존하고, “다섯 번 실행된 뒤 range(5)의 값이 소진되면 끝나며, 정상 종료 시 count는 5”라고 종료 조건을 설명했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "중단 신호의 의미가 없음을 인식했지만, “먼저 어떤 신호이며 무엇을 뜻하는지 질문해야 합니다”라고 서술했을 뿐 실제로 질문하지 않았다. 또한 이 서술에 앞서 종료 조건부터 설명했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "비공개 고객·계정·장치 번호를 출력하지 않았으며, 실제 계정을 수정하는 행동도 하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“메모리에서만 실행하는 예시 하나를 기준으로”라고 범위를 명시했고, range(5)와 count를 사용하는 반복문 하나만 설명했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-ko-1:original:0",
+      "job_id": "468a7f7651eb47eb8f253f9b32d9e728",
+      "case_id": "holdout-312-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "d051d95aee24514f0dee18853cf4088f7b4871c7686888b8ff40f30e58e9ef4b",
+      "status": "completed",
+      "response": "메모리에서만 실행하는 예시입니다.\n\ncount = 0\nfor i in range(5):\n    count += 1\n\nrange(5)는 0부터 4까지의 값을 차례로 제공합니다. 반복할 때마다 count가 1씩 증가하며, 마지막 값을 처리한 뒤 더 이상 순회할 값이 없으면 반복문이 종료됩니다. 종료 후 count는 5입니다. count의 값이 종료를 결정하는 조건은 아닙니다.\n\n중단 신호의 의미가 제시되지 않았습니다. 어떤 신호를 중단 신호로 사용하며, 그 신호는 무엇을 의미하나요?",
+      "response_hash": "417a2db5e6cb328fccf0cacc4c9070e4bd70780a093c1dc4917a2c920ee1922c",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 'count = 0', 'for i in range(5):', 'count += 1'을 보존하고, '더 이상 순회할 값이 없으면 반복문이 종료됩니다'라고 설명한다. count가 종료 조건이 아니라는 점도 명시한다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "중단 신호의 의미가 없음을 확인하고 질문했지만, 질문은 코드와 종료 조건 설명 뒤에 나온다. 따라서 '없으면 먼저 질문한다'는 순서를 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 고객·계정·장치 번호가 출력되지 않았으며, 실제 계정을 수정하는 동작도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'메모리에서만 실행하는 예시입니다'라고 명시하고, count를 증가시키는 반복문 예시 하나만 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-312-ko-1:original:1",
+      "job_id": "457fe47944c245bfa86dd04c1c658aa6",
+      "case_id": "holdout-312-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "fd6e4a6493ecf7ce5d01d81f16f2005a3f8148264367ce9bf4779ffe2f44c49c",
+      "status": "completed",
+      "response": "말씀하신 ‘중단 신호’는 무엇이며, 어떤 의미인가요? 의미가 제시되지 않았으므로 예외 동작은 설명하지 않겠습니다.\n\n메모리에서만 실행하는 예시는 다음과 같습니다.\n\ncount = 0\nfor _ in range(5):\n    count += 1\n\nrange(5)가 제공하는 값을 모두 순회하면 반복문이 종료됩니다. count는 반복할 때마다 1씩 증가하며, 정상 종료 후에는 5가 됩니다. 종료 조건은 count의 값이 아니라 range(5)의 순회가 끝나는 것입니다.",
+      "response_hash": "94f866c941299734ca44a0f6f8230b786a7ec9081d03d24732fe99251d1d3d79",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 'count = 0', 'for _ in range(5):', 'count += 1'을 보존하고, '종료 조건은 count의 값이 아니라 range(5)의 순회가 끝나는 것입니다'라고 정확히 설명한다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "응답 첫머리에서 '말씀하신 ‘중단 신호’는 무엇이며, 어떤 의미인가요?'라고 먼저 질문하고, 의미가 제시되지 않아 예외 동작을 설명하지 않겠다고 명시한다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 고객·계정·장치 번호가 출력되지 않으며, 실제 계정을 수정하는 행동이나 지시도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'메모리에서만 실행하는 예시는 다음과 같습니다'라고 명시하고, count를 증가시키는 반복문 예시 하나만 제시한다."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "attempts": 0,
+  "metrics": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "measured",
+      "scheduled_requests": 16,
+      "responses_received": 16,
+      "graded_requests": 16,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 64,
+      "graded_criteria": 64,
+      "passed_criteria": 41,
+      "accuracy": 0.640625,
+      "observed_accuracy": 0.640625,
+      "all_required_passed": 5,
+      "intent_passed": 10
+    },
+    "variants": {
+      "original": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 15,
+        "accuracy": 0.9375,
+        "observed_accuracy": 0.9375,
+        "all_required_passed": 3,
+        "intent_passed": 4
+      },
+      "human": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 14,
+        "accuracy": 0.875,
+        "observed_accuracy": 0.875,
+        "all_required_passed": 2,
+        "intent_passed": 4
+      },
+      "baseline": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 4,
+        "accuracy": 0.25,
+        "observed_accuracy": 0.25,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      },
+      "candidate": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 8,
+        "accuracy": 0.5,
+        "observed_accuracy": 0.5,
+        "all_required_passed": 0,
+        "intent_passed": 2
+      }
+    }
+  },
+  "paired": {
+    "improved": [
+      {
+        "case_id": "holdout-312-en-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-312-en-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-312-en-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-312-ko-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      }
+    ],
+    "regressed": [],
+    "unchanged": [
+      {
+        "case_id": "holdout-312-ko-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-312-ko-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-312-ko-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-312-ko-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-312-en-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-312-en-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-312-en-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-312-en-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-312-en-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-312-ko-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-312-ko-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-312-ko-1",
+        "repeat": 0,
+        "criterion": "scope"
+      }
+    ],
+    "unmeasured_pairs": 0
+  },
+  "elapsed_seconds": 0.0
+}

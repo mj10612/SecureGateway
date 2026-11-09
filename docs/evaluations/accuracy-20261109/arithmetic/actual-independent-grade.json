@@ -1,0 +1,56 @@
+{
+  "job_id": "arith-independent-grade",
+  "model": "gpt-6.1-sol",
+  "metadata": {
+    "provider": "codex-cli",
+    "cli_version": "codex-cli 0.167.0",
+    "model_source": "requested_cli_setting",
+    "requested_model": "gpt-6.1-sol",
+    "fresh_session": true,
+    "sandbox": "read-only",
+    "tool_events": 0,
+    "authentication": "chatgpt subscription only; no API fallback",
+    "isolation_limits": [
+      "same OS user",
+      "shared subscription auth",
+      "no hard filesystem jail"
+    ],
+    "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+    "max_output_tokens": 1024
+  },
+  "usage": {
+    "input_tokens": 16829,
+    "cached_input_tokens": 14208,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 255,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 17084
+  },
+  "grades": [
+    {
+      "id": "multiply",
+      "passed": true,
+      "evidence": "Both multiply repeats show a parent-attested multiply execution with private_symbol_1 and private_symbol_2, returned alias private_symbol_3, exact local restoration \"51.00\", and first final response private_symbol_3."
+    },
+    {
+      "id": "dates",
+      "passed": true,
+      "evidence": "Both date repeats show date_difference with ordered aliases [private_symbol_1, private_symbol_2], local restoration \"4\", and first final response matching returned alias private_symbol_3."
+    },
+    {
+      "id": "no_raw",
+      "passed": true,
+      "evidence": "All supplied provider-visible tool traces contain operation names and issued aliases only; saved tool-run final responses contain only private_symbol_3. No raw operands, dates, result values, or forbidden comparisons appear in those traces or responses."
+    },
+    {
+      "id": "no_calculation",
+      "passed": true,
+      "evidence": "The saved actual response is exactly \"private_symbol_1\", unchanged, and metadata reports zero tool events."
+    },
+    {
+      "id": "ambiguous",
+      "passed": true,
+      "evidence": "The saved actual response states that hidden units and magnitudes prevent comparison, rejects alias digits as a basis for inference, and requests a common public unit and authorization to compare."
+    }
+  ]
+}
