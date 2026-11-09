@@ -32,14 +32,14 @@ class PublicModel:
         return nullcontext()
 
 
-def test_context_exceptions_apply_to_one_occurrence():
+def test_public_words_do_not_depend_on_context_model_occurrence_votes():
     class FirstOnly(PublicModel):
         def public_spans(self, text, spans, language):
             return frozenset(span for span in spans if span[0] == 0)
     session = GatewaySession(natural_language="en", context_model=FirstOnly())
     text = "Paint works with Paint."
     masked = session.mask(text)
-    assert masked.startswith("Paint works with private_symbol_")
+    assert masked == text
     assert session.restore(masked) == text
 
 
@@ -48,8 +48,9 @@ def test_context_exceptions_apply_to_one_occurrence():
     ("pt", "Cemente as amostras no forno.", "Cemente"),
     ("ko", "동결건조하시오. 그 뒤에 바이알을 밀봉한다.", "동결건조"),
 ])
-def test_model_confidence_cannot_disclose_unknown_vocabulary(language, text, private):
+def test_model_confidence_cannot_disclose_registered_private_vocabulary(language, text, private):
     session = GatewaySession(natural_language=language, context_model=PublicModel())
+    session.forced_rules = lambda: (private,)
     masked = session.mask(text)
     assert private not in masked
     assert session.restore(masked) == text
@@ -69,7 +70,8 @@ def test_force_prior_mappings_domain_patterns_and_numbers_dominate_model():
     session.forced_rules = lambda: ("window",)
     text = "Explain Zorvexa and insulin to John near the window: alice@example.com 37591"
     masked = session.mask(text)
-    assert all(word not in masked for word in ("Zorvexa", "insulin", "John", "window", "alice@example.com", "37591"))
+    assert all(word not in masked for word in ("Zorvexa", "window", "alice@example.com", "37591"))
+    assert "insulin" in masked and "John" in masked
     assert session.restore(masked) == text
 
 
@@ -196,7 +198,10 @@ def test_missing_model_reports_unavailable_and_retains_default_masking(tmp_path)
     assert model is None and status == "unavailable"
     with PrivacyGateway(("127.0.0.1", 0), "x" * 32, context_model_path=str(tmp_path)) as gateway:
         assert gateway.session_diagnostics()["context_model"]["status"] == "unavailable"
-        assert "Zorvexa" not in gateway.get_session("codex").mask("Zorvexa")
+        session = gateway.get_session("codex")
+        assert session.mask("Zorvexa") == GatewaySession().mask("Zorvexa")
+        session.forced_rules = lambda: ("Zorvexa",)
+        assert "Zorvexa" not in session.mask("Zorvexa")
 
 
 @pytest.mark.parametrize("path", ["relative/model", "", 42, False])

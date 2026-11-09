@@ -104,6 +104,8 @@ def test_multilingual_passages_mask_private_values_and_restore(language, text, i
     fixture = SENSITIVE[language]
     private = (fixture["person"], fixture["company"], *fixture["terms"],
                f"person{index}@example.invalid")
+    # Public-looking names/words require explicit privacy registration.
+    session.forced_rules = lambda: tuple(part for value in private for part in value.split())
     original = text + "\n" + " | ".join(private)
     masked = session.request({"model": "fixture", "input": [{"role": "user", "content": original}]})
     forwarded = masked["input"][0]["content"]
@@ -120,6 +122,7 @@ def test_long_multilingual_document_keeps_aliases_stable(language):
     private = (sample["person"], sample["company"], *sample["terms"], "person@example.invalid")
     paragraph = "\n".join([*CORPUS[language], *prose_lines(language), " | ".join(private)])
     session = GatewaySession(natural_language=language)
+    session.forced_rules = lambda: tuple(part for value in private for part in value.split())
     first = session.mask(paragraph)
     document = (paragraph + "\n") * 20
     assert len(document.encode("utf-8")) >= 16000

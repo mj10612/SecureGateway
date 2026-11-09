@@ -1,0 +1,2338 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "9c6d4be7223f4c07a6fbad0e2fe144d0",
+  "metadata": {
+    "package_version": "2.7.13",
+    "code_sha": "089be42d95961771ce7b721b65a70cf24486d885",
+    "source_hash": "5141604490242a9ce892db8249ca984f91e2da3d85dd4b3a801fcd571c10b819",
+    "scoring_version": 2,
+    "corpus_version": "issue324-tasks-holdout-v1",
+    "corpus_hash": "19d72cfed29600e2e227aca7d4fd0587b05a9b73b775e4d703fe000308055132",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "hold-task-en": [],
+        "hold-task-ko": [],
+        "hold-task-es": [],
+        "hold-task-fr": [
+          "Ardoise"
+        ],
+        "hold-task-pt": [],
+        "hold-task-de": [],
+        "hold-task-id": [],
+        "hold-task-tr": [],
+        "hold-task-ru": [],
+        "hold-task-hi": [],
+        "hold-task-mr": [],
+        "hold-task-bn": [],
+        "hold-task-ur": [],
+        "hold-task-te": [],
+        "hold-task-ar": [],
+        "hold-task-zh": [],
+        "hold-task-ja": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63",
+      "case_language_modes": {
+        "hold-task-en": "auto",
+        "hold-task-ko": "explicit",
+        "hold-task-es": "auto",
+        "hold-task-fr": "explicit",
+        "hold-task-pt": "auto",
+        "hold-task-de": "explicit",
+        "hold-task-id": "auto",
+        "hold-task-tr": "explicit",
+        "hold-task-ru": "auto",
+        "hold-task-hi": "explicit",
+        "hold-task-mr": "auto",
+        "hold-task-bn": "explicit",
+        "hold-task-ur": "auto",
+        "hold-task-te": "explicit",
+        "hold-task-ar": "auto",
+        "hold-task-zh": "explicit",
+        "hold-task-ja": "auto"
+      }
+    },
+    "settings_hash": "7ecf2b24bab81db835ae579da6b7f0e6716271aafbeb990299d1a84449c01e01",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "ar",
+      "bn",
+      "de",
+      "en",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "ko",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "languages_not_measured": [],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "hold-task-en",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-en-holdout-task-volunteer-roster",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 7,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "I coordinate weekend volunteers at private_symbol_1 Community Pantry. Assign Saturday's three shifts (732846215368259843–732846966113138820, 732846966113138820–732846392432314149, 732846392432314149–732846961428657592) among Rose Calloway, Wes private_symbol_6 and Hope private_symbol_7. Rules: nobody works two shifts in a row; Rose cannot do the early shift; Wes must be on the shift that receives the 732846392432314149:732846579285146011 truck. I haven't heard back from Hope about her availability yet. Don't assign anyone I didn't name. Give me the roster as a three-line list in time order, plus anything you still need from me."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "I coordinate weekend volunteers at Fernhill Community Pantry. Assign Saturday's three shifts (8–11, 11–14, 14–17) among Rose Calloway, Wes Abara and Hope Lindgren. Rules: nobody works two shifts in a row; Rose cannot do the early shift; Wes must be on the shift that receives the 14:00 truck. I haven't heard back from Hope about her availability yet. Don't assign anyone I didn't name. Give me the roster as a three-line list in time order, plus anything you still need from me.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.02087050000409363,
+      "timings_seconds": {
+        "request_transform": [
+          0.00638720000279136,
+          0.0001714999962132424
+        ],
+        "response_restore": [
+          0.0003077000001212582,
+          0.0002502999996067956
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Fernhill",
+        "732846215368259843": "8",
+        "732846966113138820": "11",
+        "732846392432314149": "14",
+        "732846961428657592": "17",
+        "private_symbol_6": "Abara",
+        "private_symbol_7": "Lindgren",
+        "732846579285146011": "00"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 35,
+          "end": 60,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 120,
+          "end": 133,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 135,
+          "end": 144,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 149,
+          "end": 162,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 205,
+          "end": 209,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 237,
+          "end": 240,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 319,
+          "end": 323,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-ko",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-ko-holdout-task-bookclub-notice",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "별다리 작은도서관 독서모임 공지문을 써 주세요. 진행자는 윤하늘 님이고, 모임은 매월 둘째 주 토요일 오후 private_symbol_1 private_symbol_2 세미나실에서 열립니다. 이번 분기 선정 도서 세 권은 아직 위원회에서 확정되지 않았어요. 참가 신청은 하늘 님에게 private_symbol_3 로 받습니다. 조건: 존댓말, private_symbol_4 이내. 책 제목을 임의로 지어내지 마세요. 공지문 본문만 주세요."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "별다리 작은도서관 독서모임 공지문을 써 주세요. 진행자는 윤하늘 님이고, 모임은 매월 둘째 주 토요일 오후 3시 2층 세미나실에서 열립니다. 이번 분기 선정 도서 세 권은 아직 위원회에서 확정되지 않았어요. 참가 신청은 하늘 님에게 haneul.yoon@byeoldari-demo.invalid 로 받습니다. 조건: 존댓말, 5문장 이내. 책 제목을 임의로 지어내지 마세요. 공지문 본문만 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.025200199997925665,
+      "timings_seconds": {
+        "request_transform": [
+          0.010025099996710196,
+          0.00018689999706111848
+        ],
+        "response_restore": [
+          0.0002536999963922426,
+          0.00018889999773819
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "3시",
+        "private_symbol_2": "2층",
+        "private_symbol_3": "haneul.yoon@byeoldari-demo.invalid",
+        "private_symbol_4": "5문장"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 9,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 32,
+          "end": 35,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 123,
+          "end": 125,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 130,
+          "end": 164,
+          "label": "email",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-es",
+      "language": "es",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-es-holdout-task-supplier-quote",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Tengo dos presupuestos para 732846108655131491 sillas plegables para el centro cívico. Talleres private_symbol_2: 732846999578282680 € con transporte incluido, entrega el 732846543930153169 de marzo. Mueblería Brisa: 732846016891628659 € más 732846044443333100 € de transporte; Nieves Arrieta, su comercial, todavía no me ha dicho la fecha de entrega. La regla del comité: elegir la opción más barata siempre que llegue antes del 732846841946273366 de marzo. No me recomiendes un tercer proveedor. Responde con la recomendación en una frase y, debajo, los cálculos."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Tengo dos presupuestos para 40 sillas plegables para el centro cívico. Talleres Ondarra: 1.880 € con transporte incluido, entrega el 12 de marzo. Mueblería Brisa: 1.720 € más 95 € de transporte; Nieves Arrieta, su comercial, todavía no me ha dicho la fecha de entrega. La regla del comité: elegir la opción más barata siempre que llegue antes del 15 de marzo. No me recomiendes un tercer proveedor. Responde con la recomendación en una frase y, debajo, los cálculos.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.021786199999041855,
+      "timings_seconds": {
+        "request_transform": [
+          0.006225199998880271,
+          0.00018429999909130856
+        ],
+        "response_restore": [
+          0.00033519999851705506,
+          0.0002538999979151413
+        ]
+      },
+      "grading_alias_bindings": {
+        "732846108655131491": "40",
+        "private_symbol_2": "Ondarra",
+        "732846999578282680": "1.880",
+        "732846543930153169": "12",
+        "732846016891628659": "1.720",
+        "732846044443333100": "95",
+        "732846841946273366": "15"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 71,
+          "end": 87,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 146,
+          "end": 161,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 195,
+          "end": 209,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-fr",
+      "language": "fr",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-fr-holdout-task-minutes-to-actions",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "project",
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 5,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Transforme ce compte rendu en tableau d'actions (colonnes : action, responsable, échéance), dans l'ordre où les actions apparaissent. Ne reprends pas la discussion sur le budget.\n« Réunion du 732846068513493649 février. Claire private_symbol_2 relira le contrat de maintenance avant le 732846563531257047 février. Le budget 732846631154148040 a été jugé trop serré ; on en reparlera. Pierre private_symbol_5 commandera les badges des stagiaires d'ici le 732846455826974138 février. Claire et Manon private_symbol_7 prépareront la visite du site ⟦private_symbol_8⟧ ; aucune date n'a été fixée. »"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Transforme ce compte rendu en tableau d'actions (colonnes : action, responsable, échéance), dans l'ordre où les actions apparaissent. Ne reprends pas la discussion sur le budget.\n« Réunion du 4 février. Claire Fontanel relira le contrat de maintenance avant le 10 février. Le budget 2027 a été jugé trop serré ; on en reparlera. Pierre Aubertin commandera les badges des stagiaires d'ici le 14 février. Claire et Manon Riguet prépareront la visite du site Ardoise ; aucune date n'a été fixée. »",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.021069800000987016,
+      "timings_seconds": {
+        "request_transform": [
+          0.005708299999241717,
+          0.00020489999587880448
+        ],
+        "response_restore": [
+          0.0002666000000317581,
+          0.0003281999961473048
+        ]
+      },
+      "grading_alias_bindings": {
+        "732846068513493649": "4",
+        "private_symbol_2": "Fontanel",
+        "732846563531257047": "10",
+        "732846631154148040": "2027",
+        "private_symbol_5": "Aubertin",
+        "732846455826974138": "14",
+        "private_symbol_7": "Riguet",
+        "private_symbol_8": "Ardoise"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 203,
+          "end": 218,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 329,
+          "end": 344,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 403,
+          "end": 409,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 413,
+          "end": 425,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 456,
+          "end": 463,
+          "label": "project",
+          "fragments": [],
+          "policy": "explicit",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-pt",
+      "language": "pt",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-pt-holdout-task-discount-refusal",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "order_id",
+          "policy": "pattern",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Escreva uma resposta curta (até 732846539303821569 palavras) para Glória Bastos, compradora da Papelaria Alvorada, que pediu 732846722113778215 de desconto no pedido PED-private_symbol_3. Nossa política só permite 732846164515246215 para pedidos acima de 732846437108548401 unidades, e o pedido dela tem 732846687358012929. Recuse com cordialidade, explique o motivo e ofereça frete grátis, que está autorizado. Não prometa nenhuma data de entrega. Assine como Vítor Cunha."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Escreva uma resposta curta (até 90 palavras) para Glória Bastos, compradora da Papelaria Alvorada, que pediu 20% de desconto no pedido PED-SYN-5531. Nossa política só permite 8% para pedidos acima de 500 unidades, e o pedido dela tem 320. Recuse com cordialidade, explique o motivo e ofereça frete grátis, que está autorizado. Não prometa nenhuma data de entrega. Assine como Vítor Cunha.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.018287800005055033,
+      "timings_seconds": {
+        "request_transform": [
+          0.003926500001398381,
+          0.00014930000179447234
+        ],
+        "response_restore": [
+          0.00021779999951831996,
+          0.00022059999901102856
+        ]
+      },
+      "grading_alias_bindings": {
+        "732846539303821569": "90",
+        "732846722113778215": "20%",
+        "private_symbol_3": "SYN-5531",
+        "732846164515246215": "8%",
+        "732846437108548401": "500",
+        "732846687358012929": "320"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 63,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 79,
+          "end": 97,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 135,
+          "end": 147,
+          "label": "order_id",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 376,
+          "end": 387,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-de",
+      "language": "de",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-de-holdout-task-fieldtrip-packing",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Erstelle eine Packliste für den Tagesausflug der Klasse 732846559162625429 ins Waldmuseum Lindenhain am Donnerstag. Leiter ist Ernst Kühne. Vorgaben: Regen ist angesagt; das Museum erlaubt keine Glasflaschen; Mittagessen gibt es vor Ort nicht. Gib keine Empfehlungen zu Medikamenten – das regelt Herr Kühne mit den Eltern. Höchstens acht Punkte, als nummerierte Liste, ohne Einleitung."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Erstelle eine Packliste für den Tagesausflug der Klasse 6b ins Waldmuseum Lindenhain am Donnerstag. Leiter ist Ernst Kühne. Vorgaben: Regen ist angesagt; das Museum erlaubt keine Glasflaschen; Mittagessen gibt es vor Ort nicht. Gib keine Empfehlungen zu Medikamenten – das regelt Herr Kühne mit den Eltern. Höchstens acht Punkte, als nummerierte Liste, ohne Einleitung.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.017872099997475743,
+      "timings_seconds": {
+        "request_transform": [
+          0.003257200005464256,
+          0.00013499999477062374
+        ],
+        "response_restore": [
+          0.00020650000078603625,
+          0.00020419999782461673
+        ]
+      },
+      "grading_alias_bindings": {
+        "732846559162625429": "6b"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 63,
+          "end": 84,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 111,
+          "end": 122,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 285,
+          "end": 290,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-id",
+      "language": "id",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-id-holdout-task-expense-categories",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Tolong kelompokkan pengeluaran acara arisan RT bulan ini ke dalam kategori Konsumsi, Perlengkapan, dan Transportasi, lalu hitung subtotal tiap kategori. Data dari bendahara Intan Wulandari: nasi kotak private_symbol_1.private_symbol_2; sewa tenda private_symbol_3.private_symbol_2; bensin mobil Pak Bulan Siswanto private_symbol_4.private_symbol_2; air mineral private_symbol_5.private_symbol_2; taplak meja (nota hilang, jumlah belum diketahui); ongkos ojek private_symbol_6.private_symbol_2. Jangan menebak jumlah yang tidak ada. Sajikan sebagai tabel, lalu satu kalimat berisi total keseluruhan."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Tolong kelompokkan pengeluaran acara arisan RT bulan ini ke dalam kategori Konsumsi, Perlengkapan, dan Transportasi, lalu hitung subtotal tiap kategori. Data dari bendahara Intan Wulandari: nasi kotak Rp450.000; sewa tenda Rp300.000; bensin mobil Pak Bulan Siswanto Rp85.000; air mineral Rp60.000; taplak meja (nota hilang, jumlah belum diketahui); ongkos ojek Rp24.000. Jangan menebak jumlah yang tidak ada. Sajikan sebagai tabel, lalu satu kalimat berisi total keseluruhan.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.027391900002839975,
+      "timings_seconds": {
+        "request_transform": [
+          0.012474600000132341,
+          0.00016959999629762024
+        ],
+        "response_restore": [
+          0.00023669999791309237,
+          0.00023469999723602086
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Rp450",
+        "private_symbol_2": "000",
+        "private_symbol_3": "Rp300",
+        "private_symbol_4": "Rp85",
+        "private_symbol_5": "Rp60",
+        "private_symbol_6": "Rp24"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 173,
+          "end": 188,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 251,
+          "end": 265,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-tr",
+      "language": "tr",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-tr-holdout-task-leave-handover",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "phone",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Yarından itibaren iki hafta izindeyim. Yerime bakacak Umut Karaca için tam üç maddelik bir devir notu yaz. Bilgiler: Yıldırım Lojistik teklifi cuma günü gönderilecek; Deniz Ulu ile salı toplantısı ertelendi, yeni tarih bekleniyor; depo sayımı tamamlandı. Müşterinin telefon numarası olan +732846672231028893 732846707423269380 732846895143338685'yi nota koyma. Madde işaretlerinden önce veya sonra metin ekleme."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Yarından itibaren iki hafta izindeyim. Yerime bakacak Umut Karaca için tam üç maddelik bir devir notu yaz. Bilgiler: Yıldırım Lojistik teklifi cuma günü gönderilecek; Deniz Ulu ile salı toplantısı ertelendi, yeni tarih bekleniyor; depo sayımı tamamlandı. Müşterinin telefon numarası olan +44 7700 900602'yi nota koyma. Madde işaretlerinden önce veya sonra metin ekleme.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.019176000001607463,
+      "timings_seconds": {
+        "request_transform": [
+          0.004015400001662783,
+          0.00018480000289855525
+        ],
+        "response_restore": [
+          0.00020509999740170315,
+          0.0002097000033245422
+        ]
+      },
+      "grading_alias_bindings": {
+        "732846672231028893": "44",
+        "732846707423269380": "7700",
+        "732846895143338685": "900602"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 54,
+          "end": 65,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 117,
+          "end": 134,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 167,
+          "end": 176,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 288,
+          "end": 303,
+          "label": "phone",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-ru",
+      "language": "ru",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-ru-holdout-task-room-booking",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Помоги забронировать переговорную для воркшопа Веры private_symbol_1 в четверг с 732846550269912052:732846541654429950 до 732846886014572658:732846541654429950. Доступны: «private_symbol_5» на 732846516026363407 мест (свободна весь день), «private_symbol_7» на 732846227366837544 мест (свободна только после 732846860707321123:732846541654429950), «Дуб» на 732846577565162095 мест (свободна весь день, но стоит вдвое дороже остальных). Сколько будет участников, Вера пока не сообщила. Правило: брать самую дешёвую комнату, которая вмещает всех на всё время. Не придумывай число участников. Ответь коротко: какую комнату брать или что нужно уточнить."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Помоги забронировать переговорную для воркшопа Веры Синицыной в четверг с 10:00 до 13:00. Доступны: «Ольха» на 8 мест (свободна весь день), «Клён» на 20 мест (свободна только после 11:00), «Дуб» на 40 мест (свободна весь день, но стоит вдвое дороже остальных). Сколько будет участников, Вера пока не сообщила. Правило: брать самую дешёвую комнату, которая вмещает всех на всё время. Не придумывай число участников. Ответь коротко: какую комнату брать или что нужно уточнить.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01957150000089314,
+      "timings_seconds": {
+        "request_transform": [
+          0.005580100005317945,
+          0.00019289999909233302
+        ],
+        "response_restore": [
+          0.0002426999999443069,
+          0.000254299993684981
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Синицыной",
+        "732846550269912052": "10",
+        "732846541654429950": "00",
+        "732846886014572658": "13",
+        "private_symbol_5": "Ольха",
+        "732846516026363407": "8",
+        "private_symbol_7": "Клён",
+        "732846227366837544": "20",
+        "732846860707321123": "11",
+        "732846577565162095": "40"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 47,
+          "end": 61,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 287,
+          "end": 291,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-hi",
+      "language": "hi",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-hi-holdout-task-parent-reminder",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "phone",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "कक्षा 732846721207651628 के अभिभावकों के लिए एक व्हाट्सऐप रिमाइंडर लिखिए: अभिभावक-शिक्षक बैठक शनिवार सुबह 732846919074357993 बजे सरस्वती विहार विद्यालय के हॉल में है। कक्षा अध्यापिका पूजा रस्तोगी हैं; जो नहीं आ सकते वे पूजा जी को private_symbol_3 पर संदेश भेजें। संदेश 732846724840975828 शब्दों से कम हो। बकाया फ़ीस का ज़िक्र बिलकुल न करें। सिर्फ़ संदेश लिखें।"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "कक्षा 4 के अभिभावकों के लिए एक व्हाट्सऐप रिमाइंडर लिखिए: अभिभावक-शिक्षक बैठक शनिवार सुबह 10 बजे सरस्वती विहार विद्यालय के हॉल में है। कक्षा अध्यापिका पूजा रस्तोगी हैं; जो नहीं आ सकते वे पूजा जी को +1 415 555 0144 पर संदेश भेजें। संदेश 60 शब्दों से कम हो। बकाया फ़ीस का ज़िक्र बिलकुल न करें। सिर्फ़ संदेश लिखें।",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.016845199999806937,
+      "timings_seconds": {
+        "request_transform": [
+          0.003006600003573112,
+          0.00017179999849759042
+        ],
+        "response_restore": [
+          0.0001843999998527579,
+          0.00021580000611720607
+        ]
+      },
+      "grading_alias_bindings": {
+        "732846721207651628": "4",
+        "732846919074357993": "10",
+        "private_symbol_3": "+1 415 555 0144",
+        "732846724840975828": "60"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 96,
+          "end": 118,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 150,
+          "end": 162,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 186,
+          "end": 190,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 197,
+          "end": 212,
+          "label": "phone",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-mr",
+      "language": "mr",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-mr-holdout-task-repair-priority",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "सोसायटीच्या चार दुरुस्ती तक्रारी प्राधान्यक्रमाने लावा. नियम: आधी सुरक्षिततेचा धोका, मग पाणी गळती, मग बाकी; एकाच प्रकारात आधी आलेली तक्रार आधी. तक्रारी: (732846537068791958) विजय साठे - लिफ्टमधील आरसा डागाळला आहे, 732846299609438999 मार्च; (732846012564556107) आशा नाईक - जिन्यातील दिवा बंद, जिना अंधारात, 732846109724049729 मार्च; (732846859302531437) मेघा कर्वे - स्वयंपाकघरात छतातून गळती, 732846281262984818 मार्च; (732846305950898807) किरण दळवी - बाथरूमच्या नळातून गळती, 732846305950898807 मार्च. फक्त क्रमांकित यादी द्या, प्रत्येक ओळीत नाव आणि एका वाक्यात कारण. नवीन तक्रारी जोडू नका."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "सोसायटीच्या चार दुरुस्ती तक्रारी प्राधान्यक्रमाने लावा. नियम: आधी सुरक्षिततेचा धोका, मग पाणी गळती, मग बाकी; एकाच प्रकारात आधी आलेली तक्रार आधी. तक्रारी: (१) विजय साठे - लिफ्टमधील आरसा डागाळला आहे, ५ मार्च; (२) आशा नाईक - जिन्यातील दिवा बंद, जिना अंधारात, ७ मार्च; (३) मेघा कर्वे - स्वयंपाकघरात छतातून गळती, ६ मार्च; (४) किरण दळवी - बाथरूमच्या नळातून गळती, ४ मार्च. फक्त क्रमांकित यादी द्या, प्रत्येक ओळीत नाव आणि एका वाक्यात कारण. नवीन तक्रारी जोडू नका.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01936730000306852,
+      "timings_seconds": {
+        "request_transform": [
+          0.00459219999902416,
+          0.00020139999833190814
+        ],
+        "response_restore": [
+          0.0002595999976620078,
+          0.00024500000290572643
+        ]
+      },
+      "grading_alias_bindings": {
+        "732846537068791958": "१",
+        "732846299609438999": "५",
+        "732846012564556107": "२",
+        "732846109724049729": "७",
+        "732846859302531437": "३",
+        "732846281262984818": "६",
+        "732846305950898807": "४"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 157,
+          "end": 166,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 210,
+          "end": 218,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 268,
+          "end": 278,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 320,
+          "end": 329,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-bn",
+      "language": "bn",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-bn-holdout-task-feedback-themes",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 5,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "আমাদের রান্নার কর্মশালা নিয়ে অংশগ্রহণকারীদের মতামত থেকে সবচেয়ে বেশি উঠে আসা দুটি বিষয় বের করুন। মতামত: আলো মজুমদার – 'ঘর খুব গরম ছিল'; আকাশ রায় – 'উপকরণ কম পড়েছিল'; নদী খাতুন – 'পাখা চলছিল না, গরমে কষ্ট হয়েছে'; রাকিব হাসান – 'সবজি শেষ হয়ে গিয়েছিল'; সুমি দে – 'শিক্ষক খুব ভালো'। কারও নাম লিখবেন না এবং হুবহু উদ্ধৃতি দেবেন না। দুটি বুলেট দিন, প্রতিটিতে কতজন বলেছেন তা উল্লেখ করুন।"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "আমাদের রান্নার কর্মশালা নিয়ে অংশগ্রহণকারীদের মতামত থেকে সবচেয়ে বেশি উঠে আসা দুটি বিষয় বের করুন। মতামত: আলো মজুমদার – 'ঘর খুব গরম ছিল'; আকাশ রায় – 'উপকরণ কম পড়েছিল'; নদী খাতুন – 'পাখা চলছিল না, গরমে কষ্ট হয়েছে'; রাকিব হাসান – 'সবজি শেষ হয়ে গিয়েছিল'; সুমি দে – 'শিক্ষক খুব ভালো'। কারও নাম লিখবেন না এবং হুবহু উদ্ধৃতি দেবেন না। দুটি বুলেট দিন, প্রতিটিতে কতজন বলেছেন তা উল্লেখ করুন।",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.017953000002307817,
+      "timings_seconds": {
+        "request_transform": [
+          0.0033350000012433156,
+          0.00015409999468829483
+        ],
+        "response_restore": [
+          0.0001982000030693598,
+          0.00022389999503502622
+        ]
+      },
+      "grading_alias_bindings": {},
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 106,
+          "end": 117,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 138,
+          "end": 147,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 170,
+          "end": 179,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 217,
+          "end": 228,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 257,
+          "end": 264,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-ur",
+      "language": "ur",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-ur-holdout-task-delay-apology",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "order_id",
+          "policy": "pattern",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 4,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "شاہین ٹیکسٹائل کی صبا ملک کو ای میل لکھیں: ان کا آرڈر private_symbol_1-private_symbol_2 وعدے کی تاریخ پر نہیں پہنچا۔ تاخیر کی وجہ ابھی گودام سے معلوم نہیں ہوئی، اور نئی ترسیل کی تاریخ بھی طے نہیں۔ معذرت کریں اور بتائیں کہ ہم 732846749905746579 گھنٹوں میں تازہ صورتحال بھیجیں گے۔ کوئی وجہ یا تاریخ خود سے نہ گھڑیں، اور رعایت کی پیشکش نہ کریں۔ دستخط: نور حسن۔"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "شاہین ٹیکسٹائل کی صبا ملک کو ای میل لکھیں: ان کا آرڈر ORD-SYN-2290 وعدے کی تاریخ پر نہیں پہنچا۔ تاخیر کی وجہ ابھی گودام سے معلوم نہیں ہوئی، اور نئی ترسیل کی تاریخ بھی طے نہیں۔ معذرت کریں اور بتائیں کہ ہم 48 گھنٹوں میں تازہ صورتحال بھیجیں گے۔ کوئی وجہ یا تاریخ خود سے نہ گھڑیں، اور رعایت کی پیشکش نہ کریں۔ دستخط: نور حسن۔",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.0504951999973855,
+      "timings_seconds": {
+        "request_transform": [
+          0.03502999999909662,
+          0.000167199999850709
+        ],
+        "response_restore": [
+          0.0002671999973244965,
+          0.00019489999976940453
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "ORD",
+        "private_symbol_2": "SYN-2290",
+        "732846749905746579": "48"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 14,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 18,
+          "end": 25,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 54,
+          "end": 66,
+          "label": "order_id",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 312,
+          "end": 319,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-te",
+      "language": "te",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-te-holdout-task-study-timetable",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "కిరణ్ దాసరి కోసం సోమవారం నుంచి శుక్రవారం వరకు సాయంత్రం 732846251240569586–732846460582054453 గంటల అధ్యయన టైమ్‌టేబుల్ తయారు చేయండి. సబ్జెక్టులు: గణితం, భౌతికశాస్త్రం, తెలుగు. నియమాలు: గణితానికి కనీసం రెండు రోజులు; బుధవారం కిరణ్ క్రికెట్ ప్రాక్టీస్‌కు వెళ్తాడు కాబట్టి ఆ రోజు ఏమీ పెట్టవద్దు; ప్రతి రోజు ఒకే సబ్జెక్ట్. శనివారం, ఆదివారం చేర్చవద్దు. రోజు – సబ్జెక్ట్ రూపంలో ఐదు లైన్లు మాత్రమే ఇవ్వండి."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "కిరణ్ దాసరి కోసం సోమవారం నుంచి శుక్రవారం వరకు సాయంత్రం 6–8 గంటల అధ్యయన టైమ్‌టేబుల్ తయారు చేయండి. సబ్జెక్టులు: గణితం, భౌతికశాస్త్రం, తెలుగు. నియమాలు: గణితానికి కనీసం రెండు రోజులు; బుధవారం కిరణ్ క్రికెట్ ప్రాక్టీస్‌కు వెళ్తాడు కాబట్టి ఆ రోజు ఏమీ పెట్టవద్దు; ప్రతి రోజు ఒకే సబ్జెక్ట్. శనివారం, ఆదివారం చేర్చవద్దు. రోజు – సబ్జెక్ట్ రూపంలో ఐదు లైన్లు మాత్రమే ఇవ్వండి.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01804180000181077,
+      "timings_seconds": {
+        "request_transform": [
+          0.0033324000032735057,
+          0.00014400000509340316
+        ],
+        "response_restore": [
+          0.00021500000002561137,
+          0.00019869999960064888
+        ]
+      },
+      "grading_alias_bindings": {
+        "732846251240569586": "6",
+        "732846460582054453": "8"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 11,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 187,
+          "end": 192,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-ar",
+      "language": "ar",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-ar-holdout-task-job-posting",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "اكتب إعلان وظيفة قصيرًا لوظيفة \"منسق مستودع\" في شركة النور للتوزيع بناءً على هذه الملاحظات: دوام كامل من الأحد إلى الخميس؛ الموقع في المنطقة الصناعية الثانية؛ المتطلبات: خبرة سنتين في المخازن ورخصة قيادة رافعة شوكية؛ للتقديم تُرسل الطلبات إلى هدى الشامي على private_symbol_1. الراتب لم تعتمده الإدارة بعد. لا تضع أي شرط يتعلق بالعمر أو الجنس، ولا تكتب رقمًا للراتب. أعطني نص الإعلان فقط: عنوان وثلاث فقرات قصيرة."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "اكتب إعلان وظيفة قصيرًا لوظيفة \"منسق مستودع\" في شركة النور للتوزيع بناءً على هذه الملاحظات: دوام كامل من الأحد إلى الخميس؛ الموقع في المنطقة الصناعية الثانية؛ المتطلبات: خبرة سنتين في المخازن ورخصة قيادة رافعة شوكية؛ للتقديم تُرسل الطلبات إلى هدى الشامي على huda.alshami@alnoor-demo.invalid. الراتب لم تعتمده الإدارة بعد. لا تضع أي شرط يتعلق بالعمر أو الجنس، ولا تكتب رقمًا للراتب. أعطني نص الإعلان فقط: عنوان وثلاث فقرات قصيرة.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01868800000374904,
+      "timings_seconds": {
+        "request_transform": [
+          0.004553799997665919,
+          0.00016029999824240804
+        ],
+        "response_restore": [
+          0.00023890000011306256,
+          0.00018840000120690092
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "huda.alshami@alnoor-demo.invalid"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 48,
+          "end": 66,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 243,
+          "end": 253,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 258,
+          "end": 290,
+          "label": "email",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-zh",
+      "language": "zh",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-zh-holdout-task-notice-proofread",
+      "language_mode": "explicit",
+      "sensitive_annotations": [
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "email",
+          "policy": "pattern",
+          "severity": "high"
+        },
+        {
+          "label": "organization",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "email",
+          "policy": "pattern",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 6,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "请检查下面这则通知，只列出需要更正的地方，不要重写全文。已知事实：活动在11月22日（星期六）下午2点，地点是月湖社区活动中心三楼，负责人是高明远，private_symbol_1。\n草稿：「各位居民：月湖社区将于11月22日（星期日）下午2点在活动中心二楼举办手工市集，负责人高明远，private_symbol_2。」\n用编号列表，每条写成\"原文 → 改为\"。"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "请检查下面这则通知，只列出需要更正的地方，不要重写全文。已知事实：活动在11月22日（星期六）下午2点，地点是月湖社区活动中心三楼，负责人是高明远，报名邮箱是mingyuan.gao@yuehu-demo.invalid。\n草稿：「各位居民：月湖社区将于11月22日（星期日）下午2点在活动中心二楼举办手工市集，负责人高明远，报名请发邮件至mingyuan.gao@yuehu-demo.invalid。」\n用编号列表，每条写成\"原文 → 改为\"。",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.020423899994057138,
+      "timings_seconds": {
+        "request_transform": [
+          0.004354000004241243,
+          0.00013480000052368268
+        ],
+        "response_restore": [
+          0.00016909999976633117,
+          0.00019330000213813037
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "报名邮箱是mingyuan.gao@yuehu-demo.invalid",
+        "private_symbol_2": "报名请发邮件至mingyuan.gao@yuehu-demo.invalid"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 55,
+          "end": 59,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 73,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 79,
+          "end": 110,
+          "label": "email",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 121,
+          "end": 125,
+          "label": "organization",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 159,
+          "end": 162,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 170,
+          "end": 201,
+          "label": "email",
+          "fragments": [],
+          "policy": "pattern",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    },
+    {
+      "id": "hold-task-ja",
+      "language": "ja",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "holdout-task-ja-holdout-task-agenda-order",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "person",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "来週の定例会の議題を並べてください。条件：(a)「予算案の承認」は「見積もり比較の報告」の後；(b) 新メンバー佐伯 空さんの紹介は最初；(c) 森下 光さんは11時に退出するので、彼女が担当する「見積もり比較の報告」はできるだけ早く；(d)「その他」は最後。議題は「予算案の承認」「見積もり比較の報告」「新メンバー紹介」「備品の棚卸し結果」「その他」の5つです。番号付きリストだけで答え、議題を追加しないでください。"
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "来週の定例会の議題を並べてください。条件：(a)「予算案の承認」は「見積もり比較の報告」の後；(b) 新メンバー佐伯 空さんの紹介は最初；(c) 森下 光さんは11時に退出するので、彼女が担当する「見積もり比較の報告」はできるだけ早く；(d)「その他」は最後。議題は「予算案の承認」「見積もり比較の報告」「新メンバー紹介」「備品の棚卸し結果」「その他」の5つです。番号付きリストだけで答え、議題を追加しないでください。",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.02315910000470467,
+      "timings_seconds": {
+        "request_transform": [
+          0.007041500000923406,
+          0.00012399999832268804
+        ],
+        "response_restore": [
+          0.00019370000518392771,
+          0.00016510000568814576
+        ]
+      },
+      "grading_alias_bindings": {},
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 56,
+          "end": 60,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 73,
+          "end": 77,
+          "label": "person",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": []
+    }
+  ],
+  "status": "running",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 64,
+      "measured_sensitive": 64,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 17,
+      "full_exposures": 47,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.265625,
+      "observed_accuracy": 0.265625,
+      "requests_with_leak": 17,
+      "measured_requests": 17,
+      "total_requests": 17
+    },
+    "overmasking": {
+      "measured_public": 0,
+      "overmasked": 0,
+      "rate": null
+    },
+    "integrity": {
+      "roundtrip_passed": 17,
+      "semantic_roundtrip_passed": 17,
+      "replay_passed": 17,
+      "measured_requests": 17,
+      "response_failures": 0,
+      "payload_replay_passed": 17
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  }
+}

@@ -48,6 +48,7 @@ def test_cli_mcp_sdk_same_policy():
 def test_gateway_policy_and_code_default_preservation():
     with PrivacyGateway(("127.0.0.1", 0), "t" * 32, prose_mode="uncommon_words", common_words=["nexvanta"]) as gateway:
         session = gateway.get_session("codex")
+        session.mask("zorblyx", code=True)
         masked = session._mask_prose("the meeting uses zorblyx and nexvanta")
         assert "meeting" in masked and "nexvanta" in masked and "zorblyx" not in masked
         code = session._mask_source("privateValue = 7", "python")

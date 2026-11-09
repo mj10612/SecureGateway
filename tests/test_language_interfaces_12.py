@@ -143,6 +143,7 @@ def test_gateway_prose_language_selection_and_exact_restore(language):
     from secure_gateway.gateway import GatewaySession
     name, grammar = CASES[language]
     gateway = GatewaySession(natural_language=language)
+    gateway.forced_rules = lambda: (name,)
     text = f"{name} {grammar} {name}."
     masked = gateway.mask(text)
     assert name not in masked

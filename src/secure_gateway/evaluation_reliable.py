@@ -17,7 +17,7 @@ from secure_gateway.encrypted_session import session_file_lock
 from secure_gateway.engine.natural_languages import SUPPORTED_LANGUAGES
 from secure_gateway.evaluation import at, compare_reports, digest, load_corpus, run_privacy, write_json
 from secure_gateway import evaluation_codex_worker as _adapter_module
-from secure_gateway.evaluation_codex_worker import run_codex_worker
+from secure_gateway.evaluation_diagnostics import diagnostic_worker as run_codex_worker, ObservedWorkerFailure
 from secure_gateway.evaluation_comprehension import (
     GRADING_POLICY_V2, _grade_request, _validate_grades, _validate_response, continue_comprehension, prepare_comprehension,
 )
@@ -654,6 +654,9 @@ def execute_reliable(output_dir, *, execute=False, max_calls=306, max_seconds=72
                                 entry['usage_unknown'] = True
                         except Exception as exc:
                             entry.update(status='error', error=type(exc).__name__)
+                            if isinstance(exc, ObservedWorkerFailure):
+                                entry.update(error=exc.diagnostics['code'], diagnostics=exc.diagnostics,
+                                             usage=exc.usage or {}, usage_unknown=exc.usage is None)
                             journal['stopped'] = True
                             journal['stop_reason'] = 'Worker error or rejected record.'
                             if result is not None:
@@ -747,6 +750,9 @@ def audit_references(data_dir, output_dir, *, execute=False, split='holdout', mo
                 journal['stopped'] = True  # Unknown usage stays incomplete by budget policy.
         except Exception as exc:
             entry.update(status='error', error=type(exc).__name__)
+            if isinstance(exc, ObservedWorkerFailure):
+                entry.update(error=exc.diagnostics['code'], diagnostics=exc.diagnostics,
+                             usage=exc.usage or {}, usage_unknown=exc.usage is None)
             journal['stopped'] = True
             if result is not None:
                 _append_rejected(rejected_path, {'job_id': request['job_id'], 'error': type(exc).__name__,

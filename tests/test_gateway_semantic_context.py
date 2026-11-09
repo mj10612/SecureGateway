@@ -14,6 +14,7 @@ PARAGRAPHS = [row for name in ("semantic_paragraphs.json", "semantic_holdout.jso
 @pytest.mark.parametrize("row", PARAGRAPHS, ids=lambda row: row["language"])
 def test_paragraphs_keep_references_private_and_restore_exactly(row):
     session = GatewaySession()
+    session.forced_rules = lambda: tuple(row["references"])
     request = session.request({"model": "fixture", "input": [{"role": "user", "content": row["text"]}]})
     masked = request["input"][0]["content"]
     for reference in row["references"]:
@@ -47,13 +48,13 @@ def test_source_numeric_spellings_remain_private_and_restore_in_prose(number, ma
     assert session.mask(text) == masked
 
 
-def test_discourse_markers_are_preserved_only_in_grammatical_positions():
+def test_common_discourse_words_remain_public_in_all_positions():
     session = GatewaySession(natural_language="en")
     text = "First, compare Zorvexa and First. Then, recommend the cheaper option."
     masked = session.mask(text)
     assert masked.startswith("First,")
     assert "Then," in masked
-    assert "and First" not in masked
+    assert "and First" in masked
     assert "Zorvexa" not in masked
     assert session.restore(masked) == text
 
@@ -83,10 +84,12 @@ def test_request_preserves_operations_and_constraints(language, text, operators)
     assert all(operator in masked for operator in operators)
 
 
-def test_imperative_exception_does_not_disclose_other_capitalized_occurrences():
+def test_common_imperative_word_remains_public_in_name_position():
     session = GatewaySession(natural_language="en")
     masked = session.mask("Compare the options and ask Compare.")
-    assert masked.startswith("Compare ") and "ask Compare" not in masked
+    assert masked.startswith("Compare ") and "ask Compare" in masked
+    session.forced_rules = lambda: ("Compare",)
+    assert "Compare" not in session.mask("Compare the options and ask Compare.")
 
 
 @pytest.mark.parametrize("text", ["  Compare the options.", "\tCompare two options.", "Compare 2 options."])
@@ -113,8 +116,12 @@ def test_korean_conditional_selection_and_negative_actions_remain_readable():
                                   "Compare works with Zorvexa.", "Reserve offers plans.", "Compare may acquire Zorvexa.",
                                   "Compare matches the code.", "Compare sends reports.", "Contact only sends reports.",
                                   "Reserve only offers plans.", "Reserve first announced Zorvexa.", "First sends reports."])
-def test_instruction_word_in_name_position_stays_private(text):
-    assert text.split()[0] not in GatewaySession(natural_language="en").mask(text)
+def test_registered_instruction_word_in_name_position_stays_private(text):
+    session = GatewaySession(natural_language="en")
+    word = text.split()[0]
+    assert word in session.mask(text)
+    session.forced_rules = lambda: (word,)
+    assert word not in session.mask(text)
 
 
 @pytest.mark.parametrize("language,text,name", [
@@ -123,5 +130,8 @@ def test_instruction_word_in_name_position_stays_private(text):
     ("fr", "Compare travaille ici.", "Compare"),
     ("pt", "Compare trabalha aqui.", "Compare"),
 ])
-def test_other_languages_keep_ambiguous_capitalized_subjects_private(language, text, name):
-    assert name not in GatewaySession(natural_language=language).mask(text)
+def test_other_languages_keep_registered_ambiguous_subjects_private(language, text, name):
+    session = GatewaySession(natural_language=language)
+    assert name in session.mask(text)
+    session.forced_rules = lambda: (name,)
+    assert name not in session.mask(text)

@@ -54,7 +54,7 @@ def test_korean_candidate_preserves_known_actions_but_forced_terms_win():
         assert "물어보세요" not in masked and session.restore(masked) == text
 
 
-def test_korean_candidate_does_not_expose_known_or_domain_private_word():
+def test_korean_candidate_protects_mapping_and_keeps_ordinary_domain_word_public():
     from secure_gateway.experiment_profiles import candidate_profile
     with candidate_profile(309):
         session = gateway.GatewaySession(natural_language="ko")
@@ -62,6 +62,8 @@ def test_korean_candidate_does_not_expose_known_or_domain_private_word():
         assert "물어보세요" not in session.mask("물어보세요")
         other = gateway.GatewaySession(natural_language="ko")
         other.engine.domain_spans = lambda text: [(0, len(text))]
+        assert "모르면" in other.mask("모르면")
+        other.forced_rules = lambda: ("모르면",)
         assert "모르면" not in other.mask("모르면")
 
 

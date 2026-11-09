@@ -1,8 +1,10 @@
 # Issue #323: public-word prose policy (implementation notes)
 
-Status: implemented in the root work-in-progress tree for review. It is **not** a release
-claim and **not** an evaluation result. Root owns final independent evaluation, versioning
-and release.
+Status: integrated in 2.7.10; the frozen 2.7.13 engine has a completed
+[holdout measurement with an explicit interruption continuation](../evaluations/issue323-2.7.13-holdout-continuation/README.md).
+The owner accepted the listed name/organization exposures. Original strict
+privacy/adoption gates were not passed or relabelled. Version 2.7.14 records
+the results and aligns public-default versus explicit-private test controls.
 
 ## User policy
 

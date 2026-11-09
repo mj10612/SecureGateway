@@ -16,6 +16,7 @@ def test_korean_requests_retain_action_and_public_context():
 
 def test_korean_request_words_do_not_expose_private_values_or_code():
     session = GatewaySession()
+    session.forced_rules = lambda: ("비밀고객",)
     text = "비밀고객의 파일을 찾아서 수정해줘 alice@example.com"
     masked = session.mask(text)
     assert "비밀고객" not in masked
@@ -56,8 +57,9 @@ def test_partial_alias_expansion_respects_output_limit():
         session.mask("⟦" * 2)
 
 
-def test_foreign_task_word_does_not_expose_english_proper_name():
+def test_registered_foreign_task_word_does_not_expose_english_proper_name():
     session = GatewaySession(natural_language="en")
+    session.forced_rules = lambda: ("Ara", "Sil", "Delete")
     assert "Ara" not in session.mask("Ara")
     assert "Sil" not in session.mask("Sil")
     assert "Delete" not in session.mask("Delete")
@@ -101,25 +103,29 @@ def test_reviewed_indic_words_with_case_suffixes_remain_understandable(language,
     assert session.mask(text) == text
 
 
-def test_frequent_domain_words_are_still_private():
+def test_frequent_domain_words_are_public_unless_registered_private():
     session = GatewaySession(natural_language="en")
     text = "review cancer credit and bank"
+    assert session.mask(text) == text
+    session.forced_rules = lambda: ("cancer", "credit", "bank")
     masked = session.mask(text)
     assert all(word not in masked for word in ("cancer", "credit", "bank"))
     assert session.restore(masked) == text
 
 
 @pytest.mark.parametrize("text", ["cancer's", "bank’s", "banking", "cancers", "password's"])
-def test_domain_inflections_do_not_bypass_masking(text):
+def test_registered_domain_inflections_do_not_bypass_masking(text):
     session = GatewaySession(natural_language="en")
+    session.forced_rules = lambda: (text,)
     masked = session.mask(text)
     assert text not in masked
     assert session.restore(masked) == text
 
 
 @pytest.mark.parametrize("text", ["ومحمد", "السرطان"])
-def test_arabic_prefixes_do_not_expose_known_names_or_domains(text):
+def test_arabic_prefixes_do_not_expose_registered_names_or_domains(text):
     session = GatewaySession(natural_language="ar")
+    session.forced_rules = lambda: (text,)
     masked = session.mask(text)
     assert text not in masked
     assert session.restore(masked) == text
@@ -250,26 +256,32 @@ def test_skill_filename_adjacent_to_unicode_restores_exactly(text):
 
 def test_capitalized_common_words_can_be_private_names():
     session = GatewaySession(natural_language="en")
+    assert session.mask("Meeting acquired Water.") == "Meeting acquired Water."
+    session.forced_rules = lambda: ("Meeting", "Water")
     masked = session.mask("Meeting acquired Water.")
     assert "Meeting" not in masked and "Water" not in masked
 
 
-def test_skill_instruction_does_not_expose_person_named_read():
+def test_skill_instruction_keeps_ordinary_read_unless_registered_private():
     session = GatewaySession()
     text = "Read SKILL.md and ask Read for help."
     masked = session.mask(text)
     assert masked.startswith("Read SKILL.md")
-    assert "ask Read" not in masked
+    assert "ask Read" in masked
     assert session.restore(masked) == text
+    session.forced_rules = lambda: ("Read",)
+    assert "Read" not in session.mask(text)
 
 
-def test_skill_follow_verb_does_not_expose_a_person_named_follow():
+def test_skill_follow_verb_stays_public_unless_registered_private():
     session = GatewaySession()
     text = "Read SKILL.md. Follow its instructions and ask Follow for help."
     masked = session.mask(text)
     assert "SKILL.md." in masked and "Follow its instructions" in masked
-    assert "ask Follow" not in masked
+    assert "ask Follow" in masked
     assert session.restore(masked) == text
+    session.forced_rules = lambda: ("Follow",)
+    assert "Follow" not in session.mask(text)
 
 
 def test_aggressive_mode_does_not_preserve_new_general_words():
@@ -327,6 +339,7 @@ def test_forced_rules_block_leaks_in_protocol_fields_and_numbers():
 ])
 def test_supported_languages_keep_task_words_and_mask_private_terms(language, action, technical):
     session = GatewaySession(natural_language=language)
+    session.forced_rules = lambda: ("Zorvexa", technical)
     text = f"{action} Zorvexa {technical} test@example.com"
     masked = session.mask(text)
     assert action in masked

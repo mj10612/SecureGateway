@@ -86,12 +86,12 @@ def test_failed_snapshot_save_is_atomic_and_read_is_bounded(tmp_path, monkeypatc
 def test_gateway_effective_byte_limit_and_metadata_only_diagnostics():
     with PrivacyGateway(("127.0.0.1", 0), "synthetic-token", max_mapping_bytes=1200) as g:
         s = g.get_session("codex")
-        s._mask_prose("private")
+        s.mask("private", code=True)
         report = g.session_diagnostics()["providers"]["codex"]
         assert report["max_mapping_bytes"] == 1200 and 0 < report["mapping_bytes"] <= 1200
         assert "private" not in json.dumps(report)
         with pytest.raises(ValueError, match="Mapping byte limit"):
-            s._mask_prose("zorblyx")
+            s.mask("zorblyx", code=True)
     saved = PrivacySession("gateway", max_mapping_bytes=1500)
     wrapped = GatewaySession(saved, max_mapping_bytes=1200)
     assert wrapped.session.generator.max_mapping_bytes == 1200

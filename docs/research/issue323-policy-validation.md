@@ -36,3 +36,20 @@ has not been completed. The owner directed integration with organization-name
 exposure accepted; this does not establish that every uncommon person name or
 other unregistered sensitive value is safe to disclose. Keep the outstanding
 evaluation and failure classification visible.
+
+## Completed follow-up
+
+The candidate was integrated in 2.7.10 and evaluated at the frozen 2.7.13 commit.
+The [holdout report](../evaluations/issue323-2.7.13-holdout-continuation/README.md)
+records a task-response gain from 48.00 to 61.00 / 68, with three repeats per
+language. It preserves an interrupted primary run, its three unknown-usage
+attempts and a separate explicit continuation. The owner reviewed and accepted
+the complete newly exposed person/organization list. Original privacy labels
+and failed strict adoption gates remain visible.
+
+The integrated pre-alignment full suite had 4,554 passed, 345 failed and 288
+skipped. All failures were confined to eight test files whose expectations used
+the previous private-by-default policy. Their updated public-default and
+explicit-private controls passed 811 tests with 2 skips. Historical evaluation
+corpora and parser fixtures were not changed. Evaluation safeguards/diagnostics
+passed 59 tests; Ruff, mypy, package build and version checks passed for 2.7.14.
