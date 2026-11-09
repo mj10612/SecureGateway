@@ -31,7 +31,7 @@ shape, or non-hex digests).
 - `get_session()` catches the invalid-envelope error from `load_session()`, quarantines the snapshot pair,
   and starts a fresh in-memory session. `SessionExpiredError` still removes the
   expired snapshot. `OSError` from snapshot load is not treated as proven
-  corruption and propagates (transient read/permission failure). Authentication failures are ambiguous with wrong passwords and preserve state.
+  corruption and propagates (transient read/permission failure). Authentication failures are ambiguous with wrong passwords, so original bytes are quarantined intact before starting a fresh session.
 - If the encrypted mapping snapshot loads successfully but
   `<key>-symbols-v2.opaque.json` is malformed/invalid, only opaque provenance is
   quarantined. Encrypted alias mappings remain usable, but `session.opaque` stays
@@ -72,5 +72,6 @@ quarantine failure.
 - No cross-project logging rewrite and no new user-facing diagnostics beyond the
   bounded quarantine behavior; the fixed quarantine-failure `OSError` is internal
   and handled by existing safe HTTP error paths.
-- Authentication failure is indistinguishable from a wrong password, so affected
-  snapshots are preserved and require explicit operator recovery.
+- Authentication failure is indistinguishable from a wrong password. The original
+  encrypted bytes remain in quarantine and can be recovered explicitly. If that
+  quarantine path already exists, recovery stops instead of overwriting it.

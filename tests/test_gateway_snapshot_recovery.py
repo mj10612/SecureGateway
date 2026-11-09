@@ -229,7 +229,7 @@ def test_quarantine_failure_fails_safely_without_leaking_details(tmp_path, monke
         assert "local-token" not in str(exc.value)
 
 
-def test_wrong_password_snapshot_is_preserved(tmp_path):
+def test_wrong_password_snapshot_is_quarantined_before_fresh_session(tmp_path):
     with PrivacyGateway(("127.0.0.1", 0), "local-token", state_dir=tmp_path) as gateway:
         session = gateway.get_session("codex", "conv1")
         session.mask("secret-value", code=True)
@@ -237,10 +237,27 @@ def test_wrong_password_snapshot_is_preserved(tmp_path):
         save_session(path, session.session, "different-password")
         original = path.read_bytes()
         gateway.sessions.clear()
-        with pytest.raises(ValueError):
+        recovered = gateway.get_session("codex", "conv1")
+        assert not path.exists()
+        quarantined = path.with_name(path.name + ".quarantined")
+        assert quarantined.read_bytes() == original
+        gateway.save("codex", recovered)
+        assert path.exists()
+        assert quarantined.read_bytes() == original
+
+
+def test_existing_quarantine_is_not_overwritten(tmp_path):
+    with PrivacyGateway(("127.0.0.1", 0), "local-token", state_dir=tmp_path) as gateway:
+        session = gateway.get_session("codex", "conv1")
+        path = tmp_path / f"{session.storage_key}-symbols-v2.enc"
+        path.write_bytes(b"corrupt-current")
+        quarantined = path.with_name(path.name + ".quarantined")
+        quarantined.write_bytes(b"older-recovery")
+        gateway.sessions.clear()
+        with pytest.raises(OSError, match="Snapshot recovery failed"):
             gateway.get_session("codex", "conv1")
-        assert path.read_bytes() == original
-        assert not path.with_name(path.name + ".quarantined").exists()
+        assert path.read_bytes() == b"corrupt-current"
+        assert quarantined.read_bytes() == b"older-recovery"
 
 
 def test_quarantine_chmod_failure_fails_safely(tmp_path, monkeypatch):

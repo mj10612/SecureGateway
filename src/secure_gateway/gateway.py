@@ -2355,6 +2355,8 @@ class PrivacyGateway(ThreadingHTTPServer):
                 if not path.exists():
                     continue
                 target = path.with_name(path.name + ".quarantined")
+                if target.exists() or target.is_symlink():
+                    raise OSError("Snapshot quarantine already exists.")
                 path.chmod(0o600)
                 path.replace(target)
             except OSError:
@@ -2468,9 +2470,10 @@ class PrivacyGateway(ThreadingHTTPServer):
                     self._remove_snapshot(key)
                     saved = None
                 except ValueError as exc:
-                    # Only an invalid envelope is distinguishable from a wrong
-                    # password. Preserve all ambiguous authentication failures.
-                    if str(exc) != "Invalid encrypted session file.":
+                    # Authentication failure can also mean a wrong password.
+                    # Quarantine the bytes intact before starting a new session.
+                    if str(exc) not in {"Invalid encrypted session file.",
+                                        "Incorrect session password or damaged session file."}:
                         raise ValueError("Snapshot could not be loaded.") from None
                     self._recover_snapshot(key)
                     saved = None
