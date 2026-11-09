@@ -14,6 +14,7 @@ import stat
 import time
 
 from secure_gateway.audit_retry import CompletionRetries
+from secure_gateway.platform_utils import lock_file_exclusive
 from uuid import uuid4
 
 
@@ -107,13 +108,8 @@ class AuditStore:
 
     @staticmethod
     def _lock(handle):
-        handle.seek(0)
-        if sys.platform == "win32":
-            import msvcrt
-            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
-        else:
-            import fcntl
-            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)  # type: ignore[attr-defined]
+        """Ownership markers stay portable without a platform branch here."""
+        lock_file_exclusive(handle)
 
     def close(self):
         retries = getattr(self, "completion_retries", None)

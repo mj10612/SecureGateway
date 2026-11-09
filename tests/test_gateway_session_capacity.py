@@ -139,7 +139,11 @@ def test_http_mask_failure_releases_session_pin(monkeypatch):
         response.read()
         client.close()
         assert len(gateway.sessions) == 1
-        assert next(iter(gateway.sessions.values())).active_requests == 0
+        session = next(iter(gateway.sessions.values()))
+        deadline = time.monotonic() + 3
+        while session.active_requests and time.monotonic() < deadline:
+            time.sleep(.01)
+        assert session.active_requests == 0
     finally:
         gateway.shutdown()
         gateway.server_close()

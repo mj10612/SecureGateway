@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "secure-gateway"
-version = "2.7.15"
+version = "2.7.18"
 description = "Local multilingual masking and automatic Claude/Codex subscription privacy gateway"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -52,7 +52,8 @@ dependencies = [
 [project.optional-dependencies]
 context = [
     "numpy>=1.24,<3.0",
-    "onnxruntime>=1.20,<2.0",
+    "onnxruntime>=1.20,<1.24; python_version < '3.11'",
+    "onnxruntime>=1.20,<2.0; python_version >= '3.11'",
     "tokenizers>=0.21,<1.0",
 ]
 context-eval = [

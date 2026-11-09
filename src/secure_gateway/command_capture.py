@@ -1,41 +1,12 @@
 """Bounded binary capture for explicitly trusted local command arguments."""
 
 import math
-import os
-import signal
 import subprocess
 from threading import Event, Lock, Thread
 import time
 from typing import BinaryIO, Sequence
 
-
-def _cancel(process: subprocess.Popen[bytes]) -> None:
-    """Cancel the owned process, including descendants where the OS permits."""
-    if os.name == "nt":
-        if process.poll() is None:
-            # Best effort only: exited/reparented descendants may no longer be
-            # associated with this PID. A Windows job object is not owned here.
-            try:
-                subprocess.run(
-                    ["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    timeout=2,
-                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-                    check=False,
-                )
-            except (OSError, subprocess.TimeoutExpired):
-                pass
-    else:
-        try:
-            os.killpg(process.pid, signal.SIGKILL)  # type: ignore[attr-defined]
-        except (ProcessLookupError, PermissionError):
-            # Group termination can be unavailable even for an owned child.
-            # Still terminate and reap the child through its direct handle.
-            pass
-    if process.poll() is None:
-        process.kill()
-    process.wait()  # Always reap the directly owned child.
+from secure_gateway.platform_utils import cancel_process, child_process_options, read_available
 
 
 def capture_command(
@@ -63,11 +34,7 @@ def capture_command(
         or max_output_bytes <= 0
     ):
         raise ValueError("Invalid local command capture limits.")
-    options = (
-        {"creationflags": getattr(subprocess, "CREATE_NO_WINDOW", 0)}
-        if os.name == "nt"
-        else {"start_new_session": True}
-    )
+    options = child_process_options()
     process = subprocess.Popen(
         argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **options
     )
@@ -82,7 +49,7 @@ def capture_command(
         nonlocal total, error, finished
         try:
             while True:
-                block = stream.read1(65536)  # type: ignore[attr-defined]
+                block = read_available(stream, 65536)
                 if not block:
                     break
                 with lock:
@@ -130,7 +97,7 @@ def capture_command(
                 raise ValueError("Local command timed out.")
             changed.wait(min(remaining, 0.05))
     except BaseException:
-        _cancel(process)
+        cancel_process(process)
         raise
     finally:
         for reader in readers:
