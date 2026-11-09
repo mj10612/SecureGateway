@@ -198,7 +198,7 @@ def tokenize(text: str, language: str) -> list[TextChunk]:
         lang = detect_natural_language(text)
     chunks: list[TextChunk] = []
     position = 0
-    protected = {"WHITESPACE", "CODE_BLOCK", "URL", "EMAIL", "SECRET", "UUID", "IP", "PHONE", "NUMBER"}
+    protected = {"WHITESPACE", "CODE_BLOCK", "URL", "EMAIL", "SECRET", "UUID", "IP", "PHONE", "PART_NUMBER", "NUMBER"}
     while position < len(text):
         match = TOKEN_SPLIT_REGEX.match(text, position)
         if match is not None and match.lastgroup in protected:

@@ -172,6 +172,7 @@ class MaskingEngine:
                     "UUID",
                     "IP",
                     "PHONE",
+                    "PART_NUMBER",
                     "CODE_BLOCK",
                 }
                 token_type = TokenType.ENTITY if force else TokenType.NOUN
@@ -278,7 +279,7 @@ class MaskingEngine:
             offset = 0
             for chunk in self._chunks(text, terms, language):
                 end = offset + len(chunk.text)
-                if chunk.kind in {"URL", "EMAIL", "CODE_BLOCK", "SECRET", "UUID", "IP", "PHONE", "ENTITY"}:
+                if chunk.kind in {"URL", "EMAIL", "CODE_BLOCK", "SECRET", "UUID", "IP", "PHONE", "PART_NUMBER", "ENTITY"}:
                     opaque.append((offset, end))
                 offset = end
             spans: list[tuple[int, int]] = []
@@ -341,7 +342,7 @@ class MaskingEngine:
         offset = 0
         for chunk in tokenize(text):
             end = offset + len(chunk.text)
-            if chunk.kind in {"URL", "EMAIL", "CODE_BLOCK", "SECRET", "UUID", "IP", "PHONE", "ENTITY"}:
+            if chunk.kind in {"URL", "EMAIL", "CODE_BLOCK", "SECRET", "UUID", "IP", "PHONE", "PART_NUMBER", "ENTITY"}:
                 forced_opaque.append((offset, end))
             offset = end
         forced_spans: list[tuple[int, int, int]] = []

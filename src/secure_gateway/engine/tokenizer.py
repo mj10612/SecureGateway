@@ -29,6 +29,11 @@ TOKEN_SPLIT_REGEX = re.compile(
     rf"|(?P<UUID>{UUID_PATTERN})"
     rf"|(?P<IP>{IP_PATTERN})"
     rf"|(?P<PHONE>{PHONE_PATTERN})"
+    # Opaque part/model numbers are one lexical span. Keep this after URL,
+    # email and other protected formats, and before NUMBER/WORD splitting.
+    # A dotted numeric suffix is rejected so source-like ``TV-592.1`` does not
+    # silently lose its boundary; sentence punctuation remains a boundary.
+    r"|(?P<PART_NUMBER>(?<!\w)[A-Za-z][A-Za-z0-9]*-\d+(?:-[A-Za-z0-9]+)*(?!\w|\.\d))"
     r"|(?P<HANGUL_WORD>(?=[\w]*[가-힣])\w+)"
     # A number never ends inside a word: 2024_report, 3d_models or 3é4x stay one
     # WORD. Splitting them gave adjacent number/word aliases with no separator,
@@ -56,6 +61,7 @@ class TextChunk:
             "UUID",
             "IP",
             "PHONE",
+            "PART_NUMBER",
             "NUMBER",
         }
 
