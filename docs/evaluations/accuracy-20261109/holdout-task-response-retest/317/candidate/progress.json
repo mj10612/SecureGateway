@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "70be42f519e44466b24d3c7a9cdcf591",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "661d105ab9d50dcc4e2139d8dacc13a7a4054605ffad56eec1783d6d71e13e36",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-317-en-1": [],
+        "holdout-317-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "ee88a3c6aaee978bd45dee1436900af6c95cf512d9b91401c2e8aa868dbd5798",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "holdout-317-en-1",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "private_symbol_1 synthetic dispatch record:\n| private_symbol_2 | private_symbol_3 |\n| --- | --- |\n| private_symbol_4 | private_symbol_5 private_symbol_6 |\nprivate_symbol_7 code: private_symbol_8-732846584287350176\nSummarize the checks required before releasing the package described in the table and key-value line. private_symbol_10 for the inspection result if it has not been supplied. Do not expose the record values or private_symbol_11 the package as released. private_symbol_12 this single package and retain the field labels only."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Confidential synthetic dispatch record:\n| Customer | Site |\n| --- | --- |\n| Velmora | Orchard Quay |\nDispatch code: DX-618405\nSummarize the checks required before releasing the package described in the table and key-value line. Ask for the inspection result if it has not been supplied. Do not expose the record values or mark the package as released. Cover this single package and retain the field labels only.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 76,
+          "end": 83,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 86,
+          "end": 98,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 116,
+          "end": 125,
+          "label": "dispatch_code",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 126,
+          "end": 227,
+          "label": "intent",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 228,
+          "end": 286,
+          "label": "condition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 287,
+          "end": 351,
+          "label": "prohibition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 352,
+          "end": 411,
+          "label": "scope",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "가상의 private_symbol_1 보관 기록입니다.\n| 고객 | 보관 장소 |\n| --- | --- |\n| private_symbol_2 | private_symbol_3 |\n접수 코드: IN-732846438372819155\n표와 키-값 줄의 항목을 private_symbol_5 보관 전 확인할 사항을 정리해 주세요. 수량 확인 결과가 없으면 먼저 private_symbol_6 주세요. 기록의 private_symbol_1 값을 private_symbol_7 private_symbol_8 완료로 표시하지 마세요. 이 접수 한 건만 private_symbol_9 항목 이름은 유지해 주세요."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상의 비공개 보관 기록입니다.\n| 고객 | 보관 장소 |\n| --- | --- |\n| 푸른비늘 | 자운선반 |\n접수 코드: IN-537206\n표와 키-값 줄의 항목을 참고해 보관 전 확인할 사항을 정리해 주세요. 수량 확인 결과가 없으면 먼저 요청해 주세요. 기록의 비공개 값을 노출하거나 입고 완료로 표시하지 마세요. 이 접수 한 건만 다루고 항목 이름은 유지해 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "http_seconds": 0.0,
+      "timings_seconds": {
+        "request_transform": [
+          0.0,
+          0.0
+        ],
+        "response_restore": [
+          0.0,
+          0.0
+        ]
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 49,
+          "end": 53,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 56,
+          "end": 60,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 79,
+          "label": "intake_code",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 119,
+          "label": "intent",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 120,
+          "end": 145,
+          "label": "condition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 146,
+          "end": 179,
+          "label": "prohibition",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 180,
+          "end": 209,
+          "label": "scope",
+          "overmasked": true,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "running",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 6,
+      "measured_sensitive": 6,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 6,
+      "full_exposures": 0,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 1.0,
+      "observed_accuracy": 1.0,
+      "requests_with_leak": 0,
+      "measured_requests": 2,
+      "total_requests": 2
+    },
+    "overmasking": {
+      "measured_public": 8,
+      "overmasked": 7,
+      "rate": 0.875
+    },
+    "integrity": {
+      "roundtrip_passed": 2,
+      "semantic_roundtrip_passed": 2,
+      "replay_passed": 2,
+      "measured_requests": 2
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  }
+}

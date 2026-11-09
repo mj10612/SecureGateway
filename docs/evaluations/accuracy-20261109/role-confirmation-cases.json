@@ -1,0 +1,647 @@
+{
+  "schema_version": 1,
+  "synthetic": true,
+  "corpus_version": "role-confirmation-20261109-v1",
+  "cases": [
+    {
+      "id": "role-confirmation-en-01",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "approval_routing",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Zurev Qal\nDocument: Navurex Draft\nIf approval is missing,\nkeep Reviewer assigned to Document in the routing note and identify whose approval is still needed.\nDo not invent a replacement reviewer.\nOutput exactly one sentence using the field labels."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 67, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 68, "end": 167, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf approval is missing,\nkeep Reviewer assigned to Document in the routing note and identify whose approval is still needed.\nDo not invent a replacement reviewer.\nOutput exactly one sentence using the field labels.",
+      "rubric": [
+        {"id": "intent", "description": "The routing note links the designated Reviewer to the designated Document and attributes the outstanding approval to that Reviewer."},
+        {"id": "conditions", "description": "Treat approval as missing, with the assignment still active rather than approved or reassigned."},
+        {"id": "prohibition", "description": "Do not introduce another person or role as a replacement reviewer."},
+        {"id": "scope", "description": "Return exactly one sentence using the public field labels; do not claim to route anything externally."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-02",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "handoff_dependency",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Povek Rix\nDocument: Lomevik Sheet\nIf the handoff is paused,\nexplain that Document must wait for Reviewer to finish the review before the handoff can continue.\nDo not describe the handoff as complete.\nOutput a two-item checklist: the waiting item, then the dependency."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 69, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 70, "end": 168, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf the handoff is paused,\nexplain that Document must wait for Reviewer to finish the review before the handoff can continue.\nDo not describe the handoff as complete.\nOutput a two-item checklist: the waiting item, then the dependency.",
+      "rubric": [
+        {"id": "intent", "description": "Identify Document as the item waiting and completion of its review by Reviewer as the dependency."},
+        {"id": "conditions", "description": "Represent the handoff as paused until the designated review finishes."},
+        {"id": "prohibition", "description": "Do not imply the handoff has already completed."},
+        {"id": "scope", "description": "Return exactly two checklist items in the requested waiting-item/dependency order."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-03",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "comparison_responsibility",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Lumad Voq\nDocument: Paruven Brief\nIf two revisions disagree,\nassign comparison of the revisions of Document to Reviewer and distinguish the person from the material being compared.\nDo not choose a winning revision.\nOutput one row with columns Responsible role and Comparison object."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 70, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 71, "end": 190, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf two revisions disagree,\nassign comparison of the revisions of Document to Reviewer and distinguish the person from the material being compared.\nDo not choose a winning revision.\nOutput one row with columns Responsible role and Comparison object.",
+      "rubric": [
+        {"id": "intent", "description": "Assign the comparison to Reviewer and identify the revisions of Document as its object, without reversing person and material."},
+        {"id": "conditions", "description": "Make the comparison responsibility apply to the disagreement between two revisions."},
+        {"id": "prohibition", "description": "Do not pick, recommend, or fabricate a winning revision."},
+        {"id": "scope", "description": "Provide one data row under the requested two column labels, with no additional analysis."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-04",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "meeting_question",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Tazun Fep\nDocument: Vezunor Notes\nIf the review meeting is short,\nask Reviewer which unresolved issue in Document should receive the meeting's attention first.\nDo not answer the question on the reviewer's behalf.\nOutput only the single question, addressed by role."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 75, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 76, "end": 169, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf the review meeting is short,\nask Reviewer which unresolved issue in Document should receive the meeting's attention first.\nDo not answer the question on the reviewer's behalf.\nOutput only the single question, addressed by role.",
+      "rubric": [
+        {"id": "intent", "description": "Address Reviewer with a question about prioritizing an unresolved issue in Document."},
+        {"id": "conditions", "description": "Focus the question on what to discuss first in the short meeting."},
+        {"id": "prohibition", "description": "Do not invent an issue, select the priority, or answer for Reviewer."},
+        {"id": "scope", "description": "Return only one role-addressed question, without explanation or a proposed answer."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-05",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "audit_link_clarification",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Kirev Dox\nDocument: Qalurex Audit\nIf an audit entry lacks attribution,\nclarify that Reviewer is the review contact for Document and that the entry needs evidence of that review.\nDo not assert that any review evidence already exists.\nOutput a correction note of at most two sentences."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 80, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 81, "end": 187, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf an audit entry lacks attribution,\nclarify that Reviewer is the review contact for Document and that the entry needs evidence of that review.\nDo not assert that any review evidence already exists.\nOutput a correction note of at most two sentences.",
+      "rubric": [
+        {"id": "intent", "description": "Connect Reviewer as review contact to Document and explain the need to substantiate that review in the audit entry."},
+        {"id": "conditions", "description": "Treat missing attribution as a gap requiring correction rather than proof of completed review."},
+        {"id": "prohibition", "description": "Do not claim that evidence, a signature, or a completed review has been found."},
+        {"id": "scope", "description": "Write only the correction note in no more than two sentences."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-06",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "partial_review_boundary",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Ruvak Pel\nDocument: Tenvori Guide\nIf only the appendix changed,\nlimit Reviewer's requested review of Document to the appendix and state the boundary explicitly.\nDo not delegate the review or request a full rewrite.\nOutput one review-request sentence."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 73, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 74, "end": 170, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf only the appendix changed,\nlimit Reviewer's requested review of Document to the appendix and state the boundary explicitly.\nDo not delegate the review or request a full rewrite.\nOutput one review-request sentence.",
+      "rubric": [
+        {"id": "intent", "description": "Request that Reviewer review the appendix of Document, keeping the person and review object associated."},
+        {"id": "conditions", "description": "Explicitly restrict the requested review to the changed appendix."},
+        {"id": "prohibition", "description": "Do not assign another reviewer or ask for a rewrite of the complete document."},
+        {"id": "scope", "description": "Return a single review-request sentence with the review boundary stated."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-07",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "release_gate",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Senox Vim\nDocument: Zepural Index\nIf the release gate is closed,\nstate that Document stays unreleased until Reviewer records a review decision.\nDo not equate being assigned with having approved.\nOutput two labeled lines: Current state and Required next event."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 74, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 75, "end": 153, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf the release gate is closed,\nstate that Document stays unreleased until Reviewer records a review decision.\nDo not equate being assigned with having approved.\nOutput two labeled lines: Current state and Required next event.",
+      "rubric": [
+        {"id": "intent", "description": "Link the unreleased state of Document to the outstanding review decision that Reviewer must record."},
+        {"id": "conditions", "description": "Preserve the closed release gate until the specified review decision is recorded."},
+        {"id": "prohibition", "description": "Do not infer approval or release authorization from the Reviewer assignment."},
+        {"id": "scope", "description": "Return exactly the two requested labeled lines, separating present state from next event."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-08",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "reminder_draft",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Furek Jaz\nDocument: Dovarek Notes\nIf the deadline is tomorrow,\ndraft a reminder to Reviewer to return comments on Document before that deadline.\nDo not claim that a reminder was sent or invent a clock time.\nOutput a subject line and a one-sentence body using role labels."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 72, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 73, "end": 154, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf the deadline is tomorrow,\ndraft a reminder to Reviewer to return comments on Document before that deadline.\nDo not claim that a reminder was sent or invent a clock time.\nOutput a subject line and a one-sentence body using role labels.",
+      "rubric": [
+        {"id": "intent", "description": "Address the reminder to Reviewer and ask for that person's comments on Document."},
+        {"id": "conditions", "description": "Use tomorrow as the deadline and ask for comments before it."},
+        {"id": "prohibition", "description": "Do not claim delivery or add a specific hour, calendar date, or scheduling action."},
+        {"id": "scope", "description": "Provide only a subject and a one-sentence draft body using the public role labels."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-09",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "question_triage",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Deluv Qon\nDocument: Fenumix Brief\nIf a reader asks about a review comment,\nroute the clarification question about Document to Reviewer and explain the assignment basis.\nDo not invent the comment's meaning.\nOutput one sentence suitable for a support ticket."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 84, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 85, "end": 178, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf a reader asks about a review comment,\nroute the clarification question about Document to Reviewer and explain the assignment basis.\nDo not invent the comment's meaning.\nOutput one sentence suitable for a support ticket.",
+      "rubric": [
+        {"id": "intent", "description": "Direct the clarification about Document to Reviewer because that person holds the stated review assignment."},
+        {"id": "conditions", "description": "Treat the incoming request as a question about a review comment, rather than a request to revise the document."},
+        {"id": "prohibition", "description": "Do not supply a fabricated interpretation of the unspecified comment."},
+        {"id": "scope", "description": "Return one support-ticket sentence that describes routing without claiming external action."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-en-10",
+      "issue_number": 311,
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "assignment_correction",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "Reviewer: Wazik Tep\nDocument: Javorek Sheet\nIf a note reverses the roles,\ncorrect the statement 'Document reviews Reviewer' so that the reviewer performs the review and the document receives it.\nDo not introduce an author or approver role.\nOutput only the corrected statement using the field labels."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 10, "end": 19, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 30, "end": 43, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 8, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 20, "end": 28, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 44, "end": 73, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 74, "end": 194, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "Reviewer: private_symbol_1\nDocument: private_symbol_2\nIf a note reverses the roles,\ncorrect the statement 'Document reviews Reviewer' so that the reviewer performs the review and the document receives it.\nDo not introduce an author or approver role.\nOutput only the corrected statement using the field labels.",
+      "rubric": [
+        {"id": "intent", "description": "Correct the direction of the review relationship so Reviewer acts on Document rather than the reverse."},
+        {"id": "conditions", "description": "Repair the supplied reversed-role statement rather than treating it as an accurate fact."},
+        {"id": "prohibition", "description": "Do not infer authorship, approval authority, or any additional role."},
+        {"id": "scope", "description": "Return only the corrected statement using Reviewer and Document as the labels."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-01",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "signoff_checklist",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 누제칸\n문서: 네루빛보고\n서명란이 비어 있으면,\n담당자가 문서의 검토 결과를 확인한 뒤 서명해야 한다는 점검 항목을 작성하세요.\n서명이 이미 끝났다고 쓰지 마세요.\n출력은 역할 명칭을 사용한 체크박스 한 개로 제한하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 31, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 32, "end": 76, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n서명란이 비어 있으면,\n담당자가 문서의 검토 결과를 확인한 뒤 서명해야 한다는 점검 항목을 작성하세요.\n서명이 이미 끝났다고 쓰지 마세요.\n출력은 역할 명칭을 사용한 체크박스 한 개로 제한하세요.",
+      "rubric": [
+        {"id": "intent", "description": "담당자를 문서의 검토 결과 확인과 서명을 수행할 사람으로 연결한다."},
+        {"id": "conditions", "description": "서명란이 비어 있는 상태를 유지하며 검토 결과 확인 뒤에 서명하도록 순서를 제시한다."},
+        {"id": "prohibition", "description": "이미 서명했거나 확인이 끝났다고 단정하지 않는다."},
+        {"id": "scope", "description": "담당자와 문서라는 역할 명칭으로 체크박스 항목 한 개만 출력한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-02",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "status_digest",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 베루핌\n문서: 모란결초안\n수정본이 아직 도착하지 않았으면,\n문서의 수정본을 기다리는 담당자의 상태를 주간 보고용으로 요약하세요.\n담당자가 수정을 거부했다고 추측하지 마세요.\n출력은 '대기 대상'과 '담당 역할' 두 항목으로 제한하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 37, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 38, "end": 76, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n수정본이 아직 도착하지 않았으면,\n문서의 수정본을 기다리는 담당자의 상태를 주간 보고용으로 요약하세요.\n담당자가 수정을 거부했다고 추측하지 마세요.\n출력은 '대기 대상'과 '담당 역할' 두 항목으로 제한하세요.",
+      "rubric": [
+        {"id": "intent", "description": "기다리는 주체를 담당자로, 기다리는 대상을 문서의 수정본으로 정확히 연결한다."},
+        {"id": "conditions", "description": "수정본이 도착하지 않아 대기 중인 상태로 요약한다."},
+        {"id": "prohibition", "description": "지연을 담당자의 수정 거부나 의도적 방치로 해석하지 않는다."},
+        {"id": "scope", "description": "대기 대상과 담당 역할이라는 두 항목만 작성한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-03",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "agenda_ordering",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 소네쿤\n문서: 바누별목록\n질의 시간이 오 분뿐이면,\n담당자의 문서 검토 현황 확인을 첫 안건으로 놓고 남은 질문 수집을 다음 안건으로 놓으세요.\n문서의 세부 내용을 상상해 안건을 추가하지 마세요.\n출력은 순서가 있는 안건 두 개만 작성하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 33, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 34, "end": 85, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n질의 시간이 오 분뿐이면,\n담당자의 문서 검토 현황 확인을 첫 안건으로 놓고 남은 질문 수집을 다음 안건으로 놓으세요.\n문서의 세부 내용을 상상해 안건을 추가하지 마세요.\n출력은 순서가 있는 안건 두 개만 작성하세요.",
+      "rubric": [
+        {"id": "intent", "description": "첫 안건에서 담당자의 해당 문서 검토 현황을 확인하고 둘째 안건에서 남은 질문을 수집하도록 한다."},
+        {"id": "conditions", "description": "오 분의 제한에 맞춰 현황 확인이 질문 수집보다 앞서는 순서를 지킨다."},
+        {"id": "prohibition", "description": "제공되지 않은 문서 내용이나 추가 안건을 만들어 넣지 않는다."},
+        {"id": "scope", "description": "번호 등으로 순서가 드러나는 안건 두 개만 출력한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-04",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "access_rationale_request",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 자루펠\n문서: 세루담기록\n열람 목적이 적혀 있지 않으면,\n문서의 열람 요청을 검토할 담당자에게 요청 목적을 확인해 달라는 문구를 작성하세요.\n열람 권한을 부여하거나 승인을 받았다고 쓰지 마세요.\n출력은 내부 메모 한 문장으로 제한하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 36, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 37, "end": 83, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n열람 목적이 적혀 있지 않으면,\n문서의 열람 요청을 검토할 담당자에게 요청 목적을 확인해 달라는 문구를 작성하세요.\n열람 권한을 부여하거나 승인을 받았다고 쓰지 마세요.\n출력은 내부 메모 한 문장으로 제한하세요.",
+      "rubric": [
+        {"id": "intent", "description": "문서의 열람 요청을 검토할 사람을 담당자로 연결하고 그 사람에게 요청 목적 확인을 부탁한다."},
+        {"id": "conditions", "description": "열람 목적이 누락된 상태이므로 목적 확인이 필요하다는 점을 반영한다."},
+        {"id": "prohibition", "description": "권한 부여, 승인 완료 또는 실제 처리가 이루어졌다고 주장하지 않는다."},
+        {"id": "scope", "description": "내부 메모에 쓸 한 문장만 제공한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-05",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "version_selection_referral",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 테브논\n문서: 지온빛요약\n두 판본의 날짜가 같으면,\n문서의 어느 판본을 기준으로 검토할지 담당자에게 확인하는 질문을 만드세요.\n날짜만으로 최신 판본을 골라 주지 마세요.\n출력은 역할 명칭을 쓴 질문 한 개만 허용합니다."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 33, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 34, "end": 75, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n두 판본의 날짜가 같으면,\n문서의 어느 판본을 기준으로 검토할지 담당자에게 확인하는 질문을 만드세요.\n날짜만으로 최신 판본을 골라 주지 마세요.\n출력은 역할 명칭을 쓴 질문 한 개만 허용합니다.",
+      "rubric": [
+        {"id": "intent", "description": "문서의 검토 기준 판본을 결정하기 위한 확인 질문을 담당자에게 향하도록 작성한다."},
+        {"id": "conditions", "description": "두 판본의 날짜가 같아 날짜로 구분할 수 없다는 상황을 유지한다."},
+        {"id": "prohibition", "description": "특정 판본을 최신 또는 기준 판본으로 임의 선택하지 않는다."},
+        {"id": "scope", "description": "담당자와 문서라는 명칭을 사용한 질문 한 개만 출력한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-06",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "retention_review_hold",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 모제룬\n문서: 하누결지침\n보관 기한 해석이 미정이면,\n담당자가 문서의 보관 기한을 확인할 때까지 폐기 판단을 보류한다는 기록을 남기세요.\n삭제 지시나 확정된 보관 기간을 만들지 마세요.\n출력은 '상태: 이유' 형식의 한 줄로 제한하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 34, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 35, "end": 81, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n보관 기한 해석이 미정이면,\n담당자가 문서의 보관 기한을 확인할 때까지 폐기 판단을 보류한다는 기록을 남기세요.\n삭제 지시나 확정된 보관 기간을 만들지 마세요.\n출력은 '상태: 이유' 형식의 한 줄로 제한하세요.",
+      "rubric": [
+        {"id": "intent", "description": "문서의 폐기 판단 보류를 담당자의 보관 기한 확인과 연결한다."},
+        {"id": "conditions", "description": "기한 해석이 미정인 동안 보류 상태를 유지하고 확인을 해제 조건으로 삼는다."},
+        {"id": "prohibition", "description": "삭제를 지시하거나 제공되지 않은 보관 기간을 확정하지 않는다."},
+        {"id": "scope", "description": "상태와 이유를 콜론으로 구분한 한 줄만 작성한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-07",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "onboarding_role_quiz",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 가누렘\n문서: 누베별대장\n신입이 두 항목을 혼동하면,\n문서를 검토할 주체가 누구인지 묻는 교육용 문제를 만들고 담당자와 문서의 역할 차이를 해설하세요.\n문서를 사람으로 설명하거나 실제 이름을 정답으로 요구하지 마세요.\n출력은 '문제'와 '해설' 각 한 문장으로 제한하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 34, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 35, "end": 89, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n신입이 두 항목을 혼동하면,\n문서를 검토할 주체가 누구인지 묻는 교육용 문제를 만들고 담당자와 문서의 역할 차이를 해설하세요.\n문서를 사람으로 설명하거나 실제 이름을 정답으로 요구하지 마세요.\n출력은 '문제'와 '해설' 각 한 문장으로 제한하세요.",
+      "rubric": [
+        {"id": "intent", "description": "문제는 문서 검토 주체를 묻고 해설은 담당자를 검토하는 사람, 문서를 검토받는 대상으로 구별한다."},
+        {"id": "conditions", "description": "두 항목의 혼동을 바로잡도록 주체와 대상의 차이를 설명한다."},
+        {"id": "prohibition", "description": "문서를 사람으로 취급하거나 개인 이름을 요구하는 정답을 만들지 않는다."},
+        {"id": "scope", "description": "문제와 해설이라는 두 표제에 각각 한 문장만 제공한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-08",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "rationale_gap",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 페주칸\n문서: 레온담안건\n변경 이유가 빠져 있으면,\n문서의 변경 이유를 검토 기록에 보완해 달라고 담당자에게 요청하세요.\n이유를 대신 지어내거나 검토 결론을 변경하지 마세요.\n출력은 정중한 요청 한 문장만 작성하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 33, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 34, "end": 72, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n변경 이유가 빠져 있으면,\n문서의 변경 이유를 검토 기록에 보완해 달라고 담당자에게 요청하세요.\n이유를 대신 지어내거나 검토 결론을 변경하지 마세요.\n출력은 정중한 요청 한 문장만 작성하세요.",
+      "rubric": [
+        {"id": "intent", "description": "담당자에게 해당 문서의 변경 이유를 검토 기록에 보완하도록 요청한다."},
+        {"id": "conditions", "description": "변경 이유가 누락된 부분의 보완에 요청을 집중한다."},
+        {"id": "prohibition", "description": "누락된 이유를 생성하거나 기존 검토 결론을 바꾸지 않는다."},
+        {"id": "scope", "description": "정중한 요청 문장 한 개만 출력한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-09",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "duplicate_queue_pair",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 도네핌\n문서: 보루빛문안\n같은 요청이 두 번 등록되면,\n담당자와 문서의 검토 배정 쌍을 하나로 유지한다는 중복 정리 원칙을 설명하세요.\n담당자를 삭제하거나 문서를 두 개로 나누지 마세요.\n출력은 처리 원칙 한 문장으로 제한하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 35, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 36, "end": 80, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n같은 요청이 두 번 등록되면,\n담당자와 문서의 검토 배정 쌍을 하나로 유지한다는 중복 정리 원칙을 설명하세요.\n담당자를 삭제하거나 문서를 두 개로 나누지 마세요.\n출력은 처리 원칙 한 문장으로 제한하세요.",
+      "rubric": [
+        {"id": "intent", "description": "중복 요청을 합치면서 담당자와 해당 문서 사이의 검토 배정 관계 한 쌍을 보존한다."},
+        {"id": "conditions", "description": "동일 요청이 두 번 등록된 경우에만 적용하는 중복 정리 원칙으로 설명한다."},
+        {"id": "prohibition", "description": "담당자 배정을 제거하거나 문서를 복수의 대상으로 분리하지 않는다."},
+        {"id": "scope", "description": "실제 삭제나 변경을 했다는 주장 없이 처리 원칙 한 문장만 제공한다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    },
+    {
+      "id": "role-confirmation-ko-10",
+      "issue_number": 311,
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "unresolved_objection_log",
+      "smoke": false,
+      "payload": {"model": "fixture", "input": [{"role": "user", "content": "담당자: 루베쿤\n문서: 케누결표준\n이견이 아직 해소되지 않았으면,\n문서에 대한 담당자의 검토 이견을 미해결 항목으로 의사결정 기록에 남기세요.\n합의가 이루어졌다고 표현하거나 이견의 구체적 내용을 꾸미지 마세요.\n출력은 '항목 | 상태' 두 칸의 행 하나만 작성하세요."}]},
+      "echo_path": ["input", 0, "content"],
+      "task_path": ["input", 0, "content"],
+      "secrets": [
+        {"path": ["input", 0, "content"], "start": 5, "end": 8, "label": "person_name", "fragments": [], "policy": "contextual", "severity": "high"},
+        {"path": ["input", 0, "content"], "start": 13, "end": 18, "label": "document_name", "fragments": [], "policy": "contextual", "severity": "high"}
+      ],
+      "public": [
+        {"path": ["input", 0, "content"], "start": 0, "end": 3, "label": "person_role"},
+        {"path": ["input", 0, "content"], "start": 9, "end": 11, "label": "document_role"},
+        {"path": ["input", 0, "content"], "start": 19, "end": 36, "label": "condition"},
+        {"path": ["input", 0, "content"], "start": 37, "end": 79, "label": "action"}
+      ],
+      "forced_terms": [],
+      "human_text": "담당자: private_symbol_1\n문서: private_symbol_2\n이견이 아직 해소되지 않았으면,\n문서에 대한 담당자의 검토 이견을 미해결 항목으로 의사결정 기록에 남기세요.\n합의가 이루어졌다고 표현하거나 이견의 구체적 내용을 꾸미지 마세요.\n출력은 '항목 | 상태' 두 칸의 행 하나만 작성하세요.",
+      "rubric": [
+        {"id": "intent", "description": "기록할 이견을 담당자가 문서의 검토에서 제기한 것으로 연결한다."},
+        {"id": "conditions", "description": "이견이 해소되지 않았으므로 상태를 미해결로 유지한다."},
+        {"id": "prohibition", "description": "합의나 해결을 선언하거나 이견의 실제 내용을 만들어 내지 않는다."},
+        {"id": "scope", "description": "항목과 상태에 해당하는 두 칸의 행 하나만 출력하며 추가 해설을 붙이지 않는다."}
+      ],
+      "local_policy": {"allow_roles": true, "confidential_roles": false}
+    }
+  ]
+}

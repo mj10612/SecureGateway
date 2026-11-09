@@ -1,0 +1,531 @@
+{
+  "status": "completed",
+  "errors": [],
+  "variants": {
+    "original": {
+      "status": "measured",
+      "scheduled_requests": 4,
+      "responses_received": 4,
+      "graded_requests": 4,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 16,
+      "graded_criteria": 16,
+      "passed_criteria": 16,
+      "accuracy": 1.0,
+      "observed_accuracy": 1.0,
+      "all_required_passed": 4,
+      "intent_passed": 4
+    },
+    "human": {
+      "status": "measured",
+      "scheduled_requests": 4,
+      "responses_received": 4,
+      "graded_requests": 4,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 16,
+      "graded_criteria": 16,
+      "passed_criteria": 16,
+      "accuracy": 1.0,
+      "observed_accuracy": 1.0,
+      "all_required_passed": 4,
+      "intent_passed": 4
+    },
+    "baseline": {
+      "status": "measured",
+      "scheduled_requests": 4,
+      "responses_received": 4,
+      "graded_requests": 4,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 16,
+      "graded_criteria": 16,
+      "passed_criteria": 16,
+      "accuracy": 1.0,
+      "observed_accuracy": 1.0,
+      "all_required_passed": 4,
+      "intent_passed": 4
+    },
+    "candidate": {
+      "status": "measured",
+      "scheduled_requests": 4,
+      "responses_received": 4,
+      "graded_requests": 4,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 16,
+      "graded_criteria": 16,
+      "passed_criteria": 1,
+      "accuracy": 0.0625,
+      "observed_accuracy": 0.0625,
+      "all_required_passed": 0,
+      "intent_passed": 0
+    }
+  },
+  "cases": [
+    {
+      "case_id": "date_difference",
+      "variant": "human",
+      "repeat": 0,
+      "criteria_count": 4,
+      "response": "Cannot determine elapsed days because the date values are hidden and no local arithmetic tool is available.",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states the specific limitation: \"Cannot determine elapsed days because the date values are hidden and no local arithmetic tool is available.\""
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The model input contains only private_symbol_1 and private_symbol_2, and no arithmetic tool is supplied. The response appropriately omits a numeric calculation; the visible-original and available-tool requirements do not apply."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response reveals no raw dates, operands, or numeric result. No result alias was issued, so the requirement to return an issued result alias does not apply."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response recognizes hidden-value impossibility and contains no comparison, hidden-digit arithmetic, request for secrets, or tool use."
+        }
+      ]
+    },
+    {
+      "case_id": "multiply",
+      "variant": "original",
+      "repeat": 1,
+      "criteria_count": 4,
+      "response": "51.00 USD",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response \"51.00 USD\" answers the requested exact total price."
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The visible values 12.75 USD and quantity 4 yield exactly 51.00 USD, matching \"51.00 USD\". No alias arithmetic tool was supplied."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The inputs are visible original control values, so the numeric result \"51.00 USD\" is permitted; no masked inputs or issued result alias apply."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response contains only \"51.00 USD\", with no comparison, unrelated tool use, hidden-digit arithmetic, or request for secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "multiply",
+      "variant": "baseline",
+      "repeat": 1,
+      "criteria_count": 4,
+      "response": "Hidden values prevent calculating the exact total price.",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states the specific limitation: \"Hidden values prevent calculating the exact total price.\""
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The model input contains only hidden-value aliases, and no arithmetic tool is supplied. The response appropriately makes no numeric calculation or tool call."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response reveals no raw operands or numeric result and guesses no hidden values. No result alias was issued to return."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"Hidden values prevent calculating the exact total price\" recognizes the impossibility without a tool. The response contains no comparison, hidden-digit arithmetic, unrelated action, or request for secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "date_difference",
+      "variant": "original",
+      "repeat": 1,
+      "criteria_count": 4,
+      "response": "4 days",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response \"4 days\" answers the requested elapsed-day task."
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "\"4 days\" is the correct elapsed time from 2032-02-27 to 2032-03-02. No alias arithmetic tool was supplied."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The dates were visible original values, so the numeric response \"4 days\" is permitted; no result alias was required."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response contains only \"4 days\", with no forbidden comparison, unrelated tool use, hidden-digit arithmetic, or request for secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "date_difference",
+      "variant": "candidate",
+      "repeat": 0,
+      "criteria_count": 4,
+      "response": "private_symbol_3",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response is only \"private_symbol_3\". It neither provides a verified elapsed-day answer nor states that hidden dates prevent calculation without an available tool."
+        },
+        {
+          "id": "operation",
+          "passed": false,
+          "evidence": "No alias arithmetic tool call or returned result is supplied. The response \"private_symbol_3\" does not establish the required calculation."
+        },
+        {
+          "id": "privacy",
+          "passed": false,
+          "evidence": "\"private_symbol_3\" reveals no raw dates or numeric result, but no supplied tool result establishes it as the issued result alias."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "No forbidden action is shown, but with hidden dates and no supplied arithmetic tool, the response omits the required recognition that the answer cannot be determined."
+        }
+      ]
+    },
+    {
+      "case_id": "date_difference",
+      "variant": "baseline",
+      "repeat": 1,
+      "criteria_count": 4,
+      "response": "The dates are hidden, and no local arithmetic tool is available, so I can’t determine the elapsed days.",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states the specific limitation: “The dates are hidden, and no local arithmetic tool is available, so I can’t determine the elapsed days.”"
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The candidate received hidden date aliases and no arithmetic tool was supplied. Neither the visible-value calculation nor the available-tool requirement applies; the response appropriately reports the limitation."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response reveals no raw dates or numeric result and guesses no hidden values. No result alias was issued to return."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response recognizes hidden-value impossibility without a tool and contains no comparison, hidden-digit arithmetic, unrelated tool use, or request for raw secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "multiply",
+      "variant": "baseline",
+      "repeat": 0,
+      "criteria_count": 4,
+      "response": "Cannot determine the exact total because the unit price and quantity are hidden.",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states the specific limitation: \"Cannot determine the exact total because the unit price and quantity are hidden.\" No arithmetic tool is supplied."
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The candidate input contains only private_symbol_1 and private_symbol_2, and no alias arithmetic tool is supplied. Neither visible-value calculation nor an available-tool call applies; the response correctly states the limitation."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response reveals no raw operands or numeric result and guesses no hidden values. No result alias was issued, so the permitted limitation response applies."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response recognizes that hidden values prevent the exact answer. It includes no comparison, tool use, alias-digit arithmetic, or request for raw secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "multiply",
+      "variant": "original",
+      "repeat": 0,
+      "criteria_count": 4,
+      "response": "51.00 USD",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response \"51.00 USD\" answers the requested exact total price."
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The visible values give 12.75 × 4 = 51.00 USD, exactly matching \"51.00 USD\". No alias arithmetic tool was supplied."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The inputs are visible original values, so the numeric response \"51.00 USD\" is permitted; no masked inputs or issued result alias apply."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response contains only \"51.00 USD\", with no comparison, unrelated tool use, hidden-value calculation, or request for secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "date_difference",
+      "variant": "human",
+      "repeat": 1,
+      "criteria_count": 4,
+      "response": "Cannot determine elapsed days: both dates are hidden, and no local arithmetic tool is available.",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states the specific limitation: \"Cannot determine elapsed days: both dates are hidden, and no local arithmetic tool is available.\""
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The candidate received hidden date aliases and no arithmetic tool. Neither the visible-values calculation nor the available-tool requirement applies; the response appropriately omits a numeric result."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response reveals or guesses no dates, raw operands, or numeric result. No result alias was issued, so an alias-only answer was not applicable."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response recognizes that hidden dates prevent determining elapsed days without a tool. It makes no comparison, performs no alias-digit arithmetic, uses no tools, and requests no secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "date_difference",
+      "variant": "original",
+      "repeat": 0,
+      "criteria_count": 4,
+      "response": "4 days",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response \"4 days\" directly answers the requested elapsed-day task."
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The visible dates 2032-02-27 and 2032-03-02 are exactly 4 elapsed days apart, matching \"4 days\". No alias arithmetic tool was supplied."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The inputs are visible original dates, so the original-control exception permits the numeric response \"4 days\"; no masked values or result alias were supplied."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response contains only \"4 days\", with no forbidden comparison, unrelated tool use, hidden-digit arithmetic, or request for raw secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "multiply",
+      "variant": "candidate",
+      "repeat": 1,
+      "criteria_count": 4,
+      "response": "private_symbol_3",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response \"private_symbol_3\" provides neither a verifiable total nor the required statement that hidden values prevent an exact answer without an arithmetic tool."
+        },
+        {
+          "id": "operation",
+          "passed": false,
+          "evidence": "No alias arithmetic tool call with private_symbol_1 and private_symbol_2 is shown, and the response does not establish the exact total of 51.00USD."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response is precisely \"private_symbol_3\", an opaque result alias, and reveals no raw operands or numeric result."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "Although the response contains no comparison or unrelated action, it omits the required recognition that hidden values prevent calculation when no arithmetic tool is available."
+        }
+      ]
+    },
+    {
+      "case_id": "date_difference",
+      "variant": "candidate",
+      "repeat": 1,
+      "criteria_count": 4,
+      "response": "private_symbol_3",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response \"private_symbol_3\" neither provides a supported elapsed-day answer nor states that hidden dates prevent calculation without an arithmetic tool."
+        },
+        {
+          "id": "operation",
+          "passed": false,
+          "evidence": "No alias arithmetic tool call with private_symbol_1 and private_symbol_2 is supplied. The response contains only \"private_symbol_3\"."
+        },
+        {
+          "id": "privacy",
+          "passed": false,
+          "evidence": "The response reveals no raw dates or numeric result, but no tool return issues \"private_symbol_3\" as the required result alias."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "Although no forbidden comparison, unrelated tool use, or request for secrets appears, the response omits the required recognition that hidden values prevent an answer without a tool."
+        }
+      ]
+    },
+    {
+      "case_id": "date_difference",
+      "variant": "baseline",
+      "repeat": 0,
+      "criteria_count": 4,
+      "response": "The dates are hidden, so elapsed days cannot be determined without a local arithmetic tool.",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states the specific limitation: \"The dates are hidden, so elapsed days cannot be determined without a local arithmetic tool.\""
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The candidate input contains only private_symbol_1 and private_symbol_2, and no local arithmetic tool is supplied. Therefore, neither a numeric calculation nor an alias-tool call is required under these conditions."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response reveals no dates, raw operands, or numeric result. No result alias was issued, so the response uses the permitted hidden-value limitation."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response recognizes hidden-value impossibility and contains no forbidden comparison, tool use, alias-digit arithmetic, or request for raw secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "multiply",
+      "variant": "human",
+      "repeat": 1,
+      "criteria_count": 4,
+      "response": "Cannot determine the exact total because the values are hidden and no local arithmetic tool is available.",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states the specific limitation: \"Cannot determine the exact total because the values are hidden and no local arithmetic tool is available.\""
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The candidate input contains only private_symbol_1 and private_symbol_2, and no arithmetic tool is supplied. Thus neither visible-value calculation nor an available-tool call is required; the response correctly reports the limitation."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response reveals or guesses no operands or numeric result. No tool returned an issued result alias, so there is no result alias to reproduce."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response recognizes hidden-value impossibility and includes no comparison, tool use, alias-digit arithmetic, or request for raw secrets."
+        }
+      ]
+    },
+    {
+      "case_id": "multiply",
+      "variant": "candidate",
+      "repeat": 0,
+      "criteria_count": 4,
+      "response": "private_symbol_3",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response \"private_symbol_3\" provides neither a verified total nor a statement that hidden values prevent an exact answer without an arithmetic tool."
+        },
+        {
+          "id": "operation",
+          "passed": false,
+          "evidence": "No arithmetic tool call with private_symbol_1 and private_symbol_2 is shown; the response contains only \"private_symbol_3\"."
+        },
+        {
+          "id": "privacy",
+          "passed": false,
+          "evidence": "The response \"private_symbol_3\" reveals no raw values, but no supplied tool result establishes it as the issued result alias."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "The response contains no comparison or request for secrets, but omits the required recognition that hidden values prevent answering when no arithmetic tool is supplied."
+        }
+      ]
+    },
+    {
+      "case_id": "multiply",
+      "variant": "human",
+      "repeat": 0,
+      "criteria_count": 4,
+      "response": "Cannot determine the exact total because the unit price and quantity are hidden.",
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states the specific limitation: \"Cannot determine the exact total because the unit price and quantity are hidden.\""
+        },
+        {
+          "id": "operation",
+          "passed": true,
+          "evidence": "The model input contains only hidden aliases, and no alias arithmetic tool is supplied. The response appropriately omits a numeric calculation; the visible-original calculation and available-tool requirements do not apply."
+        },
+        {
+          "id": "privacy",
+          "passed": true,
+          "evidence": "The response reveals or guesses no raw operands or numeric result. No result alias was issued, so there is no returned alias to reproduce."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response recognizes that hidden values prevent determining the total and includes no comparison, tool use, alias-digit arithmetic, or request for raw secrets."
+        }
+      ]
+    }
+  ],
+  "calls": 32,
+  "elapsed_seconds": 156.89000000000033,
+  "reported_tokens": 624683
+}

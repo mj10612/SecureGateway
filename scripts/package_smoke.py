@@ -95,6 +95,19 @@ def health_data(settings):
     with opener.open(request, timeout=5) as response:
         return json.load(response)
 
+def domain_policy(settings, enabled=None):
+    request = urllib.request.Request(f"http://127.0.0.1:{settings['port']}/admin/api/domain-policy",
+        data=json.dumps({'enabled': enabled}).encode() if enabled is not None else None,
+        headers={'X-SecureGateway-Token': settings['token'], 'Content-Type': 'application/json'})
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    try:
+        with opener.open(request, timeout=5) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:  # Older supported upgrade sources have no dictionaries.
+            return None
+        raise
+
 if stage in ('setup', 'all'):
     codex.parent.mkdir(parents=True)
     claude.parent.mkdir(parents=True)
@@ -109,6 +122,10 @@ if stage in ('setup', 'all'):
         cli('gateway', 'install', '--agent', 'both', '--config', str(config), '--port', str(port))
         settings = load_config(config)
         assert healthy(settings)
+        if domain_policy(settings) is not None:
+            enabled = {'defense': False, 'automotive': True, 'semiconductor': False}
+            assert domain_policy(settings, enabled)['enabled'] == enabled
+            (home / 'expected-domain-policy.json').write_text(json.dumps(enabled), encoding='utf-8')
         manifest = json.loads(installation_path(config).read_text(encoding='utf-8'))
         for name in manifest['files']:
             assert Path(name).resolve().is_relative_to(home.resolve()), name
@@ -129,6 +146,9 @@ if stage in ('finish', 'all'):
     try:
         cli('gateway', 'ensure', '--config', str(config))
         assert health_data(settings)['version'] == __version__
+        expected_policy = home / 'expected-domain-policy.json'
+        if expected_policy.exists():
+            assert domain_policy(settings)['enabled'] == json.loads(expected_policy.read_text(encoding='utf-8'))
         cli('gateway', 'stop', '--config', str(config))
         assert not healthy(settings)
 

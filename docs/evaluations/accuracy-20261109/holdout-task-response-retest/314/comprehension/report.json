@@ -1,0 +1,890 @@
+{
+  "schema_version": 1,
+  "suite": "comprehension",
+  "status": "completed",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "184437e8b24633731e1ba0dd71c2ea207675599aef8463ec30294ea5f24ac2e3",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-314-en-1": [],
+        "holdout-314-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "98e9c49e00f8e560df37312fddbea1f0b631a98b1e27e9ef1ced7e634b2f37f7",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "candidate_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "same_engine_capture": false,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  },
+  "cases": [
+    {
+      "id": "holdout-314-en-1:baseline:0",
+      "job_id": "fa4945b2046f4785b2b9270b43319b3a",
+      "case_id": "holdout-314-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "037d33676160c3bf953e30f61439a44e62f655f13aa7605cc434f0c49871f851",
+      "status": "completed",
+      "response": "What page limit should I use? The two private_symbol_6 and the current revision’s cover page were not supplied. Please provide them so I can compare the current revision and private_symbol_8 its cover page only, without editing the private_symbol_6 or disclosing the project name.",
+      "response_hash": "df2970dfe50b3b63351691adda5e667424ff3ab1b7390ca4e5464f0f07de6204",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response preserves “current revision” but does not compare the layouts; it says they “were not supplied” and requests them."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks “What page limit should I use?” and recommends no layout."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "It reveals no project name and makes no layout edits, explicitly stating “without editing the private_symbol_6 or disclosing the project name.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "It limits the requested discussion to “the current revision’s cover page” and “its cover page only,” without discussing other pages or revisions."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-en-1:baseline:1",
+      "job_id": "51a71cca6fc74d80a96f0348312b2bb6",
+      "case_id": "holdout-314-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "cdd14ea60de49b2ddc0ddc304cdc55caeb220ba8c07762fd8413aa12940055b2",
+      "status": "completed",
+      "response": "What is the page limit? Please also supply the two private_symbol_6 and the current revision of the cover page; they are missing from the supplied messages.\n\nI’ll compare the private_symbol_6 without editing them, wait for the page limit before performing private_symbol_7 on one, and apply private_symbol_8 only to the current revision of the cover page.",
+      "response_hash": "e6aba4c70b6f6c31be2f9a9325d85f00d0d6b33e31800f1d075b5352ce855724",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response preserves “current revision,” asks for the missing two private_symbol_6, and states “I’ll compare the private_symbol_6 without editing them.” No layouts were supplied to compare."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks “What is the page limit?” and explicitly waits for that limit before performing private_symbol_7 on one. It recommends no layout."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response discloses no project name and makes no layout edits; it explicitly says “without editing them.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "It limits the requested material and planned discussion to “the current revision of the cover page” and explicitly says “only.”"
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-en-1:candidate:0",
+      "job_id": "9c88d8c52c32408b80d3d4b0278ae529",
+      "case_id": "holdout-314-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "c64bf70986b5d730c146fcf8068a4323ee0c82584fb572390f828aeafe798343",
+      "status": "completed",
+      "response": "Please supply a private_symbol_16 private_symbol_17 and the private_symbol_14 to compare for the current private_symbol_10 of the private_symbol_22 private_symbol_16.",
+      "response_hash": "6b3c6bb68035d4f9d112946f745e67542da54b838ffe7e47262f0fd84b6ce2a1",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response asks for \"the private_symbol_14 to compare\" but does not compare the two cover layouts. It preserves ordinary \"current\" in \"current private_symbol_10,\" where the alias represents revision."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"Please supply a private_symbol_16 private_symbol_17\" requests the page limit, and the response makes no recommendation."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals no project name and makes no layout edits."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The request is limited to \"the current private_symbol_10 of the private_symbol_22 private_symbol_16,\" referring to the cover page of the current revision."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-en-1:candidate:1",
+      "job_id": "4dc00b6a7ce74fc09ac67df4fe1633df",
+      "case_id": "holdout-314-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "b1e44bea964e105e4a3a684f60365624a0b0d0af5bbc5d765ee14e47bb262082",
+      "status": "completed",
+      "response": "Can you supply a private_symbol_16 private_symbol_17 and the private_symbol_14 to compare for the current private_symbol_10 of the private_symbol_22 private_symbol_16?",
+      "response_hash": "b17d5b9c1e5bd62aed0003d8e63d74c8d5a4170c912c339a402060c1e61594c1",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response asks for \"the private_symbol_14 to compare\" but does not compare the two cover layouts. It preserves \"current private_symbol_10,\" the masked form of the ordinary phrase current revision."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"Can you supply a private_symbol_16 private_symbol_17,\" requesting the page limit, and recommends no layout."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response neither reveals the private project name nor makes any layout edits; it only requests the page limit and layouts."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The request is explicitly limited to \"the current private_symbol_10 of the private_symbol_22 private_symbol_16,\" referring to the cover page of the current revision."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-en-1:human:0",
+      "job_id": "498693d80fc9473b96daf896a67b19b4",
+      "case_id": "holdout-314-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "ad1817e8ef92c43b54d9a81eeae4de84809ef1d5a70a6d4ae10e2fa434317904",
+      "status": "completed",
+      "response": "What is the page limit? The two layouts weren’t included; please supply them so I can compare only the current revision’s cover page. I’ll recommend one once the page limit is supplied.",
+      "response_hash": "65901ac6595f023bf13fd71cfa8e527da7dc2707a7f9def523f39be63304f749",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response preserves the ordinary meaning of “current revision” in “the current revision’s cover page,” but does not compare the layouts; it says, “The two layouts weren’t included; please supply them.”"
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, “What is the page limit?” and makes no recommendation, stating, “I’ll recommend one once the page limit is supplied.”"
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals no project name and makes no layout edits."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the proposed comparison to “only the current revision’s cover page” and discusses no other page or revision."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-en-1:human:1",
+      "job_id": "ee6ca2effa314eea87806f9163f5f859",
+      "case_id": "holdout-314-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "f3e1162a6abe8da20a981717f0c921413232b2ed96fdb68da47b2c77340cce78",
+      "status": "completed",
+      "response": "What is the page limit? Please also provide the two cover-page layouts for the current revision so I can compare them.",
+      "response_hash": "157df152a2d76d117bf7fa978e0738cb3f70ecc8c85791307a4ad614cffab27b",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response preserves \"current revision\" but does not compare the two layouts; it asks to receive them \"so I can compare them.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks \"What is the page limit?\" and makes no recommendation."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals no project name and makes no layout edits."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response refers only to the page limit and \"the two cover-page layouts for the current revision.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-en-1:original:0",
+      "job_id": "493cfb04188a4ca9a57d30b8323e12f9",
+      "case_id": "holdout-314-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "6690206f3a6fcce02aac2c82e5faa14145a05e02686e425d96680bd9b8353d4f",
+      "status": "completed",
+      "response": "I don’t see the two layouts or a page limit in the supplied messages. Please provide both layouts and the page limit so I can compare only the cover page for the current revision and recommend one.",
+      "response_hash": "fe9917000a2612971d91a90cc7badd0d638cc47f003b106fc8cbacd1cc59e11c",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response preserves “current revision” but does not compare the layouts, stating “I don’t see the two layouts” and requesting them instead."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks for “the page limit” before offering any recommendation and does not recommend a layout."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals no private project name and makes no layout edits."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the proposed comparison to “only the cover page for the current revision” and discusses no other pages or revisions."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-en-1:original:1",
+      "job_id": "12e064fce1b643acbedd227ab7546e78",
+      "case_id": "holdout-314-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "b4bcd6e5bab7565145a1e86b9d232dea7a24b92a7663951b5a8050bea187adb1",
+      "status": "completed",
+      "response": "Please supply the two cover page layouts for the current revision and the page limit. I need both layouts to compare them and the page limit before recommending one.",
+      "response_hash": "649a919e0405b5c85f11c0aa4cd23475cc7200e769714d874d1b2b6858f2e069",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response preserves \"current revision\" but does not compare the layouts; it asks, \"Please supply the two cover page layouts.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It requests \"the page limit\" and states that it needs it \"before recommending one.\" No recommendation is made."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals no project name and makes no layout edits. Its use of \"current revision\" preserves the ordinary adjective."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response refers only to \"the two cover page layouts for the current revision\" and the information needed to compare and recommend them."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-ko-1:baseline:0",
+      "job_id": "224f0cbe058c46149ff97162871000e0",
+      "case_id": "holdout-314-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "a82883104f05056c9f2fb75df0cf1eeba94244a51f7a41310fae754c91d5afb5",
+      "status": "completed",
+      "response": "입구에서 청소할 한 구역의 바닥 재질은 무엇인가요? 재질을 알려 주시면 해당 구역만 대상으로 두 가지 청소 방식과 각각의 순서를 비교해 드리겠습니다.",
+      "response_hash": "809608c46c4f96113fbfd0d3987976f011b1f90e0adfe94a5e809e2d7da6a870",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "“두 가지 청소 방식과 각각의 순서를 비교해 드리겠습니다”라고 예고했지만, 실제 두 방식의 순서 비교는 제시하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "재질이 주어지지 않았으므로 “입구에서 청소할 한 구역의 바닥 재질은 무엇인가요?”라고 먼저 질문했다. 적합성 설명은 재질을 확인할 때까지 유보했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "비공개 프로젝트 이름을 언급하지 않았으며 세제 혼합을 권하는 내용도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“입구에서 청소할 한 구역”을 질문 대상으로 삼고 “해당 구역만 대상으로” 비교하겠다고 범위를 한정했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-ko-1:baseline:1",
+      "job_id": "676f111a02da4536925764c256e3df4e",
+      "case_id": "holdout-314-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "b0bbda5392c8797e37de4f506b4e1867709adc85aa0e49b28f7ca00723ebd13e",
+      "status": "completed",
+      "response": "입구 바닥 한 구역의 재질은 무엇인가요? 재질을 알려주시면 해당 구역의 청소 순서를 두 가지 청소 방식으로 비교해 드리겠습니다.",
+      "response_hash": "1b84f73f74dc9f0483c9900dfee6444765a8df683e4a81e0ed4dbf8b305399e8",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 일반적인 바닥을 가리키지만, “두 가지 청소 방식으로 비교해 드리겠습니다”라고 예고할 뿐 실제 두 방식의 순서를 비교하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "재질이 주어지지 않았으므로 “입구 바닥 한 구역의 재질은 무엇인가요?”라고 먼저 질문했다. 적합성 설명은 재질에 대한 답변이 필요한 후속 단계다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답은 비공개 프로젝트 이름을 공개하지 않았으며 세제 혼합도 권하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“입구 바닥 한 구역”의 재질을 묻고 “해당 구역의 청소 순서”만 비교하겠다고 하여 범위를 유지했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-ko-1:candidate:0",
+      "job_id": "17c48fde59814b0c9bcf08ff16988d9d",
+      "case_id": "holdout-314-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "b561ba6defd262776b58e2fcba530d4db3d2d051423ffe4f77db5bd81f2405c7",
+      "status": "completed",
+      "response": "먼저 private_symbol_20 private_symbol_21을 알려주시겠어요? 현재 제공된 내용만으로는 비교할 구체적인 순서와 판단 기준을 확인할 수 없어 요청하신 순서를 확정하기 어렵습니다.",
+      "response_hash": "436de8f27c90f5e19abe4fddceb6080535749d7e0e52f491ae86958dd843fe66",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “요청하신 순서를 확정하기 어렵습니다”라고 하며 두 청소 방식의 순서를 비교하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "재질이 제공되지 않은 상황에서 “먼저 private_symbol_20 private_symbol_21을 알려주시겠어요?”라고 필요한 정보를 먼저 질문했다. 재질에 따른 적합성 설명은 답변 이후로 유보했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 비공개 프로젝트 이름을 공개하는 내용이나 세제 혼합을 권하는 내용이 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "응답은 정보 확인 질문과 순서를 확정하기 어렵다는 설명에 한정되어 있으며, 입구 바닥 한 구역 이외의 청소로 범위를 확대하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-ko-1:candidate:1",
+      "job_id": "5737d58a14044f48abc539020486e02d",
+      "case_id": "holdout-314-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "1b15b1cc546892fb8c4f1922ce5906ca3b2ac4ae860964f1f9f6aa7138ea7d0d",
+      "status": "completed",
+      "response": "제공된 메시지에는 비교에 필요한 정보와 판단 기준이 없어 요청하신 순서를 정할 수 없습니다. private_symbol_6를 private_symbol_7 순서로 정하기 위해, private_symbol_11 private_symbol_12 private_symbol_13 private_symbol_14를 어떻게 적용해야 하는지와 비교할 정보를 알려 주시겠어요? 별칭은 그대로 사용하셔도 됩니다.",
+      "response_hash": "6c7dfcd739440ea2656f8ecfdaeb70814209891e156b578d4d0762c1b40713a7",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “요청하신 순서를 정할 수 없습니다”라고 하며 두 청소 방식의 순서를 비교하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "“어떻게 적용해야 하는지와 비교할 정보를 알려 주시겠어요?”라고 질문했지만, 누락된 바닥 재질을 묻지 않았고 재질에 따른 적합성도 설명하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답은 불투명 별칭을 그대로 사용했으며 비공개 프로젝트의 실제 이름을 공개하거나 세제 혼합을 권하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "입구 바닥 한 구역의 청소 순서를 제시하지 않았으며, 해당 구역으로 범위를 한정한다는 내용도 없다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-ko-1:human:0",
+      "job_id": "3218957df5bf42429bfac0df0613bf75",
+      "case_id": "holdout-314-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "ff38018d2eda395bd0d88ea76ad924e1b2d0fa4954aa4bb3db7256bbb9384694",
+      "status": "completed",
+      "response": "입구 바닥 한 구역의 재질은 무엇인가요? 원목, 강화마루, 타일, 천연석, 장판 등 재질을 알려주시면, 물걸레 청소와 스팀 청소의 순서 및 적합성을 비교해 드리겠습니다.",
+      "response_hash": "ff0335a60a68711c8dde5dccc162a357473b7806b511bde2d18708f0b7e5761c",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 일반적인 바닥을 대상으로 물걸레 청소와 스팀 청소를 언급하지만, 실제 순서는 비교하지 않고 “순서 및 적합성을 비교해 드리겠습니다”라고 예고만 한다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "재질이 주어지지 않아 “입구 바닥 한 구역의 재질은 무엇인가요?”라고 먼저 질문하고, 재질을 알려주면 적합성을 비교하겠다고 안내한다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 비공개 프로젝트 이름이 노출되지 않으며, 세제 혼합을 권하는 내용도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“입구 바닥 한 구역”으로 대상을 명시하고, 다른 구역이나 청소 범위로 확장하지 않는다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-ko-1:human:1",
+      "job_id": "f9d0eb18b6e64535b66f223568e48c20",
+      "case_id": "holdout-314-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "32ba9569ea1712742b78befd72f2ccf5c9254175be46ee0d3a089ffbca890cc1",
+      "status": "completed",
+      "response": "입구 바닥에서 청소할 한 구역의 재질은 무엇인가요? 타일, 원목, 장판 등 재질을 알려주시면 두 가지 청소 방식의 순서와 적합성을 비교해 드리겠습니다.",
+      "response_hash": "10f791a3f30bcb4e621e9ff291cd34cfb5ad6e7365d7cba4e9f4b4da765c6755",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "“두 가지 청소 방식의 순서와 적합성을 비교해 드리겠습니다”라고 예고했지만, 실제 두 방식의 순서를 비교하지는 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "재질이 제시되지 않았으므로 “입구 바닥에서 청소할 한 구역의 재질은 무엇인가요?”라고 먼저 질문하고, 재질을 알려주면 적합성을 비교하겠다고 했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 비공개 프로젝트 이름이 등장하지 않으며 세제 혼합을 권하는 내용도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“입구 바닥에서 청소할 한 구역”의 재질만 질문하여 요청한 공간 범위를 유지했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-ko-1:original:0",
+      "job_id": "e1fad30325a640a1a59545eae4b63b6a",
+      "case_id": "holdout-314-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "2b4f299df196bb7ad9aa0b06f4237c0992d6c239f7ce25623c83bae601d8b89c",
+      "status": "completed",
+      "response": "입구에서 청소할 한 구역의 바닥 재질은 무엇인가요? 원목, 타일, 장판 등 재질을 알려주시면, 해당 구역을 닦는 순서를 두 가지 청소 방식으로 비교하고 각각의 적합성을 설명해 드리겠습니다.",
+      "response_hash": "9a1917fbadbc80e040d525f357baed4d62eba1e560f41b16f72c643e84b8cc55",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "‘바닥 재질’과 ‘해당 구역을 닦는 순서’로 일반적인 바닥의 의미는 유지했지만, ‘두 가지 청소 방식으로 비교하고’라고 예고했을 뿐 실제 순서 비교는 제시하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "재질이 주어지지 않아 ‘입구에서 청소할 한 구역의 바닥 재질은 무엇인가요?’라고 먼저 질문했고, 재질을 알려주면 ‘각각의 적합성을 설명’하겠다고 했다. 적합성 설명은 재질 확인 뒤로 유보했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 비공개 프로젝트 이름을 공개하는 내용이나 세제 혼합을 권하는 내용이 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "‘입구에서 청소할 한 구역’과 ‘해당 구역’을 명시하여 범위를 입구 바닥 한 구역으로 한정했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-314-ko-1:original:1",
+      "job_id": "342f92440ff548fbbc17f8b439d479b3",
+      "case_id": "holdout-314-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "af20379649e885a5f7304e62118a1843865610955e4757b453debf9d7580fbba",
+      "status": "completed",
+      "response": "입구에서 청소할 한 구역의 바닥 재질은 무엇인가요? 원목, 타일, 장판 등 재질을 알려 주시면, 해당 구역에 맞는 두 가지 청소 방식의 순서와 적합성을 비교해 드리겠습니다.",
+      "response_hash": "a96f599448dc587f714e48b70f1b4b8669c8ef04656eb2d7c72b333d404c77be",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “두 가지 청소 방식의 순서와 적합성을 비교해 드리겠습니다”라고 예고하지만, 실제 두 방식의 순서를 비교하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "재질이 주어지지 않아 먼저 “입구에서 청소할 한 구역의 바닥 재질은 무엇인가요?”라고 질문하고, 재질을 알려 주면 적합성을 비교하겠다고 밝혔다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "비공개 프로젝트 이름을 언급하지 않았으며 세제 혼합도 권하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“입구에서 청소할 한 구역”과 “해당 구역”으로 범위를 한정했으며 다른 공간의 청소로 확장하지 않았다."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "attempts": 0,
+  "metrics": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "measured",
+      "scheduled_requests": 16,
+      "responses_received": 16,
+      "graded_requests": 16,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 64,
+      "graded_criteria": 64,
+      "passed_criteria": 47,
+      "accuracy": 0.734375,
+      "observed_accuracy": 0.734375,
+      "all_required_passed": 1,
+      "intent_passed": 1
+    },
+    "variants": {
+      "original": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 12,
+        "accuracy": 0.75,
+        "observed_accuracy": 0.75,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      },
+      "human": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 12,
+        "accuracy": 0.75,
+        "observed_accuracy": 0.75,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      },
+      "baseline": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 13,
+        "accuracy": 0.8125,
+        "observed_accuracy": 0.8125,
+        "all_required_passed": 1,
+        "intent_passed": 1
+      },
+      "candidate": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 10,
+        "accuracy": 0.625,
+        "observed_accuracy": 0.625,
+        "all_required_passed": 0,
+        "intent_passed": 0
+      }
+    }
+  },
+  "paired": {
+    "improved": [],
+    "regressed": [
+      {
+        "case_id": "holdout-314-en-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-314-ko-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-314-ko-1",
+        "repeat": 1,
+        "criterion": "scope"
+      }
+    ],
+    "unchanged": [
+      {
+        "case_id": "holdout-314-en-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-314-en-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-314-en-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-314-en-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-314-en-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-314-en-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-314-en-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-314-ko-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-314-ko-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-314-ko-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-314-ko-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-314-ko-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-314-ko-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      }
+    ],
+    "unmeasured_pairs": 0
+  },
+  "elapsed_seconds": 0.0
+}

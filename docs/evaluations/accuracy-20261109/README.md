@@ -14,6 +14,61 @@ uses the same frozen candidates/corpus with a corrected task-response adapter;
 its separate first responses/grades supersede the invalid decision, not the
 historical files. It is a retest, not a new untouched holdout.
 
+## Corrected task-response retest
+
+`task-response-screen-summary.json` and `holdout-task-response-retest/` contain
+the corrected 320-call run (160 fresh task answers, then 160 fresh independent
+grades): 5,101,855 reported tokens, 1,273.125 seconds, zero worker errors.
+Candidates and captured payloads were frozen; only the adapter's task-response
+instruction changed. These inspected cases are now regression/screening material.
+
+| Issue | Original / 16 | Human / 16 | Baseline / 16 | Candidate / 16 | Paired gains / losses |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| #309 | 14 | 15 | 10 | 12 | 2 / 0 |
+| #310 | 16 | 16 | 16 | 16 | 0 / 0 |
+| #311 | 16 | 16 | 14 | 14 | 1 / 1 |
+| #312 | 14 | 14 | 12 | 13 | 1 / 0 |
+| #313 | 13 | 12 | 9 | 10 | 1 / 0 |
+| #314 | 12 | 12 | 13 | 10 | 0 / 3 |
+| #315 | 16 | 16 | 15 | 15 | 1 / 1 |
+| #316 | 16 | 16 | 12 | 14 | 2 / 0 |
+| #317 | 16 | 16 | 14 | 14 | 0 / 0 |
+| #318 | 16 | 16 | 14 | 14 | 0 / 0 |
+
+No candidate is enabled. #309 still fails a hard condition and whole-task target;
+#311/#315 have paired losses, while several protection-led candidates show no
+new protection on these two families. #314/#316 each protect one previously
+exposed occurrence; #314 loses criteria, and #316 merits further scoped-policy
+confirmation. The independently authored 20-family `role-confirmation-cases.json`
+was prepared before inspecting corrected #311 scores but **was not executed**:
+#311 did not qualify. It is not twenty additional measured families.
+
+`multilingual-task-response-retest/` is the corrected **one-repeat regression**:
+17 paragraphs score original 67/68, human 67/68, current engine 50/68; whole tasks
+16/17, 16/17 and 8/17. The two known requests score 8/8, 8/8 and 7/8. The SKILL.md
+inputs are identical across all arms, so its single grader-point difference
+cannot be attributed to masking. The 35 marked private references and all 19
+restoration/replay cases pass, but this is a small protection set.
+
+Issue #324 supersedes these screens as the adoption gate: separate development
+and untouched holdout families, a substantially larger multilingual privacy set,
+at least three repeats per language, and explicit scoring of justified deferral
+when required information is absent. Current single-repeat/regression scores do
+not establish that future vocabulary expansion is safe or effective. No defaults
+will be selected from the already inspected 17 paragraphs.
+
+`arithmetic-mcp-approved-retest/` separately demonstrates four actual native MCP
+calculations, two MCP-enabled no-calculation/unsupported-comparison controls,
+encrypted local restoration and an independent tool-evidence grade. The initial
+approval failure and generic-grader omission are preserved and disclosed. This
+is an evaluation fixture, not an automatically installed arithmetic tool.
+
+From 2.6.1, Git stores this evaluation directory without line-ending conversion.
+This restores the original captured CRLF/LF bytes for byte-hash verification;
+JSON values and recorded answers are unchanged. Version 2.6.0's Git-normalized
+artifacts remain in history. Do not compare frozen byte hashes to a checkout
+that silently normalizes their line endings.
+
 ## Execution and deviations
 
 The independently authored `holdout-cases.json` contains two task families per

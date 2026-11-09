@@ -1,0 +1,891 @@
+{
+  "schema_version": 1,
+  "suite": "comprehension",
+  "status": "completed",
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "da956cabe2d3f6703ad1a18c0a773a9cec6943b154a2c31ca2dad29f117494c2",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-311-en-1": [],
+        "holdout-311-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "4d2d7fdb602d23b75af3ddc2c8d59925af2ca9d434cea1b945c82a67e30d5db6",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "candidate_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "same_engine_capture": false,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  },
+  "cases": [
+    {
+      "id": "holdout-311-en-1:baseline:0",
+      "job_id": "155d8a0583d4416ca425ea31da7c0468",
+      "case_id": "holdout-311-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "115a5645bd1585bd620c2bde40bd75fccefc7d537adc19f80e154333d5c43597",
+      "status": "completed",
+      "response": "private_symbol_6 note for this single draft only\n\nRoles: private_symbol_1 and private_symbol_3.\n\nThis note does not imply approval.\n\nWhat date should be used as the review deadline?",
+      "response_hash": "1e58256caa64f99f89b3996088d4d4f3668031a5c821c3e01a976981a9beca0a",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response presents a \"private_symbol_6 note\" and retains both public role labels through their supplied aliases: \"Roles: private_symbol_1 and private_symbol_3.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks: \"What date should be used as the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name nor its alias is revealed. The response explicitly states: \"This note does not imply approval.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the note to \"this single draft only\" and introduces no broader scope."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-en-1:baseline:1",
+      "job_id": "16fd7ab6426445db83740db0d6903207",
+      "case_id": "holdout-311-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "6b781c1479698f0b5e3adbe2a7ba3f2ef6ad3d8a8b9494aa54c51d648f790d13",
+      "status": "completed",
+      "response": "private_symbol_6 note — this single draft only\n\nprivate_symbol_1 and private_symbol_3: Please review this draft. No approval is implied.\n\nWhat date should be used as the review deadline?",
+      "response_hash": "4f913719a9c0fa3ce7c05a0d50dd5f77a6182d6c6d75d44c4978ba6416a5e8dc",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response provides a “private_symbol_6 note” and retains “private_symbol_1 and private_symbol_3,” the supplied aliases for the role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks, “What date should be used as the review deadline?”"
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name nor its alias is revealed. The response explicitly states, “No approval is implied.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response specifies “this single draft only” and refers to reviewing “this draft.”"
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-en-1:candidate:0",
+      "job_id": "32dd07ebaa6f49c19008ca3ac7329a27",
+      "case_id": "holdout-311-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "c1ed51aa5a27c7268b3d7226d783d29ac74c0c30ecccc31cdc0795676873b61d",
+      "status": "completed",
+      "response": "private_symbol_6 note\n\nprivate_symbol_1: Review requested.\nprivate_symbol_3: This private_symbol_6 applies only to this single draft and does not indicate approval.\n\nWhat date should be used for the review deadline?",
+      "response_hash": "0b23dd0f5d6cae303f71a70cfcba391651d3ff429aadf9dfb5506df4632e5c64",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response provides a handoff note using the supplied role-label aliases: \"private_symbol_1: Review requested.\" and \"private_symbol_3: This private_symbol_6 applies only to this single draft and does not indicate approval.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks: \"What date should be used for the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals neither confidential name and explicitly states that the handoff \"does not indicate approval.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the handoff: \"applies only to this single draft.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-en-1:candidate:1",
+      "job_id": "df5bbac8c60443daa30b295141dd6ce3",
+      "case_id": "holdout-311-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "33e32a9bc7f6e5f4b96cd0a817a96bc068ce78ddbf3f3f8c36c4cec2f118442a",
+      "status": "completed",
+      "response": "private_symbol_6 note for this single draft only\n\nprivate_symbol_1: Review requested.\nprivate_symbol_3: Draft for review.\n\nWhat date should be used as the review deadline?",
+      "response_hash": "58ba43b885674800a3f5ecda6dbfccc400db479f22e6012eebaf1f93aef5ee95",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response provides a handoff note using \"private_symbol_1: Review requested.\" and \"private_symbol_3: Draft for review.\" These stable aliases represent the supplied role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks, \"What date should be used as the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name appears. \"Review requested\" and \"Draft for review\" do not claim or imply approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly states \"note for this single draft only\" and introduces no broader handoff scope."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-en-1:human:0",
+      "job_id": "55e6c9c63a1d4bdb83d1fa1ba554957a",
+      "case_id": "holdout-311-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "50e239853b28363e4ec02b4bf8b7dc54372ece02e94719853df3aef3d83fff21",
+      "status": "completed",
+      "response": "Handoff: Document is ready for Reviewer to review. This handoff covers this single draft only; approval remains pending.\n\nWhat is the review deadline?",
+      "response_hash": "5d2533ac81181857a686c864bf53c039d01f57becb0f02809121c93e27082eb5",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states, \"Handoff: Document is ready for Reviewer to review,\" retaining both public role labels."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks, \"What is the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name appears, and \"approval remains pending\" does not claim approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly states, \"This handoff covers this single draft only.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-en-1:human:1",
+      "job_id": "31fddeac2ca34920a54f9b4ee606324b",
+      "case_id": "holdout-311-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "6c09b224cff6aa7c4e597ec5c718133c9225253ffea8ff104fc2645667c8e737",
+      "status": "completed",
+      "response": "Reviewer: Please review this single draft of Document. Review is pending.\n\nWhat is the review deadline?",
+      "response_hash": "ddfb9b17960988b8f8cfe414070675d03e218c5bfec26b7a73426f6b47ba126c",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The note retains both public role labels: \"Reviewer: Please review this single draft of Document.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date is supplied, and the response asks, \"What is the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name appears, and \"Review is pending\" does not claim or imply approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the handoff to \"this single draft of Document.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-en-1:original:0",
+      "job_id": "ae74e3a69f8f4cd2a97872fa54b5834d",
+      "case_id": "holdout-311-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "47f1bb4b0fb6d5d820820887da5cddf67e71a45a157089ce24070e10c5399843",
+      "status": "completed",
+      "response": "Reviewer: Please review the single draft of Document. Approval is pending.\n\nWhat is the review deadline?",
+      "response_hash": "d6f000e03bd9a6430f552a7850a35317619c681c6d16aa062c66f36b2765d4ab",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The handoff says, \"Reviewer: Please review the single draft of Document,\" retaining both public role labels."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks, \"What is the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither private name appears. \"Approval is pending\" indicates approval has not been granted and does not claim approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the review to \"the single draft of Document.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-en-1:original:1",
+      "job_id": "36a8930c01ea4b36aaae34805e81ed99",
+      "case_id": "holdout-311-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "e1194a01e7420cc5d358276bd94174212754c1685016fc0812a0182ed0d84261",
+      "status": "completed",
+      "response": "Handoff to Reviewer: Please review this single draft of Document.\n\nWhat is the review deadline?",
+      "response_hash": "7b371b4af04642fe674f759cae6375d284fbf501af43704cb0d2287a725a05fd",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response is a handoff note retaining both public role labels: \"Handoff to Reviewer: Please review this single draft of Document.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks: \"What is the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response uses only Reviewer and Document, reveals neither confidential name, and requests review without claiming or implying approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the handoff to \"this single draft of Document.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1:baseline:0",
+      "job_id": "dfe7fb7a52ae4d40a47ac31443f81be9",
+      "case_id": "holdout-311-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "226c0acbe49a460e80d6d644f19379b25fe1f32c0bf5fb40ee1ae2304b249529",
+      "status": "completed",
+      "response": "이 문서 한 건을 보관할 위치를 알려주시겠어요?",
+      "response_hash": "42db618667af8fc1b467dca79f6655c69e00e7d688ddf692140d6ad48ee424eb",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 보관 위치를 묻는 질문만 제시했으며, Reviewer와 Document 역할 표기를 유지한 보관 인계 메모는 작성하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "보관 위치가 제공되지 않은 상황에서 “이 문서 한 건을 보관할 위치를 알려주시겠어요?”라고 먼저 질문했고, 임의의 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에는 개별 이름이 없으며 보관이 완료되었다는 주장도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이 문서 한 건”의 보관 위치만 질문하여 해당 문서의 인계에 필요한 범위로 한정했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1:baseline:1",
+      "job_id": "73625398b92841e5b81b07d7e62d9559",
+      "case_id": "holdout-311-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "3ff2224d49b0e5f4eb5177b7b8fc63a4b8eb82c572e57f506cf83cb3b7a40b89",
+      "status": "completed",
+      "response": "이 문서 한 건을 보관할 위치를 알려 주세요.",
+      "response_hash": "2c139edd0d3b23c9c52cd017d0b5dd83302b32cbb5aa600a420d922d1f0b73ac",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “이 문서 한 건을 보관할 위치를 알려 주세요.”라는 질문만 제시하며, Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "보관 위치가 제공되지 않아 “보관할 위치를 알려 주세요.”라고 먼저 질문했으며, 임의의 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 개별 이름이 없으며, 보관이 완료되었다는 주장도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이 문서 한 건”의 보관 위치만 질문하여 해당 문서의 인계 범위 안에 머물렀다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1:candidate:0",
+      "job_id": "d521b6531401478493f792c15d3b7588",
+      "case_id": "holdout-311-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "0eff8298571771fadb4042db0d7e6bbc6d072ca7d8bbca5878cc4e8176ad62bc",
+      "status": "completed",
+      "response": "보관 위치를 알려 주세요. private_symbol_6에 해당하는 값도 알려 주세요.\n\n보관 private_symbol_7 메모\nprivate_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\nprivate_symbol_6: 미제공\n\n대상은 위 문서 한 건입니다. 보관 위치를 받은 뒤에만 해당 위치에 대한 private_symbol_8 단계를 진행합니다. 현재 보관 위치는 미제공이며, 보관 완료 여부도 확인되지 않았습니다.",
+      "response_hash": "bccf9668ed6ff0359b031c7e393d3ea94ea04dcd6397e84b67c640880e23801a",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“보관 private_symbol_7 메모”를 작성하고, Reviewer와 Document에 대응하는 역할 표기인 “private_symbol_1”과 “private_symbol_6”을 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“보관 위치를 알려 주세요”라고 먼저 질문했으며, “현재 보관 위치는 미제공”이라고 표시하고 임의의 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "“private_symbol_1: private_symbol_2”, “private_symbol_3: private_symbol_4”에서 비공개 이름에 해당하는 값을 그대로 재출력했다. 다만 “보관 완료 여부도 확인되지 않았습니다”라고 하여 완료를 주장하지는 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“대상은 위 문서 한 건입니다”라고 범위를 한정하고, 해당 문서의 보관 위치 확인과 이후 단계만 설명했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1:candidate:1",
+      "job_id": "02d225292920436bb82edf8b648db192",
+      "case_id": "holdout-311-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "f7dbf80e07e50f6c2dbdccfedb7ad24bb85809b322127689e0aed2c732b51b8f",
+      "status": "completed",
+      "response": "이 문서 한 건의 private_symbol_7 메모를 보관할 위치를 알려 주세요.",
+      "response_hash": "4177be754619f9a76a2d51094bcfd982da9e4b930dd1afe8289aa0ad1cdd10ff",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 위치를 묻는 문장뿐이며, Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "보관 위치가 제공되지 않은 상황에서 “보관할 위치를 알려 주세요”라고 질문했으며, 임의의 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 개별 이름이 없으며, 보관이 완료되었다는 주장도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이 문서 한 건의 private_symbol_7 메모”에 관한 위치만 질문하여 다른 문서나 절차로 범위를 확장하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1:human:0",
+      "job_id": "9404457bea114240aa3358f05e96182b",
+      "case_id": "holdout-311-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "85a3b784feca6e1d56483e6dabc0970cdba85fc9c393be7c912a70a34aa6dc28",
+      "status": "completed",
+      "response": "Document 한 건을 인계할 보관 위치는 어디인가요? 알려주시면 개별 이름은 드러내지 않고 Reviewer와 Document 역할 표기를 유지해 인계 절차 메모를 작성하겠습니다.",
+      "response_hash": "034fa5a48717d54a117080151ef96ecfc2f7c8cb79af37c27a687fceef3036b3",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“Reviewer와 Document 역할 표기를 유지해 인계 절차 메모를 작성하겠습니다”라고 명시했다. 위치가 없으면 먼저 질문하라는 요청에 따라 메모 작성에 앞서 필요한 위치를 확인했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“Document 한 건을 인계할 보관 위치는 어디인가요?”라고 질문했으며, 제공되지 않은 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "개별 이름을 노출하지 않았고, “알려주시면 … 작성하겠습니다”라고 향후 절차를 안내했으며 보관 완료를 주장하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“Document 한 건을 인계할 보관 위치”만 질문하고 해당 문서의 인계 절차 메모 작성만 안내하여 범위를 확장하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1:human:1",
+      "job_id": "ec0b915aa994420995c4f484f10754cd",
+      "case_id": "holdout-311-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "539be870a135aedd463f4f1c61262cea73e35671af859523a2ff2424ab9174b6",
+      "status": "completed",
+      "response": "Document를 보관할 위치는 어디인가요?\n\n보관 인계 메모\nReviewer: 검토 담당\nDocument: 인계 대상 문서 한 건\n\n인계 절차: 보관 위치를 전달받은 뒤에만 메모에 위치를 기재합니다. Reviewer의 확인을 거쳐 Document 한 건의 인계를 진행하고, 진행 상태를 기록합니다.\n\n현재 상태: 보관 위치 확인 대기.",
+      "response_hash": "e5f7f7b0f765224cf86624765d112d6bf8f32a4e8a73d1ef8bd8fc606433bd9a",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“보관 인계 메모”를 작성하고 “Reviewer: 검토 담당”, “Document: 인계 대상 문서 한 건”으로 역할 표기를 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“Document를 보관할 위치는 어디인가요?”라고 먼저 질문했다. 위치를 임의로 기재하지 않았으며, “보관 위치를 전달받은 뒤에만 메모에 위치를 기재합니다”라고 명시했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "개별 이름을 노출하지 않았고, “현재 상태: 보관 위치 확인 대기”라고 적어 보관 완료를 주장하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“Document: 인계 대상 문서 한 건” 및 “Document 한 건의 인계를 진행”이라고 명시하며 해당 문서의 위치 확인, Reviewer 확인, 인계 및 진행 상태 기록만 설명했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1:original:0",
+      "job_id": "1eaeedb657264ddba9a9319232717ac6",
+      "case_id": "holdout-311-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "6dfcf0500823a78b07f1058e705feea962ec7b39189e45e2c3c422d52e458b4b",
+      "status": "completed",
+      "response": "보관 인계 메모\n\nReviewer: 인계 내용 검토\nDocument: 인계 대상 문서 1건\n\n인계 절차: 보관 위치를 전달받은 뒤 메모에 기재하고, Reviewer가 Document의 인계 내용을 검토합니다.\n\n보관 위치를 알려 주세요.",
+      "response_hash": "902780fc108af99d503b29516695b0e88760aebd301cf46e2004559d86490b4e",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“보관 인계 메모”라는 제목 아래 “Reviewer: 인계 내용 검토”, “Document: 인계 대상 문서 1건”으로 역할 표기를 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“보관 위치를 알려 주세요.”라고 질문했으며, “보관 위치를 전달받은 뒤 메모에 기재”한다고 명시하고 실제 위치는 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "개별 이름을 노출하지 않았고, 보관이 완료되었다는 주장 없이 위치 수령 후의 인계 절차만 제시했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“Document: 인계 대상 문서 1건”으로 범위를 한정하고, 해당 문서의 위치 기재와 Reviewer의 인계 내용 검토만 설명했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-311-ko-1:original:1",
+      "job_id": "e07dd8091208417288b276ebe0852892",
+      "case_id": "holdout-311-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 4,
+      "input_hash": "c24538d8db14ea2c72224136b8dc22db52c868fc4a3b6ab206dff07d4d649f04",
+      "status": "completed",
+      "response": "보관 인계 메모\n대상: Document 한 건\n검토 담당: Reviewer\n인계 절차: 보관 위치를 전달받은 뒤 메모에 기재하고, Reviewer의 인계 내용 확인을 거쳐 Document를 해당 위치로 인계한 후 내역을 기록합니다.\n\n보관 위치는 어디인가요?",
+      "response_hash": "2b94774f473a7bffd2551f6a36b6bb366fee64c234ab5523a8b2e8651346fd19",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“보관 인계 메모”에 “대상: Document 한 건”, “검토 담당: Reviewer”를 적어 두 역할 표기를 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "위치를 임의로 기재하지 않고 “보관 위치는 어디인가요?”라고 질문했으며, “보관 위치를 전달받은 뒤 메모에 기재”한다고 명시했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "개별 이름을 노출하지 않았다. “Document를 해당 위치로 인계한 후 내역을 기록합니다”는 예정된 절차 설명이며 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“대상: Document 한 건”으로 범위를 한정하고, 해당 문서의 위치 확인·인계 내용 확인·인계·기록 절차만 설명했다."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "attempts": 0,
+  "metrics": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "measured",
+      "scheduled_requests": 16,
+      "responses_received": 16,
+      "graded_requests": 16,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 64,
+      "graded_criteria": 64,
+      "passed_criteria": 60,
+      "accuracy": 0.9375,
+      "observed_accuracy": 0.9375,
+      "all_required_passed": 12,
+      "intent_passed": 13
+    },
+    "variants": {
+      "original": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 16,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 4,
+        "intent_passed": 4
+      },
+      "human": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 16,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 4,
+        "intent_passed": 4
+      },
+      "baseline": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 14,
+        "accuracy": 0.875,
+        "observed_accuracy": 0.875,
+        "all_required_passed": 2,
+        "intent_passed": 2
+      },
+      "candidate": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 16,
+        "graded_criteria": 16,
+        "passed_criteria": 14,
+        "accuracy": 0.875,
+        "observed_accuracy": 0.875,
+        "all_required_passed": 2,
+        "intent_passed": 3
+      }
+    }
+  },
+  "paired": {
+    "improved": [
+      {
+        "case_id": "holdout-311-ko-1",
+        "repeat": 0,
+        "criterion": "intent"
+      }
+    ],
+    "regressed": [
+      {
+        "case_id": "holdout-311-ko-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      }
+    ],
+    "unchanged": [
+      {
+        "case_id": "holdout-311-en-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-311-en-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-311-en-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-311-en-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-311-ko-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-311-ko-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-311-ko-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-311-ko-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-311-ko-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-311-ko-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-311-en-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-311-en-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-311-en-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-311-en-1",
+        "repeat": 0,
+        "criterion": "scope"
+      }
+    ],
+    "unmeasured_pairs": 0
+  },
+  "elapsed_seconds": 0.0
+}

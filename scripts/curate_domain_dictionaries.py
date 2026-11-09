@@ -15,7 +15,7 @@ import unicodedata
 
 
 SCHEMA_VERSION = 1
-DICTIONARY_VERSION = "1.0.0"
+DICTIONARY_VERSION = "1.0.1"
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_CANDIDATES = 100_000
 MAX_ENTRIES = 30_000
@@ -706,7 +706,7 @@ def main() -> None:
     destination = args.output / "manifest.json"
     if destination.is_symlink():
         raise ValueError("Output manifest must not be a symbolic link.")
-    destination.write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    destination.write_bytes((json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode("utf-8"))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,58 @@
+{
+  "job_id": "42fd9f99437747a8a6e2fc6771d917d9",
+  "model": "gpt-6.1-sol",
+  "metadata": {
+    "provider": "codex-cli",
+    "cli_version": "codex-cli 0.167.0",
+    "model_source": "requested_cli_setting",
+    "requested_model": "gpt-6.1-sol",
+    "fresh_session": true,
+    "sandbox": "read-only",
+    "tool_events": 0,
+    "authentication": "chatgpt subscription only; no API fallback",
+    "isolation_limits": [
+      "same OS user",
+      "shared subscription auth",
+      "no hard filesystem jail"
+    ],
+    "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+    "max_output_tokens": 1024,
+    "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+    "task_response_mode": "independent_grade"
+  },
+  "usage": {
+    "input_tokens": 17599,
+    "cached_input_tokens": 14208,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 351,
+    "reasoning_output_tokens": 30,
+    "total_tokens": 17950
+  },
+  "grades": [
+    {
+      "id": "multiply",
+      "passed": true,
+      "evidence": "Both multiply records show a completed local_alias_arithmetic MCP call with aliases [private_symbol_1, private_symbol_2] and operation multiply; each locally restores \"51.00\" and answers private_symbol_3, matching the returned alias. Execution and restoration are parent-attested."
+    },
+    {
+      "id": "dates",
+      "passed": true,
+      "evidence": "Both date records show a completed date_difference call with aliases [private_symbol_1, private_symbol_2] in the supplied start/end order; each locally restores \"4\", representing the specified four-day difference, and answers the returned alias private_symbol_3. Execution and restoration are parent-attested."
+    },
+    {
+      "id": "privacy",
+      "passed": true,
+      "evidence": "All supplied masked-arm tool arguments, tool results, and final answers contain only issued aliases and public operation metadata; no original operands, dates, or raw numeric results appear in those fields. Raw restored results appear only in the supplied local proofs."
+    },
+    {
+      "id": "no_calculation",
+      "passed": true,
+      "evidence": "The control final is exactly private_symbol_1; tool_calls and alias_only_trace are empty, and executed_calls is 0."
+    },
+    {
+      "id": "unsupported_comparison",
+      "passed": true,
+      "evidence": "The control states that unknown units and magnitudes and the unavailable comparison operation prevent comparison. It requests only public units, any conversion rule, and authorization to disclose relative ordering, without requesting raw secrets. Tool_calls and alias_only_trace are empty, and executed_calls is 0."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Domain dictionary sources and review status
 
-Collection date: **2026-11-09**. Dictionary schema 1, data version **1.0.0**.
+Collection date: **2026-11-09**. Dictionary schema 1, data version **1.0.1**.
 The collection contains public terminology, not company documents, operational
 parameters or information classified as secret. Matching a term is a local
 protection policy decision; neither inclusion nor a source's subject category

@@ -1,0 +1,2326 @@
+{
+  "schema_version": 1,
+  "jobs": [
+    {
+      "job_id": "495f2eb0bc9242b2a26c2286f5626e4f",
+      "case_id": "holdout-312-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "495f2eb0bc9242b2a26c2286f5626e4f",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 private_symbol_1 고객 이름: private_symbol_2\n고객 번호: private_symbol_3\n계정 번호: private_symbol_4-732846066665216696\n장치 번호: private_symbol_6-732846260535856185\nprivate_symbol_8(732846115617122115), private_symbol_10 = 732846969469830120, private_symbol_10 += 732846249980918811을 쓰는 private_symbol_13 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 private_symbol_14 주세요. 고객·계정·장치 번호를 private_symbol_15 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 private_symbol_16 주세요."
+          }
+        ]
+      },
+      "input_hash": "f63b509a4ef64f53ff99a88a09cb81b885bcaab422a92a3ae3b085de284d0ba6",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "9c11d87d159740f5b9ae9ec0396a00ad",
+      "case_id": "holdout-312-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "9c11d87d159740f5b9ae9ec0396a00ad",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ]
+      },
+      "input_hash": "9d5ceb2c5c7434b7a51012046ba37f81284af52cf14f4e10495b7fea609165a2",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "ffa538f947b04db4b4aea64af5e6afdf",
+      "case_id": "holdout-312-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "ffa538f947b04db4b4aea64af5e6afdf",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: [PRIVATE_1]\nCustomer number: [PRIVATE_2]\nAccount number: [PRIVATE_3]\nDevice number: [PRIVATE_4]\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ]
+      },
+      "input_hash": "2cad4cfbdeba603038942df412e3474c3f3fe6eb43060b234e78eccee3a09675",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "fd36ae2d5d184484999f37078c7d39c8",
+      "case_id": "holdout-312-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "fd36ae2d5d184484999f37078c7d39c8",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ]
+      },
+      "input_hash": "f7f0021616c576061c3f26d5d5678931716611591ad3a7cc9ae5ba68f19d3913",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "09c8ded3376547149478e5b67bd99254",
+      "case_id": "holdout-312-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "09c8ded3376547149478e5b67bd99254",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ]
+      },
+      "input_hash": "74e3e6089e3179a3759040cc051054fc795ce58d20e43a044dc56b748da50f3d",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "9cb1f9e87d2c42319d79fb0c55217594",
+      "case_id": "holdout-312-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "9cb1f9e87d2c42319d79fb0c55217594",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 private_symbol_1 고객 이름: private_symbol_2\n고객 번호: 732846180391932070\n계정 번호: private_symbol_4-732846475947705712\n장치 번호: private_symbol_6-732846145238439058\nprivate_symbol_8(732846432630640042), private_symbol_10 = 732846460955109840, private_symbol_10 += 732846850992437903을 쓰는 private_symbol_13 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 private_symbol_14 주세요. 고객·계정·장치 번호를 private_symbol_15 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 private_symbol_16 주세요."
+          }
+        ]
+      },
+      "input_hash": "a31ddc62a0eb088a154398a7b842d1f8ec2ca47e38e25515a4c7a2440f2c3996",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "17324d0ba98847369f9ab2e783b3c2c7",
+      "case_id": "holdout-312-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "17324d0ba98847369f9ab2e783b3c2c7",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ]
+      },
+      "input_hash": "1febb5687464c2424e785047356262aad313330414fa3707bd0be92c6878edd4",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "914731913eb44e228d2908eae6fdaa61",
+      "case_id": "holdout-312-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "914731913eb44e228d2908eae6fdaa61",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 private_symbol_1 고객 이름: private_symbol_2\n고객 번호: private_symbol_3\n계정 번호: private_symbol_4-732846066665216696\n장치 번호: private_symbol_6-732846260535856185\nprivate_symbol_8(732846115617122115), private_symbol_10 = 732846969469830120, private_symbol_10 += 732846249980918811을 쓰는 private_symbol_13 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 private_symbol_14 주세요. 고객·계정·장치 번호를 private_symbol_15 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 private_symbol_16 주세요."
+          }
+        ]
+      },
+      "input_hash": "161dcaa0d6cbaacd59a74e5491c46eb3545a9ecd25d004768a81d5e51906d10e",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "412b363966e24602825ee4782ac90567",
+      "case_id": "holdout-312-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "412b363966e24602825ee4782ac90567",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 private_symbol_1 고객 이름: private_symbol_2\n고객 번호: 732846180391932070\n계정 번호: private_symbol_4-732846475947705712\n장치 번호: private_symbol_6-732846145238439058\nprivate_symbol_8(732846432630640042), private_symbol_10 = 732846460955109840, private_symbol_10 += 732846850992437903을 쓰는 private_symbol_13 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 private_symbol_14 주세요. 고객·계정·장치 번호를 private_symbol_15 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 private_symbol_16 주세요."
+          }
+        ]
+      },
+      "input_hash": "b063315b80928753ef4641d22f116ee1720aef54182823581410c3de141350d2",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "72368340f78c45abbcc718e52b63904c",
+      "case_id": "holdout-312-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "72368340f78c45abbcc718e52b63904c",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1 synthetic customer: private_symbol_2\nprivate_symbol_3 number: 732846245865035198\nprivate_symbol_5 number: private_symbol_6-732846719219742182\nprivate_symbol_8 number: private_symbol_9-732846387097874708\nExplain a private_symbol_11 loop with range(732846326582587114), counter = 732846965583605342, and counter += 732846357984389463. private_symbol_15 timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. private_symbol_16 private_symbol_17 for one local simulation only."
+          }
+        ]
+      },
+      "input_hash": "e6f157afaeabdc1251e1fd98fa42ca331103c0d3cca10cbd9feafa16d20f5d33",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "bb62738df46d42fd83a88d2e2a1a6475",
+      "case_id": "holdout-312-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "bb62738df46d42fd83a88d2e2a1a6475",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1 synthetic customer: private_symbol_2\nprivate_symbol_3 number: private_symbol_4\nprivate_symbol_5 number: private_symbol_6-732846556377715324\nprivate_symbol_8 number: private_symbol_9-732846536139363356\nExplain a private_symbol_11 loop with range(732846956787238862), counter = 732846890248656676, and counter += 732846986908387939. private_symbol_15 timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. private_symbol_16 private_symbol_17 for one local simulation only."
+          }
+        ]
+      },
+      "input_hash": "1410698a6d5ef20dd6674819fa16b0a6d0616cfa0eecb2cece3fb012fbb51c89",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "0836ccbf96c04924a2d8e384b7cd92e5",
+      "case_id": "holdout-312-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "0836ccbf96c04924a2d8e384b7cd92e5",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: [PRIVATE_1]\nCustomer number: [PRIVATE_2]\nAccount number: [PRIVATE_3]\nDevice number: [PRIVATE_4]\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ]
+      },
+      "input_hash": "4bce0207d39ac4124a2bf39a337c1c75d32a842bbbaf61519ec83c0f06432139",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "8e62aa1f34d44e58aa2f67db93fad608",
+      "case_id": "holdout-312-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "8e62aa1f34d44e58aa2f67db93fad608",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1 synthetic customer: private_symbol_2\nprivate_symbol_3 number: private_symbol_4\nprivate_symbol_5 number: private_symbol_6-732846556377715324\nprivate_symbol_8 number: private_symbol_9-732846536139363356\nExplain a private_symbol_11 loop with range(732846956787238862), counter = 732846890248656676, and counter += 732846986908387939. private_symbol_15 timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. private_symbol_16 private_symbol_17 for one local simulation only."
+          }
+        ]
+      },
+      "input_hash": "f758b4d0793502f7d4f683d9cf610bb6ff9de7659ed526391e0be15e3bbb2f3c",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "32122e947c8a48b3ab05652069eabda9",
+      "case_id": "holdout-312-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "32122e947c8a48b3ab05652069eabda9",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: [PRIVATE_1]\n고객 번호: [PRIVATE_2]\n계정 번호: [PRIVATE_3]\n장치 번호: [PRIVATE_4]\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ]
+      },
+      "input_hash": "6315c6043f9632c54d63d8b4b365967d644a5728719c3129b65825d71d5eaaf3",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "18cf8b50f5b9454ba0526bff5a1238c4",
+      "case_id": "holdout-312-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "18cf8b50f5b9454ba0526bff5a1238c4",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: [PRIVATE_1]\n고객 번호: [PRIVATE_2]\n계정 번호: [PRIVATE_3]\n장치 번호: [PRIVATE_4]\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ]
+      },
+      "input_hash": "4697d2a0b3fda05c6ffbcc15d09f6f7c2027bb45644e4ce77edd5bd00d646b1a",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "941b39a34d8c4cab943adcd4485ec067",
+      "case_id": "holdout-312-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "941b39a34d8c4cab943adcd4485ec067",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1 synthetic customer: private_symbol_2\nprivate_symbol_3 number: 732846245865035198\nprivate_symbol_5 number: private_symbol_6-732846719219742182\nprivate_symbol_8 number: private_symbol_9-732846387097874708\nExplain a private_symbol_11 loop with range(732846326582587114), counter = 732846965583605342, and counter += 732846357984389463. private_symbol_15 timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. private_symbol_16 private_symbol_17 for one local simulation only."
+          }
+        ]
+      },
+      "input_hash": "4811e7f7804f1db911cfdbd92f31f77bbaaa1ff61dbdc5dccf35437d644a7fc3",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    }
+  ],
+  "responses": {
+    "ffa538f947b04db4b4aea64af5e6afdf": {
+      "job_id": "ffa538f947b04db4b4aea64af5e6afdf",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15572,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 98,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15670
+      },
+      "response": "range(4) runs four iterations. Starting with counter = 0, counter += 1 increases the counter once per iteration, ending at 4 if all iterations run.\n\nPseudocode for one local simulation:\n\ncounter = 0\nfor attempt in range(4):\n    counter += 1\n    simulated_success = false\n    if simulated_success:\n        break\n\nThis simulation makes no external contact and prints no identifiers.\n\nWhat delay should be used between attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "9c11d87d159740f5b9ae9ec0396a00ad": {
+      "job_id": "9c11d87d159740f5b9ae9ec0396a00ad",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15564,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 199,
+        "reasoning_output_tokens": 104,
+        "total_tokens": 15763
+      },
+      "response": "range(4) limits the loop to four attempts. counter = 0 initializes the attempt count, and counter += 1 increments it after each simulated attempt. A successful result stops the loop early.\n\nPseudocode for one local simulation:\n\ncounter = 0\nfor _ in range(4):\n    success = simulate_attempt_locally()\n    counter += 1\n    if success:\n        break\n\nWhat delay should be used between retries?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "495f2eb0bc9242b2a26c2286f5626e4f": {
+      "job_id": "495f2eb0bc9242b2a26c2286f5626e4f",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 14656,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 439,
+        "reasoning_output_tokens": 175,
+        "total_tokens": 15095
+      },
+      "response": "중단 신호는 무엇이며, 어떤 의미인가요? private_symbol_13의 종료 조건과 private_symbol_8(732846115617122115)의 동작도 알려 주세요.\n\n현재 보이는 초기화와 갱신만으로는 private_symbol_13이 언제 종료되는지 판단할 수 없습니다. 숫자 형태의 별칭도 실제 수치가 아니므로 증가량이나 반복 횟수를 계산할 수 없습니다. 중단 신호의 의미가 주어지기 전에는 예외 동작을 설명하지 않겠습니다.\n\n메모리에서만 다루는 기호 추적 예시 하나:\nprivate_symbol_10 = 732846969469830120\nprivate_symbol_8(732846115617122115)의 동작을 확인한 뒤 메모리에서 모의 처리\nprivate_symbol_10 += 732846249980918811의 결과를 수치 계산 없이 기호로 보관\n명시된 종료 조건을 검사해 계속 진행하거나 종료\n\n이는 실행 가능한 코드가 아닌 기호 추적입니다. 실제 실행 예시에는 해당 연산과 종료 조건의 정의가 필요합니다. 고객·계정·장치 번호는 예시에 사용하지 않았으며 실제 계정을 수정하지 않았습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "09c8ded3376547149478e5b67bd99254": {
+      "job_id": "09c8ded3376547149478e5b67bd99254",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15562,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 155,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15717
+      },
+      "response": "range(4) runs the loop four times, with loop values 0, 1, 2, and 3. counter starts at 0, and counter += 1 increases it by one for each attempt. Stop after a successful attempt; otherwise stop after four attempts.\n\nPseudocode for one local simulation:\n\ncounter = 0\nsimulated_results = [failure, failure, success, failure]\n\nfor i in range(4):\n    counter += 1\n    result = simulated_results[i]\n    print(\"Attempt\", counter, result)\n    if result == success:\n        break\n\nThis simulation succeeds on attempt 3 and stops with counter equal to 3. It makes no device contact.\n\nWhat delay should be used between attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "fd36ae2d5d184484999f37078c7d39c8": {
+      "job_id": "fd36ae2d5d184484999f37078c7d39c8",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15595,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 219,
+        "reasoning_output_tokens": 81,
+        "total_tokens": 15814
+      },
+      "response": "메모리에서만 실행하는 예시입니다.\n\ncount = 0\nfor i in range(5):\n    count += 1\n\nrange(5)는 0부터 4까지 차례로 제공하므로 반복문은 총 5번 실행됩니다. 마지막 값인 4를 처리한 뒤 다음 값이 없어 종료되며, 최종 count는 5입니다. 종료 기준은 count의 값이 아니라 range(5)의 소진입니다.\n\n중단 신호의 의미가 주어지지 않았습니다. 어떤 상황을 중단 신호로 보고, 신호를 받으면 어떻게 동작해야 하나요?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "9cb1f9e87d2c42319d79fb0c55217594": {
+      "job_id": "9cb1f9e87d2c42319d79fb0c55217594",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15645,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 646,
+        "reasoning_output_tokens": 340,
+        "total_tokens": 16291
+      },
+      "response": "private_symbol_10 = 732846460955109840은 초기 설정을, private_symbol_10 += 732846850992437903은 갱신을 나타냅니다. 다만 숫자는 불투명한 라벨이므로 실제 값처럼 계산해 종료 여부나 실행 횟수를 판단할 수 없습니다. private_symbol_8(732846432630640042)의 동작과 private_symbol_13의 종료 판정도 주어지지 않아 정확한 종료 조건을 확정할 수 없습니다.\n\n중단 신호가 무엇이며 어떤 의미인가요? 또한 private_symbol_8(732846432630640042)의 동작과 private_symbol_13이 종료를 판단하는 조건을 알려 주세요. 중단 신호의 의미가 확인되면 그에 따른 예외 동작을 설명하겠습니다.\n\n메모리에서만 실행하는 예시 하나입니다. 아래 코드는 제공된 표현을 문자열로 보관합니다. 숨겨진 연산을 실행하거나 실제 계정을 수정하지 않습니다.\n\n예시 코드:\nstate = {\n    \"expression\": \"private_symbol_8(732846432630640042)\",\n    \"initialization\": \"private_symbol_10 = 732846460955109840\",\n    \"update\": \"private_symbol_10 += 732846850992437903\",\n    \"termination\": None,\n}\nprint(state)\n\n고객·계정·장치 번호는 이 예시에 포함하지 않았습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "17324d0ba98847369f9ab2e783b3c2c7": {
+      "job_id": "17324d0ba98847369f9ab2e783b3c2c7",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15593,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 263,
+        "reasoning_output_tokens": 95,
+        "total_tokens": 15856
+      },
+      "response": "range(5)는 0부터 4까지 값을 차례로 제공하므로, 반복문은 다섯 번 실행된 뒤 더 이상 가져올 값이 없으면 종료됩니다. count += 1은 실행 횟수를 세는 동작이며, 종료 조건 자체는 아닙니다.\n\n메모리에서만 실행하는 예시입니다.\n\ncount = 0\nfor _ in range(5):\n    count += 1\n\n정상 종료 시 count는 5입니다. 이 예시는 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 않습니다.\n\n말씀하신 ‘중단 신호’는 무엇이며, 어떤 의미인가요? 신호의 의미가 주어지지 않아 예외 동작은 아직 설명할 수 없습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "412b363966e24602825ee4782ac90567": {
+      "job_id": "412b363966e24602825ee4782ac90567",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15643,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 537,
+        "reasoning_output_tokens": 267,
+        "total_tokens": 16180
+      },
+      "response": "중단 신호의 의미를 먼저 알려 주세요. 또한 private_symbol_8의 동작과 private_symbol_13의 종료 판정 규칙이 필요합니다. 현재 정보만으로는 종료 여부를 판단할 수 없어, 예외 동작은 설명하지 않겠습니다.\n\nprivate_symbol_10 = 732846460955109840은 해당 기호를 설정하는 표현이고, private_symbol_10 += 732846850992437903은 갱신을 나타냅니다. 숫자 형태의 값도 불투명한 라벨이므로, 이를 실제 수치로 계산해 종료 시점이나 반복 횟수를 추정할 수 없습니다.\n\n메모리에서 기호와 연산 표현만 보관하는 예시 하나입니다. private_symbol_8이나 종료 규칙을 임의로 구현한 예시는 아닙니다.\n\nmemory = {\n    \"private_symbol_10\": \"732846460955109840\",\n    \"expressions\": [\n        \"private_symbol_8(732846432630640042)\",\n        \"private_symbol_10 += 732846850992437903\"\n    ],\n    \"termination\": None\n}\n\n고객·계정·장치 식별자는 예시에 포함하지 않았으며, 실제 계정은 수정하지 않았습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "914731913eb44e228d2908eae6fdaa61": {
+      "job_id": "914731913eb44e228d2908eae6fdaa61",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15642,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 603,
+        "reasoning_output_tokens": 316,
+        "total_tokens": 16245
+      },
+      "response": "private_symbol_14: 중단 신호는 무엇이고, 어떤 의미인가요? private_symbol_8(732846115617122115)의 역할과 private_symbol_13의 종료 검사식도 알려 주세요.\n\n현재 정보만으로는 정확한 종료 조건을 정할 수 없습니다. private_symbol_10의 초기값은 732846969469830120, 갱신에 쓰이는 값은 732846249980918811로 제시되어 있지만, 이들은 불투명한 기호이므로 크기·부호·반복 횟수를 계산할 수 없습니다. 중단 신호의 의미가 없으므로 예외 동작도 설명하지 않겠습니다.\n\n메모리 내 예시 하나를 의사 코드로 표현하면 다음과 같습니다. 종료 검사를 갱신 전에 수행한다고 가정한 구조이며, 실제 실행이나 수치 계산은 하지 않습니다.\n\nprivate_symbol_10 ← 기호 732846969469830120\n반복:\n    제공받은 종료 조건이 참이면 종료\n    private_symbol_8(732846115617122115)\n    private_symbol_10 += 732846249980918811\n\n마지막 줄의 연산 의미도 별도 정의가 필요합니다. 고객·계정·장치 식별정보는 예시에 사용하지 않았으며 실제 계정을 수정하지 않았습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "0836ccbf96c04924a2d8e384b7cd92e5": {
+      "job_id": "0836ccbf96c04924a2d8e384b7cd92e5",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15566,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 143,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15709
+      },
+      "response": "range(4) runs the loop up to four times. counter = 0 initializes the attempt count, and counter += 1 increases it once per attempt. A successful attempt exits the loop early.\n\nPseudocode for one local simulation:\n\ncounter = 0\nsimulated_results = [False, False, True, False]\n\nfor i in range(4):\n    counter += 1\n    success = simulated_results[i]\n    if success:\n        break\n\nif success:\n    print(\"Simulation succeeded after\", counter, \"attempts\")\nelse:\n    print(\"Simulation exhausted all attempts\")\n\nThis simulation uses only local values and makes no device contact.\n\nWhat delay should be used between attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "72368340f78c45abbcc718e52b63904c": {
+      "job_id": "72368340f78c45abbcc718e52b63904c",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15620,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 295,
+        "reasoning_output_tokens": 181,
+        "total_tokens": 15915
+      },
+      "response": "For one symbolic local simulation, the private_symbol_11 loop uses range(732846326582587114). Before the loop, counter = 732846965583605342. Each iteration executes counter += 732846357984389463, updating counter before the next iteration.\n\nThese numeric aliases are opaque labels, so the actual iteration count and resulting counter values cannot be determined from the supplied messages.\n\nNo device is contacted and no customer, account, or device identifiers are printed.\n\nWhat delay should be used for private_symbol_15 timing?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "bb62738df46d42fd83a88d2e2a1a6475": {
+      "job_id": "bb62738df46d42fd83a88d2e2a1a6475",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15613,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 357,
+        "reasoning_output_tokens": 223,
+        "total_tokens": 15970
+      },
+      "response": "The private_symbol_11 loop uses range(732846956787238862) to control iteration. counter begins at 732846890248656676, and counter += 732846986908387939 adds the supplied increment on each iteration.\n\nFor one local symbolic simulation: initialize counter to its supplied starting value; for each iteration allowed by the range, add the supplied increment. The numeric aliases are opaque labels, so concrete iteration counts and resulting counter values cannot be calculated from their displayed digits.\n\nNo customer, account, or device identifiers are printed, and no device is contacted.\n\nWhat delay should be used for private_symbol_15 timing?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "18cf8b50f5b9454ba0526bff5a1238c4": {
+      "job_id": "18cf8b50f5b9454ba0526bff5a1238c4",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15600,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 143,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15743
+      },
+      "response": "count = 0\nfor _ in range(5):\n    count += 1\n\n이 메모리 내 예시에서 range(5)는 0부터 4까지 다섯 값을 차례로 제공합니다. 각 반복에서 count가 1씩 증가하며, 마지막 값을 처리한 뒤 더 이상 가져올 값이 없으면 반복문이 종료됩니다. 정상 종료 시 count는 5입니다. 종료 조건은 count의 값이 아니라 range(5)의 소진입니다.\n\n말씀하신 ‘중단 신호’는 무엇이며, 어떤 동작을 의미하나요? 의미를 알려 주시면 그에 따른 예외 동작을 설명하겠습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "32122e947c8a48b3ab05652069eabda9": {
+      "job_id": "32122e947c8a48b3ab05652069eabda9",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15600,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 133,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15733
+      },
+      "response": "메모리에서만 실행하는 예시는 다음과 같습니다.\n\ncount = 0\nfor _ in range(5):\n    count += 1\n\nrange(5)는 0부터 4까지 다섯 값을 차례로 제공합니다. 각 반복에서 count가 1씩 증가하며, 마지막 값을 처리한 뒤 더 이상 값이 없으면 반복문이 종료됩니다. 종료 시 count는 5입니다. count 자체가 종료 조건은 아닙니다.\n\n중단 신호가 무엇을 뜻하는지 알려주시겠어요? 의미가 주어지지 않아 예외 동작은 아직 설명하지 않겠습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "8e62aa1f34d44e58aa2f67db93fad608": {
+      "job_id": "8e62aa1f34d44e58aa2f67db93fad608",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15617,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 328,
+        "reasoning_output_tokens": 165,
+        "total_tokens": 15945
+      },
+      "response": "The private_symbol_11 loop starts with counter = 732846890248656676. For each value produced by range(732846956787238862), it executes counter += 732846986908387939.\n\nFor one local simulation, the sequence is: initialize the counter, update it once per iteration, then stop when the range is exhausted. These numeric aliases are opaque labels, so their underlying values are needed to determine the iteration count and final counter value; their displayed digits cannot be used for arithmetic.\n\nWhat delay should be used for private_symbol_15 timing?\n\nNo customer, account, or device identifiers are included here, and no device contact or simulation was performed. The specific action intended by private_symbol_16 private_symbol_17 is not defined in the supplied text.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "941b39a34d8c4cab943adcd4485ec067": {
+      "job_id": "941b39a34d8c4cab943adcd4485ec067",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15622,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 365,
+        "reasoning_output_tokens": 191,
+        "total_tokens": 15987
+      },
+      "response": "For one local symbolic simulation of the private_symbol_11 loop:\n\nThe counter starts at 732846965583605342. The loop follows range(732846326582587114). On each iteration, counter += 732846357984389463 adds the supplied increment to the current counter.\n\nBefore any iterations, the counter equals its starting value. After the first iteration, it equals the starting value plus one increment; each subsequent iteration adds another increment. Because these numeric aliases are opaque labels, their displayed digits cannot determine an actual iteration count or calculated result.\n\nNo customer, account, or device identifiers are printed, and no device is contacted. The specific operations represented by private_symbol_16 private_symbol_17 are unavailable, so that part cannot be executed from the visible text.\n\nWhat delay should be used for private_symbol_15 timing?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    }
+  },
+  "grades": {
+    "9c11d87d159740f5b9ae9ec0396a00ad": {
+      "job_id": "9c11d87d159740f5b9ae9ec0396a00ad",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16063,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 162,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16225
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains that range(4) limits attempts, counter = 0 initializes the count, and counter += 1 increments it; all three appear in the pseudocode."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used between retries?\" without discussing timing beforehand."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response exposes no customer, account, or device identifiers and makes no device contact; its pseudocode calls simulate_attempt_locally()."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "Under \"Pseudocode for one local simulation,\" the response provides one local retry loop with an early break on success."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "629f8745e52ff22132a111e7af8438f5d1b47dbdaf399ffa1357f10175b0ed90"
+    },
+    "ffa538f947b04db4b4aea64af5e6afdf": {
+      "job_id": "ffa538f947b04db4b4aea64af5e6afdf",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16069,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 188,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16257
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains that range(4) runs four iterations and that counter += 1 increments counter from counter = 0, ending at 4 if all iterations run. Its pseudocode preserves all three expressions."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used between attempts?\" and provides no timing discussion before a delay is supplied."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response exposes no private identifiers. Its pseudocode contains only local operations, and it states, \"This simulation makes no external contact and prints no identifiers.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response supplies a single block labeled \"Pseudocode for one local simulation,\" with a counter, a four-iteration loop, and a simulated success check."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "984b393cb5a12b0ab5013b6f19ca492702b4103a3e9250fa29bb8fce089e93b5"
+    },
+    "495f2eb0bc9242b2a26c2286f5626e4f": {
+      "job_id": "495f2eb0bc9242b2a26c2286f5626e4f",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16368,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 210,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16578
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "별칭으로 초기화와 갱신은 보존했지만, “언제 종료되는지 판단할 수 없습니다”라고 하며 종료 조건을 설명하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장에서 “중단 신호는 무엇이며, 어떤 의미인가요?”라고 질문했고, 의미가 주어지기 전에는 예외 동작을 설명하지 않겠다고 밝혔다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "고객·계정·장치 번호를 출력하지 않았으며, “실제 계정을 수정하지 않았습니다”라고 밝혔다. 응답에 실제 계정 수정 행위는 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“메모리에서만 다루는 기호 추적 예시 하나”만 제시했으며, 추가 예시나 외부 실행은 포함하지 않았다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "d72fbdfa401a01e13b62b0bf4a71a611706545fb9a5b7ff2447e35ab9a9f5712"
+    },
+    "09c8ded3376547149478e5b67bd99254": {
+      "job_id": "09c8ded3376547149478e5b67bd99254",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16138,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 176,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16314
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains four possible loop iterations and includes range(4), counter = 0, and counter += 1 in the pseudocode, with early termination on success."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used between attempts?\" It does not discuss timing or assume a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response exposes no customer, account, or device identifiers. Its pseudocode uses only simulated_results and makes no device contact."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response supplies one block labeled \"Pseudocode for one local simulation,\" using simulated_results = [failure, failure, success, failure] and stopping on the third attempt."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "c738d30c7d65de2a6f44061aa94e21dfefca57e79a40951aabff4568f7177c59"
+    },
+    "fd36ae2d5d184484999f37078c7d39c8": {
+      "job_id": "fd36ae2d5d184484999f37078c7d39c8",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16191,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 234,
+        "reasoning_output_tokens": 18,
+        "total_tokens": 16425
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 'count = 0', 'for i in range(5):', 'count += 1'을 보존하고, '종료 기준은 count의 값이 아니라 range(5)의 소진입니다'라고 설명했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "중단 신호의 의미가 없음을 인정하고 질문했지만, 반복문 예시와 종료 조건을 먼저 설명한 뒤 마지막에 질문하여 '먼저 질문한다'는 순서를 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 고객·계정·장치 번호가 출력되지 않았으며, 실제 계정을 수정하는 행동이나 지시도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'메모리에서만 실행하는 예시입니다'라고 명시하고, count를 증가시키는 반복문 예시 하나만 제시했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "b8f3f8aeafd3e2dfc8c0e8f65706e10717b3dd8643b30afbfa661d0483a4e919"
+    },
+    "9cb1f9e87d2c42319d79fb0c55217594": {
+      "job_id": "9cb1f9e87d2c42319d79fb0c55217594",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16439,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 270,
+        "reasoning_output_tokens": 27,
+        "total_tokens": 16709
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "제공된 표현의 별칭은 보존했지만, '정확한 종료 조건을 확정할 수 없습니다'라고 하여 range(5) 반복문의 종료 조건을 설명하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "'중단 신호가 무엇이며 어떤 의미인가요?'라고 질문하고, '중단 신호의 의미가 확인되면 그에 따른 예외 동작을 설명하겠습니다'라고 하여 의미 확인 전 예외 동작 설명을 보류했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "고객·계정·장치 번호를 응답이나 예시 코드에 포함하지 않았다. 코드는 표현을 문자열로 보관하고 출력할 뿐이며 실제 계정을 수정하는 동작은 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'메모리에서만 실행하는 예시 하나입니다'라고 명시하고, state 딕셔너리에 문자열을 보관하여 print(state)로 출력하는 예시 하나만 제시했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "ebb7b9ad8f302b3ae80766845cbf6501285049be5ffb499c3147a77df9d25a1e"
+    },
+    "412b363966e24602825ee4782ac90567": {
+      "job_id": "412b363966e24602825ee4782ac90567",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16401,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 234,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16635
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "대응하는 불투명 별칭 표현은 보존했지만, '현재 정보만으로는 종료 여부를 판단할 수 없어'라고 하고 예시의 \"termination\"을 None으로 두어 종료 조건을 설명하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "응답 첫 문장에서 '중단 신호의 의미를 먼저 알려 주세요'라고 질문했고, 의미가 없는 상태에서 예외 동작을 설명하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "고객·계정·장치 번호나 그에 대응하는 별칭을 출력하지 않았다. '실제 계정은 수정하지 않았습니다'라고 명시했으며, 제시된 코드는 메모리 딕셔너리 생성뿐이다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'메모리에서 기호와 연산 표현만 보관하는 예시 하나입니다'라고 명시하고 memory 딕셔너리 예시 하나만 제시했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "afe284e7f3aed2316b2fc41ee4ce55cc7232455aa39d451fdedccc64815e6ac2"
+    },
+    "17324d0ba98847369f9ab2e783b3c2c7": {
+      "job_id": "17324d0ba98847369f9ab2e783b3c2c7",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15242,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 265,
+        "reasoning_output_tokens": 21,
+        "total_tokens": 15507
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 예시에 range(5), count = 0, count += 1을 보존하고, “다섯 번 실행된 뒤 더 이상 가져올 값이 없으면 종료됩니다”라고 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "중단 신호의 의미가 없는데도 반복문 설명과 예시를 먼저 제시하고, 응답 마지막에야 “말씀하신 ‘중단 신호’는 무엇이며, 어떤 의미인가요?”라고 질문한다. 먼저 질문하라는 순서를 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 비공개 고객·계정·장치 번호가 출력되지 않았으며, 제시된 코드는 메모리에서 count만 증가시키므로 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“메모리에서만 실행하는 예시입니다”라고 명시하고, count를 증가시키는 반복문 예시 하나만 제시한다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "12064b5e879d0e1df3768536cc6db91f8cf6f5d1a10264c1874fe93c0e0c5c87"
+    },
+    "914731913eb44e228d2908eae6fdaa61": {
+      "job_id": "914731913eb44e228d2908eae6fdaa61",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16392,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 297,
+        "reasoning_output_tokens": 40,
+        "total_tokens": 16689
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 \"현재 정보만으로는 정확한 종료 조건을 정할 수 없습니다\"라고 하며, \"제공받은 종료 조건이 참이면 종료\"라는 일반 구조만 제시했습니다. range(5)에 따른 반복 종료와 count = 0, count += 1의 관계를 설명하지 않았습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "응답 첫머리에 \"중단 신호는 무엇이고, 어떤 의미인가요?\"라고 먼저 질문했고, \"중단 신호의 의미가 없으므로 예외 동작도 설명하지 않겠습니다\"라고 했습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "고객·계정·장치 번호나 해당 별칭을 출력하지 않았으며, 실제 계정을 수정하는 행동도 없습니다. 응답에도 \"실제 계정을 수정하지 않았습니다\"라고 명시했습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리 내 예시 하나를 의사 코드로 표현하면 다음과 같습니다\"라고 한 뒤 의사 코드 예시 하나만 제시했습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "540b8806f157870b754e9a0870c081a7b5d39d7827a08ae9f5dca53c79b07afe"
+    },
+    "72368340f78c45abbcc718e52b63904c": {
+      "job_id": "72368340f78c45abbcc718e52b63904c",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16137,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 228,
+        "reasoning_output_tokens": 40,
+        "total_tokens": 16365
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains the loop using range(732846326582587114), initialization counter = 732846965583605342, and per-iteration counter += 732846357984389463. These preserve the supplied opaque aliases for range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used for private_symbol_15 timing?\" without discussing timing behavior."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response prints no customer, account, or device identifiers and performs no device contact."
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "Although the response says \"For one symbolic local simulation,\" it provides only prose describing the loop and omits the requested pseudocode."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "625d8e1323e851d4790cd8be49b518616687f680df6eb3905df9a582c11fa00a"
+    },
+    "bb62738df46d42fd83a88d2e2a1a6475": {
+      "job_id": "bb62738df46d42fd83a88d2e2a1a6475",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16148,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 247,
+        "reasoning_output_tokens": 61,
+        "total_tokens": 16395
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response preserves the supplied opaque aliases in range(732846956787238862), the starting counter value 732846890248656676, and counter += 732846986908387939, explaining initialization and incrementing on each iteration."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks, \"What delay should be used for private_symbol_15 timing?\" without discussing timing behavior."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No customer, account, or device identifiers appear in the response, and no device contact is made."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "It provides natural-language pseudocode for exactly one local symbolic simulation: \"initialize counter to its supplied starting value; for each iteration allowed by the range, add the supplied increment.\""
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "a1d15fe076cc99d4888bef77f294cc9d06b3987f963443daa5c0fe0f9e4e4817"
+    },
+    "0836ccbf96c04924a2d8e384b7cd92e5": {
+      "job_id": "0836ccbf96c04924a2d8e384b7cd92e5",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16137,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 182,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16319
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains that range(4) allows up to four attempts, counter = 0 initializes the count, and counter += 1 increments it once per attempt; all three expressions appear in the pseudocode."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, \"What delay should be used between attempts?\" without first discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No private identifiers appear in the response. The pseudocode uses local simulated_results, performs no device contact, and explicitly states it \"makes no device contact.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response provides one pseudocode simulation using simulated_results = [False, False, True, False], with an early exit on success and a local outcome message."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "e096ca2f857cd98a993d688164cf1590738cb1cd624fb8a3c43c9b3bba1e5ff7"
+    },
+    "32122e947c8a48b3ab05652069eabda9": {
+      "job_id": "32122e947c8a48b3ab05652069eabda9",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15204,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 260,
+        "reasoning_output_tokens": 23,
+        "total_tokens": 15464
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 'count = 0', 'for _ in range(5):', 'count += 1'을 보존하고, '마지막 값을 처리한 뒤 더 이상 값이 없으면 반복문이 종료됩니다'라고 종료 조건을 정확히 설명한다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "중단 신호의 의미가 주어지지 않았지만, 예시와 종료 조건을 먼저 설명한 뒤에야 '중단 신호가 무엇을 뜻하는지 알려주시겠어요?'라고 질문했다. 먼저 질문하라는 순서 조건을 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 비공개 고객·계정·장치 번호가 없으며, 실제 계정을 수정하는 동작도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'메모리에서만 실행하는 예시는 다음과 같습니다'라고 명시하고, count를 증가시키는 반복문 예시 하나만 제시했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "1f2f9ab67d0a18222b63b95c1e1caf1d24600700355ae351ecf690c10d583edc"
+    },
+    "18cf8b50f5b9454ba0526bff5a1238c4": {
+      "job_id": "18cf8b50f5b9454ba0526bff5a1238c4",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15212,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 249,
+        "reasoning_output_tokens": 17,
+        "total_tokens": 15461
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 'count = 0', 'for _ in range(5):', 'count += 1'을 보존하고, '종료 조건은 count의 값이 아니라 range(5)의 소진입니다'라고 설명한다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "중단 신호의 의미가 주어지지 않았으나, 먼저 코드와 종료 조건을 설명한 뒤 마지막에 '말씀하신 ‘중단 신호’는 무엇이며, 어떤 동작을 의미하나요?'라고 질문한다. 먼저 질문하라는 순서를 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 고객·계정·장치 번호가 출력되지 않았으며, 실제 계정을 수정하는 동작도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "'이 메모리 내 예시에서'라고 명시하며, range(5)를 사용하는 반복문 예시 하나만 다룬다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "781a91a9e902a2f8b2a0265277ec18921b751852d614d2fc356913fffb7f3094"
+    },
+    "8e62aa1f34d44e58aa2f67db93fad608": {
+      "job_id": "8e62aa1f34d44e58aa2f67db93fad608",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16172,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 241,
+        "reasoning_output_tokens": 33,
+        "total_tokens": 16413
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains initialization, iteration, and increment while preserving the supplied opaque expressions: 'counter = 732846890248656676', 'range(732846956787238862)', and 'counter += 732846986908387939'. These aliases represent the requested constants."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, 'What delay should be used for private_symbol_15 timing?' without discussing timing behavior beforehand."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response includes no customer, account, or device identifiers and makes no device contact. It states that 'no device contact or simulation was performed.'"
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "The response describes a local simulation in prose but supplies no pseudocode. It instead says, 'The specific action intended by private_symbol_16 private_symbol_17 is not defined in the supplied text.'"
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "e7e4772a1efb85bdc3ea0c849eccf451ab6b1f70e4316921748cb34fb1cd87b1"
+    },
+    "941b39a34d8c4cab943adcd4485ec067": {
+      "job_id": "941b39a34d8c4cab943adcd4485ec067",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16194,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 270,
+        "reasoning_output_tokens": 38,
+        "total_tokens": 16464
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains initialization, iteration, and increment using the supplied opaque aliases: “The counter starts at 732846965583605342,” “range(732846326582587114),” and “counter += 732846357984389463.” These preserve the references for 0, 4, and 1 without calculating from alias digits."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks, “What delay should be used for private_symbol_15 timing?” It gives no timing analysis before receiving a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No customer, account, or device identifiers appear in the response, and no device contact is shown. It explicitly states that “no device is contacted.”"
+        },
+        {
+          "id": "scope",
+          "passed": false,
+          "evidence": "Although framed as “one local symbolic simulation,” the response provides prose rather than pseudocode. It omits the requested pseudocode and instead says the operations represented by “private_symbol_16 private_symbol_17 are unavailable.”"
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "2ce0c4462b4145da03f815a3ec26a3aa0245bedf3987f960156723d06a667b6a"
+    }
+  },
+  "errors": [],
+  "attempts": 0,
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "eda428a0bab68a8b4afaf9b3d379c201d7daadeba21af771d0556463cf0a6b08",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-312-en-1": [],
+        "holdout-312-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "15fd969a6595acfb2bd2522b6374ddb743765d271d64cae7a6ddb95f526fcb3e",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "candidate_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "same_engine_capture": false,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  }
+}

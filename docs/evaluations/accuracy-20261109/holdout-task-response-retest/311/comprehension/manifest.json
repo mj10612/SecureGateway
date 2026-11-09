@@ -1,0 +1,2326 @@
+{
+  "schema_version": 1,
+  "jobs": [
+    {
+      "job_id": "ec0b915aa994420995c4f484f10754cd",
+      "case_id": "holdout-311-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "ec0b915aa994420995c4f484f10754cd",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Reviewer: [PRIVATE_1]\nDocument: [PRIVATE_2]\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "input_hash": "539be870a135aedd463f4f1c61262cea73e35671af859523a2ff2424ab9174b6",
+      "original": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "df5bbac8c60443daa30b295141dd6ce3",
+      "case_id": "holdout-311-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "df5bbac8c60443daa30b295141dd6ce3",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\nRole hints (public source field roles only): private_symbol_2=person; private_symbol_4=document.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\nThe two names above are private_symbol_5 fixture names. Write a private_symbol_6 note using the role labels private_symbol_1 and private_symbol_3. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the private_symbol_6 for this single draft only."
+          }
+        ]
+      },
+      "input_hash": "33e32a9bc7f6e5f4b96cd0a817a96bc068ce78ddbf3f3f8c36c4cec2f118442a",
+      "original": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "02d225292920436bb82edf8b648db192",
+      "case_id": "holdout-311-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "02d225292920436bb82edf8b648db192",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\nRole hints (public source field roles only): private_symbol_2=person; private_symbol_4=document.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\n위 두 값은 가상의 private_symbol_5 이름입니다. private_symbol_1와 private_symbol_6 역할 표기를 살려 보관 private_symbol_7 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 private_symbol_8, 없으면 먼저 private_symbol_9 주세요. 개별 이름을 private_symbol_10 보관이 private_symbol_11 쓰지 마세요. 이 문서 한 건의 private_symbol_7 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "input_hash": "f7dbf80e07e50f6c2dbdccfedb7ad24bb85809b322127689e0aed2c732b51b8f",
+      "original": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "31fddeac2ca34920a54f9b4ee606324b",
+      "case_id": "holdout-311-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "31fddeac2ca34920a54f9b4ee606324b",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Reviewer: [PRIVATE_1]\nDocument: [PRIVATE_2]\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only."
+          }
+        ]
+      },
+      "input_hash": "6c09b224cff6aa7c4e597ec5c718133c9225253ffea8ff104fc2645667c8e737",
+      "original": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "1eaeedb657264ddba9a9319232717ac6",
+      "case_id": "holdout-311-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "1eaeedb657264ddba9a9319232717ac6",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "input_hash": "6dfcf0500823a78b07f1058e705feea962ec7b39189e45e2c3c422d52e458b4b",
+      "original": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "dfe7fb7a52ae4d40a47ac31443f81be9",
+      "case_id": "holdout-311-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "dfe7fb7a52ae4d40a47ac31443f81be9",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\n위 두 값은 가상의 private_symbol_5 이름입니다. private_symbol_1와 private_symbol_6 역할 표기를 살려 보관 private_symbol_7 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 private_symbol_8, 없으면 먼저 private_symbol_9 주세요. 개별 이름을 private_symbol_10 보관이 private_symbol_11 쓰지 마세요. 이 문서 한 건의 private_symbol_7 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "input_hash": "226c0acbe49a460e80d6d644f19379b25fe1f32c0bf5fb40ee1ae2304b249529",
+      "original": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "55e6c9c63a1d4bdb83d1fa1ba554957a",
+      "case_id": "holdout-311-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "55e6c9c63a1d4bdb83d1fa1ba554957a",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Reviewer: [PRIVATE_1]\nDocument: [PRIVATE_2]\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only."
+          }
+        ]
+      },
+      "input_hash": "50e239853b28363e4ec02b4bf8b7dc54372ece02e94719853df3aef3d83fff21",
+      "original": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "ae74e3a69f8f4cd2a97872fa54b5834d",
+      "case_id": "holdout-311-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "ae74e3a69f8f4cd2a97872fa54b5834d",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only."
+          }
+        ]
+      },
+      "input_hash": "47f1bb4b0fb6d5d820820887da5cddf67e71a45a157089ce24070e10c5399843",
+      "original": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "32dd07ebaa6f49c19008ca3ac7329a27",
+      "case_id": "holdout-311-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "32dd07ebaa6f49c19008ca3ac7329a27",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\nRole hints (public source field roles only): private_symbol_2=person; private_symbol_4=document.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\nThe two names above are private_symbol_5 fixture names. Write a private_symbol_6 note using the role labels private_symbol_1 and private_symbol_3. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the private_symbol_6 for this single draft only."
+          }
+        ]
+      },
+      "input_hash": "c1ed51aa5a27c7268b3d7226d783d29ac74c0c30ecccc31cdc0795676873b61d",
+      "original": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "e07dd8091208417288b276ebe0852892",
+      "case_id": "holdout-311-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "e07dd8091208417288b276ebe0852892",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "input_hash": "c24538d8db14ea2c72224136b8dc22db52c868fc4a3b6ab206dff07d4d649f04",
+      "original": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "d521b6531401478493f792c15d3b7588",
+      "case_id": "holdout-311-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "d521b6531401478493f792c15d3b7588",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\nRole hints (public source field roles only): private_symbol_2=person; private_symbol_4=document.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\n위 두 값은 가상의 private_symbol_5 이름입니다. private_symbol_1와 private_symbol_6 역할 표기를 살려 보관 private_symbol_7 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 private_symbol_8, 없으면 먼저 private_symbol_9 주세요. 개별 이름을 private_symbol_10 보관이 private_symbol_11 쓰지 마세요. 이 문서 한 건의 private_symbol_7 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "input_hash": "0eff8298571771fadb4042db0d7e6bbc6d072ca7d8bbca5878cc4e8176ad62bc",
+      "original": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "16fd7ab6426445db83740db0d6903207",
+      "case_id": "holdout-311-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "16fd7ab6426445db83740db0d6903207",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\nThe two names above are private_symbol_5 fixture names. Write a private_symbol_6 note using the role labels private_symbol_1 and private_symbol_3. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the private_symbol_6 for this single draft only."
+          }
+        ]
+      },
+      "input_hash": "6b781c1479698f0b5e3adbe2a7ba3f2ef6ad3d8a8b9494aa54c51d648f790d13",
+      "original": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "9404457bea114240aa3358f05e96182b",
+      "case_id": "holdout-311-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "9404457bea114240aa3358f05e96182b",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Reviewer: [PRIVATE_1]\nDocument: [PRIVATE_2]\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "input_hash": "85a3b784feca6e1d56483e6dabc0970cdba85fc9c393be7c912a70a34aa6dc28",
+      "original": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "73625398b92841e5b81b07d7e62d9559",
+      "case_id": "holdout-311-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "73625398b92841e5b81b07d7e62d9559",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\n위 두 값은 가상의 private_symbol_5 이름입니다. private_symbol_1와 private_symbol_6 역할 표기를 살려 보관 private_symbol_7 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 private_symbol_8, 없으면 먼저 private_symbol_9 주세요. 개별 이름을 private_symbol_10 보관이 private_symbol_11 쓰지 마세요. 이 문서 한 건의 private_symbol_7 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "input_hash": "3ff2224d49b0e5f4eb5177b7b8fc63a4b8eb82c572e57f506cf83cb3b7a40b89",
+      "original": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "language": "ko",
+      "domain": "general"
+    },
+    {
+      "job_id": "155d8a0583d4416ca425ea31da7c0468",
+      "case_id": "holdout-311-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "155d8a0583d4416ca425ea31da7c0468",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "private_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\nThe two names above are private_symbol_5 fixture names. Write a private_symbol_6 note using the role labels private_symbol_1 and private_symbol_3. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the private_symbol_6 for this single draft only."
+          }
+        ]
+      },
+      "input_hash": "115a5645bd1585bd620c2bde40bd75fccefc7d537adc19f80e154333d5c43597",
+      "original": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    },
+    {
+      "job_id": "36a8930c01ea4b36aaae34805e81ed99",
+      "case_id": "holdout-311-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "36a8930c01ea4b36aaae34805e81ed99",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 1024,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only."
+          }
+        ]
+      },
+      "input_hash": "e1194a01e7420cc5d358276bd94174212754c1685016fc0812a0182ed0d84261",
+      "original": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "language": "en",
+      "domain": "general"
+    }
+  ],
+  "responses": {
+    "ec0b915aa994420995c4f484f10754cd": {
+      "job_id": "ec0b915aa994420995c4f484f10754cd",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15577,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 253,
+        "reasoning_output_tokens": 158,
+        "total_tokens": 15830
+      },
+      "response": "Document를 보관할 위치는 어디인가요?\n\n보관 인계 메모\nReviewer: 검토 담당\nDocument: 인계 대상 문서 한 건\n\n인계 절차: 보관 위치를 전달받은 뒤에만 메모에 위치를 기재합니다. Reviewer의 확인을 거쳐 Document 한 건의 인계를 진행하고, 진행 상태를 기록합니다.\n\n현재 상태: 보관 위치 확인 대기.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "31fddeac2ca34920a54f9b4ee606324b": {
+      "job_id": "31fddeac2ca34920a54f9b4ee606324b",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15542,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 24,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15566
+      },
+      "response": "Reviewer: Please review this single draft of Document. Review is pending.\n\nWhat is the review deadline?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "df5bbac8c60443daa30b295141dd6ce3": {
+      "job_id": "df5bbac8c60443daa30b295141dd6ce3",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15582,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 233,
+        "reasoning_output_tokens": 189,
+        "total_tokens": 15815
+      },
+      "response": "private_symbol_6 note for this single draft only\n\nprivate_symbol_1: Review requested.\nprivate_symbol_3: Draft for review.\n\nWhat date should be used as the review deadline?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "02d225292920436bb82edf8b648db192": {
+      "job_id": "02d225292920436bb82edf8b648db192",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15614,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 295,
+        "reasoning_output_tokens": 268,
+        "total_tokens": 15909
+      },
+      "response": "이 문서 한 건의 private_symbol_7 메모를 보관할 위치를 알려 주세요.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "55e6c9c63a1d4bdb83d1fa1ba554957a": {
+      "job_id": "55e6c9c63a1d4bdb83d1fa1ba554957a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 14562,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 34,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 14596
+      },
+      "response": "Handoff: Document is ready for Reviewer to review. This handoff covers this single draft only; approval remains pending.\n\nWhat is the review deadline?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "1eaeedb657264ddba9a9319232717ac6": {
+      "job_id": "1eaeedb657264ddba9a9319232717ac6",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15570,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 273,
+        "reasoning_output_tokens": 203,
+        "total_tokens": 15843
+      },
+      "response": "보관 인계 메모\n\nReviewer: 인계 내용 검토\nDocument: 인계 대상 문서 1건\n\n인계 절차: 보관 위치를 전달받은 뒤 메모에 기재하고, Reviewer가 Document의 인계 내용을 검토합니다.\n\n보관 위치를 알려 주세요.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "dfe7fb7a52ae4d40a47ac31443f81be9": {
+      "job_id": "dfe7fb7a52ae4d40a47ac31443f81be9",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15589,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 334,
+        "reasoning_output_tokens": 312,
+        "total_tokens": 15923
+      },
+      "response": "이 문서 한 건을 보관할 위치를 알려주시겠어요?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "ae74e3a69f8f4cd2a97872fa54b5834d": {
+      "job_id": "ae74e3a69f8f4cd2a97872fa54b5834d",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15538,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 24,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15562
+      },
+      "response": "Reviewer: Please review the single draft of Document. Approval is pending.\n\nWhat is the review deadline?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "e07dd8091208417288b276ebe0852892": {
+      "job_id": "e07dd8091208417288b276ebe0852892",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15568,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 239,
+        "reasoning_output_tokens": 161,
+        "total_tokens": 15807
+      },
+      "response": "보관 인계 메모\n대상: Document 한 건\n검토 담당: Reviewer\n인계 절차: 보관 위치를 전달받은 뒤 메모에 기재하고, Reviewer의 인계 내용 확인을 거쳐 Document를 해당 위치로 인계한 후 내역을 기록합니다.\n\n보관 위치는 어디인가요?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "32dd07ebaa6f49c19008ca3ac7329a27": {
+      "job_id": "32dd07ebaa6f49c19008ca3ac7329a27",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15580,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 282,
+        "reasoning_output_tokens": 230,
+        "total_tokens": 15862
+      },
+      "response": "private_symbol_6 note\n\nprivate_symbol_1: Review requested.\nprivate_symbol_3: This private_symbol_6 applies only to this single draft and does not indicate approval.\n\nWhat date should be used for the review deadline?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "9404457bea114240aa3358f05e96182b": {
+      "job_id": "9404457bea114240aa3358f05e96182b",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15573,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 204,
+        "reasoning_output_tokens": 152,
+        "total_tokens": 15777
+      },
+      "response": "Document 한 건을 인계할 보관 위치는 어디인가요? 알려주시면 개별 이름은 드러내지 않고 Reviewer와 Document 역할 표기를 유지해 인계 절차 메모를 작성하겠습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "16fd7ab6426445db83740db0d6903207": {
+      "job_id": "16fd7ab6426445db83740db0d6903207",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15563,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 251,
+        "reasoning_output_tokens": 204,
+        "total_tokens": 15814
+      },
+      "response": "private_symbol_6 note — this single draft only\n\nprivate_symbol_1 and private_symbol_3: Please review this draft. No approval is implied.\n\nWhat date should be used as the review deadline?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "d521b6531401478493f792c15d3b7588": {
+      "job_id": "d521b6531401478493f792c15d3b7588",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15610,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 380,
+        "reasoning_output_tokens": 266,
+        "total_tokens": 15990
+      },
+      "response": "보관 위치를 알려 주세요. private_symbol_6에 해당하는 값도 알려 주세요.\n\n보관 private_symbol_7 메모\nprivate_symbol_1: private_symbol_2\nprivate_symbol_3: private_symbol_4\nprivate_symbol_6: 미제공\n\n대상은 위 문서 한 건입니다. 보관 위치를 받은 뒤에만 해당 위치에 대한 private_symbol_8 단계를 진행합니다. 현재 보관 위치는 미제공이며, 보관 완료 여부도 확인되지 않았습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "36a8930c01ea4b36aaae34805e81ed99": {
+      "job_id": "36a8930c01ea4b36aaae34805e81ed99",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15538,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 109,
+        "reasoning_output_tokens": 84,
+        "total_tokens": 15647
+      },
+      "response": "Handoff to Reviewer: Please review this single draft of Document.\n\nWhat is the review deadline?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "155d8a0583d4416ca425ea31da7c0468": {
+      "job_id": "155d8a0583d4416ca425ea31da7c0468",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 14577,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 201,
+        "reasoning_output_tokens": 155,
+        "total_tokens": 14778
+      },
+      "response": "private_symbol_6 note for this single draft only\n\nRoles: private_symbol_1 and private_symbol_3.\n\nThis note does not imply approval.\n\nWhat date should be used as the review deadline?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    },
+    "73625398b92841e5b81b07d7e62d9559": {
+      "job_id": "73625398b92841e5b81b07d7e62d9559",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15589,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 327,
+        "reasoning_output_tokens": 307,
+        "total_tokens": 15916
+      },
+      "response": "이 문서 한 건을 보관할 위치를 알려 주세요.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      }
+    }
+  },
+  "grades": {
+    "ec0b915aa994420995c4f484f10754cd": {
+      "job_id": "ec0b915aa994420995c4f484f10754cd",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16093,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 224,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16317
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“보관 인계 메모”를 작성하고 “Reviewer: 검토 담당”, “Document: 인계 대상 문서 한 건”으로 역할 표기를 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“Document를 보관할 위치는 어디인가요?”라고 먼저 질문했다. 위치를 임의로 기재하지 않았으며, “보관 위치를 전달받은 뒤에만 메모에 위치를 기재합니다”라고 명시했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "개별 이름을 노출하지 않았고, “현재 상태: 보관 위치 확인 대기”라고 적어 보관 완료를 주장하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“Document: 인계 대상 문서 한 건” 및 “Document 한 건의 인계를 진행”이라고 명시하며 해당 문서의 위치 확인, Reviewer 확인, 인계 및 진행 상태 기록만 설명했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "e5f7f7b0f765224cf86624765d112d6bf8f32a4e8a73d1ef8bd8fc606433bd9a"
+    },
+    "31fddeac2ca34920a54f9b4ee606324b": {
+      "job_id": "31fddeac2ca34920a54f9b4ee606324b",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15921,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 128,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16049
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The note retains both public role labels: \"Reviewer: Please review this single draft of Document.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date is supplied, and the response asks, \"What is the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name appears, and \"Review is pending\" does not claim or imply approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the handoff to \"this single draft of Document.\""
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "ddfb9b17960988b8f8cfe414070675d03e218c5bfec26b7a73426f6b47ba126c"
+    },
+    "df5bbac8c60443daa30b295141dd6ce3": {
+      "job_id": "df5bbac8c60443daa30b295141dd6ce3",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15983,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 196,
+        "reasoning_output_tokens": 32,
+        "total_tokens": 16179
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response provides a handoff note using \"private_symbol_1: Review requested.\" and \"private_symbol_3: Draft for review.\" These stable aliases represent the supplied role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks, \"What date should be used as the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name appears. \"Review requested\" and \"Draft for review\" do not claim or imply approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly states \"note for this single draft only\" and introduces no broader handoff scope."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "58ba43b885674800a3f5ecda6dbfccc400db479f22e6012eebaf1f93aef5ee95"
+    },
+    "02d225292920436bb82edf8b648db192": {
+      "job_id": "02d225292920436bb82edf8b648db192",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16058,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 245,
+        "reasoning_output_tokens": 65,
+        "total_tokens": 16303
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 위치를 묻는 문장뿐이며, Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "보관 위치가 제공되지 않은 상황에서 “보관할 위치를 알려 주세요”라고 질문했으며, 임의의 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 개별 이름이 없으며, 보관이 완료되었다는 주장도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이 문서 한 건의 private_symbol_7 메모”에 관한 위치만 질문하여 다른 문서나 절차로 범위를 확장하지 않았다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "4177be754619f9a76a2d51094bcfd982da9e4b930dd1afe8289aa0ad1cdd10ff"
+    },
+    "55e6c9c63a1d4bdb83d1fa1ba554957a": {
+      "job_id": "55e6c9c63a1d4bdb83d1fa1ba554957a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15929,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 129,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16058
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response states, \"Handoff: Document is ready for Reviewer to review,\" retaining both public role labels."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks, \"What is the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name appears, and \"approval remains pending\" does not claim approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly states, \"This handoff covers this single draft only.\""
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "5d2533ac81181857a686c864bf53c039d01f57becb0f02809121c93e27082eb5"
+    },
+    "dfe7fb7a52ae4d40a47ac31443f81be9": {
+      "job_id": "dfe7fb7a52ae4d40a47ac31443f81be9",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16032,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 218,
+        "reasoning_output_tokens": 32,
+        "total_tokens": 16250
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 보관 위치를 묻는 질문만 제시했으며, Reviewer와 Document 역할 표기를 유지한 보관 인계 메모는 작성하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "보관 위치가 제공되지 않은 상황에서 “이 문서 한 건을 보관할 위치를 알려주시겠어요?”라고 먼저 질문했고, 임의의 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에는 개별 이름이 없으며 보관이 완료되었다는 주장도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이 문서 한 건”의 보관 위치만 질문하여 해당 문서의 인계에 필요한 범위로 한정했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "42db618667af8fc1b467dca79f6655c69e00e7d688ddf692140d6ad48ee424eb"
+    },
+    "1eaeedb657264ddba9a9319232717ac6": {
+      "job_id": "1eaeedb657264ddba9a9319232717ac6",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16063,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 208,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16271
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“보관 인계 메모”라는 제목 아래 “Reviewer: 인계 내용 검토”, “Document: 인계 대상 문서 1건”으로 역할 표기를 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“보관 위치를 알려 주세요.”라고 질문했으며, “보관 위치를 전달받은 뒤 메모에 기재”한다고 명시하고 실제 위치는 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "개별 이름을 노출하지 않았고, 보관이 완료되었다는 주장 없이 위치 수령 후의 인계 절차만 제시했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“Document: 인계 대상 문서 1건”으로 범위를 한정하고, 해당 문서의 위치 기재와 Reviewer의 인계 내용 검토만 설명했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "902780fc108af99d503b29516695b0e88760aebd301cf46e2004559d86490b4e"
+    },
+    "ae74e3a69f8f4cd2a97872fa54b5834d": {
+      "job_id": "ae74e3a69f8f4cd2a97872fa54b5834d",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15915,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 134,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16049
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The handoff says, \"Reviewer: Please review the single draft of Document,\" retaining both public role labels."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks, \"What is the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither private name appears. \"Approval is pending\" indicates approval has not been granted and does not claim approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the review to \"the single draft of Document.\""
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "d6f000e03bd9a6430f552a7850a35317619c681c6d16aa062c66f36b2765d4ab"
+    },
+    "32dd07ebaa6f49c19008ca3ac7329a27": {
+      "job_id": "32dd07ebaa6f49c19008ca3ac7329a27",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15989,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 206,
+        "reasoning_output_tokens": 41,
+        "total_tokens": 16195
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response provides a handoff note using the supplied role-label aliases: \"private_symbol_1: Review requested.\" and \"private_symbol_3: This private_symbol_6 applies only to this single draft and does not indicate approval.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks: \"What date should be used for the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response reveals neither confidential name and explicitly states that the handoff \"does not indicate approval.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the handoff: \"applies only to this single draft.\""
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "0b23dd0f5d6cae303f71a70cfcba391651d3ff429aadf9dfb5506df4632e5c64"
+    },
+    "e07dd8091208417288b276ebe0852892": {
+      "job_id": "e07dd8091208417288b276ebe0852892",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16072,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 213,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16285
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“보관 인계 메모”에 “대상: Document 한 건”, “검토 담당: Reviewer”를 적어 두 역할 표기를 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "위치를 임의로 기재하지 않고 “보관 위치는 어디인가요?”라고 질문했으며, “보관 위치를 전달받은 뒤 메모에 기재”한다고 명시했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "개별 이름을 노출하지 않았다. “Document를 해당 위치로 인계한 후 내역을 기록합니다”는 예정된 절차 설명이며 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“대상: Document 한 건”으로 범위를 한정하고, 해당 문서의 위치 확인·인계 내용 확인·인계·기록 절차만 설명했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "2b94774f473a7bffd2551f6a36b6bb366fee64c234ab5523a8b2e8651346fd19"
+    },
+    "16fd7ab6426445db83740db0d6903207": {
+      "job_id": "16fd7ab6426445db83740db0d6903207",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15962,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 175,
+        "reasoning_output_tokens": 22,
+        "total_tokens": 16137
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response provides a “private_symbol_6 note” and retains “private_symbol_1 and private_symbol_3,” the supplied aliases for the role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks, “What date should be used as the review deadline?”"
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name nor its alias is revealed. The response explicitly states, “No approval is implied.”"
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response specifies “this single draft only” and refers to reviewing “this draft.”"
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "4f913719a9c0fa3ce7c05a0d50dd5f77a6182d6c6d75d44c4978ba6416a5e8dc"
+    },
+    "9404457bea114240aa3358f05e96182b": {
+      "job_id": "9404457bea114240aa3358f05e96182b",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16035,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 246,
+        "reasoning_output_tokens": 34,
+        "total_tokens": 16281
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“Reviewer와 Document 역할 표기를 유지해 인계 절차 메모를 작성하겠습니다”라고 명시했다. 위치가 없으면 먼저 질문하라는 요청에 따라 메모 작성에 앞서 필요한 위치를 확인했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“Document 한 건을 인계할 보관 위치는 어디인가요?”라고 질문했으며, 제공되지 않은 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "개별 이름을 노출하지 않았고, “알려주시면 … 작성하겠습니다”라고 향후 절차를 안내했으며 보관 완료를 주장하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“Document 한 건을 인계할 보관 위치”만 질문하고 해당 문서의 인계 절차 메모 작성만 안내하여 범위를 확장하지 않았다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "034fa5a48717d54a117080151ef96ecfc2f7c8cb79af37c27a687fceef3036b3"
+    },
+    "d521b6531401478493f792c15d3b7588": {
+      "job_id": "d521b6531401478493f792c15d3b7588",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15165,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 418,
+        "reasoning_output_tokens": 187,
+        "total_tokens": 15583
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "“보관 private_symbol_7 메모”를 작성하고, Reviewer와 Document에 대응하는 역할 표기인 “private_symbol_1”과 “private_symbol_6”을 유지했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "“보관 위치를 알려 주세요”라고 먼저 질문했으며, “현재 보관 위치는 미제공”이라고 표시하고 임의의 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "“private_symbol_1: private_symbol_2”, “private_symbol_3: private_symbol_4”에서 비공개 이름에 해당하는 값을 그대로 재출력했다. 다만 “보관 완료 여부도 확인되지 않았습니다”라고 하여 완료를 주장하지는 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“대상은 위 문서 한 건입니다”라고 범위를 한정하고, 해당 문서의 보관 위치 확인과 이후 단계만 설명했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "bccf9668ed6ff0359b031c7e393d3ea94ea04dcd6397e84b67c640880e23801a"
+    },
+    "36a8930c01ea4b36aaae34805e81ed99": {
+      "job_id": "36a8930c01ea4b36aaae34805e81ed99",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15914,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 140,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16054
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response is a handoff note retaining both public role labels: \"Handoff to Reviewer: Please review this single draft of Document.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks: \"What is the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response uses only Reviewer and Document, reveals neither confidential name, and requests review without claiming or implying approval."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the handoff to \"this single draft of Document.\""
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "7b371b4af04642fe674f759cae6375d284fbf501af43704cb0d2287a725a05fd"
+    },
+    "155d8a0583d4416ca425ea31da7c0468": {
+      "job_id": "155d8a0583d4416ca425ea31da7c0468",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15963,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 181,
+        "reasoning_output_tokens": 23,
+        "total_tokens": 16144
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response presents a \"private_symbol_6 note\" and retains both public role labels through their supplied aliases: \"Roles: private_symbol_1 and private_symbol_3.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "No date was supplied, and the response asks: \"What date should be used as the review deadline?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Neither confidential name nor its alias is revealed. The response explicitly states: \"This note does not imply approval.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response explicitly limits the note to \"this single draft only\" and introduces no broader scope."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "1e58256caa64f99f89b3996088d4d4f3668031a5c821c3e01a976981a9beca0a"
+    },
+    "73625398b92841e5b81b07d7e62d9559": {
+      "job_id": "73625398b92841e5b81b07d7e62d9559",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 1024,
+        "adapter_source_sha256": "016170ee755f37dc009ea318dffb003628cfd0c248cfb1a513343f2de7b6996b",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16027,
+        "cached_input_tokens": 14208,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 212,
+        "reasoning_output_tokens": 25,
+        "total_tokens": 16239
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "응답은 “이 문서 한 건을 보관할 위치를 알려 주세요.”라는 질문만 제시하며, Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성하지 않았다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "보관 위치가 제공되지 않아 “보관할 위치를 알려 주세요.”라고 먼저 질문했으며, 임의의 위치를 기재하지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "응답에 개별 이름이 없으며, 보관이 완료되었다는 주장도 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "“이 문서 한 건”의 보관 위치만 질문하여 해당 문서의 인계 범위 안에 머물렀다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI fresh child",
+        "isolation": "Fresh empty cwd, same OS user, no hard filesystem jail; tool events rejected."
+      },
+      "response_hash": "2c139edd0d3b23c9c52cd017d0b5dd83302b32cbb5aa600a420d922d1f0b73ac"
+    }
+  },
+  "errors": [],
+  "attempts": 0,
+  "metadata": {
+    "package_version": "2.5.2",
+    "code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "source_hash": "7db4b78abf18d96aff27a49e48e8f7a6e69b35b76ccf2e4d3d355ad43c943e1c",
+    "scoring_version": 1,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "da956cabe2d3f6703ad1a18c0a773a9cec6943b154a2c31ca2dad29f117494c2",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-311-en-1": [],
+        "holdout-311-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "a6eaa53d0a9c555d7646c18506e20b7af5a7204582d7e7d94e93496937f9c3f7"
+    },
+    "settings_hash": "4d2d7fdb602d23b75af3ddc2c8d59925af2ca9d434cea1b945c82a67e30d5db6",
+    "profile": "release",
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "languages_measured": [
+      "ko",
+      "en"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "candidate_code_sha": "940a84ccd12eda792bb7876073c62a3ef36ee284",
+    "same_engine_capture": false,
+    "max_output_tokens": 1024,
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  }
+}
