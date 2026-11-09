@@ -384,7 +384,8 @@ def exec_masked(agent, state_dir, session_id, timeout, max_output_bytes, command
             restored = [store.restore(arg, session) for arg in command]
         completed = capture_command(restored, timeout=timeout, max_output_bytes=max_output_bytes)
         with store.session(session_id, create=True) as session:
-            assert session is not None
+            if session is None:
+                raise ValueError("Session could not be initialized.")
             stdout = store.mask(completed.stdout.decode("utf-8"), session)
             stderr = store.mask(completed.stderr.decode("utf-8"), session)
     except (ValueError, OSError, AssertionError):
@@ -589,7 +590,10 @@ def demo():
             restored = engine.unmask(
                 masked.masked_text, session.session_id, session.reverse_store
             )
-            assert restored.unmasked_text == text
+            if restored.unmasked_text != text:
+                raise click.ClickException(
+                    "Demo restoration mismatch: roundtrip text does not match original."
+                )
             console.print(Panel(Text(masked.masked_text), title="Masked payload"))
             console.print(
                 Panel(Text(restored.unmasked_text), title="Local restoration")

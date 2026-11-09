@@ -577,7 +577,8 @@ def handle_hook(
         if "tool_response" not in payload:
             raise ValueError("Missing tool response.")
         with store.session(sid, create=True) as session:
-            assert session is not None
+            if session is None:
+                raise ValueError("Session could not be initialized.")
             replacement = _walk(
                 payload["tool_response"],
                 lambda text: store.mask(text, session),

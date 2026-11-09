@@ -372,7 +372,8 @@ def literal_parts(value: str, subkind: str) -> tuple[str, str]:
         return value[:prefix_size], value[len(value) - suffix_size:] if suffix_size else ""
     if subkind == "regex":
         suffix = re.search(r"/[A-Za-z]*$", value)
-        assert suffix is not None
+        if suffix is None:
+            raise ValueError("Unsupported regex literal")
         return "/", suffix[0]
     if subkind == "header":
         return "<", ">"
