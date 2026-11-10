@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-holdout-20261109-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-318-ko-1",
+      "issue_number": 318,
+      "template_group": "h318-scoped-return-record",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "고객: 여울초롱\n장소: 초록나루\n기한: 2033-08-26\n\n기록은 위에서 끝납니다. 이 요청은 기록 밖에 있습니다. 고객·장소·기한을 묶은 기록에 대한 반납 점검 목록을 작성해 주세요. 반납 승인이 확인되기 전에는 날짜를 제안하지 말고 먼저 승인 여부를 물어봐 주세요. 묶인 항목의 값을 노출하거나 반납 알림을 보내지 마세요. 기밀 정책은 위 기록에만 적용해 주세요. 여기서 고객, 장소, 기한은 공개 항목 이름입니다."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 4,
+          "end": 8,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 13,
+          "end": 17,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 22,
+          "end": 32,
+          "label": "due_value",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 65,
+          "label": "scope_boundary"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 66,
+          "end": 104,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 105,
+          "end": 151,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 152,
+          "end": 183,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 184,
+          "end": 235,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "묶인 기록에 대한 반납 점검 목록을 작성하며 항목 이름을 유지한다."
+        },
+        {
+          "id": "conditions",
+          "description": "날짜를 제안하기 전에 반납 승인 여부를 묻는다."
+        },
+        {
+          "id": "prohibition",
+          "description": "묶인 항목 값을 노출하거나 반납 알림을 보내지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "기밀 정책은 위 기록의 정확한 범위에만 적용한다."
+        }
+      ],
+      "human_text": "고객: [PRIVATE_1]\n장소: [PRIVATE_2]\n기한: [PRIVATE_3]\n\n기록은 위에서 끝납니다. 이 요청은 기록 밖에 있습니다. 고객·장소·기한을 묶은 기록에 대한 반납 점검 목록을 작성해 주세요. 반납 승인이 확인되기 전에는 날짜를 제안하지 말고 먼저 승인 여부를 물어봐 주세요. 묶인 항목의 값을 노출하거나 반납 알림을 보내지 마세요. 기밀 정책은 위 기록에만 적용해 주세요. 여기서 고객, 장소, 기한은 공개 항목 이름입니다.",
+      "smoke": true,
+      "local_policy": {
+        "document_sha256": "12b244904a05a093c10e255fe011b729c07ae1387c2033db78ffb4b9e5eff90e",
+        "scope": [
+          0,
+          33
+        ],
+        "required_fields": [
+          "고객",
+          "장소",
+          "기한"
+        ],
+        "protect_fields": [
+          "고객",
+          "장소",
+          "기한"
+        ]
+      }
+    }
+  ]
+}

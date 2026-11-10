@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "corpus_version": "names-policy-holdout-2.10.0-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-new-310-ko-B",
+      "issue_number": 310,
+      "template_group": "holdout-new-310-ko-B",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "프로젝트명은 여울입니다. 승인 여부를 먼저 확인하고 발송하지 마세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 7,
+          "end": 9,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 21,
+          "end": 26,
+          "label": "action"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Carry out the requested action."
+        },
+        {
+          "id": "condition",
+          "description": "Respect the stated condition."
+        },
+        {
+          "id": "prohibition",
+          "description": "Respect any stated prohibition."
+        },
+        {
+          "id": "scope",
+          "description": "Keep the requested output scope."
+        }
+      ],
+      "human_text": "프로젝트명은 private_symbol_1입니다. 승인 여부를 먼저 확인하고 발송하지 마세요.",
+      "smoke": true,
+      "local_policy": {},
+      "candidate_arm": "B"
+    }
+  ]
+}

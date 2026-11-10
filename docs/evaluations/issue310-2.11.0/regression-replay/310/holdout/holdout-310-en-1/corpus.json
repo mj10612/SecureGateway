@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-holdout-20261109-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-310-en-1",
+      "issue_number": 310,
+      "template_group": "h310-gift-batch",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "The confidential project is named Meadow. Draft a packing checklist for its sample gift boxes. Use a batch size only after I provide the confirmed count; otherwise ask for it. Do not invent quantities or place an order. Cover packing steps for one trial batch only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 40,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 42,
+          "end": 94,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 95,
+          "end": 175,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 176,
+          "end": 219,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 220,
+          "end": 265,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Draft a packing checklist for sample gift boxes."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for the confirmed batch count before using any quantity."
+        },
+        {
+          "id": "prohibition",
+          "description": "Invent no quantities and place no order."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the answer to packing one trial batch."
+        }
+      ],
+      "human_text": "The confidential project is named [PRIVATE_1]. Draft a packing checklist for its sample gift boxes. Use a batch size only after I provide the confirmed count; otherwise ask for it. Do not invent quantities or place an order. Cover packing steps for one trial batch only.",
+      "smoke": true,
+      "local_policy": {}
+    }
+  ]
+}

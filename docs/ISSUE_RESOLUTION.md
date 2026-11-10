@@ -208,3 +208,50 @@ with all toggles OFF, output is verified byte-identical to the baseline engine.
 - Korean conjugation splitting is bounded to the specified rule table without statistical morphological analysis dependencies; irregular stems with unpredictable sound changes fall back safely to legacy token masking.
 - Segment language selection is restricted to Korean and English; other languages inherit request language directly.
 - All candidate toggles remain default `OFF` on this branch. Switching default activation is reserved for repository owners after reviewing holdout evidence.
+
+
+## Experiment takeover inventory (2.11.0)
+
+The earlier screening was run on earlier candidate source and cannot certify subsequent changes. All four candidates remain default off. Historical raw privacy and real-LLM first-response and grading artifacts are under `docs/evaluations/accuracy-20261109/holdout-task-response-retest/<issue>/`; each used two synthetic task families and two repeats per arm. These small screens do not satisfy larger confirmation.
+
+| Issue | Existing implementation and tests | Earlier measurement (candidate vs baseline criterion counts) | Open acceptance and decision |
+| --- | --- | --- | --- |
+| #310 | `experiment_context.name_spans`, issue 310 profile and `test_add_protection_profiles_preserve_original` | 16/16 vs 16/16; candidate 2/2 sensitive spans protected | Session-only promotion, quoted-data trust, bounded failure behavior, paired controls and independent confirmation need work; hold. |
+| #311 | issue 311 profile, role hint test; alias representation unchanged | 14/16 vs 14/16; candidate 4/4 sensitive spans protected | Evidenced role provenance and confidential-category gold, isolation across code/tools, combined #310 and metadata inference tests remain open; hold. |
+| #316 | `_corrections` in experimental profiles; trusted project mismatch test | 14/16 vs 12/16; candidate 2/2 sensitive spans protected | Authenticated encrypted persistence, complete record lifecycle, actual explicit preview/save, conflict and holdout tests remain open; hold. |
+| #318 | `bundle_spans` and hash-bound form test | 14/16 vs 14/16; candidate 6/6 sensitive spans protected | Table row binding, parser interface, missing/duplicate field controls and catalogue guessing experiment remain open; hold. |
+
+The candidate privacy counts above are from two requests per issue; overmasking and baseline comparisons remain in the linked reports. Latency and memory for those earlier reports were not measured; subsequent measurements and their limitations appear below. #318 catalogue guessing remains unmeasured. These findings are partial, not issue completion.
+
+
+### Follow-up slices after takeover
+
+The #310 profile now registers explicit user-prose introductions in its session and avoids proposing names from quoted assertions or tool-result fields; the baseline may independently protect values from tool results. The #311 profile takes coarse role hints from direct, unquoted user fields only, with an explicit confidential-category switch. The #316 local CLI previews in an isolated profile and saves only on explicit confirmation; records are encrypted and authenticated with the existing snapshot cryptography and locking, bound to a local project and include expiry, revocation and policy version. The #318 profile accepts row-scoped table fields through `cells` as well as the existing form parser.
+
+These are partial slices, not full acceptance: role evidence from all dictionary/introducer forms and combined profiles, broader trust and recovery cases, independent new holdout, per-session RSS guard, revised-candidate real-LLM comprehension and #318 guessing remain unmeasured or unimplemented; public-exception and timing evidence appears below. Historical comprehension used earlier code and must not be attributed to these changes. Decisions remain **hold**, all profiles remain off by default, and none of these issues is claimed complete. Frozen regression replay instructions and the limitations of the previously inspected holdout are in `evaluations/issue310-2.11.0/FREEZE.md`.
+
+
+### Regression replay and revised-candidate model attempts
+
+The frozen 2.10.0 regression replay recorded full sensitive-span exposure baseline -> candidate as #310 development 2/2 -> 0/2 and previously inspected holdout 2/2 -> 1/2; #311 0/4 -> 0/4 and 4/4 -> 4/4; #316 2/2 -> 0/2 and 2/2 -> 0/2; #318 0/8 -> 0/8 and 4/6 -> 0/6. Exact restoration passed 2/2 per arm and split, with zero partial exposures; public overmasking and raw captures are recorded per issue. These cases are already inspected and do not qualify as independent holdout.
+
+Revised-candidate real-LLM comprehension is 미측정: #310, #316 and #318 stopped at the first interpreter failure (`ValueError`, usage unknown); #311 recorded two ungraded responses before the token budget stopped execution (29,724 reported tokens). #318 inference attack remains 미측정; subsequent timing and process-memory evidence appears below. Every decision remains hold and every issue remains 부분 완료; no candidate is enabled.
+
+
+The optional #311 `with_name_context` combination is tested separately from #311 alone and remains default off; the earlier replay did not exercise it. The #316 public-exception arm is evaluation-only and applies to scoped, explicitly recorded whole alphabetic name-fallback tokens; forced rules, protected correction records, domain spans, identifier contexts, opaque token types and existing mappings take precedence. Its generalization, rollback and comprehension measurements remain unmeasured; its development protection screen is recorded below, so it is not exposed through the save command or enabled by default.
+
+
+### New synthetic holdout (frozen at 5dd6bf1)
+
+The small, same-author English/Korean holdout was committed before capture. Fully exposed sensitive spans baseline -> candidate: #310 2/2 -> 0/2; #311 5/5 -> 5/5 (including one secret role category); #316 2/2 -> 0/2; #318 3/6 -> 0/6. Partial exposures and public overmasking were zero in the annotated cases; exact restoration was 2/2 in each arm for each issue. The #318 cases had no public gold spans, so they cannot measure overmasking. Raw per-case captures and source offsets are under each `evaluations/issue<N>-2.11.0/new-holdout-run/` directory. These same-author cases are not independently blinded and cannot establish generalization; the C exception and combined #310/#311 arms were not part of this holdout. Revised-candidate comprehension and the catalogue attack remain 미측정 as described above; all decisions remain hold.
+
+
+### Performance and exception development screen
+
+The per-issue `evaluations/issue<N>-2.11.0/performance-by-issue.json` files contain five process-cold and 30 process-warm engine-only samples for each 1/10/100 KiB prose, code and structured baseline/candidate workload. The original #311 role scan exceeded the frozen warm-p95 guard at 10 KiB and 100 KiB prose (49.22 -> 93.59 ms and 487.45 -> 2615.02 ms); the other measured candidate/workload pairs stayed within it. A bounded single-pass role scan was then implemented: a new five-cold/30-warm prose retest measured 10 KiB 61.99 -> 58.89 ms and 100 KiB 521.97 -> 508.02 ms, both within the guard; raw samples and source hashes are in `evaluations/issue311-2.11.0/performance-retest.json`. The other workloads were not rerun after that change.
+
+Maximum measured candidate process peak-working-set increases were 24.66, 25.13, 24.87 and 24.91 MiB for #310, #311, #316 and #318, respectively. These are changes in process high-water marks after imports, not independently isolated per-session peak RSS; they may undercount allocations beneath an earlier peak and do not certify the 32 MiB per-session guard.
+
+The frozen #316 public-exception development controls show a correct public exception reduced overmasking 1/1 -> 0/1, a forced protected term stayed protected 0/1 -> 0/1 exposure, and a wrong correction introduced exposure 0/1 -> 1/1. All three restored 1/1 exactly. The exception arm is therefore rejected for adoption under the no-new-exposure rule, remains evaluation-only and default off, and has no independent holdout or comprehension measurement. The protect-only B arm remains on hold. Raw captures: `evaluations/issue316-2.11.0/public-development-run/`.
+
+The frozen new cases were replayed again after the bounded #311 scan; this is a regression retest, not a second holdout. The full-exposure counts were unchanged for all four issues, and all captures completed; raw results are in each `evaluations/issue<N>-2.11.0/final-regression-run/` directory.

@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "corpus_version": "names-policy-holdout-2.10.0-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-new-310-en-B",
+      "issue_number": 310,
+      "template_group": "holdout-new-310-en-B",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Project name: glimmer. Ask for receipt before drafting; do not publish."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 14,
+          "end": 21,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 23,
+          "end": 38,
+          "label": "action"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Carry out the requested action."
+        },
+        {
+          "id": "condition",
+          "description": "Respect the stated condition."
+        },
+        {
+          "id": "prohibition",
+          "description": "Respect any stated prohibition."
+        },
+        {
+          "id": "scope",
+          "description": "Keep the requested output scope."
+        }
+      ],
+      "human_text": "Project name: private_symbol_1. Ask for receipt before drafting; do not publish.",
+      "smoke": true,
+      "local_policy": {},
+      "candidate_arm": "B"
+    }
+  ]
+}

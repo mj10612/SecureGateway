@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "corpus_version": "names-policy-holdout-2.10.0-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-new-316-ko-B",
+      "issue_number": 316,
+      "template_group": "holdout-new-316-ko-B",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "여울 항목은 승인 후 검토하고 미승인 상태에서는 먼저 물어보세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 2,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 27,
+          "end": 35,
+          "label": "action"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Carry out the requested action."
+        },
+        {
+          "id": "condition",
+          "description": "Respect the stated condition."
+        },
+        {
+          "id": "prohibition",
+          "description": "Respect any stated prohibition."
+        },
+        {
+          "id": "scope",
+          "description": "Keep the requested output scope."
+        }
+      ],
+      "human_text": "private_symbol_1 항목은 승인 후 검토하고 미승인 상태에서는 먼저 물어보세요.",
+      "smoke": true,
+      "local_policy": {
+        "trusted_project": "local-A",
+        "workspace": "local-A",
+        "language": "ko",
+        "policyrecords": [
+          {
+            "term": "여울",
+            "project": "local-A",
+            "language": "ko",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      },
+      "candidate_arm": "B"
+    }
+  ]
+}

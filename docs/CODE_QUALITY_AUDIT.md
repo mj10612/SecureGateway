@@ -2,17 +2,17 @@
 
 Snapshot: 2026-11-10; GitHub issue state checked with `gh issue view`.
 Closed denotes the issue's GitHub state, not proof that every historical
-aspiration is achieved on this branch. The current logging work is unmerged.
+aspiration is achieved on this branch. Logging, exception and documentation work is merged (PRs #344 and #346).
 
 | Phase | Issue | GitHub state | Evidence or boundary |
 | --- | --- | --- | --- |
 | 1 | [#327](https://github.com/mj10612/SecureGateway/issues/327) silent handlers | Closed | [diagnostics](https://github.com/mj10612/SecureGateway/commit/45db478ac3753623c710dfbc19c083e9b67ada96), [PR 341](https://github.com/mj10612/SecureGateway/pull/341); additional cleanup events on this branch |
 | 1 | [#330](https://github.com/mj10612/SecureGateway/issues/330) validation | Closed | [boundary validation](https://github.com/mj10612/SecureGateway/commit/82646da); remaining asserts require individual classification |
 | 1 | [#329](https://github.com/mj10612/SecureGateway/issues/329) experiments | Closed | [evaluation implementation](https://github.com/mj10612/SecureGateway/commit/46d031f); incomplete markers have recovery semantics |
-| 2 | [#328](https://github.com/mj10612/SecureGateway/issues/328) logging | Open | This branch adds opt-in package logging; repository-wide migration and performance measurement remain open |
-| 2 | [#336](https://github.com/mj10612/SecureGateway/issues/336) exceptions | Open | This branch introduces categories and attaches existing custom exceptions while retaining prior base classes |
+| 2 | [#328](https://github.com/mj10612/SecureGateway/issues/328) logging | Open | [PR 344](https://github.com/mj10612/SecureGateway/pull/344) merged opt-in package logging; 11 `except ...: pass` handlers remain package-wide, and repository-wide migration, rotation and overhead measurement remain open |
+| 2 | [#336](https://github.com/mj10612/SecureGateway/issues/336) exceptions | Closed | [PR 344](https://github.com/mj10612/SecureGateway/pull/344) introduced categories and attached existing custom exceptions while retaining prior base classes |
 | 2 | [#332](https://github.com/mj10612/SecureGateway/issues/332) stream resources | Closed | [stream cleanup](https://github.com/mj10612/SecureGateway/commit/14dbd05) |
-| 3 | [#331](https://github.com/mj10612/SecureGateway/issues/331) documentation | Open | Repository-wide public API documentation remains open |
+| 3 | [#331](https://github.com/mj10612/SecureGateway/issues/331) documentation | Closed | [PR 346](https://github.com/mj10612/SecureGateway/pull/346): public docstrings enforced by `tests/test_docstrings_331.py`, `docs/API.md`, ADRs |
 | 3 | [#334](https://github.com/mj10612/SecureGateway/issues/334) context tests | Closed | [context tests](https://github.com/mj10612/SecureGateway/commit/56e9883) |
 | 3 | [#333](https://github.com/mj10612/SecureGateway/issues/333) dependencies | Closed | [locked installs](https://github.com/mj10612/SecureGateway/commit/64f60e3) |
 | 4 | [#335](https://github.com/mj10612/SecureGateway/issues/335) platform support | Closed | [PR 339](https://github.com/mj10612/SecureGateway/pull/339) |
@@ -32,3 +32,8 @@ measured on this branch and remain open. A one-hour resource stress test,
 logging overhead, cross-platform CI and live provider comprehension were not
 run. Locked dependencies and automated tests are not substitutes for those
 measurements. CLI program output is intentionally retained.
+
+Update after merge (2026-11-11): the table above reflects the merged state. Counted on main after
+PR #344, 11 handlers whose sole statement is `pass` remain across the package (some are intentional,
+such as `FileExistsError`); they were not individually classified. Public docstring coverage is now
+enforced by test. The other unmeasured targets listed above are unchanged.
