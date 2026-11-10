@@ -8,12 +8,16 @@ from http.client import HTTPException, IncompleteRead
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import secrets
+import time
 from threading import Thread
 import urllib.error
 import urllib.parse
 import urllib.request
 
 from secure_gateway.gateway import LIMIT, NoRedirect, supported_query
+from secure_gateway.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 @contextmanager
@@ -60,7 +64,24 @@ def antigravity_endpoint(gateway_origin: str, local_token: str, api_key: str):
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
-            pass
+            # BaseHTTPRequestHandler supplies the request line here; discard it.
+            return
+
+        def send_response(self, code, message=None):
+            self._safe_status = code // 100
+            super().send_response(code, message)
+
+        def handle_one_request(self):
+            started = time.monotonic()
+            self._safe_status = 0
+            try:
+                super().handle_one_request()
+            finally:
+                method = getattr(self, "command", "")
+                if method not in {"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"}:
+                    method = "OTHER"
+                _logger.info("sdk_request method=%s status_class=%d duration_ms=%d", method,
+                             self._safe_status, round((time.monotonic() - started) * 1000))
 
         def setup(self):
             super().setup()

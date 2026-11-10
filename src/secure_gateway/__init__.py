@@ -1,6 +1,6 @@
 """Local multilingual masking and trusted-client restoration with MCP utilities."""
 
-__version__ = "2.7.23"
+__version__ = "2.8.0"
 __author__ = "SecureGateway Contributors"
 __license__ = "Apache-2.0"
 
@@ -29,3 +29,7 @@ __all__ = [
     "SessionVault",
     "LocalPrivacyClient",
 ]
+
+import logging
+
+logging.getLogger("secure_gateway").addHandler(logging.NullHandler())

@@ -7,6 +7,8 @@ cannot be reconstructed by this prospective observer.
 """
 from __future__ import annotations
 
+from secure_gateway.exceptions import ProcessError
+
 from hashlib import sha256
 import time
 
@@ -39,7 +41,7 @@ _CODES = {
 }
 
 
-class ObservedWorkerFailure(ValueError):
+class ObservedWorkerFailure(ProcessError, ValueError):
     """A fixed safe error code and optional validated usage, never model text."""
 
     def __init__(self, diagnostics, usage=None):

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from secure_gateway.exceptions import ResourceError
+
 from contextlib import contextmanager
 import base64
 import errno
@@ -299,11 +301,11 @@ def _working_registration(hook: dict[str, Any], state_dir: Path, agent: str) -> 
     )
 
 
-class _SnapshotBusy(ValueError):
+class _SnapshotBusy(ResourceError, ValueError):
     pass
 
 
-class _LegacySnapshotLock(ValueError):
+class _LegacySnapshotLock(ResourceError, ValueError):
     pass
 
 

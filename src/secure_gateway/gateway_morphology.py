@@ -15,6 +15,8 @@ Gateway private/code protections run before this helper.
 
 from __future__ import annotations
 
+from secure_gateway.exceptions import SecureGatewayError
+
 from typing import Callable
 import unicodedata
 
@@ -28,7 +30,7 @@ MAX_DE_LOOKUPS = 160
 RootPredicate = Callable[[str], bool]
 
 
-class _Rejected(Exception):
+class _Rejected(SecureGatewayError, Exception):
     """A private candidate root or an exhausted work budget."""
 
 

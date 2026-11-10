@@ -12,6 +12,8 @@ import time
 
 import click
 from secure_gateway import __version__
+from secure_gateway.logging_config import configure_logging
+from secure_gateway.exceptions import SecureGatewayError
 from secure_gateway.evaluation_cli import evaluate
 from rich.console import Console
 from rich.panel import Panel
@@ -43,6 +45,13 @@ class LiteralArgumentGroup(click.Group):
         """Handle main."""
         kwargs["windows_expand_args"] = False
         return super().main(*args, **kwargs)
+
+    def invoke(self, ctx):
+        """Invoke a command and sanitize gateway failures."""
+        try:
+            return super().invoke(ctx)
+        except SecureGatewayError:
+            raise click.ClickException("SecureGateway operation failed.") from None
 
 
 def _file_options(command):
@@ -737,6 +746,7 @@ def gateway_run(config, mapping_limit, mask_numbers):
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
         ) as server:
+            configure_logging()
             with diagnostic_logging():
                 server.serve_forever()
     except (ValueError, OSError, sqlite3.Error) as exc:
@@ -1050,6 +1060,7 @@ def gateway_api_run(config, mask_numbers):
             state_dir=runtime_directory(path.resolve()) / "sessions",
             audit_path=runtime_directory(path.resolve()) / "logs.sqlite3",
         ) as server:
+            configure_logging()
             with diagnostic_logging():
                 server.serve_forever()
     except (ValueError, OSError, sqlite3.Error) as exc:

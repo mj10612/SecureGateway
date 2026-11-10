@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from secure_gateway.exceptions import ConfigurationError
+
 from contextlib import nullcontext
 import re
 import unicodedata
@@ -55,7 +57,7 @@ NUMERIC_ALIAS_LENGTH = 18
 NUMERIC_ALIAS_RUN = re.compile(r"(?<![A-Za-z0-9_])(?:732846\d{12})+(?![A-Za-z0-9_])")
 
 
-class NumericLiteralConflict(ValueError):
+class NumericLiteralConflict(ConfigurationError, ValueError):
     """A preserved number would be interpreted as an existing alias."""
 
 

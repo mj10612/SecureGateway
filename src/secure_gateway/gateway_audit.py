@@ -1,5 +1,7 @@
 """Durable request metadata. Prompts, replies and credentials never enter SQLite."""
 
+from secure_gateway.exceptions import ResourceError
+
 from contextlib import contextmanager
 import base64
 from datetime import datetime, timezone, timedelta
@@ -18,7 +20,7 @@ from secure_gateway.platform_utils import lock_file_exclusive
 from uuid import uuid4
 
 
-class AuditMaintenanceError(sqlite3.OperationalError):
+class AuditMaintenanceError(ResourceError, sqlite3.OperationalError):
     """Completion is committed; bounded post-completion maintenance was deferred."""
 
 

@@ -6,7 +6,11 @@ from threading import Event, Lock, Thread
 import time
 from typing import BinaryIO, Sequence
 
+from secure_gateway.logging_config import get_logger, log_failure
 from secure_gateway.platform_utils import cancel_process, child_process_options, read_available
+
+
+_logger = get_logger(__name__)
 
 
 def capture_command(
@@ -62,7 +66,8 @@ def capture_command(
                         break
                     chunks[index].append(block)
                 changed.set()
-        except (OSError, ValueError):
+        except (OSError, ValueError) as exc:
+            log_failure(_logger, "command_capture_read_failed", exc)
             with lock:
                 error = error or "Local command output could not be captured."
         finally:

@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.7.23 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.8.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -1038,7 +1038,7 @@ Gateway warning records contain only a fixed category and message: no snapshot p
 mapping, request, provider body or exception traceback. This bounds repeated
 warning output. The counters remain available when a logging destination filters
 warnings; they are not persistent forensic records. Normal client disconnect
-cleanup and disabled HTTP request logging remain intentionally quiet.
+cleanup failures log only the exception type. Antigravity SDK request logging reports only method, status class, and duration.
 
 Both inference and model-catalog HTTP errors preserve sanitized allowlisted
 statuses and captured retry headers. If the formatter itself fails, the gateway
@@ -1062,3 +1062,15 @@ or failed destination does not delay the HTTP response. Counts become visible
 after delivery is attempted; a full queue counts as failed delivery. Library use
 keeps the caller's logging configuration and propagation; its handlers retain
 their own error-handling behavior.
+
+Gateway process logging is configured at startup with
+`SECURE_GATEWAY_LOG_LEVEL` (default WARNING). Events contain fixed categories
+and bounded metadata, never request content, credentials, paths, exception text,
+or tracebacks. See [error handling](ERROR_HANDLING.md). CLI output is program
+output and is not converted to logs.
+
+If `invalid_config_uninstall_daemon_not_stopped` is reported, owned settings
+were restored without confirming daemon shutdown. Stop only the known gateway
+foreground terminal, or restore a verified configuration backup and use the
+normal `gateway stop --config` command. Do not terminate an unrelated listener;
+retain encrypted state until recovery is complete.
