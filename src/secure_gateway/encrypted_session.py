@@ -5,6 +5,8 @@ Only ciphertext is written to disk. MCP sessions remain memory-only.
 
 from __future__ import annotations
 
+from secure_gateway.exceptions import ResourceError
+
 import base64
 from contextlib import contextmanager
 import errno
@@ -31,7 +33,7 @@ _SALT_SIZE = 16
 _LOCK_MAGIC = b"SecureGateway-native-lock-v1\n"
 
 
-class SessionExpiredError(ValueError):
+class SessionExpiredError(ResourceError, ValueError):
     """The snapshot is beyond its idle TTL and must not be reused."""
 
 

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import codecs
 import json
-import logging
 import queue
 import re
 import socket
@@ -12,7 +11,9 @@ import time
 from threading import Event, Lock, Thread
 from typing import Any
 
-_logger = logging.getLogger(__name__)
+from secure_gateway.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 # Default maximum bytes for SSE/stream input, group, and output buffers (16 MiB).
 # Bounds memory for long streams and malformed event groups; not user-configurable.

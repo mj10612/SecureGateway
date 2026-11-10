@@ -26,6 +26,7 @@ import time
 import unicodedata
 from threading import Condition, Event, Lock, RLock, Thread
 from typing import Any, Callable, Iterator
+from secure_gateway.logging_config import get_logger, log_failure
 from secure_gateway import __version__
 from secure_gateway.context_model import ContextModel, load_context_model, MAX_CONTEXT_CHARS
 import urllib.error
@@ -75,7 +76,7 @@ LIMIT = MAX_REQUEST_BYTES
 # Maximum retained conversation snapshots before eviction; bounds in-memory state
 # (each session holds mappings/reasoning provenance). Not user-configurable.
 MAX_CONVERSATION_SESSIONS = 256
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = get_logger(__name__)
 _DIAGNOSTIC_LOGGER = logging.getLogger(__name__ + ".diagnostic")
 _DIAGNOSTIC_LIMIT = 2**31 - 1  # SQLite integer upper bound for diagnostic counters.
 _DIAGNOSTIC_CATEGORIES = (
@@ -2913,8 +2914,8 @@ class GatewayHandler(BaseHTTPRequestHandler):
                         if not block:
                             break
                         length -= len(block)
-        except (OSError, ValueError):
-            pass  # Peer disconnects/timeouts must not prevent stream cleanup.
+        except (OSError, ValueError) as exc:
+            log_failure(_LOGGER, "peer_cleanup_failed", exc)  # Best effort.
         finally:
             super().finish()
 

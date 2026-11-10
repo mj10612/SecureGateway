@@ -1,7 +1,10 @@
 """Stable public diagnostics; exception values and request contents stay private."""
 
 
-class GatewayRequestError(ValueError):
+from secure_gateway.exceptions import ConfigurationError
+
+
+class GatewayRequestError(ConfigurationError):
     """A gateway request error with a stable public diagnostic code."""
 
     def __init__(self, code: str) -> None:

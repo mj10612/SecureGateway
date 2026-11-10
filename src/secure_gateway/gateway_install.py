@@ -17,13 +17,14 @@ import tempfile
 from threading import Thread
 import urllib.error
 import urllib.request
-import warnings
 
 import tomlkit
 
+from secure_gateway.logging_config import get_logger, log_failure
 from secure_gateway.encrypted_session import session_file_lock
 from secure_gateway.hooks import _atomic_json, _remove_owned, _settings
 
+_LOGGER = get_logger(__name__)
 _STARTUP_TIMEOUT = 60
 
 
@@ -256,8 +257,8 @@ def _terminate_started_gateway(process):
     if process.poll() is None:
         try:
             process.terminate()
-        except ProcessLookupError:
-            pass
+        except ProcessLookupError as exc:
+            log_failure(_LOGGER, "child_already_exited", exc)
     try:
         process.wait(timeout=5)
     except subprocess.TimeoutExpired:
@@ -333,10 +334,9 @@ def stop_gateway(path: Path):
         # An authenticated HTTP rejection is never a successful shutdown.
         exc.close()
         raise
-    except (HTTPException, OSError):
-        # The daemon can close its socket while acknowledging shutdown. Confirm
-        # that it actually disappeared rather than hiding a failed stop request.
-        pass
+    except (HTTPException, OSError) as exc:
+        # Confirm the daemon disappeared after a broken shutdown connection.
+        log_failure(_LOGGER, "shutdown_response_failed", exc)
     deadline = time.monotonic() + 5
     while healthy(config):
         if time.monotonic() >= deadline:
@@ -767,14 +767,7 @@ def _uninstall_gateway(path: Path, *, force_clean=False):
         manifest["uninstall_started"] = True
         _atomic_json(manifest_path, manifest)
     if invalid_config:
-        warnings.warn(
-            "Gateway configuration is invalid; cannot confirm the daemon stopped. "
-            "Owned settings will be restored without stopping processes. "
-            "If a gateway remains running, stop its known foreground terminal or "
-            "restore a verified configuration backup and run gateway stop --config PATH. "
-            "Do not terminate an unrelated listener; retain encrypted state until recovery is complete.",
-            RuntimeWarning, stacklevel=2,
-        )
+        _LOGGER.warning("invalid_config_uninstall_daemon_not_stopped")
     else:
         stop_gateway(path)
     for settings, original in originals.items():
