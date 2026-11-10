@@ -24,7 +24,7 @@ import socket
 import sqlite3
 import time
 import unicodedata
-from threading import Condition, Event, RLock, Thread
+from threading import Condition, Event, Lock, RLock, Thread
 from typing import Any, Callable, Iterator
 from secure_gateway import __version__
 from secure_gateway.context_model import ContextModel, load_context_model, MAX_CONTEXT_CHARS
@@ -61,7 +61,12 @@ from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, Tok
 from secure_gateway.session import PrivacySession
 from secure_gateway.gateway_stream import relay_stream
 from secure_gateway.gateway_errors import GatewayRequestError, public_request_error
-from secure_gateway.domain_dictionaries import catalog as domain_catalog, DEFAULTS as DOMAIN_DEFAULTS, protect_chunks
+from secure_gateway.domain_dictionaries import (
+    catalog as domain_catalog,
+    DomainCatalog,
+    DEFAULTS as DOMAIN_DEFAULTS,
+    protect_chunks,
+)
 
 # Maximum request/stream payload size in bytes (16 MiB). Bounds memory use and
 # rejects oversized JSON/SSE payloads before deeper processing; not user-configurable.
@@ -77,7 +82,7 @@ _DIAGNOSTIC_CATEGORIES = (
     "snapshot_scan_io", "snapshot_cleanup_io", "snapshot_preserved",
     "snapshot_load_failed", "snapshot_recovered", "snapshot_recovery_io",
     "upstream_error_body", "upstream_error_format", "upstream_error_close",
-    "log_delivery_failed",
+    "log_delivery_failed", "catalog_preload_failed",
 )
 
 
@@ -2334,7 +2339,10 @@ class PrivacyGateway(ThreadingHTTPServer):
             state_dir.chmod(0o700)
             self._snapshot_scan = iter(state_dir.glob("*-symbols-v2.enc"))
         self.rules_path = state_dir / "mask-rules.enc" if state_dir else None
-        self.domain_catalog = domain_catalog()
+        self._preload_event = Event()
+        self._preload_lock = Lock()
+        self._domain_catalog: DomainCatalog | None = None
+        self._catalog_preload_failed = False
         self.domain_policy = dict(DOMAIN_DEFAULTS)
         self.domain_policy_origin = "defaults"
         self.domain_policy_path = state_dir / "domain-policy.enc" if state_dir else None
@@ -2363,10 +2371,45 @@ class PrivacyGateway(ThreadingHTTPServer):
                 self.audit.retention(apply=True)
             super().__init__(address, GatewayHandler)
             self.cleanup_expired_snapshots()
+            self._start_catalog_preload()
         except BaseException:
             if self.audit is not None:
                 self.audit.close()
             raise
+
+    def _start_catalog_preload(self):
+        thread = Thread(target=self._preload_catalog_worker, daemon=True)
+        thread.start()
+
+    def _preload_catalog_worker(self):
+        try:
+            cat = domain_catalog()
+            with self._preload_lock:
+                self._domain_catalog = cat
+        except Exception:
+            self.record_diagnostic("catalog_preload_failed")
+            self._catalog_preload_failed = True
+        finally:
+            self._preload_event.set()
+
+    @property
+    def domain_catalog(self):
+        """Return the preloaded or synchronously loaded DomainCatalog instance."""
+        self._preload_event.wait()
+        with self._preload_lock:
+            if self._domain_catalog is None:
+                try:
+                    self._domain_catalog = domain_catalog()
+                except Exception:
+                    raise
+            return self._domain_catalog
+
+    @domain_catalog.setter
+    def domain_catalog(self, value):
+        """Set the DomainCatalog instance and mark preload as ready."""
+        with self._preload_lock:
+            self._domain_catalog = value
+            self._preload_event.set()
 
     def record_audit_error(self, phase):
         """Handle record audit error."""
@@ -2545,6 +2588,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                 "audit_write_errors": self.audit_write_errors,
                 "audit_error_counts": self.audit_error_diagnostics(),
                 "diagnostic_counts": self.operational_diagnostics(),
+                "domain_catalog": self.domain_status(),
                 "audit_completion_retries": self.audit.completion_retries.diagnostics() if self.audit else None}
 
     def _recover_snapshot(self, key: str, *, opaque_only: bool = False) -> None:
