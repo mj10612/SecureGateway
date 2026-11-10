@@ -16,6 +16,8 @@ MAX_CONTEXT_CHARS = 8192
 
 
 class ContextModel:
+    """Optional local context model wrapper with bounded inference and caching."""
+    """ContextModel."""
     def __init__(self, directory: Path):
         verify_model(directory)
         import numpy as np
@@ -50,6 +52,7 @@ class ContextModel:
 
     @contextmanager
     def request_budget(self):
+        """Handle request budget."""
         token = _budget.set({"remaining": 64, "cache": {}})
         try:
             yield
@@ -57,11 +60,19 @@ class ContextModel:
             _budget.reset(token)
 
     def diagnostics(self) -> dict:
+        """Return the result of diagnostics.
+
+        Never returns ``None``.
+        """
         with self.lock:
             return {"status": "ready", "model": MODEL_ID, "calls": self.calls,
                     "errors": self.errors, "skipped": self.skipped}
 
     def public_spans(self, text: str, spans: list[tuple[int, int]], language: str) -> frozenset[tuple[int, int]]:
+        """Return the result of public spans.
+
+        Never returns ``None``.
+        """
         if language not in SUPPORTED_LANGUAGES - {"auto"} or len(text) > MAX_CONTEXT_CHARS or not spans:
             return frozenset()
         with self.lock:
@@ -133,6 +144,10 @@ class ContextModel:
 
 
 def load_context_model(directory) -> tuple[ContextModel | None, str]:
+    """Perform load context model.
+
+    Returns ``None``.
+    """
     if directory is None:
         return None, "disabled"
     if not isinstance(directory, str) or not directory.strip() or not Path(directory).is_absolute():

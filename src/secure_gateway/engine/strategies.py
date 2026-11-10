@@ -29,6 +29,7 @@ def mapping_key(original: str, token_type: TokenType, code: bool = False) -> str
 
 
 class StrategyGenerator:
+    """Generates surrogate tokens per strategy with allocation limits and locking."""
     def __init__(self, strategy: SurrogateStrategy, salt: str = ""):
         self.strategy = strategy
         self.salt = salt or secrets.token_hex(32)
@@ -43,6 +44,10 @@ class StrategyGenerator:
 
     @contextmanager
     def operation(self) -> Iterator[None]:
+        """Perform operation.
+
+        Returns ``None``.
+        """
         with self.lock:
             if self.closed:
                 raise ValueError("Session has been cleared or expired.")
@@ -50,9 +55,17 @@ class StrategyGenerator:
 
     @staticmethod
     def get_prefix_for_type(token_type: TokenType) -> str:
+        """Return the result of get prefix for type.
+
+        Never returns ``None``.
+        """
         return PREFIXES.get(token_type, "SYM")
 
     def generate(self, token_type: TokenType, original: str, code: bool = False) -> str:
+        """Return the result of generate.
+
+        Never returns ``None``.
+        """
         with self.operation():
             prefix = self.get_prefix_for_type(token_type)
             while True:
@@ -94,6 +107,10 @@ class StrategyGenerator:
 
     @staticmethod
     def get_pattern(strategy: SurrogateStrategy) -> re.Pattern[str]:
+        """Return the result of get pattern.
+
+        Never returns ``None``.
+        """
         # Candidate scans are intentionally broader than allocation syntax.
         prefix = r"(?:ENT(?:ITY)?|NOUN|VERB|ADJ|NUM(?:BER)?|ID|LIT|SYM)"
         if strategy == SurrogateStrategy.BRACKET:

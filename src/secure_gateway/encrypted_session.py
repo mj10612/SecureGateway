@@ -56,6 +56,10 @@ class SnapshotEncryption:
         self._fernet = _cipher(password, self._salt)
 
     def encrypt(self, payload: bytes) -> bytes:
+        """Return the result of encrypt.
+
+        Never returns ``None``.
+        """
         return _MAGIC + self._salt + self._fernet.encrypt(payload)
 
 

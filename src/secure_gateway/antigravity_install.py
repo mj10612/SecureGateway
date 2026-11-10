@@ -153,6 +153,7 @@ def configure_antigravity(path: Path, install=True):
 
 
 def antigravity_status(path: Path):
+    """Handle antigravity status."""
     path = path.resolve()
     settings = _settings(path)
     record_path = path.with_name(path.name + ".secure-gateway.json")

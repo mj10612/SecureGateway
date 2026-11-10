@@ -46,12 +46,18 @@ TOKEN_SPLIT_REGEX = re.compile(
 
 
 class TextChunk:
+    """A tokenized text span with its classification kind."""
+
     def __init__(self, text: str, kind: str):
         self.text = text
         self.kind = kind
 
     @property
     def is_word(self) -> bool:
+        """Return the result of is word.
+
+        Never returns ``None``.
+        """
         return self.kind in {
             "WORD",
             "HANGUL_WORD",
@@ -67,26 +73,47 @@ class TextChunk:
 
     @property
     def is_number(self) -> bool:
+        """Return the result of is number.
+
+        Never returns ``None``.
+        """
         return self.kind == "NUMBER"
 
     @property
     def is_code(self) -> bool:
+        """Return the result of is code.
+
+        Never returns ``None``.
+        """
         return self.kind == "CODE_BLOCK"
 
     @property
     def is_whitespace(self) -> bool:
+        """Return the result of is whitespace.
+
+        Never returns ``None``.
+        """
         return self.kind == "WHITESPACE"
 
     @property
     def is_punctuation(self) -> bool:
+        """Return the result of is punctuation.
+
+        Never returns ``None``.
+        """
         return self.kind == "OTHER" and all(
             unicodedata.category(c)[0] in "PS" for c in self.text
         )
 
 
 class MultilingualTokenizer:
+    """Tokenizer that recognizes sensitive spans and language-specific word units."""
     @staticmethod
     def tokenize(text: str) -> list[TextChunk]:
+        """Return the result of tokenize.
+
+        Never returns ``None``.
+        """
         chunks: list[TextChunk] = []
         for match in TOKEN_SPLIT_REGEX.finditer(text):
             chunk = TextChunk(match[0], match.lastgroup or "OTHER")

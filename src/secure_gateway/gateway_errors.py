@@ -2,7 +2,9 @@
 
 
 class GatewayRequestError(ValueError):
-    def __init__(self, code):
+    """A gateway request error with a stable public diagnostic code."""
+
+    def __init__(self, code: str) -> None:
         self.code = code
         super().__init__(GUIDANCE[code])
 
@@ -26,7 +28,13 @@ _REASONS = {
 }
 
 
-def public_request_error(exc):
+def public_request_error(exc: BaseException) -> dict[str, str]:
+    """Map an internal exception to a fixed public error payload.
+
+    Returns a JSON-serializable dict with stable ``error``/``code``/``guidance``
+    fields. Internal exception text is not exposed except through known reason
+    mappings. Never returns ``None``.
+    """
     code = exc.code if isinstance(exc, GatewayRequestError) else _REASONS.get(str(exc), "invalid_request")
     return {"error": "Privacy gateway could not safely process this request; nothing bypassed masking",
             "code": code, "guidance": GUIDANCE[code]}

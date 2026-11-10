@@ -98,6 +98,10 @@ def canonical_language(language: str) -> str:
 
 
 def structural_words(language: str) -> frozenset[str]:
+    """Return the result of structural words.
+
+    Never returns ``None``.
+    """
     return CLOSED_CLASS_WORDS.get(canonical_language(language), frozenset())
 
 

@@ -43,6 +43,7 @@ def _jsonl(path, rows):
 def prepare_comprehension(data, baseline, candidate, *, output_dir, model, profile='smoke', repeats=1, max_output_tokens=1024,
                           all_tasks=False, variants=('original', 'human', 'baseline', 'candidate'),
                           grading_policy_version=1, reasoning_effort=None):
+    """Handle prepare comprehension."""
     from secure_gateway.evaluation import validate_corpus
     validate_corpus(data)
     if not isinstance(model, str) or not model or not 1 <= repeats <= 10 or not 64 <= max_output_tokens <= 8192:
@@ -191,6 +192,7 @@ def _metrics(rows):
 
 def continue_comprehension(output_dir, *, responses_path=None, grades_path=None, command=None,
                            max_calls=64, max_seconds=300, max_tokens=65536):
+    """Handle continue comprehension."""
     output_dir = Path(output_dir)
     state = json.loads((output_dir / 'manifest.json').read_text(encoding='utf-8'))
     jobs = {j['job_id']: j for j in state['jobs']}

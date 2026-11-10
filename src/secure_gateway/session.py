@@ -17,6 +17,10 @@ from secure_gateway.models import MaskMode, SessionStats, SurrogateStrategy, Tok
 
 
 def validate_ttl(ttl: float) -> None:
+    """Perform validate ttl.
+
+    Returns ``None``.
+    """
     if isinstance(ttl, bool) or not math.isfinite(ttl) or not 0 < ttl <= 86400:
         raise ValueError("ttl_seconds must be positive and at most 86400 (one day).")
 
@@ -131,6 +135,7 @@ class SessionMappings(dict[str, TokenMapping]):
         self._original_trie = None
 
     def clear(self):
+        """Handle clear."""
         self.mapping_bytes = 0
         self._entry_bytes.clear()
         self._original_automaton = None
@@ -139,10 +144,12 @@ class SessionMappings(dict[str, TokenMapping]):
         self._original_trie = None
 
     def update(self, *args, **kwargs):
+        """Handle update."""
         for key, mapping in dict(*args, **kwargs).items():
             self[key] = mapping
 
     def pop(self, key, *default):
+        """Handle pop."""
         if key not in self:
             return super().pop(key, *default)
         mapping = self[key]
@@ -150,6 +157,7 @@ class SessionMappings(dict[str, TokenMapping]):
         return mapping
 
     def popitem(self):
+        """Handle popitem."""
         self._original_automaton = None
         key, mapping = super().popitem()
         self.mapping_bytes -= self._entry_bytes.pop(key, 0)
@@ -159,6 +167,7 @@ class SessionMappings(dict[str, TokenMapping]):
         return key, mapping
 
     def setdefault(self, key, default=None):
+        """Handle setdefault."""
         if key not in self:
             self[key] = default
         return self[key]
@@ -170,6 +179,7 @@ class SessionMappings(dict[str, TokenMapping]):
 
 
 class PrivacySession:
+    """A bounded, lock-guarded session holding mapping stores and generator state."""
     def __init__(
         self,
         session_id: str,
@@ -217,14 +227,26 @@ class PrivacySession:
                     self.last_accessed = time.time()
 
     def is_expired(self) -> bool:
+        """Return the result of is expired.
+
+        Never returns ``None``.
+        """
         with self.generator.lock:
             return time.time() - self.last_accessed > self.ttl_seconds
 
     def touch(self) -> None:
+        """Perform touch.
+
+        Returns ``None``.
+        """
         with self.generator.operation():
             self.last_accessed = time.time()
 
     def clear(self) -> None:
+        """Perform clear.
+
+        Returns ``None``.
+        """
         with self.generator.lock:
             self.generator.closed = True
             self.forward_store.clear()
@@ -236,6 +258,10 @@ class PrivacySession:
             self.generator.salt = ""
 
     def get_stats(self) -> SessionStats:
+        """Return the result of get stats.
+
+        Never returns ``None``.
+        """
         with self.operation():
             counts: dict[str, int] = {}
             for mapping in self.forward_store.values():
@@ -327,6 +353,10 @@ class SessionVault:
         mode: MaskMode = MaskMode.CONTENT_WORDS,
         strategy: SurrogateStrategy = SurrogateStrategy.BRACKET,
     ) -> PrivacySession:
+        """Return the result of get or create.
+
+        Never returns ``None``.
+        """
         while True:
             with self._lock:
                 if self._closed:
@@ -359,6 +389,10 @@ class SessionVault:
         strategy: SurrogateStrategy = SurrogateStrategy.BRACKET,
         ttl_seconds: float | None = None,
     ) -> PrivacySession:
+        """Return the result of create.
+
+        Never returns ``None``.
+        """
         ttl = self.default_ttl if ttl_seconds is None else ttl_seconds
         validate_ttl(ttl)
         with self._lock:
@@ -379,6 +413,10 @@ class SessionVault:
             return session
 
     def get_session(self, session_id: str) -> PrivacySession | None:
+        """Return an active session by id, or ``None`` when missing or expired.
+
+        Expired/closed sessions are cleaned up and not returned.
+        """
         with self._lock:
             self._cleanup_expired_locked()
             session = self._sessions.get(self._sid(session_id))
@@ -393,11 +431,19 @@ class SessionVault:
 
     @property
     def active_count(self) -> int:
+        """Return the result of active count.
+
+        Never returns ``None``.
+        """
         with self._lock:
             self._cleanup_expired_locked()
             return len(self._sessions)
 
     def clear_session(self, session_id: str) -> bool:
+        """Return the result of clear session.
+
+        Never returns ``None``.
+        """
         with self._lock:
             session = self._sessions.pop(self._sid(session_id), None)
         if session:
@@ -406,6 +452,10 @@ class SessionVault:
         return False
 
     def clear_all(self) -> int:
+        """Return the result of clear all.
+
+        Never returns ``None``.
+        """
         with self._lock:
             sessions = tuple(self._sessions.values())
             self._sessions.clear()
@@ -414,6 +464,10 @@ class SessionVault:
         return len(sessions)
 
     def close(self) -> None:
+        """Perform close.
+
+        Returns ``None``.
+        """
         self._stop.set()
         with self._lock:
             self._closed = True

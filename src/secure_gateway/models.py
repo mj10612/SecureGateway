@@ -122,6 +122,10 @@ class UnmaskResult(BaseModel):
 
     @computed_field
     def restored_occurrences(self) -> int:
+        """Return the number of restored surrogate occurrences.
+
+        Alias for :attr:`restored_tokens_count` for API compatibility.
+        """
         return self.restored_tokens_count
 
 

@@ -71,6 +71,10 @@ LOCAL_TOOLS = frozenset(
 
 
 def default_state_dir() -> Path:
+    """Return the result of default state dir.
+
+    Never returns ``None``.
+    """
     return Path.home() / ".secure-gateway" / "hooks"
 
 
@@ -250,6 +254,10 @@ def configure(
 def installation_status(
     settings: Path, state_dir: Path, agent: str = "claude"
 ) -> dict[str, Any]:
+    """Return the result of installation status.
+
+    Never returns ``None``.
+    """
     if agent not in AGENT_EVENTS:
         raise ValueError("Unsupported agent.")
     config = _settings(settings)
@@ -335,6 +343,10 @@ class HookStore:
         self.engine = MaskingEngine()
 
     def path(self, sid: str) -> Path:
+        """Return the result of path.
+
+        Never returns ``None``.
+        """
         if not isinstance(sid, str) or not sid.strip() or len(sid) > 1024:
             raise ValueError("A valid host session ID is required.")
         return self.directory / (sha256(sid.encode("utf-8")).hexdigest() + ".enc")
@@ -451,6 +463,10 @@ class HookStore:
     def session(
         self, sid: str, create: bool = False
     ) -> Iterator[PrivacySession | None]:
+        """Perform session.
+
+        Returns ``None``.
+        """
         path = self.path(sid)
         if self._retired(path).exists():
             raise ValueError("Hook session has been retired; start a new conversation.")
@@ -474,6 +490,10 @@ class HookStore:
                     session.clear()
 
     def mask(self, text: str, session: PrivacySession) -> str:
+        """Return the result of mask.
+
+        Never returns ``None``.
+        """
         # Expand registered echoes once, locally, before tokenizing the whole
         # result. Splitting first would expose surrounding URL/code fragments.
         expanded = self.engine.unmask(
@@ -496,6 +516,10 @@ class HookStore:
         ).masked_text
 
     def restore(self, text: str, session: PrivacySession | None) -> str:
+        """Return the result of restore.
+
+        Never returns ``None``.
+        """
         result = self.engine.unmask(
             text,
             session.session_id if session else "missing",
@@ -509,6 +533,10 @@ class HookStore:
         return result.unmasked_text
 
     def clear(self, sid: str) -> None:
+        """Perform clear.
+
+        Returns ``None``.
+        """
         path = self.path(sid)
         with session_file_lock(path):
             path.unlink(missing_ok=True)
@@ -561,6 +589,10 @@ def _validate_hook_depth(payload: Any) -> None:
 def handle_hook(
     payload: dict[str, Any], state_dir: Path, agent: str = "claude"
 ) -> dict[str, Any]:
+    """Return the result of handle hook.
+
+    Never returns ``None``.
+    """
     _validate_hook_depth(payload)
     event = payload.get("hook_event_name")
     if agent not in AGENT_EVENTS or event not in AGENT_EVENTS[agent]:

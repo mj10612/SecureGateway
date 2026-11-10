@@ -27,7 +27,22 @@ class PrivateArithmetic:
         self.max_calls, self.calls = max_calls, 0
         self._owner = secrets.token_hex(16)
 
-    def call(self, operation, aliases):
+    def call(self, operation: str, aliases: list[str]) -> dict[str, str]:
+        """Compute an allowed operation over two authorized aliases.
+
+        Args:
+            operation: One of ``add``, ``subtract``, ``multiply``, or
+                ``date_difference``.
+            aliases: Exactly two session aliases authorized by the unit policy.
+
+        Returns:
+            ``{"alias": <result_alias>}`` containing a new session-local alias
+            for the computed result. Never returns ``None``.
+
+        Raises:
+            ValueError: For unsupported operations, unauthorized aliases, policy
+                violations, budget limits, or invalid operand formats.
+        """
         if operation not in {"add", "subtract", "multiply", "date_difference"} or not isinstance(aliases, list) or len(aliases) != 2:
             raise ValueError("Unsupported local arithmetic operation")
         if any(not isinstance(alias, str) or alias not in self.allowed for alias in aliases):

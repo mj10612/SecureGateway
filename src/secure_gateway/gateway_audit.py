@@ -23,6 +23,7 @@ class AuditMaintenanceError(sqlite3.OperationalError):
 
 
 class AuditStore:
+    """SQLite-backed durable audit metadata store with retention and recovery."""
     def __init__(self, path: Path, max_records=100_000, max_age_days=None, *, read_only=False):
         if type(max_records) is not int or not 1 <= max_records <= 2**63 - 1:
             raise ValueError("Audit max_records must be an integer between 1 and 9223372036854775807.")
@@ -112,6 +113,7 @@ class AuditStore:
         lock_file_exclusive(handle)
 
     def close(self):
+        """Handle close."""
         retries = getattr(self, "completion_retries", None)
         if retries is not None:
             retries.close()
@@ -149,6 +151,7 @@ class AuditStore:
             return True  # Uncertain ownership must protect the request.
 
     def recover_incomplete(self, apply=False, *, include_legacy=False):
+        """Handle recover incomplete."""
         if apply and self.read_only:
             raise ValueError("Audit store is read-only.")
         if not self.path.exists():
@@ -218,6 +221,7 @@ class AuditStore:
 
     @contextmanager
     def connect(self, *, timeout=5):
+        """Handle connect."""
         target = self.path.resolve().as_uri() + "?mode=ro" if self.read_only else self.path
         db = sqlite3.connect(target, timeout=timeout, uri=self.read_only)
         db.row_factory = sqlite3.Row
@@ -228,6 +232,7 @@ class AuditStore:
             db.close()
 
     def begin(self, agent, provider, subscription, endpoint, destination):
+        """Handle begin."""
         if self.read_only or self._owner_file is None:
             raise ValueError("Audit store is read-only or closed.")
         # Maintenance can fail independently. Complete it before publishing a
@@ -248,6 +253,7 @@ class AuditStore:
                           "masked_bytes", "output_bytes", "new_aliases")
 
     def finish(self, request_id, metadata):
+        """Handle finish."""
         if self.read_only or self._owner_file is None:
             raise ValueError("Audit store is read-only or closed.")
         # Keep only the ledger's fixed metadata fields, never the caller's extras.
@@ -349,6 +355,7 @@ class AuditStore:
         return (" WHERE " + " AND ".join(clauses) if clauses else ""), values
 
     def query(self, filters, limit=50, offset=0):
+        """Handle query."""
         if (type(limit) is not int or not 1 <= limit <= 200
                 or type(offset) is not int or not 0 <= offset <= 2**63 - 1):
             raise ValueError("Invalid audit pagination.")

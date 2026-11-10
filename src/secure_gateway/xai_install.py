@@ -19,10 +19,15 @@ from secure_gateway.gateway_install import (
 
 
 def default_api_config():
+    """Handle default api config."""
     return Path.home() / ".secure-gateway" / "xai-api" / "config.json"
 
 
 def load_api_config(path):
+    """Return load api config.
+
+    Returns the validated xAI API configuration dict; never returns ``None``.
+    """
     config = load_config(path)
     if config.get("mode") != "api" or config.get("provider") != "xai":
         raise ValueError("Expected an isolated xAI API configuration.")
@@ -30,6 +35,7 @@ def load_api_config(path):
 
 
 def install_api(path: Path, model: str, port=38118, grok_dir=None):
+    """Handle install api."""
     if not model.strip() or any(ord(character) < 32 for character in model):
         raise ValueError("A nonempty xAI model ID is required.")
     validate_api_options({"model": model}, "responses")

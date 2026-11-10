@@ -39,6 +39,11 @@ class _PackedOffsets:
 
 
 def _case_form(text):
+    """Normalize text for case-sensitive domain-form comparison.
+
+    Applies NFC normalization, maps ASCII and Unicode dash characters to spaces,
+    and collapses whitespace runs. Returns the normalized string; never ``None``.
+    """
     text = unicodedata.normalize("NFC", text)
     return " ".join("".join(" " if char in "-‐‑–—" else char for char in text).split())
 
@@ -75,7 +80,15 @@ def normalize(text):
 
 
 class TermIndex:
+    """Aho–Corasick index for bounded domain-term matching."""
+
     def __init__(self, terms):
+        """Build a shared Aho–Corasick automaton over normalized domain terms.
+
+        Terms are normalized with :func:`normalize`; each accepting state stores
+        match metadata (normalized length, domain, case form, sensitivity, boundary).
+        Failure links and output propagation are computed in a breadth-first pass.
+        """
         self.edges: list[dict[str, int]] = [{}]
         self.failure = [0]
         self.outputs: list[list[tuple]] = [[]]
@@ -91,6 +104,8 @@ class TermIndex:
                     self.outputs.append([])
                 state = self.edges[state][char]
             self.outputs[state].append((len(key), domain, _case_form(term) if case_sensitive else term, case_sensitive, boundary))
+        # Aho–Corasick failure links: on mismatch, fall back to the longest proper
+        # suffix that is also a pattern prefix; propagate outputs along failures.
         queue = deque(self.edges[0].values())
         while queue:
             state = queue.popleft()
@@ -103,6 +118,14 @@ class TermIndex:
                 self.outputs[child].extend(self.outputs[self.failure[child]])
 
     def spans(self, text, enabled, max_matches=100_000):
+        """Find protected original-text spans for enabled domains.
+
+        Normalizes ``text`` once, walks the automaton, maps normalized positions
+        back to original offsets, applies boundary/case checks, and merges to
+        leftmost-longest / union for overlaps. Returns a list of ``(start, end)``
+        character offsets in the original text, or ``[]`` when no domains are
+        enabled or no matches survive.
+        """
         if not any(enabled.values()):
             return []
         if len(text.encode()) > 16 * 1024 * 1024:
@@ -111,6 +134,7 @@ class TermIndex:
         matches = []
         state = count = 0
         for pos, char in enumerate(normalized):
+            # Automaton walk: follow failure links until a transition matches.
             while state and char not in self.edges[state]:
                 state = self.failure[state]
             state = self.edges[state].get(char, 0)
@@ -120,7 +144,10 @@ class TermIndex:
                     raise ValueError("Dictionary matching budget exceeded")
                 if not enabled.get(domain):
                     continue
+                # Map normalized match end -> original [start, end) span.
                 start, end = offsets[pos - length + 1][0], offsets[pos][1]
+                # Boundary guard: reject alnum/underscore adjacency, with limited
+                # hangul-suffix and reviewed English-plural exceptions.
                 left, right = text[start - 1:start] if start else "", text[end:end + 1]
                 if left and (left.isalnum() or left == "_"):
                     continue
@@ -145,6 +172,18 @@ class TermIndex:
 
 
 def _read(path):
+    """Read a domain dictionary file with bounded, symlink-safe checks.
+
+    Args:
+        path: Dictionary file path inside the trusted catalog directory.
+
+    Returns:
+        Raw file bytes. Never returns ``None``.
+
+    Raises:
+        ValueError: If ``path`` is missing, not a regular file, a symlink, or
+            exceeds :data:`MAX_FILE` by stat size or actual read length.
+    """
     if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_FILE:
         raise ValueError("Missing or oversized domain dictionary")
     data = path.read_bytes()
@@ -154,6 +193,8 @@ def _read(path):
 
 
 class DomainCatalog:
+    """Loaded domain dictionary manifest, documents, and match index."""
+
     def __init__(self, directory=None):
         self.directory = Path(directory) if directory else Path(__file__).parent / "data/domains"
         manifest_bytes = _read(self.directory / "manifest.json")
@@ -188,9 +229,19 @@ class DomainCatalog:
         self.index = TermIndex(terms)
 
     def spans(self, text, enabled, max_matches=100_000):
+        """Return protected spans for ``text`` under the enabled-domain policy.
+
+        Delegates to :meth:`TermIndex.spans`. Returns ``(start, end)`` offsets
+        in the original text, or ``[]`` when nothing is protected.
+        """
         return self.index.spans(text, enabled, max_matches)
 
     def status(self, enabled):
+        """Return catalog/policy status metadata for the enabled-domain map.
+
+        Returns a JSON-serializable dict with policy/manifest versions and per-
+        domain counts. Never returns ``None``.
+        """
         policy_version = sha256((self.version + json.dumps(enabled, sort_keys=True)).encode()).hexdigest()
         return {"enabled": dict(enabled), "policy_version": policy_version, "dictionary_manifest": self.version,
                 "domains": [{"id": domain, "version": doc["version"],
@@ -200,6 +251,15 @@ class DomainCatalog:
                             for domain, doc in self.documents.items()]}
 
     def page(self, domain, query="", limit=50, offset=0):
+        """Return a bounded page of dictionary entries for a domain.
+
+        Filters by ``query`` (casefold substring over forms) when provided.
+        Returns a dict with domain, total, offset, entries slice, and version;
+        never returns ``None``.
+
+        Raises:
+            ValueError: For unknown domains or out-of-range query/pagination.
+        """
         if domain not in self.documents or len(query) > 128 or not 1 <= limit <= 100 or not 0 <= offset <= 100_000:
             raise ValueError("Invalid dictionary page")
         entries = [entry for entry in self.documents[domain]["entries"] if not query or
@@ -209,7 +269,12 @@ class DomainCatalog:
 
 
 @lru_cache(maxsize=1)
-def catalog():
+def catalog() -> DomainCatalog:
+    """Return the process-wide cached :class:`DomainCatalog` instance.
+
+    The catalog is loaded once per process from packaged domain data. Never
+    returns ``None``.
+    """
     return DomainCatalog()
 
 

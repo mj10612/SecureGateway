@@ -25,6 +25,12 @@ _MAX_JSON = 16 * 1024 * 1024
 
 @dataclass(frozen=True)
 class PublicLexicon:
+    """Offline public-vocabulary sets for one language.
+
+    ``words`` are ordinary/public candidates, ``names`` and ``predicates`` carry
+    additional evidence; gateway private/forced protections still take precedence.
+    """
+
     words: frozenset[str]
     names: frozenset[str]
     data_version: str
@@ -59,6 +65,14 @@ def _word_set(value):
 
 @lru_cache(maxsize=17)
 def lexicon(language: str) -> PublicLexicon:
+    """Load and verify the packaged public lexicon for ``language``.
+
+    Returns a cached :class:`PublicLexicon`; never returns ``None``.
+
+    Raises:
+        ValueError: If the language is unsupported or packaged data fails
+            manifest/integrity/shape validation.
+    """
     if language not in _LANGUAGES:
         raise ValueError('Unsupported common-vocabulary language.')
     manifest = _manifest()
@@ -104,4 +118,9 @@ def lexicon(language: str) -> PublicLexicon:
 
 
 def ordinary_words(language: str) -> frozenset[str]:
+    """Return the ordinary/public word set for ``language``.
+
+    Never returns ``None``. May raise :class:`ValueError` via :func:`lexicon`
+    for unsupported or invalid packaged data.
+    """
     return lexicon(language).words

@@ -133,6 +133,12 @@ ENGLISH_NAMES = frozenset("john james maria mary michael robert patricia jennife
 
 
 def domain_terms(text: str, language: str) -> set[str]:
+    """Find reviewed domain/name terms present in ``text`` for ``language``.
+
+    Returns a set of matched surface forms (possibly empty); never returns
+    ``None``. Matching includes limited reviewed inflections/affixes and CJK
+    substring forms for configured private term lists.
+    """
     private = DOMAIN_WORDS.get(language, frozenset()) | NAME_WORDS.get(language, frozenset())
     if language == "en":
         private = private | ENGLISH_NAMES

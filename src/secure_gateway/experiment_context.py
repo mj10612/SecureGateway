@@ -35,6 +35,11 @@ _NON_NAMES = frozenset({"information", "the", "a", "an", "it", "this", "that", "
 
 
 def _label(value: str) -> str:
+    """Return a stable comparison key for a field label.
+
+    Normalizes NFC/casefold and removes spaces, underscores, and hyphens.
+    Never returns ``None``.
+    """
     return re.sub(r"[\s_-]+", "", unicodedata.normalize("NFC", value).casefold())
 
 
@@ -49,6 +54,16 @@ _NUMERIC_FIELDS = frozenset(map(_label, (
 
 
 def _check(text: str) -> list[tuple[int, int]]:
+    """Validate input and compute excluded original-coordinate spans.
+
+    Excludes markdown code spans and opaque tokenizer kinds (email/URL/secret,
+    etc.). Returns the whole text as one excluded span when source-like content
+    cannot be safely analyzed, or when markdown parsing fails. Never returns
+    ``None``.
+
+    Raises:
+        ValueError: For non-text input or input exceeding :data:`MAX_INPUT_BYTES`.
+    """
     if not isinstance(text, str):
         raise ValueError("Context candidate input must be text")
     if len(text.encode("utf-8")) > MAX_INPUT_BYTES:
@@ -70,7 +85,15 @@ def _check(text: str) -> list[tuple[int, int]]:
     return sorted(excluded)
 
 
-def _finish(spans, excluded):
+def _finish(spans: list[tuple[int, int]], excluded: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    """Filter, deduplicate, and merge candidate spans against exclusions.
+
+    Returns sorted non-overlapping ``(start, end)`` spans with excluded regions
+    removed. Never returns ``None``.
+
+    Raises:
+        ValueError: If ``spans`` exceeds :data:`MAX_SPANS`.
+    """
     if len(spans) > MAX_SPANS:
         raise ValueError("Context candidate output budget exceeded")
     output: list[tuple[int, int]] = []
@@ -94,7 +117,14 @@ def _finish(spans, excluded):
     return output
 
 
-def _name_at(text, position, *, explicit=False):
+def _name_at(text: str, position: int, *, explicit: bool = False) -> tuple[int, int] | None:
+    """Locate a quoted or token name starting at or after ``position``.
+
+    Returns ``(start, end)`` over the name content (excluding quotes) when a
+    valid name is found, or ``None`` when no acceptable name is present.
+    Non-explicit unquoted names reject common pronoun/placeholders in
+    :data:`_NON_NAMES`.
+    """
     while position < len(text) and text[position] in " \t":
         position += 1
     if position >= len(text):
@@ -126,7 +156,13 @@ def name_spans(text: str) -> list[tuple[int, int]]:
     return _finish(spans, excluded)
 
 
-def _value_at(text, position, scope_end):
+def _value_at(text: str, position: int, scope_end: int) -> tuple[int, int] | None:
+    """Parse a quoted or bare field value starting at ``position``.
+
+    Returns ``(start, end)`` over the value content, or ``None`` when the value
+    is absent, malformed, exceeds :data:`MAX_VALUE_CHARS`, or contains unsafe
+    line breaks in quoted form.
+    """
     if position >= scope_end:
         return None
     if text[position] in _QUOTES:
@@ -151,7 +187,13 @@ def _value_at(text, position, scope_end):
     return (position, end) if position < end else None
 
 
-def _fields(text, start=0, end=None):
+def _fields(text: str, start: int = 0, end: int | None = None) -> list[tuple[str, int, int]]:
+    """Extract ``(normalized_label, value_start, value_end)`` form-field records.
+
+    Scans ``text[start:end]`` for ``label: value`` patterns, skipping pipe-table
+    lines and overlapping quoted values. Returns an empty list when no fields are
+    found; never returns ``None``.
+    """
     end = len(text) if end is None else end
     records = []
     skip_to = start
@@ -173,7 +215,12 @@ def _fields(text, start=0, end=None):
     return records
 
 
-def _cells(line, offset):
+def _cells(line: str, offset: int) -> list[tuple[int, int]]:
+    """Split a markdown table row into trimmed cell ``(start, end)`` spans.
+
+    Respects escaped pipes and drops empty leading/trailing border cells.
+    Returns an empty list for non-table lines; never returns ``None``.
+    """
     if "|" not in line:
         return []
     cuts, escaped = [], False
@@ -199,7 +246,14 @@ def _cells(line, offset):
     return cells
 
 
-def _table_fields(text):
+def _table_fields(text: str) -> list[tuple[str, int, int]]:
+    """Extract field records from valid markdown tables.
+
+    Accepts tables with unique headers, matching delimiter rows, and consistent
+    row cell counts (up to 64 columns). Returns ``(normalized_label, start, end)``
+    records for non-empty, bounded cells; never returns ``None``. Malformed
+    tables are skipped without raising.
+    """
     lines, offset = [], 0
     for raw in text.splitlines(keepends=True):
         line = raw.rstrip("\r\n")

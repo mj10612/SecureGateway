@@ -36,6 +36,7 @@ LOWER_BOUND_NOTE = ('Reported tokens are a lower bound: calls with unknown usage
 
 
 def observer_hash():
+    """Handle observer hash."""
     return sha256(Path(inspect.getfile(evaluation_diagnostics)).read_bytes()).hexdigest()
 
 
