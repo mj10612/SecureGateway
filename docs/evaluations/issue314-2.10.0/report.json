@@ -1,0 +1,103 @@
+{
+  "issue": 314,
+  "version": "2.10.0",
+  "total_sentences": 8,
+  "baseline": {
+    "protection": {
+      "total_sensitive": 8,
+      "fully_protected": 8,
+      "full_leaks": 0,
+      "partial_exposures": 0,
+      "rate": 1.0
+    },
+    "overmasking": {
+      "total_public_spans": 8,
+      "overmasked": 0,
+      "rate": 0.0
+    },
+    "restore": {
+      "total_requests": 8,
+      "exact_restored": 8,
+      "rate": 1.0
+    }
+  },
+  "candidates": {
+    "conservative": {
+      "name": "vocab_conservative",
+      "summary": {
+        "protection": {
+          "total_sensitive": 8,
+          "fully_protected": 8,
+          "full_leaks": 0,
+          "partial_exposures": 0,
+          "rate": 1.0
+        },
+        "overmasking": {
+          "total_public_spans": 8,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "restore": {
+          "total_requests": 8,
+          "exact_restored": 8,
+          "rate": 1.0
+        }
+      },
+      "decision": "rejected",
+      "reason": "High over-masking (0.0%: 0/8) degrades model task comprehension"
+    },
+    "calibrated": {
+      "name": "vocab_calibrated",
+      "summary": {
+        "protection": {
+          "total_sensitive": 8,
+          "fully_protected": 8,
+          "full_leaks": 0,
+          "partial_exposures": 0,
+          "rate": 1.0
+        },
+        "overmasking": {
+          "total_public_spans": 8,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "restore": {
+          "total_requests": 8,
+          "exact_restored": 8,
+          "rate": 1.0
+        }
+      },
+      "toggle_default": "OFF",
+      "frozen_thresholds": {
+        "en": 450,
+        "ko": 400
+      },
+      "tested_thresholds": [
+        300,
+        350,
+        400,
+        450,
+        500,
+        550
+      ],
+      "ambiguous_words": {
+        "en_count": 231,
+        "ko_count": 98,
+        "excluded_share": 1.0
+      },
+      "comprehension": {
+        "status": "미측정",
+        "reason": "Evaluated offline without live LLM subscription"
+      },
+      "decision": "hold — comprehension 미측정"
+    }
+  },
+  "latency": {
+    "cold_p50_ms": 1.7299,
+    "cold_p95_ms": 266.458,
+    "warm_p50_ms": 0.008,
+    "warm_p95_ms": 0.0085,
+    "warm_mean_ms": 0.0073
+  },
+  "memory_delta_mb": "미측정"
+}

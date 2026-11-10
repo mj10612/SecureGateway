@@ -16,10 +16,16 @@ from typing import Any
 import unicodedata
 
 from secure_gateway import gateway
+from secure_gateway.engine.natural_languages import detect_natural_language
 from secure_gateway.domain_dictionaries import protect_chunks
 from secure_gateway.experiment_context import bundle_spans, name_spans
 from secure_gateway.experiment_korean import preserve_spans as korean_spans
 from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
+from secure_gateway.gateway_vocabulary import (
+    available_languages, read_cBpack, GENERAL_WORDS, INDIC_WORDS, HOUSEHOLD_WORDS,
+    DISCOURSE_WORDS, ENGLISH_NAMES
+)
+from secure_gateway.gateway_name_vocabulary import NAME_WORDS
 from secure_gateway.models import MaskMode, TokenType
 from secure_gateway.numeric_context import (
     NumericLiteralMetadata,
@@ -29,6 +35,46 @@ from secure_gateway.numeric_context import (
 )
 from secure_gateway.private_arithmetic import LocalArithmeticDispatcher
 from secure_gateway.structure_parser import doc_structure_spans
+
+AMBIGUOUS_WORDS_EN: frozenset[str] = frozenset(ENGLISH_NAMES | {
+    "still", "current", "margin", "fold", "drift", "velvet", "march", "may",
+    "will", "rose", "grace", "amber", "dawn", "summer", "autumn", "winter",
+    "spring", "page", "check", "point", "bear", "bill", "bob", "mark", "jack",
+    "grant", "chase", "lane", "reed", "dean", "dale", "cliff", "glen", "wade",
+})
+
+AMBIGUOUS_WORDS_KO: frozenset[str] = frozenset(set(NAME_WORDS.get("ko", ())) | {
+    "나란히", "흐름", "초록", "물결", "고요", "바람", "하늘", "여울", "다온",
+    "누리", "새솔", "별무리", "마루", "바다", "구름", "달빛", "햇살", "보람",
+})
+
+
+def vocab_conservative(language: str) -> frozenset[str]:
+    """Reviewed public vocabulary only without statistical frequency bins (issue #314 Candidate B)."""
+    existing = gateway.ordinary_words(language)
+    reviewed = gateway.TASK_WORDS | gateway.SKILL_TASK_WORDS | gateway.CLOSED_CLASS_WORDS
+    reviewed |= set(DISCOURSE_WORDS.get(language, ())) | set(gateway.operator_words(language))
+    return frozenset(word for word in existing if word in reviewed)
+
+
+def vocab_calibrated(language: str, cutoff: int | None = None) -> frozenset[str]:
+    """Per-language calibrated vocabulary with ambiguous name-like words excluded (issue #314 Candidate C)."""
+    path = available_languages().get(language)
+    words = set(GENERAL_WORDS.get(language, ())) | set(INDIC_WORDS.get(language, ())) | set(HOUSEHOLD_WORDS.get(language, ()))
+    words |= set(DISCOURSE_WORDS.get(language, ()))
+    ambiguous = AMBIGUOUS_WORDS_EN if language == "en" else AMBIGUOUS_WORDS_KO if language == "ko" else frozenset()
+    if path:
+        bins = read_cBpack(path)
+        if cutoff is None:
+            cutoff = 450 if language == "en" else 400 if language == "ko" else (550 if language in {"es", "fr", "pt", "de", "id", "tr", "ru"} else 500)
+        for bucket in bins[:cutoff + 1]:
+            words.update(unicodedata.normalize("NFC", word).casefold() for word in bucket
+                         if word and word.casefold() not in ambiguous
+                         and all(char.isalpha() or unicodedata.category(char).startswith("M")
+                                 or char in "’'\u200c\u200d" for char in word))
+    elif language not in INDIC_WORDS:
+        raise ValueError("Packaged ordinary vocabulary is missing for " + language)
+    return frozenset(w for w in words if w not in ambiguous)
 
 
 CONCISE_INSTRUCTION = (
@@ -58,6 +104,10 @@ PROFILE_ALIASES: dict[str, tuple[int, dict[str, Any]]] = {
     "instruction_concise": (315, {"variant": "concise"}),
     "instruction_examples": (315, {"variant": "example"}),
     "local_arithmetic": (319, {"variant": "local_arithmetic"}),
+    "ko_conjugation_split": (309, {}),
+    "segment_language": (313, {}),
+    "vocab_conservative": (314, {"variant": "conservative"}),
+    "vocab_calibrated": (314, {"variant": "calibrated"}),
 }
 
 
@@ -139,20 +189,22 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
     expected answers or a purported project identity supplied by a model.
     """
     global _ACTIVE
+    issue_id: int
     if isinstance(issue, str):
         if issue not in PROFILE_ALIASES:
             raise ValueError(f"Unknown candidate profile name: {issue}")
-        issue_int, default_pol = PROFILE_ALIASES[issue]
+        issue_id, default_pol = PROFILE_ALIASES[issue]
         config: dict = deepcopy(default_pol)
         if policy is not None:
             if not isinstance(policy, dict):
                 raise ValueError("Candidate policy must be a local object")
             config.update(policy)
-        issue = issue_int
+        issue = issue_id
     elif type(issue) is int and issue in range(309, 320):
         if policy is not None and not isinstance(policy, dict):
             raise ValueError("Candidate policy must be a local object")
         config = deepcopy(policy or {})
+        issue_id = issue
     else:
         raise ValueError("Unsupported candidate issue")
 
@@ -165,7 +217,7 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
         311: {"allow_roles", "confidential_roles"},
         312: {"variant"},
         313: set(),
-        314: set(),
+        314: {"variant", "cutoff", "cutoff_en", "cutoff_ko"},
         315: {"variant"},
         316: {"trusted_project", "workspace", "language", "policyrecords"},
         317: {"variant", "field_policy"},
@@ -190,6 +242,11 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
     class CandidateEngine(gateway.SharedEngine):
         owner: Any = None
         _candidate_depth = 0
+        _profile_issue: int | None = issue_id
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._profile_issue = issue_id
 
         def _chunks(self, text, terms, language="en", literal_aliases=None):
             if self._candidate_depth:
@@ -247,10 +304,13 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
             return super().mask_text(*args, private_context=private_context, **kwargs)
 
     class CandidateSession(gateway.GatewaySession):
+        _profile_issue: int | None = issue_id
+
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             setattr(self.engine, "owner", self)
-            self._profile_issue = issue
+            setattr(self.engine, "_profile_issue", issue_id)
+            self._profile_issue = issue_id
             self._numeric_types: dict[str, NumericLiteralMetadata] = {}
             if issue == 319:
                 self.tool_dispatcher = LocalArithmeticDispatcher(
@@ -314,9 +374,6 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
 
         def _mask_unforced(self, text, code=False, language="auto"):
             if issue == 318 and not code:
-                # Bind the local bundle to the complete original document,
-                # before baseline sentence/Markdown fragmentation. Seed only
-                # its authorized values into the private mapping inventory.
                 matches_document = sha256(text.encode()).hexdigest() == config.get("document_sha256")
                 spans = [] if getattr(self, "_candidate_request", False) and not matches_document else bundle_spans(text, config)
                 for start, end in spans:
@@ -326,35 +383,95 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
             return super()._mask_unforced(text, code, language)
 
         def _mask_prose(self, text, preserve_task_words=True, skill_verbs=frozenset(), model_context_complete=True):
-            if issue == 313 and preserve_task_words and "\n" in text and not markdown_code_spans(text):
-                # Any known/forced multi-line phrase keeps the original unit;
-                # normalization and source mapping are never split speculatively.
+            if issue == 313 and preserve_task_words:
+                # Sensitive-pattern, forced-rule and code-span detection run on WHOLE text first
                 known = self.session.forward_store.originals_in(text)
                 protected = tuple(self.forced_rules()) + tuple(known)
-                crossing = any("\n" in term and term in text for term in protected)
+                blocked: list[tuple[int, int]] = []
+                for term in protected:
+                    if not term:
+                        continue
+                    idx = text.find(term)
+                    while idx >= 0:
+                        blocked.append((idx, idx + len(term)))
+                        idx = text.find(term, idx + len(term))
                 if self.engine.domain_spans is not None:
-                    crossing |= any("\n" in text[start:end] for start, end in self.engine.domain_spans(text))
-                if not crossing:
+                    blocked.extend(self.engine.domain_spans(text))
+                try:
+                    blocked.extend(markdown_code_spans(text))
+                except ValueError:
+                    pass
+                for match in re.finditer(r"https?://[^\s\"'<>]+|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", text):
+                    blocked.append(match.span())
+
+                raw_boundaries: list[tuple[int, int]] = []
+                # Quotes
+                for q_match in re.finditer(r'("|\'|“|”|‘|’)', text):
+                    raw_boundaries.append((q_match.start(), q_match.end()))
+                # Newlines / list items
+                for nl_match in re.finditer(r'(?:\r?\n)+(?:\s*[-*•]\s+|\s*\d+[.)]\s+)?', text):
+                    raw_boundaries.append((nl_match.start(), nl_match.end()))
+                # Sentence boundary: [.!?。！？]\s+
+                for s_match in re.finditer(r'(?<=[.!?。！？])\s+', text):
+                    raw_boundaries.append((s_match.start(), s_match.end()))
+
+                raw_boundaries.sort()
+                valid_boundaries: list[tuple[int, int]] = []
+                for b_start, b_end in raw_boundaries:
+                    if not any(s < b_end and e > b_start for s, e in blocked):
+                        if not valid_boundaries or b_start >= valid_boundaries[-1][1]:
+                            valid_boundaries.append((b_start, b_end))
+
+                if valid_boundaries:
                     old_language = self.natural_language
-                    output = []
+                    req_lang = (detect_natural_language(text) if old_language == "auto" else old_language)
+                    if req_lang not in {"ko", "en"}:
+                        req_lang = "en"
+                    pieces: list[str] = []
+                    cursor = 0
                     try:
-                        for line in text.splitlines(keepends=True):
-                            body = line.rstrip("\r\n")
-                            ending = line[len(body):]
-                            if body and not looks_like_source(body[:4096]):
-                                hangul = bool(re.search(r"[가-힣\u1100-\u11ff]", body))
-                                latin = bool(re.search(r"[A-Za-z]", body))
-                                if hangul and not latin:
+                        for b_start, b_end in valid_boundaries:
+                            if b_start > cursor:
+                                seg = text[cursor:b_start]
+                                body = seg.strip()
+                                if body and len(body) >= 8 and not looks_like_source(body[:4096]):
+                                    hangul = len(re.findall(r"[가-힣\u1100-\u11ff]", body))
+                                    latin = len(re.findall(r"[A-Za-z]", body))
+                                    if hangul > 0 and latin == 0:
+                                        self.natural_language = "ko"
+                                    elif latin > 0 and hangul == 0:
+                                        self.natural_language = "en"
+                                    elif hangul >= 2 * latin:
+                                        self.natural_language = "ko"
+                                    elif latin >= 2 * hangul:
+                                        self.natural_language = "en"
+                                    else:
+                                        self.natural_language = req_lang
+                                else:
+                                    self.natural_language = req_lang
+                                pieces.append(super()._mask_prose(seg, preserve_task_words, skill_verbs, model_context_complete))
+                            pieces.append(text[b_start:b_end])
+                            cursor = b_end
+                        if cursor < len(text):
+                            seg = text[cursor:]
+                            body = seg.strip()
+                            if body and len(body) >= 8 and not looks_like_source(body[:4096]):
+                                hangul = len(re.findall(r"[가-힣\u1100-\u11ff]", body))
+                                latin = len(re.findall(r"[A-Za-z]", body))
+                                if hangul > 0 and latin == 0:
                                     self.natural_language = "ko"
-                                elif latin and not hangul and all(ord(c) < 128 for c in body):
+                                elif latin > 0 and hangul == 0:
+                                    self.natural_language = "en"
+                                elif hangul >= 2 * latin:
+                                    self.natural_language = "ko"
+                                elif latin >= 2 * hangul:
                                     self.natural_language = "en"
                                 else:
-                                    self.natural_language = old_language
-                                output.append(super()._mask_prose(body, preserve_task_words, skill_verbs, model_context_complete))
+                                    self.natural_language = req_lang
                             else:
-                                output.append(super()._mask_prose(body, preserve_task_words, skill_verbs, model_context_complete))
-                            output.append(ending)
-                        return "".join(output)
+                                self.natural_language = req_lang
+                            pieces.append(super()._mask_prose(seg, preserve_task_words, skill_verbs, model_context_complete))
+                        return "".join(pieces)
                     finally:
                         self.natural_language = old_language
             return super()._mask_prose(text, preserve_task_words, skill_verbs, model_context_complete)
@@ -412,12 +529,22 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
         reviewed |= set(gateway.DISCOURSE_WORDS.get(language, ())) | set(gateway.operator_words(language))
         return frozenset(word for word in existing if word in reviewed)
 
+    def calibrated_words(language):
+        cutoff_en = config.get("cutoff_en", config.get("cutoff", 450))
+        cutoff_ko = config.get("cutoff_ko", config.get("cutoff", 400))
+        cutoff = cutoff_en if language == "en" else cutoff_ko if language == "ko" else None
+        return vocab_calibrated(language, cutoff)
+
     _ACTIVE = True
     try:
         setattr(gateway, "SharedEngine", CandidateEngine)
         setattr(gateway, "GatewaySession", CandidateSession)
         if issue == 314:
-            setattr(gateway, "ordinary_words", conservative_words)
+            variant = config.get("variant", "calibrated")
+            if variant == "conservative":
+                setattr(gateway, "ordinary_words", conservative_words)
+            else:
+                setattr(gateway, "ordinary_words", calibrated_words)
         yield
     finally:
         setattr(gateway, "GatewaySession", original_session)

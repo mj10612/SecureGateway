@@ -73,6 +73,45 @@ sensitive spans, URLs, email addresses and code blocks retain their protected
 precedence. Korean tokens retain the existing Korean grammar path even in mixed
 text. This is not per-sentence language detection or automatic code switching.
 
+### Auto-detection limits and segment boundaries
+
+Auto-detection operates on script cues and has known boundaries:
+- **Short fragments:** Fragments below 8 characters or lacking script features inherit the request language or default to English. They do not trigger cross-language union lookups.
+- **Ambiguous scripts:** Devanagari (Hindi vs. Marathi), Arabic script (Arabic vs. Urdu), and Han characters (Chinese vs. Japanese without Kana) cannot be disambiguated by character ranges alone; explicit `natural_language` parameters must be provided.
+- **Latin-script text:** Spanish, French, Portuguese, German, Indonesian, and Turkish text written in Latin script requires explicit selection (`language="es"`, etc.) to activate their specific closed-class vocabularies.
+- **Segment boundaries (issue #313 candidate):** When per-segment language detection is evaluated, boundaries are split on sentence ends, quotes, and list markers. Segment boundaries never bisect protected spans (forced rules, domain entries, URLs, email addresses, or markdown code spans).
+
+### Homonyms and ambiguous names
+
+Common words that coincide with proper names or project titles pose classification challenges:
+- **English homonyms:** Words like `still`, `current`, `margin`, `fold`, `drift`, `velvet`, `march`, `may`, `will`, `rose`, `grace`, `amber`, `dawn`, `summer`, `autumn`, `winter`, `spring`, `page`, `check`, `point`, `bear`, `bill`, `bob`, `mark`, `jack`, `grant`, `chase`, `lane`, `reed`, `dean`, `dale`, `cliff`, `glen`, `wade` are statistical vocabulary words but frequently serve as proper names in screening and workflow tasks.
+- **Korean homonyms:** Pure Korean nouns such as `바다`, `구름`, `하늘`, `초록`, `물결`, `고요`, `바람`, `여울`, `다온`, `누리`, `새솔`, `별무리`, `마루`, `달빛`, `햇살`, `보람`, `나란히`, `흐름` appear both as ordinary vocabulary and as given names.
+- **Policy handling:** Under the default engine, public frequency data takes precedence over unforced name heuristics. Under calibrated candidate profiles (issue #314 Candidate C), these ambiguous lists are excluded from the public ordinary vocabulary so that context-sensitive protection can mask them safely without whole-prose over-masking.
+
+### Multilingual evaluation and verification commands
+
+Run the following commands to verify multilingual behavior and accuracy metrics:
+
+```sh
+# Run full multilingual test suite across all 17 natural languages
+uv run --locked --all-extras pytest tests/test_issue291_multilingual.py
+
+# Verify Korean conjugation and inflected stem handling (#309)
+uv run --locked --all-extras pytest tests/test_korean_conjugation_split.py
+
+# Verify per-segment mixed-language boundary handling (#313)
+uv run --locked --all-extras pytest tests/test_segment_language.py
+
+# Verify vocabulary calibration and ambiguous name exclusion (#314)
+uv run --locked --all-extras pytest tests/test_vocab_calibration.py
+
+# Verify umbrella issue #306 regression and gold-span integrity checks
+uv run --locked --all-extras pytest tests/test_issue306_regression.py
+
+# Execute privacy evaluation suite via CLI
+uv run secure-gateway evaluate --suite privacy --profile release
+```
+
 ## Code languages
 
 Use the canonical name or an alias in `mask_code(language=...)`, CLI
