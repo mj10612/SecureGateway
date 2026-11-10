@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import textwrap
 import xml.etree.ElementTree as ET
 
 
@@ -16,6 +17,8 @@ def isolated_environment(work):
            if not key.startswith(("ANTHROPIC_", "CLAUDE_", "OPENAI_", "CODEX_", "ORCA_"))
            and key not in {"PYTHONPATH", "PYTHONHOME", "SECURE_GATEWAY_CONTEXT_MODEL_DIR"}}
     home = work / "home"
+    if home.resolve() == Path.home().resolve() or not home.resolve().is_relative_to(work.resolve()):
+        raise ValueError("Lifecycle home is not isolated.")
     env.update({"HOME": str(home), "USERPROFILE": str(home),
                 "APPDATA": str(home / "AppData/Roaming"),
                 "LOCALAPPDATA": str(home / "AppData/Local"),
@@ -43,15 +46,15 @@ def verify_native(python, work, env, root, binaries):
     fixture = work / "test_native_release.py"
     fixture.write_bytes((root / "tests/test_gateway_hosts.py").read_bytes())
     subprocess.run(["uv", "pip", "install", "--python", str(python), "pytest"],
-                   cwd=work, env=env, check=True, timeout=300)
+                   cwd=work, env=env, check=True, capture_output=True, timeout=300)
     versions = {}
     for agent, binary in binaries.items():
         versions[agent] = subprocess.check_output([binary, "--version"], cwd=work,
-                                                 env=env, text=True, timeout=30).strip()
+                                                 env=env, text=True, stderr=subprocess.DEVNULL, timeout=30).strip()
     report = work / "native-release.xml"
     subprocess.run([str(python), "-I", "-m", "pytest", str(fixture), "-q",
                     "-k", "native_subscription_cli_gateway", f"--junitxml={report}"],
-                   cwd=work, env=env, check=True, timeout=300)
+                   cwd=work, env=env, check=True, capture_output=True, timeout=300)
     cases = ET.parse(report).findall(".//testcase")
     if len(cases) != 4 or any(case.find(tag) is not None
                               for case in cases for tag in ("skipped", "failure", "error")):
@@ -62,8 +65,7 @@ def verify_native(python, work, env, root, binaries):
 # Content-free failure summary for the child lifecycle proof. It is shared with
 # tests so the child and the tested helper cannot drift apart. It reports the
 # HTTP status, the gateway's fixed error string (never provider text or fixture
-# content), provider request count and the random work basename that shapes
-# masked tool paths, so an intermittent CI failure can be replayed exactly.
+# content) and provider request count, without logging filesystem paths.
 LIFECYCLE_DIAGNOSTICS = r'''
 import json
 
@@ -89,12 +91,69 @@ def lifecycle_http_diagnostic(step, status, body, provider_requests, work_name):
     elif not isinstance(error, str) or error not in LIFECYCLE_GATEWAY_ERRORS:
         error = 'unavailable'
     return {'step': step, 'status': status, 'gateway_error': error,
-            'provider_requests': provider_requests, 'work_basename': work_name}
+            'provider_requests': provider_requests}
 '''
 exec(LIFECYCLE_DIAGNOSTICS)
 
 
-LIFECYCLE_PROOF = LIFECYCLE_DIAGNOSTICS + r'''
+LIFECYCLE_PROCESSES = r'''
+import os
+import time
+
+
+def process_alive(pid):
+    """Check whether the recorded daemon process is still executing."""
+    if os.name == 'nt':
+        import ctypes
+        from ctypes import wintypes
+        kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+        kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        kernel.OpenProcess.restype = wintypes.HANDLE
+        kernel.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        kernel.WaitForSingleObject.restype = wintypes.DWORD
+        kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+        handle = kernel.OpenProcess(0x00100000, False, pid)
+        if not handle:
+            if ctypes.get_last_error() == 87:
+                return False
+            raise OSError('Cannot inspect daemon process.')
+        try:
+            status = kernel.WaitForSingleObject(handle, 0)
+            if status == 0:
+                return False
+            if status == 258:
+                return True
+            raise OSError('Cannot inspect daemon process.')
+        finally:
+            kernel.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    # A zombie is no longer executing, and cannot hold the port or files.
+    stat = '/proc/' + str(pid) + '/stat'
+    if os.path.isfile(stat):
+        try:
+            with open(stat, encoding='ascii') as stream:
+                if stream.read().rsplit(') ', 1)[1].startswith('Z '):
+                    return False
+        except (OSError, IndexError):
+            pass
+    return True
+
+
+def wait_process_exit(pid):
+    """Require the recorded daemon to exit within a bounded interval."""
+    deadline = time.monotonic() + 10
+    while process_alive(pid) and time.monotonic() < deadline:
+        time.sleep(.05)
+    assert not process_alive(pid), 'Daemon process survived shutdown.'
+'''
+
+
+LIFECYCLE_PROOF = LIFECYCLE_DIAGNOSTICS + LIFECYCLE_PROCESSES + r'''
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
@@ -102,12 +161,12 @@ from pathlib import Path
 import socket
 import subprocess
 import sys
+import sysconfig
 from threading import Thread
 import urllib.request
 
 import tomlkit
 from secure_gateway import __version__
-from secure_gateway.gateway import PrivacyGateway
 from secure_gateway.gateway_install import healthy, installation_path, load_config
 
 work = Path.cwd().resolve()
@@ -118,10 +177,10 @@ config = home / 'state/config.json'
 codex = home / '.codex/config.toml'
 claude = home / '.claude/settings.json'
 stage = sys.argv[1]
-cli_base = [sys.executable, '-I', '-m', 'secure_gateway']
+cli_base = [str(Path(sys.executable).parent / ('secure-gateway.exe' if os.name == 'nt' else 'secure-gateway'))]
 
 def cli(*args):
-    return subprocess.check_output(cli_base + list(args), cwd=work, text=True, timeout=90)
+    return subprocess.check_output(cli_base + list(args), cwd=work, text=True, timeout=90, stderr=subprocess.DEVNULL)
 
 def health_data(settings):
     request = urllib.request.Request(f"http://127.0.0.1:{settings['port']}/health",
@@ -142,6 +201,137 @@ def domain_policy(settings, enabled=None):
         if exc.code == 404:  # Older supported upgrade sources have no dictionaries.
             return None
         raise
+
+def configure_tracker(provider_origin=None):
+    """Instrument the disposable venv daemon and optionally route its upstream."""
+    sitecustomize = Path(sysconfig.get_path('purelib')) / 'sitecustomize.py'
+    assert not sitecustomize.exists()
+    pid_file = home / 'lifecycle-daemon.pid'
+    sitecustomize.write_text(
+        "import os\n"
+        "if os.environ.get('SG_LIFECYCLE_PID'):\n"
+        "    import pathlib, secure_gateway.gateway as gateway\n"
+        "    if os.environ.get('SG_LIFECYCLE_PROVIDER'):\n"
+        "        gateway.UPSTREAMS['codex'] = os.environ['SG_LIFECYCLE_PROVIDER']\n"
+        "    original = gateway.PrivacyGateway.__init__\n"
+        "    def tracked(self, *args, **kwargs):\n"
+        "        original(self, *args, **kwargs)\n"
+        "        pathlib.Path(os.environ['SG_LIFECYCLE_PID']).write_text(str(os.getpid()))\n"
+        "    gateway.PrivacyGateway.__init__ = tracked\n",
+        encoding='utf-8')
+    os.environ['SG_LIFECYCLE_PID'] = str(pid_file)
+    if provider_origin is not None:
+        os.environ['SG_LIFECYCLE_PROVIDER'] = provider_origin
+    return sitecustomize, pid_file
+
+
+def exercise_provider(settings):
+    """Round-trip tool calls through the installed daemon and fake provider."""
+    class Provider(BaseHTTPRequestHandler):
+        def log_message(self, *_):
+            pass
+
+        def do_POST(self):
+            payload = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+            self.server.payloads.append(payload)
+            assert 'ConfidentialCustomer' not in json.dumps(payload)
+            assert 'alice@example.invalid' not in json.dumps(payload)
+            item = payload['input'][-1]
+            if item.get('type') != 'function_call_output':
+                tool = payload['tools'][0]
+                properties = tool['parameters']['properties']
+                key = next(iter(properties))
+                result = {'output': [{'type': 'function_call', 'call_id': 'call_smoke',
+                          'name': tool['name'], 'arguments': json.dumps({key: properties[key]['default']})}]}
+            else:
+                assert item['type'] == 'function_call_output'
+                result = {'output': [{'type': 'message', 'role': 'assistant',
+                          'content': [{'type': 'output_text', 'text': item['output']}]}]}
+            data = json.dumps(result).encode()
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+
+    class QuietProvider(ThreadingHTTPServer):
+        """Suppress request and exception content in server diagnostics."""
+        def handle_error(self, *_):
+            """Report only a fixed failure category."""
+            print('Lifecycle provider failure.', file=sys.stderr)
+
+    provider = QuietProvider(('127.0.0.1', 0), Provider)
+    provider.payloads = []
+    # The daemon has fixed production origins. Inject the loopback origin only
+    # into this disposable venv; the public CLI still starts the real daemon.
+    home.mkdir(parents=True, exist_ok=True)
+    sitecustomize, pid_file = configure_tracker(f'http://127.0.0.1:{provider.server_port}')
+    thread = Thread(target=provider.serve_forever, daemon=True)
+    thread.start()
+    previous_directory = Path.cwd()
+    os.chdir(home)
+    try:
+        cli('gateway', 'ensure', '--config', str(config))
+        pid = int(pid_file.read_text())
+        assert process_alive(pid)
+        health = health_data(settings)
+        if stage == 'setup' and 'version' not in health:
+            print('Previous release daemon version not reported by its health endpoint.')
+        else:
+            assert health['version'] == __version__
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        def send(value, step):
+            request = urllib.request.Request(f"http://127.0.0.1:{settings['port']}/codex/responses",
+                data=json.dumps(value).encode(), headers={'Content-Type': 'application/json',
+                'Authorization': 'Bearer eyJ-offline-fixture-only',
+                'X-SecureGateway-Token': settings['token']})
+            try:
+                with opener.open(request, timeout=20) as response:
+                    return json.load(response)
+            except urllib.error.HTTPError as exc:
+                try:
+                    body = exc.read(4096)
+                finally:
+                    exc.close()
+                summary = lifecycle_http_diagnostic(step, exc.code, body, len(provider.payloads), work.name)
+                print('LIFECYCLE_DIAGNOSTIC ' + json.dumps(summary, sort_keys=True), file=sys.stderr, flush=True)
+                raise
+        cases = ['normal'] if stage == 'setup' else ['normal', '2024_report', '\uace0\uac1d \ud3f4\ub354']
+        for case in cases:
+            private_file = Path('fixture_workspace') / case / 'ConfidentialCustomer.py'
+            private_file.parent.mkdir(parents=True, exist_ok=True)
+            private_file.write_text('ConfidentialCustomer alice@example.invalid', encoding='utf-8')
+            payload = {'model': 'fixture', 'input': [
+                {'role': 'user', 'content': 'Review ConfidentialCustomer.'}],
+                'tools': [{'type': 'function', 'name': 'read_file', 'parameters': {
+                    'type': 'object', 'properties': {'file_path': {'type': 'string', 'default': str(private_file)}},
+                    'required': ['file_path']}}]}
+            restored = send(payload, 'tool_call')['output'][0]
+            assert restored['name'] == 'read_file'
+            actual_path = Path(json.loads(restored['arguments'])['file_path'])
+            assert actual_path == private_file
+            tool_output = actual_path.read_text(encoding='utf-8')
+            payload['input'].extend([restored, {'type': 'function_call_output', 'call_id': 'call_smoke',
+                                      'output': tool_output}])
+            result = send(payload, 'tool_result')
+            assert result['output'][0]['content'][0]['text'] == tool_output
+        assert len(provider.payloads) == 2 * len(cases)
+        cli('gateway', 'stop', '--config', str(config))
+        wait_process_exit(pid)
+    finally:
+        try:
+            cli('gateway', 'stop', '--config', str(config))
+        finally:
+            provider.shutdown()
+            provider.server_close()
+            thread.join(timeout=5)
+            sitecustomize.unlink(missing_ok=True)
+            del os.environ['SG_LIFECYCLE_PROVIDER']
+            del os.environ['SG_LIFECYCLE_PID']
+            pid_file.unlink(missing_ok=True)
+            os.chdir(previous_directory)
+            assert not thread.is_alive()
+
 
 if stage in ('setup', 'all'):
     codex.parent.mkdir(parents=True)
@@ -166,6 +356,7 @@ if stage in ('setup', 'all'):
             assert Path(name).resolve().is_relative_to(home.resolve()), name
         cli('gateway', 'stop', '--config', str(config))
         assert not healthy(settings)
+        exercise_provider(settings)
     finally:
         if config.exists():
             cli('gateway', 'stop', '--config', str(config))
@@ -187,97 +378,27 @@ if stage in ('finish', 'all'):
         cli('gateway', 'stop', '--config', str(config))
         assert not healthy(settings)
 
-        class Provider(BaseHTTPRequestHandler):
-            def log_message(self, *_):
-                pass
+        exercise_provider(settings)
 
-            def do_POST(self):
-                payload = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
-                self.server.payloads.append(payload)
-                assert 'ConfidentialCustomer' not in json.dumps(payload)
-                assert 'alice@example.invalid' not in json.dumps(payload)
-                item = payload['input'][-1]
-                if item.get('type') != 'function_call_output':
-                    tool = payload['tools'][0]
-                    properties = tool['parameters']['properties']
-                    key = next(iter(properties))
-                    result = {'output': [{'type': 'function_call', 'call_id': 'call_smoke',
-                              'name': tool['name'], 'arguments': json.dumps({key: properties[key]['default']})}]}
-                else:
-                    assert item['type'] == 'function_call_output'
-                    result = {'output': [{'type': 'message', 'role': 'assistant',
-                              'content': [{'type': 'output_text', 'text': item['output']}]}]}
-                data = json.dumps(result).encode()
-                self.send_response(200)
-                self.send_header('Content-Type', 'application/json')
-                self.send_header('Content-Length', str(len(data)))
-                self.end_headers()
-                self.wfile.write(data)
-
-        provider = ThreadingHTTPServer(('127.0.0.1', 0), Provider)
-        provider.payloads = []
-        gateway = PrivacyGateway(('127.0.0.1', settings['port']), settings['token'],
-                                 {'codex': f'http://127.0.0.1:{provider.server_port}'},
-                                 state_dir=config.parent / 'sessions')
-        threads = [Thread(target=server.serve_forever, daemon=True)
-                   for server in (provider, gateway)]
-        for thread in threads:
-            thread.start()
+        # Track the actual restarted daemon through uninstall, not just health.
+        sitecustomize, pid_file = configure_tracker()
         try:
-            private_file = work / 'private/ConfidentialCustomer.py'
-            private_file.parent.mkdir()
-            private_file.write_text('ConfidentialCustomer alice@example.invalid', encoding='utf-8')
-            payload = {'model': 'fixture', 'input': [
-                {'role': 'user', 'content': 'Review ConfidentialCustomer.'}],
-                'tools': [{'type': 'function', 'name': 'read_file', 'parameters': {
-                    'type': 'object', 'properties': {'file_path': {'type': 'string', 'default': str(private_file)}},
-                    'required': ['file_path']}}]}
-            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-            def send(value, step):
-                request = urllib.request.Request(f"http://127.0.0.1:{settings['port']}/codex/responses",
-                    data=json.dumps(value).encode(), headers={'Content-Type': 'application/json',
-                    'Authorization': 'Bearer eyJ-offline-fixture-only',
-                    'X-SecureGateway-Token': settings['token']})
-                try:
-                    with opener.open(request, timeout=20) as response:
-                        return json.load(response)
-                except urllib.error.HTTPError as exc:
-                    try:
-                        body = exc.read(4096)
-                    finally:
-                        exc.close()
-                    summary = lifecycle_http_diagnostic(step, exc.code, body, len(provider.payloads), work.name)
-                    print('LIFECYCLE_DIAGNOSTIC ' + json.dumps(summary, sort_keys=True), file=sys.stderr, flush=True)
-                    raise
-            restored = send(payload, 'tool_call')['output'][0]
-            assert restored['name'] == 'read_file'
-            actual_path = Path(json.loads(restored['arguments'])['file_path'])
-            assert actual_path == private_file
-            tool_output = actual_path.read_text(encoding='utf-8')
-            payload['input'].extend([restored, {'type': 'function_call_output', 'call_id': 'call_smoke',
-                                      'output': tool_output}])
-            result = send(payload, 'tool_result')
-            assert result['output'][0]['content'][0]['text'] == tool_output
-            assert len(provider.payloads) == 2
-            cli('gateway', 'stop', '--config', str(config))
+            cli('gateway', 'ensure', '--config', str(config))
+            pid = int(pid_file.read_text())
+            assert process_alive(pid)
+            assert health_data(settings)['version'] == __version__
+            manifest = json.loads(installation_path(config).read_text(encoding='utf-8'))
+            hosts = {codex.resolve(), claude.resolve()}
+            startup = [Path(name) for name in manifest['files'] if Path(name).resolve() not in hosts]
+            cli('gateway', 'uninstall', '--config', str(config))
+            assert not healthy(settings)
+            wait_process_exit(pid)
+            assert not installation_path(config).exists()
+            assert all(not path.exists() for path in startup)
         finally:
-            gateway.shutdown()
-            gateway.server_close()
-            provider.shutdown()
-            provider.server_close()
-            for thread in threads:
-                thread.join(timeout=5)
-
-        # Restart the real installed CLI daemon after the local provider proof.
-        cli('gateway', 'ensure', '--config', str(config))
-        assert health_data(settings)['version'] == __version__
-        manifest = json.loads(installation_path(config).read_text(encoding='utf-8'))
-        hosts = {codex.resolve(), claude.resolve()}
-        startup = [Path(name) for name in manifest['files'] if Path(name).resolve() not in hosts]
-        cli('gateway', 'uninstall', '--config', str(config))
-        assert not healthy(settings)
-        assert not installation_path(config).exists()
-        assert all(not path.exists() for path in startup)
+            sitecustomize.unlink(missing_ok=True)
+            os.environ.pop('SG_LIFECYCLE_PID', None)
+            pid_file.unlink(missing_ok=True)
         value = tomlkit.parse(codex.read_text(encoding='utf-8'))
         assert 'model_provider' not in value
         assert 'secure_gateway_subscription' not in value.get('model_providers', {})
@@ -286,7 +407,7 @@ if stage in ('finish', 'all'):
         assert value == {'theme': 'later-user-edit', 'env': {'OTHER': 'keep'}}
         for path in (codex.parent / 'auth.json', claude.parent / '.credentials.json'):
             assert path.read_bytes() == b'synthetic-login-cache-do-not-change'
-        print(json.dumps({'stage': stage, 'version': __version__, 'provider_requests': 2,
+        print(json.dumps({'stage': stage, 'version': __version__, 'provider_requests': 6,
                           'tool_roundtrip': True, 'user_edits_preserved': True}))
     finally:
         if config.exists():
@@ -294,9 +415,23 @@ if stage in ('finish', 'all'):
 '''
 
 
+def sanitized_child_source(source):
+    """Wrap child source so failures disclose only type and line number."""
+    return ("import sys\ntry:\n" + textwrap.indent(source, "    ")
+            + "\nexcept Exception as exc:\n"
+              "    trace = exc.__traceback__\n"
+              "    while trace.tb_next is not None:\n"
+              "        trace = trace.tb_next\n"
+              "    print('Lifecycle failure: ' + type(exc).__name__ + ' line=' + str(trace.tb_lineno), file=sys.stderr)\n"
+              "    sys.exit(1)\n")
+
+
 def verify_lifecycle(python, work, env, stage="all"):
-    subprocess.run([str(python), "-I", "-c", LIFECYCLE_PROOF, stage], cwd=work,
-                   env=env, check=True, timeout=360)
+    """Run the isolated installed-artifact lifecycle stage."""
+    result = subprocess.run([str(python), "-I", "-c", sanitized_child_source(LIFECYCLE_PROOF), stage],
+                            cwd=work, env=env, timeout=360)
+    if result.returncode:
+        raise SystemExit("Installed lifecycle proof failed.")
 
 
 def main():
@@ -387,26 +522,27 @@ print(__version__)
             env = isolated_environment(work)
             venv = work / "environment"
             subprocess.run(["uv", "venv", str(venv), "--python", sys.executable],
-                           cwd=work, env=env, check=True)
+                           cwd=work, env=env, check=True, capture_output=True)
             python = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
             if previous is not None:
                 subprocess.run(["uv", "pip", "install", "--python", str(python), str(previous)],
-                               cwd=work, env=env, check=True, timeout=600)
+                               cwd=work, env=env, check=True, capture_output=True, timeout=600)
                 previous_version = subprocess.check_output(
                     [str(python), "-I", "-c", "from importlib.metadata import version; print(version('secure-gateway'))"],
-                    cwd=work, env=env, text=True, timeout=30).strip()
+                    cwd=work, env=env, text=True, stderr=subprocess.DEVNULL, timeout=30).strip()
                 verify_lifecycle(python, work, env, "setup")
             subprocess.run(["uv", "pip", "install", "--python", str(python), str(distribution)],
-                           cwd=work, env=env, check=True, timeout=600)
+                           cwd=work, env=env, check=True, capture_output=True, timeout=600)
             expected = subprocess.check_output([str(python), "-I", "-c", proof],
-                                               cwd=work, env=env, text=True).strip()
-            reported = subprocess.check_output([str(python), "-I", "-m", "secure_gateway", "--version"],
-                                               cwd=work, env=env, text=True)
+                                               cwd=work, env=env, text=True, stderr=subprocess.DEVNULL).strip()
+            executable = venv / ("Scripts/secure-gateway.exe" if os.name == "nt" else "bin/secure-gateway")
+            reported = subprocess.check_output([str(executable), "--version"],
+                                               cwd=work, env=env, text=True, stderr=subprocess.DEVNULL)
             if not reported.strip().endswith(expected):
                 raise SystemExit("CLI version disagrees with installed package.")
             masked = subprocess.check_output(
-                [str(python), "-I", "-m", "secure_gateway", "mask", "--json-output"],
-                input=b"ConfidentialCustomer", cwd=work, env=env,
+                [str(executable), "mask", "--json-output"],
+                input=b"ConfidentialCustomer", cwd=work, env=env, stderr=subprocess.DEVNULL,
             )
             if b"ConfidentialCustomer" in masked:
                 raise SystemExit("Installed CLI did not mask stdin.")
@@ -426,4 +562,8 @@ print(__version__)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as exc:
+        print("Package lifecycle failure: " + type(exc).__name__, file=sys.stderr)
+        sys.exit(1)

@@ -117,3 +117,22 @@ Character literals (#130) use opaque identifier expressions rather than invalid 
 quoted placeholders. Masked code remains a review representation, not executable anonymization.
 Unsupported string schema constraints fail before forwarding. Hook GC retires old host IDs rather
 than reallocating their aliases, and persistent OS lock files are preserved.
+
+## Issue #302 coverage inventory
+
+The following describes existing repository evidence, not a claim that the
+release gate is complete. Entries marked partial retain the named gaps.
+
+| Required automated test | Status | Existing evidence | Unmeasured / gap |
+| --- | --- | --- | --- |
+| Distribution lifecycle | Partial | `scripts/package_smoke.py`, `.github/workflows/ci.yml` `package`, `native-release` | Windows / Python 3.14.3: wheel and sdist pass installed-daemon tool roundtrips and upgrade from v2.4.0 source; the tracked daemon PID exits after stop and uninstall. Descendant-process termination, real-home invariance and other OSes remain 미측정. |
+| Install failure atomicity | Partial | `tests/test_install_startup_transaction.py`, `tests/test_install_validation.py` | Invalid config and each failure need the full unchanged-state, no-child and retry proof. |
+| Uninstall/recovery | Partial | `tests/test_gateway_selective_uninstall.py`, `tests/test_install_recovery.py` | Actual forced termination, corrupt/missing JSON and symlink preservation require full matrix proof. |
+| Native offline compatibility | Partial | `tests/test_gateway_hosts.py`, `scripts/package_smoke.py`, `native-release` | Four native cases are required with no skips, but release-commit cross-platform results remain 미측정 until CI runs. |
+| Long inference/concurrency | Partial | `tests/test_gateway_connection_close.py`, `tests/test_gateway_admin.py` | Silent slow SSE, concurrent conversation tool calls, retry and at least five-second active shutdown timing remain 미측정. |
+| Conversation compatibility | Partial | `tests/test_gateway.py`, `tests/test_gateway_validation.py`, `tests/test_gateway_error_codes.py` | Existing conversation migration and full attachment/header compatibility remain 미측정. |
+| Tool integrity | Partial | `tests/test_gateway_json_numbers.py`, `tests/test_host_contract.py`, `tests/test_gateway_lifecycle_12.py` | Full private-symbol prefix/suffix mutation and cross-platform path matrix remain 미측정. |
+| Optional model | Partial | `tests/test_model_download_recovery.py`, `tests/test_context_model.py` | Separate CI job and real pinned model independent corpus remain 미측정. |
+
+Manual subscription runs: **수동 확인 필요 — 미실행**; see
+[release checklist](RELEASE_CHECKLIST.md).

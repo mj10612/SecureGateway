@@ -746,6 +746,13 @@ def gateway_run(config, mapping_limit, mask_numbers):
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
         ) as server:
+            # Only this dedicated CLI process can safely self-terminate.
+            main_spec = getattr(sys.modules.get("__main__"), "__spec__", None)
+            command_name = Path(sys.argv[0]).name.casefold()
+            server._allow_forced_exit = sys.argv[1:3] == ["gateway", "run"] and (
+                getattr(main_spec, "name", None) == "secure_gateway.__main__"
+                or command_name in {"secure-gateway", "secure-gateway.exe", "secure-gateway-script.py"}
+            )
             configure_logging()
             with diagnostic_logging():
                 server.serve_forever()

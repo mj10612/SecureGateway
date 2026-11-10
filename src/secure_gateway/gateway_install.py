@@ -313,6 +313,10 @@ def _start_gateway(path, config):
             raise
 
 
+_SHUTDOWN_GRACE_SECONDS = 30
+_SHUTDOWN_EXIT_TIMEOUT_SECONDS = 5
+
+
 def stop_gateway(path: Path):
     """Handle stop gateway."""
     if not path.exists():
@@ -323,8 +327,10 @@ def stop_gateway(path: Path):
     request = urllib.request.Request(
         f"http://127.0.0.1:{config['port']}/shutdown",
         data=b"",
-        headers={"X-SecureGateway-Token": config["token"]},
+        headers={"X-SecureGateway-Token": config["token"],
+                 "X-SecureGateway-Shutdown-Grace-Ms": str(int(_SHUTDOWN_GRACE_SECONDS * 1000))},
     )
+    started = time.monotonic()
     try:
         with urllib.request.build_opener(
             urllib.request.ProxyHandler({}), _NoRedirect()
@@ -337,11 +343,18 @@ def stop_gateway(path: Path):
     except (HTTPException, OSError) as exc:
         # Confirm the daemon disappeared after a broken shutdown connection.
         log_failure(_LOGGER, "shutdown_response_failed", exc)
-    deadline = time.monotonic() + 5
+    deadline = started + _SHUTDOWN_GRACE_SECONDS + _SHUTDOWN_EXIT_TIMEOUT_SECONDS
     while healthy(config):
         if time.monotonic() >= deadline:
-            raise OSError("Gateway remained active after the shutdown request.")
+            error = OSError("Gateway remained active after the shutdown request.")
+            log_failure(_LOGGER, "shutdown_timeout", error)
+            raise error
         time.sleep(0.05)
+    if time.monotonic() - started >= _SHUTDOWN_GRACE_SECONDS:
+        try:
+            _LOGGER.warning("gateway_shutdown forced=true")
+        except Exception:
+            pass  # Optional diagnostics must not reverse a successful stop.
     return True
 
 

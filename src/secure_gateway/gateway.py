@@ -15,6 +15,7 @@ from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import logging
+import os
 import math
 import http.client
 from pathlib import Path
@@ -2307,6 +2308,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         self.active_audit_handlers = 0
         self.provider_admitted: dict[str, int] = {}
         self.closing = False
+        self._allow_forced_exit = False
         self.recent_timings: deque = deque(maxlen=32)
         self.token = token
         self.upstreams = dict(UPSTREAMS if upstreams is None else upstreams)
@@ -2539,11 +2541,24 @@ class PrivacyGateway(ThreadingHTTPServer):
             self.provider_admitted[agent] -= 1
             self.admission.notify_all()
 
-    def drain_and_shutdown(self):
-        """Keep health available until all admitted inference has finished."""
+    def drain_and_shutdown(self, grace=30):
+        """Drain requests; only a dedicated CLI daemon may exit on timeout."""
         with self.admission:
             self.closing = True
-            self.admission.wait_for(lambda: self.admitted_requests == 0 and self.active_audit_handlers == 0)
+            drained = self.admission.wait_for(
+                lambda: self.admitted_requests == 0 and self.active_audit_handlers == 0,
+                timeout=grace if self._allow_forced_exit else None,
+            )
+        if not drained:
+            # Never close SQLite or encrypted sessions concurrently with active
+            # handlers. Atomic snapshots and SQLite recovery own crash cleanup.
+            try:
+                self.socket.close()
+            finally:
+                try:
+                    os.write(2, b"gateway_shutdown forced=true\n")
+                finally:
+                    os._exit(75)
         self.shutdown()
 
     def session_diagnostics(self):
@@ -3109,10 +3124,13 @@ class GatewayHandler(BaseHTTPRequestHandler):
 
             with self.server.admission:
                 self.server.closing = True
+            raw_grace = self.headers.get("X-SecureGateway-Shutdown-Grace-Ms", "30000")
+            grace_ms = int(raw_grace) if len(raw_grace) <= 5 and raw_grace.isascii() and raw_grace.isdigit() else 30000
+            grace = grace_ms / 1000 if 100 <= grace_ms <= 30000 else 30
             try:
                 self.send_body(200, b'{"stopping":true}')
             finally:
-                Thread(target=self.server.drain_and_shutdown, daemon=True).start()
+                Thread(target=self.server.drain_and_shutdown, args=(grace,), daemon=True).start()
             return
         if self.path == "/reset":
             try:

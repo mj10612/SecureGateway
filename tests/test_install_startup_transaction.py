@@ -10,6 +10,7 @@ import pytest
 
 from secure_gateway.cli import main
 from secure_gateway import gateway_install as g
+from release_test_support import startup_failure_category, wait_for_bindable_port
 
 
 @contextmanager
@@ -110,6 +111,7 @@ def test_cli_port_conflict_restores_original_and_allows_retry_and_uninstall(setu
 @pytest.mark.parametrize('failure', ['runtime', 'timeout'])
 def test_cli_early_exit_and_timeout_restore_existing_config(setup, monkeypatch, failure):
     port = free_port()
+    startup_timeout = g._STARTUP_TIMEOUT
     setup['config'].parent.mkdir()
     config = {'port': port, 'token': 'synthetic-token-must-never-be-printed'}
     if failure == 'runtime':
@@ -128,6 +130,20 @@ def test_cli_early_exit_and_timeout_restore_existing_config(setup, monkeypatch, 
     assert not setup['startup'].exists() and not setup['manifest'].exists()
     assert not setup['pending'].exists()
     assert setup['children'] and all(c.poll() is not None for c in setup['children'])
+    # After correcting the fault, the same installation can be retried.
+    if failure == 'runtime':
+        del config['mapping_limit']
+        setup['config'].write_text(json.dumps(config), encoding='utf-8')
+    else:
+        monkeypatch.setattr(g, '_STARTUP_TIMEOUT', startup_timeout)
+    wait_for_bindable_port(port)
+    retry = install_cli(setup, port)
+    if retry.exit_code:
+        category = startup_failure_category(retry.output.encode('utf-8', 'replace'))
+        pytest.fail(f'install_retry_failed category={category}', pytrace=False)
+    assert g.healthy(g.load_config(setup['config']))
+    assert CliRunner().invoke(main, ['gateway', 'uninstall', '--config', str(setup['config'])]).exit_code == 0
+    assert setup['settings'].read_bytes() == host
 
 
 def test_cli_failed_reinstall_preserves_previous_files(setup):

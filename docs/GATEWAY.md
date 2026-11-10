@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.8.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.8.1 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -1074,3 +1074,13 @@ were restored without confirming daemon shutdown. Stop only the known gateway
 foreground terminal, or restore a verified configuration backup and use the
 normal `gateway stop --config` command. Do not terminate an unrelated listener;
 retain encrypted state until recovery is complete.
+
+### Stopping during an active request
+
+The subscription CLI daemon stops admitting new requests when shutdown starts.
+Already-admitted inference may finish during a 30-second grace period. If it has
+not drained by then, the dedicated daemon exits forcibly; affected clients see
+a connection error and must retry. The stop command reports a content-free
+`gateway_shutdown forced=true` diagnostic when it observes a forced timeout.
+The next start uses the normal encrypted snapshot and audit recovery paths.
+A gateway embedded in another process never terminates its host through this watchdog.

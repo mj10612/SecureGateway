@@ -93,3 +93,13 @@ and bounds JSON size. It returns public model IDs and bounded public metadata; a
 provider descriptions are omitted. This enables catalog discovery for compatibility probes;
 it does not certify Cursor/Cline or other untested hosts, and no generic `/v1/models`
 subscription route or credential fallback is enabled.
+
+## Native release pins
+
+The `native-release` job in `.github/workflows/ci.yml` pins Claude Code and Codex
+in its `Install pinned offline host clients` step. To bump either pin, update
+that step, run the required four native offline host/tool cases on all three
+platforms, and record the resulting CLI versions and workflow run in the release
+checklist. A missing executable or any skipped case fails the native gate.
+These offline fixtures use synthetic credentials and a local provider; they do
+not establish real-account compatibility.
