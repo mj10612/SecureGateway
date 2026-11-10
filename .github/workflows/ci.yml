@@ -142,3 +142,39 @@ jobs:
             export SECURE_GATEWAY_CODEX_BINARY="$(python -c "import os,pathlib; print(next(pathlib.Path(os.environ['SG_NPM_ROOT']).rglob('codex.exe')))")"
           fi
           python scripts/package_smoke.py --require-native --upgrade-from "${RUNNER_TEMP}/sg-previous-dist/secure_gateway-2.6.0-py3-none-any.whl"
+
+  optional-model-release:
+    name: Optional model recovery (offline)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v2
+      - name: Exercise isolated model installation and recovery
+        run: uv run --locked --all-extras pytest -q -W error tests/test_context_model.py tests/test_model_download_recovery.py
+
+  package-lifecycle:
+    name: Installed release lifecycle (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v2
+      - name: Build current and previous release artifacts
+        shell: bash
+        run: |
+          python scripts/build_upgrade_source.py --out-dir "${RUNNER_TEMP}/sg-lifecycle-previous-dist"
+          uv build
+      - name: Test installed daemon and upgrade for both distributions
+        shell: bash
+        run: python scripts/package_smoke.py --upgrade-from "${RUNNER_TEMP}"/sg-lifecycle-previous-dist/*.whl
