@@ -187,3 +187,24 @@ Under the experimental umbrella protocol (`docs/EXPERIMENT_PROTOCOL_20261109.md`
 - **Evidence:** Stored in `docs/evaluations/issue319-2.9.0/`. Dispatcher p95 latency is 0.08 ms (well under the 10.0 ms target). Real-LLM comprehension is recorded as **"미측정"** because ordinary test runners forbid tool execution and native MCP loopback was not active.
 - **Status:** **부분 완료**.
 - **Decision:** **hold — comprehension 미측정** (toggle default OFF).
+
+## Language-side accuracy experiments (v2.10.0)
+
+Five language-side accuracy issues were evaluated under the experiment protocol (`docs/EXPERIMENT_PROTOCOL_20261109.md`):
+hypotheses #309, #313, #314, and umbrellas #306 and #291. All candidates are implemented behind isolated toggles (default OFF);
+with all toggles OFF, output is verified byte-identical to the baseline engine.
+
+| Issue | Candidate Profile | Description & Acceptance Status | Decision | Evidence Directory |
+| :--- | :--- | :--- | :---: | :--- |
+| **#309** | `ko_conjugation_split` | Rule-based Korean ending table (`-면/-으면`, `-기 전에/-ㄴ 뒤에`, `-지 말고/-지 마`, `-세요/-해줘`, `-ㄴ/-은/-된`) keeping grammatical endings public while stem is judged by policy; forced terms mask stem and keep endings; unseen holdout evaluated. | **Hold — comprehension 미측정** (default OFF) | `docs/evaluations/issue309-2.10.0/` |
+| **#313** | `segment_language` | Per-sentence/quote/list segment language choice via `detect_natural_language()` evidence; floor inheritance (<8 chars); whole-text protected spans run first so boundaries never cut sensitive/code/forced spans; ko/en only. | **Hold — comprehension 미측정** (default OFF) | `docs/evaluations/issue313-2.10.0/` |
+| **#314** | `vocab_calibrated` (C) / `vocab_conservative` (B) | Candidate C: per-language calibrated cutoff chosen on dev data (en: 450, ko: 400), ambiguous name-like words excluded. Candidate B: reviewed public vocabulary only (rejected due to excessive over-masking of unreviewed domain prose). | **Hold — comprehension 미측정** (C, default OFF), **Reject B** | `docs/evaluations/issue314-2.10.0/` |
+| **#306** | Umbrella | Delivered sections 3 & 5: character-offset gold spans with separate FN/FP/partial/leak counts; separate denominators per language/domain/target; separate restore/protocol integrity (100%); 4 issue reproductions passing as regression cases. Real-LLM comparison reported as 미측정. Name-context referenced to `exp/310-311-316-318-names-policy`. | **Delivered (Sec 3 & 5)**; comprehension 미측정 | `docs/evaluations/issue306-2.10.0/` |
+| **#291** | Multilingual Umbrella | Evaluated 17 natural languages on default engine; meaning preservation and sensitive protection reported separately; regression tests for `SecureMCP 삭제해줘` and `Read SKILL.md before using this skill. Follow its instructions.` passing; offline fake provider tool-call roundtrip/MCP/skill verification passing; real provider stated as 미측정. Updated `docs/LANGUAGES.md`. | **Verified (offline)**; live provider 미측정 | `docs/evaluations/issue291-2.10.0/` |
+
+### Remaining limits
+
+- Real-LLM comprehension for candidate profiles is honestly reported as `미측정` (Not Measured) because live model subscription (`SECURE_GATEWAY_LIVE_SUBSCRIPTION`) was not active in this test environment. Mocks or synthetic similarity scores are deliberately not reported as comprehension.
+- Korean conjugation splitting is bounded to the specified rule table without statistical morphological analysis dependencies; irregular stems with unpredictable sound changes fall back safely to legacy token masking.
+- Segment language selection is restricted to Korean and English; other languages inherit request language directly.
+- All candidate toggles remain default `OFF` on this branch. Switching default activation is reserved for repository owners after reviewing holdout evidence.

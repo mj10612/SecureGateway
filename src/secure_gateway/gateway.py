@@ -885,6 +885,7 @@ class GatewaySession:
         self.storage_key: str | None = None
         self.domain_policy_version = ""
         self.tool_dispatcher: Any = None
+        self._profile_issue: int | None = None
 
     def _opaque_key(self, block):
         stable = {
@@ -1018,6 +1019,8 @@ class GatewaySession:
             task_words = task_words | DISCOURSE_WORDS.get(selected, frozenset()) | operator_words(selected)
         if selected in {"en", "ko"} and self.prose_mode != MaskMode.AGGRESSIVE:
             task_words = task_words | SKILL_TASK_WORDS
+        if self._profile_issue == 309 and selected == "ko":
+            self._apply_ko_conjugation_split(terms, relevant, general)
         # Single-word generic domain spans that are ordinary public words stay
         # public; any actual private registration or mapping still wins.
         span_token = _public_domain_span.set(
@@ -1076,6 +1079,17 @@ class GatewaySession:
         finally:
             _public_domain_span.reset(span_token)
         return masked
+
+    def _apply_ko_conjugation_split(self, terms: set[str], relevant: set[str], general: frozenset[str]) -> None:
+        """Decompose Korean terms into stems and grammatical endings for candidate profile #309."""
+        terms.update(self.forced_rules())
+        for term in list(terms):
+            stem, ending, _ = self.engine.ko_grammar.decompose_token(term, general, allow_conjugation=True)
+            if ending and stem:
+                terms.discard(term)
+                terms.add(stem)
+                if stem in general:
+                    relevant.add(stem)
 
     def _mask_source(self, text: str, language: str = "auto") -> str:
         """Lex a source fragment, falling back to text masking for prose.

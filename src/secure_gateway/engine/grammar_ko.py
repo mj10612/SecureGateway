@@ -252,6 +252,33 @@ KNOWN_STEMS = set(
 # Plural suffixes
 KOREAN_PLURAL = "들"
 
+# Bounded conjugation/condition/negation/request/sequence/adnominal endings (candidate ko_conjugation_split)
+KOREAN_CONJUGATION_ENDINGS: list[str] = sorted(
+    {
+        # Conditional
+        "면", "으면",
+        # Sequence (with and without internal space)
+        "기 전에", "기전에", "기 전", "기전", "기",
+        "ㄴ 뒤에", "ㄴ뒤에", "ㄴ 뒤", "ㄴ뒤",
+        "은 뒤에", "은뒤에", "은 뒤", "은뒤",
+        "ㄴ 후에", "ㄴ후에", "은 후에", "은후에",
+        # Negation / Prohibition (with and without internal space)
+        "지 말고", "지말고", "지 마", "지마", "지 마세요", "지마세요",
+        "지 마십시오", "지마십시오", "지 않고", "지않고", "지 않으면", "지않으면", "지 않다", "지않다", "지",
+        # Request (with and without internal space)
+        "세요", "으세요", "해줘", "해 줘", "해줘요", "해 줘요", "해주세요", "해 주세요", "해주십시오", "해 주십시오",
+        "어줘", "어 줘", "아줘", "아 줘", "어주세요", "어 주세요", "아주세요", "아 주세요",
+        "어주십시오", "어 주십시오", "아주십시오", "아 주십시오",
+        # Adnominal
+        "된", "한", "는", "은", "ㄴ",
+        # Compound verb endings
+        "하기 전에", "하기전에", "하지 말고", "하지말고", "하지 마", "하지마", "하지 마세요", "하지마세요",
+        "하지 마십시오", "하지마십시오", "하지 않고", "하지않고", "하지 않으면", "하지않으면",
+        "하기", "하지", "하고", "하면", "해도", "해서", "해야", "하며",
+    },
+    key=lambda s: (-len(s), s),
+)
+
 
 def is_hangul_char(ch: str) -> bool:
     """Return True if character is a Korean Hangul syllable."""
@@ -281,7 +308,8 @@ class KoreanGrammarEngine:
 
     @classmethod
     def decompose_token(
-        cls, token: str, known_stems: AbstractSet[str] | None = None
+        cls, token: str, known_stems: AbstractSet[str] | None = None,
+        allow_conjugation: bool = False,
     ) -> Tuple[str, str, TokenType]:
         """Decompose an agglutinative Korean token into (stem, grammatical_suffix, token_type).
 
@@ -362,6 +390,13 @@ class KoreanGrammarEngine:
             best_stem = clean[: -len(KOREAN_PLURAL)]
             best_suffix = KOREAN_PLURAL
 
+        # Conjugation / condition / negation / request / adnominal split (candidate ko_conjugation_split)
+        if allow_conjugation and not best_suffix and not known_word:
+            decomp = cls.decompose_conjugation(clean, known_stems)
+            if decomp is not None:
+                best_stem, best_suffix, token_type = decomp
+                return best_stem, best_suffix, token_type
+
         # Determine token type
         # Check if stem looks like entity (company/org/person/capitalized)
         if re.search(
@@ -376,6 +411,58 @@ class KoreanGrammarEngine:
             token_type = TokenType.NOUN
 
         return best_stem, best_suffix, token_type
+
+    @classmethod
+    def decompose_conjugation(
+        cls, clean: str, known_stems: AbstractSet[str] | None = None
+    ) -> Tuple[str, str, TokenType] | None:
+        """Decompose a Korean token by bounded rule-based verbal/conjugational ending."""
+        if len(clean) < 2:
+            return None
+        for ending in KOREAN_CONJUGATION_ENDINGS:
+            if ending == "ㄴ":
+                if clean.endswith("ㄴ") and len(clean) > 1:
+                    stem = clean[:-1]
+                    if not is_hangul_char(stem[-1]) and stem[-1].isalnum():
+                        return stem, "ㄴ", TokenType.ENTITY
+                continue
+            if clean.endswith(ending) and len(clean) > len(ending):
+                stem = clean[:-len(ending)]
+                if not stem:
+                    continue
+                # Foreign/alphanumeric stem
+                if not is_hangul_char(stem[-1]):
+                    if stem[-1].isalnum():
+                        return stem, ending, TokenType.ENTITY
+                    continue
+
+                # Batchim condition validation
+                has_b = has_batchim(stem[-1])
+                coda = (ord(stem[-1]) - 0xAC00) % 28
+                # 으-alternating endings require batchim (except ㄹ)
+                if ending.startswith(("으", "은")):
+                    if not has_b or coda == 8:
+                        continue
+                # 면, 세요 require vowel or ㄹ batchim
+                elif ending in {"면", "세요"}:
+                    if has_b and coda != 8:
+                        continue
+                token_type = TokenType.ENTITY if any(c.isupper() for c in stem) else TokenType.NOUN
+                return stem, ending, token_type
+
+        # Check adnominal ㄴ coda contraction on vowel stem
+        if is_hangul_char(clean[-1]):
+            code = ord(clean[-1]) - 0xAC00
+            coda = code % 28
+            if coda == 4:  # ㄴ 받침
+                lead = code // 588
+                vowel = (code % 588) // 28
+                vowel_syllable = chr(0xAC00 + (lead * 21 + vowel) * 28)
+                stem_cand = clean[:-1] + vowel_syllable
+                if len(stem_cand) >= 1:
+                    token_type = TokenType.ENTITY if any(c.isupper() for c in stem_cand) else TokenType.NOUN
+                    return stem_cand, "ㄴ", token_type
+        return None
 
     @staticmethod
     def _supported_stem(stem: str, suffix: str, known: AbstractSet[str] | None) -> bool:
