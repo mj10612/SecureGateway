@@ -12,6 +12,41 @@ import pytest
 from secure_gateway.gateway import EXEC_GRAMMAR, GatewaySession, PrivacyGateway
 
 
+def test_forced_private_rules_protect_schema_prose_and_restore():
+    session = GatewaySession()
+    session.forced_rules = lambda: ("PrivateProject", "PrivateTitle")
+    schema = {"type": "object", "title": "PrivateTitle", "description": "Review PrivateProject."}
+    request = {"input": [], "tools": [{"type": "function", "name": "Read", "parameters": schema}]}
+    result = session.request(request)["tools"][0]["parameters"]
+    assert result["type"] == "object"
+    assert "PrivateTitle" not in result["title"]
+    assert "PrivateProject" not in result["description"]
+    assert session.walk(result, restore=True) == schema
+
+
+def test_schema_title_private_root_is_scoped_and_replays():
+    session = GatewaySession()
+    schema = {"type": "object", "title": "review zorbix", "description": "review zorbixmore apples"}
+    request = {"input": [], "tools": [{"type": "function", "name": "Read", "parameters": schema}]}
+    first = session.request(request)["tools"][0]["parameters"]
+    count = len(session.session.forward_store)
+    second = session.request(request)["tools"][0]["parameters"]
+    assert first == second and len(session.session.forward_store) == count
+    assert "review" in first["title"] and "apples" in first["description"]
+    assert "zorbix" not in first["title"] and "zorbixmore" not in first["description"]
+    assert session.walk(first, restore=True) == schema
+
+
+def test_schema_public_shared_substring_does_not_mask_unrelated_word():
+    session = GatewaySession()
+    schema = {"type": "object", "title": "xxqto", "description": "tozzzz"}
+    request = {"input": [], "tools": [{"type": "function", "name": "Read", "parameters": schema}]}
+    first = session.request(request)["tools"][0]["parameters"]
+    assert "xxqto" not in first["title"]
+    assert first["description"] == schema["description"]
+    assert session.walk(first, restore=True) == schema
+
+
 @pytest.mark.parametrize("tag", ["type", "permission_mode", "platform", "source"])
 def test_safeguards_reject_private_tags(tag):
     with pytest.raises(ValueError):

@@ -703,7 +703,7 @@ def gateway_ensure(config):
 @click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
 def gateway_run(config, mapping_limit, mask_numbers):
     """Run the subscription gateway in the foreground (normally auto-started)."""
-    from secure_gateway.gateway import PrivacyGateway
+    from secure_gateway.gateway import PrivacyGateway, diagnostic_logging
     from secure_gateway.gateway_install import default_config, load_config, runtime_directory
 
     try:
@@ -732,7 +732,8 @@ def gateway_run(config, mapping_limit, mask_numbers):
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
         ) as server:
-            server.serve_forever()
+            with diagnostic_logging():
+                server.serve_forever()
     except (ValueError, OSError, sqlite3.Error) as exc:
         raise click.ClickException(str(exc)) from None
 
@@ -1014,7 +1015,7 @@ def gateway_api_install(provider, model, config, grok_home, port):
 @click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
 def gateway_api_run(config, mask_numbers):
     """Run the isolated xAI API gateway in the foreground; Ctrl+C stops it."""
-    from secure_gateway.gateway import API_UPSTREAMS, PrivacyGateway
+    from secure_gateway.gateway import API_UPSTREAMS, PrivacyGateway, diagnostic_logging
     from secure_gateway.gateway_install import runtime_directory
     from secure_gateway.xai_install import default_api_config, load_api_config
 
@@ -1044,7 +1045,8 @@ def gateway_api_run(config, mask_numbers):
             state_dir=runtime_directory(path.resolve()) / "sessions",
             audit_path=runtime_directory(path.resolve()) / "logs.sqlite3",
         ) as server:
-            server.serve_forever()
+            with diagnostic_logging():
+                server.serve_forever()
     except (ValueError, OSError, sqlite3.Error) as exc:
         raise click.ClickException(str(exc)) from None
 
