@@ -66,10 +66,12 @@ def _write_json(path, value):
 
 
 def grading_policy_hash():
+    """Handle grading policy hash."""
     return sha256(GRADING_POLICY_V2.encode('utf8')).hexdigest()
 
 
 def adapter_hash():
+    """Handle adapter hash."""
     # Hash the adapter module itself, not whatever callable is currently bound.
     return sha256(Path(inspect.getfile(_adapter_module)).read_bytes()).hexdigest()
 
@@ -262,6 +264,10 @@ def _entry_hash(entry):
 
 
 def read_holdout_ledger(path):
+    """Return read holdout ledger.
+
+    Returns ledger entries, or an empty list when the ledger file does not exist.
+    """
     path = Path(path)
     if not path.exists():
         return []
@@ -360,6 +366,7 @@ def _verify_freeze(output, frozen, *, check_native_cli=False):
 def prepare_reliable(data_dir, output_dir, *, split='holdout', model='gpt-6.1-sol', repeats=3,
                      reasoning_effort='medium', max_output_tokens=2048, baseline_dir=None, max_seconds=1200,
                      reference_audit_dir=None, holdout_ledger=None, holdout_reuse_reason=None):
+    """Handle prepare reliable."""
     if split not in SPLITS or type(repeats) is not int or not 3 <= repeats <= 10:
         raise ValueError('Select a development/holdout split and at least three repeats.')
     bundle = load_bundle(data_dir)
@@ -494,6 +501,7 @@ def _execution_summary(output):
 
 
 def joint_report(output_dir):
+    """Handle joint report."""
     output = Path(output_dir)
     frozen = json.loads((output / 'freeze.json').read_bytes())
     freeze_problems = _verify_freeze(output, frozen)
@@ -693,6 +701,7 @@ def prepare_reference_audit(data_dir, output_dir, *, split='holdout', model='gpt
 
 def audit_references(data_dir, output_dir, *, execute=False, split='holdout', model='gpt-6.1-sol',
                      reasoning_effort='medium', max_calls=17, max_seconds=900, max_tokens=600000):
+    """Handle audit references."""
     output = Path(output_dir)
     if not output.exists():
         requests = prepare_reference_audit(data_dir, output, split=split, model=model, reasoning_effort=reasoning_effort)

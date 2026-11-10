@@ -29,16 +29,22 @@ PROFILES = ('smoke', 'standard', 'release')
 
 
 def digest(value):
+    """Handle digest."""
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
 
 
 def at(value, path):
+    """Handle at."""
     for key in path:
         value = value[key]
     return value
 
 
 def load_corpus(path=None):
+    """Return load corpus.
+
+    Returns the validated corpus dict; never returns ``None``.
+    """
     raw = Path(path).read_bytes() if path else files('secure_gateway').joinpath('evaluation_corpus.json').read_bytes()
     if len(raw) > 2 * 1024 * 1024:
         raise ValueError('Corpus exceeds 2 MiB.')
@@ -48,6 +54,7 @@ def load_corpus(path=None):
 
 
 def validate_corpus(data):
+    """Handle validate corpus."""
     if not isinstance(data, dict) or data.get('schema_version') != 1 or data.get('synthetic') is not True:
         raise ValueError('A versioned synthetic corpus is required.')
     if not isinstance(data.get('corpus_version'), str) or not data['corpus_version']:
@@ -119,6 +126,7 @@ def validate_corpus(data):
 
 
 def select_cases(data, profile):
+    """Handle select cases."""
     if profile not in PROFILES:
         raise ValueError('Unknown evaluation profile.')
     cases = data['cases']
@@ -185,6 +193,7 @@ def score_field(source, outgoing, secrets, public, *, aliases=None):
 
 
 def write_json(path, value):
+    """Handle write json."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + '.' + uuid.uuid4().hex + '.tmp')
@@ -398,6 +407,7 @@ def _privacy_metrics(cases):
 
 
 def save_report(report, output_dir):
+    """Handle save report."""
     output_dir = Path(output_dir)
     write_json(output_dir / 'report.json', report)
     summary = [f"# {report['suite']} evaluation", '', f"Status: {report['status']}", '',
@@ -409,6 +419,7 @@ def save_report(report, output_dir):
 
 
 def run_privacy(data, *, output_dir, profile='smoke', max_seconds=300):
+    """Handle run privacy."""
     validate_corpus(data)
     output_dir = Path(output_dir)
     if (output_dir / 'report.json').exists():
@@ -466,6 +477,7 @@ def run_privacy(data, *, output_dir, profile='smoke', max_seconds=300):
 
 
 def compare_reports(baseline, candidate):
+    """Handle compare reports."""
     if baseline.get('schema_version') != 1 or candidate.get('schema_version') != 1 or baseline.get('suite') != candidate.get('suite'):
         raise ValueError('Incompatible report schemas/suites.')
     if baseline.get('metadata', {}).get('scoring_version') != candidate.get('metadata', {}).get('scoring_version'):

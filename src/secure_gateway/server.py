@@ -231,6 +231,11 @@ def privacy_preserving_assistant(task_description: str = "") -> str:
 
 @app.prompt()
 def secure_code_assistant(goal: str = "refactor") -> str:
+    """Return prompt instructions for reviewing a masked source representation.
+
+    The result preserves surrogate identifiers/literals as-is; it never returns
+    ``None``.
+    """
     return (
         "Review the masked source representation. Keep smcp_ID_n identifiers, "
         "literal placeholders and numeric nonce constants unchanged. Numeric constants are opaque; "
@@ -240,6 +245,10 @@ def secure_code_assistant(goal: str = "refactor") -> str:
 
 @app.resource("privacy://policies")
 def get_privacy_policies() -> str:
+    """Expose supported masking modes, strategies, and confidentiality notes.
+
+    Returns a JSON string; never returns ``None``.
+    """
     return json.dumps(
         {
             "modes": [m.value for m in MaskMode],
@@ -255,6 +264,10 @@ def get_privacy_policies() -> str:
 
 @app.resource("privacy://status")
 def get_privacy_status() -> str:
+    """Expose sanitized server status without original mapping data.
+
+    Returns a JSON string; never returns ``None``.
+    """
     return json.dumps(
         {
             "server": "SecureGateway",

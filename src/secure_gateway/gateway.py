@@ -63,10 +63,16 @@ from secure_gateway.gateway_stream import relay_stream
 from secure_gateway.gateway_errors import GatewayRequestError, public_request_error
 from secure_gateway.domain_dictionaries import catalog as domain_catalog, DEFAULTS as DOMAIN_DEFAULTS, protect_chunks
 
-LIMIT = 16 * 1024 * 1024
+# Maximum request/stream payload size in bytes (16 MiB). Bounds memory use and
+# rejects oversized JSON/SSE payloads before deeper processing; not user-configurable.
+MAX_REQUEST_BYTES = 16 * 1024 * 1024
+LIMIT = MAX_REQUEST_BYTES
+# Maximum retained conversation snapshots before eviction; bounds in-memory state
+# (each session holds mappings/reasoning provenance). Not user-configurable.
+MAX_CONVERSATION_SESSIONS = 256
 _LOGGER = logging.getLogger(__name__)
 _DIAGNOSTIC_LOGGER = logging.getLogger(__name__ + ".diagnostic")
-_DIAGNOSTIC_LIMIT = 2**31 - 1
+_DIAGNOSTIC_LIMIT = 2**31 - 1  # SQLite integer upper bound for diagnostic counters.
 _DIAGNOSTIC_CATEGORIES = (
     "snapshot_scan_io", "snapshot_cleanup_io", "snapshot_preserved",
     "snapshot_load_failed", "snapshot_recovered", "snapshot_recovery_io",
@@ -739,6 +745,7 @@ class SharedEngine(MaskingEngine):
         self.mapping_limit = mapping_limit
 
     def mask_text(self, *args, private_context=False, **kwargs):
+        """Handle mask text."""
         token = _private_prose.set(private_context)
         try:
             return super().mask_text(*args, **kwargs)
@@ -822,6 +829,7 @@ def _prose_policy(prose_mode, common_words):
 
 
 class GatewaySession:
+    """Per-conversation masking/restoration state shared by gateway request handling."""
     def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, natural_language="auto", sql_dialect="sqlite", prose_mode="content_words", common_words=None, max_mapping_bytes=DEFAULT_MAPPING_BYTES,
                  max_snapshot_bytes=DEFAULT_SNAPSHOT_BYTES, context_model: ContextModel | None = None, **restore_limits):
         if type(mask_numbers) is not bool:
@@ -1097,6 +1105,10 @@ class GatewaySession:
         return len(key[0].encode("utf-8")) + len(result.encode("utf-8")) + 256
 
     def mask(self, text: str, code: bool = False, language: str = "auto") -> str:
+        """Return the result of mask.
+
+        Never returns ``None``.
+        """
         key = self._mask_cache_key(text, code, language)
         cached = self._mask_cache.get(key)
         if cached is not None:
@@ -1248,12 +1260,14 @@ class GatewaySession:
         return "".join(output)
 
     def restore(self, text):
+        """Handle restore."""
         s = self.session
         return self.engine.unmask(
             text, s.session_id, s.reverse_store, s.strategy, strict=True
         ).unmasked_text
 
     def values(self, value, restore=False, code=False):
+        """Handle values."""
         operation = self.restore if restore else lambda text: self.mask(text, code=code)
         if isinstance(value, str):
             if not restore and not code and value:
@@ -1292,6 +1306,7 @@ class GatewaySession:
 
     def walk(self, value, restore=False, code=False, schema_root=None,
              property_names=False, schema_refs=(), schema_context=False):
+        """Handle walk."""
         if schema_root is None:
             schema_root = value
         if isinstance(value, str):
@@ -1566,6 +1581,7 @@ class GatewaySession:
         return roots, related
 
     def schema_reference(self, reference, root, restore=False, resolve=False):
+        """Handle schema reference."""
         if reference == "#":
             return root if resolve else reference
         if not reference.startswith("#") or re.search(r"%(?![0-9A-Fa-f]{2})", reference):
@@ -1665,6 +1681,7 @@ class GatewaySession:
         return self.walk_data(item, restore)
 
     def schema_name(self, name, restore=False):
+        """Handle schema name."""
         if not isinstance(name, str):
             raise ValueError("Schema property names must be text.")
         return (
@@ -1676,6 +1693,7 @@ class GatewaySession:
         )
 
     def validate_schema(self, schema):
+        """Handle validate schema."""
         if isinstance(schema, bool):
             return
         if not isinstance(schema, dict):
@@ -1778,6 +1796,7 @@ class GatewaySession:
         return result
 
     def tool_choice(self, value, dialect):
+        """Handle tool choice."""
         if isinstance(value, str):
             if value not in {"auto", "none", "required", "any"}:
                 raise ValueError("Unsupported tool choice.")
@@ -1812,6 +1831,7 @@ class GatewaySession:
         return self.walk(value)
 
     def context_management(self, value):
+        """Handle context management."""
         if not isinstance(value, dict) or set(value) != {"edits"} or not isinstance(value["edits"], list):
             raise ValueError("Unsupported context management.")
         result = []
@@ -1851,6 +1871,10 @@ class GatewaySession:
         return {"edits": result}
 
     def request(self, payload: dict[str, Any], *, dialect=None) -> dict[str, Any]:
+        """Return the result of request.
+
+        Never returns ``None``.
+        """
         with self.context_model.request_budget() if self.context_model is not None else nullcontext():
             return self._request(payload, dialect=dialect)
 
@@ -1993,6 +2017,7 @@ class GatewaySession:
         return result
 
     def claude_system(self, value):
+        """Handle claude system."""
         if isinstance(value, str):
             if value.startswith(CLAUDE_ATTRIBUTION_PREFIX):
                 raise ValueError(
@@ -2030,6 +2055,10 @@ class GatewaySession:
         return result
 
     def response(self, body: bytes, content_type: str, *, dialect=None) -> bytes:
+        """Return the result of response.
+
+        Never returns ``None``.
+        """
         if len(body) > self.engine.max_restore_input_bytes:
             raise ValueError("Restoration input size limit reached.")
         self.engine._restore_remaining = self.engine.max_restore_output_bytes
@@ -2217,6 +2246,7 @@ class GatewaySession:
 
 
 class PrivacyGateway(ThreadingHTTPServer):
+    """Threaded loopback HTTP server that masks outbound requests and restores responses."""
     daemon_threads = True
 
     def __init__(
@@ -2339,12 +2369,14 @@ class PrivacyGateway(ThreadingHTTPServer):
             raise
 
     def record_audit_error(self, phase):
+        """Handle record audit error."""
         with self.admission:
             self.audit_write_errors += 1  # Retain the legacy aggregate contract.
             self.audit_error_counts[phase] += 1
 
     @staticmethod
     def validate_mask_rules(value):
+        """Handle validate mask rules."""
         if not isinstance(value, list) or len(value) > 256:
             raise ValueError("Invalid rules")
         rules = []
@@ -2358,6 +2390,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         return tuple(dict.fromkeys(rules))
 
     def set_mask_rules(self, rules):
+        """Handle set mask rules."""
         rules = self.validate_mask_rules(rules)
         if self.rules_path is None:
             raise ValueError("Rule storage is unavailable")
@@ -2372,15 +2405,18 @@ class PrivacyGateway(ThreadingHTTPServer):
 
     @staticmethod
     def validate_domain_policy(value):
+        """Handle validate domain policy."""
         if not isinstance(value, dict) or set(value) != set(DOMAIN_DEFAULTS) or any(type(item) is not bool for item in value.values()):
             raise ValueError("Invalid domain policy")
         return dict(value)
 
     def domain_status(self):
+        """Handle domain status."""
         return {**self.domain_catalog.status(self.domain_policy),
                 "source": self.domain_policy_origin, "persistent": self.domain_policy_path is not None}
 
     def set_domain_policy(self, value):
+        """Handle set domain policy."""
         policy = self.validate_domain_policy(value)
         with self.admission:
             if self.admitted_requests:
@@ -2398,6 +2434,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         return self.domain_status()
 
     def audit_error_diagnostics(self):
+        """Handle audit error diagnostics."""
         with self.admission:
             return dict(self.audit_error_counts)
 
@@ -2416,6 +2453,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                     self._diagnostic_counts["log_delivery_failed"] = min(current + 1, _DIAGNOSTIC_LIMIT)
 
     def operational_diagnostics(self):
+        """Handle operational diagnostics."""
         with self._diagnostic_lock:
             return dict(self._diagnostic_counts)
 
@@ -2449,6 +2487,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             return True
 
     def release_admission(self, agent):
+        """Handle release admission."""
         with self.admission:
             self.admitted_requests -= 1
             self.provider_admitted[agent] -= 1
@@ -2599,6 +2638,10 @@ class PrivacyGateway(ThreadingHTTPServer):
         del self.sessions[key]
 
     def get_session(self, agent, conversation=None, *, pin=False):
+        """Return get session.
+
+        Returns the conversation session for the agent, creating or loading it as needed; never returns ``None``.
+        """
         key = agent
         if conversation:
             if not isinstance(conversation, str) or len(conversation.encode()) > 2048:
@@ -2624,13 +2667,13 @@ class PrivacyGateway(ThreadingHTTPServer):
                     # them via save().
                     self._remove_snapshot(key)
                     self._drop_session(key, current)
-            if len(self.sessions) >= 256:
+            if len(self.sessions) >= MAX_CONVERSATION_SESSIONS:
                 for old_key, old_session in list(self.sessions.items()):
                     with old_session.lock:
                         if not old_session.active_requests and old_session.session.is_expired():
                             self._remove_snapshot(old_key)
                             self._drop_session(old_key, old_session)
-                if len(self.sessions) >= 256:
+                if len(self.sessions) >= MAX_CONVERSATION_SESSIONS:
                     candidates = [(value.session.last_accessed, old_key, value) for old_key, value in self.sessions.items() if not value.active_requests]
                     if not self.state_dir or not candidates:
                         raise GatewayRequestError("conversation_capacity")
@@ -2711,6 +2754,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             return session
 
     def save(self, agent, session):
+        """Handle save."""
         if session.session.is_expired() and not session.active_requests:
             # Do not revive an expired session via touch(). Drop its aliases
             # and provenance; the next get_session() replaces the registry
@@ -2735,6 +2779,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             path.with_suffix(".opaque.json").chmod(0o600)
 
     def reset(self, agent="all"):
+        """Handle reset."""
         agents = sorted(self.upstreams) if agent == "all" else [agent]
         if any(name not in self.upstreams for name in agents):
             raise ValueError("Unknown provider.")
@@ -2768,6 +2813,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                     del self.sessions[name]
 
     def server_close(self):
+        """Handle server close."""
         with self.admission:
             self.closing = True
         super().server_close()
@@ -2785,6 +2831,7 @@ class PrivacyGateway(ThreadingHTTPServer):
 
 
 class GatewayHandler(BaseHTTPRequestHandler):
+    """HTTP request handler for the privacy gateway and local admin endpoints."""
     server: PrivacyGateway
     audit_metadata: dict[str, Any] | None = None
     stream_metrics: dict[str, Any]
@@ -2792,6 +2839,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
     timeout = 60
 
     def finish(self):
+        """Handle finish."""
         # An early rejection can leave POST bytes in flight. Closing immediately
         # then resets the connection on Windows, sometimes discarding the 401.
         # Publish EOF after the response, then allow a bounded body drain. Never
@@ -2825,9 +2873,11 @@ class GatewayHandler(BaseHTTPRequestHandler):
             super().finish()
 
     def log_message(self, *_):
+        """Handle log message."""
         pass  # Never log headers, prompts, replies or tokens.
 
     def send_body(self, status, body, content_type="application/json"):
+        """Handle send body."""
         if self.audit_metadata is not None:
             self.audit_metadata["status"] = status
             self.audit_metadata["output_bytes"] = len(body)
@@ -2841,6 +2891,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def capture_response_headers(self, headers):
+        """Handle capture response headers."""
         self.response_headers = {
             key: value
             for key, value in headers.items()
@@ -2849,11 +2900,13 @@ class GatewayHandler(BaseHTTPRequestHandler):
         }
 
     def authorized(self):
+        """Handle authorized."""
         return secrets.compare_digest(
             self.headers.get("X-SecureGateway-Token", "").encode(), self.server.token.encode()
         )
 
     def do_GET(self):
+        """Handle do GET."""
         if handle_admin(self):
             return
         if self.path == "/xai/v1/models":
@@ -2923,6 +2976,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             )
 
     def do_POST(self):
+        """Handle do POST."""
         self._request_body_consumed = False
         # Only fixed inference routes enter the ledger; never store caller paths,
         # query strings, error bodies, arbitrary headers or request/response text.
@@ -3295,6 +3349,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
 
 
 def supported_query(query):
+    """Handle supported query."""
     if not query:
         return True
     if len(query) > 256:
@@ -3351,6 +3406,7 @@ UPSTREAM_ERROR_STATUSES = {
 
 
 def sanitized_upstream_error(exc, *, on_failure: Callable[[], None] | None = None):
+    """Handle sanitized upstream error."""
     status = exc.code if exc.code in UPSTREAM_ERROR_STATUSES else 502
     error = {"message": "Upstream rejected the request."}
     try:
@@ -3396,5 +3452,7 @@ def sanitized_upstream_error(exc, *, on_failure: Callable[[], None] | None = Non
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Redirect handler that prevents automatic upstream redirects."""
     def redirect_request(self, req, fp, code, msg, headers, newurl):
+        """Handle redirect request."""
         return None

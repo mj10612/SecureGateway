@@ -12,6 +12,10 @@ import unicodedata
 
 
 def ascii_lower(value: str) -> str:
+    """Return the result of ascii lower.
+
+    Never returns ``None``.
+    """
     return value.translate(str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))
 
 
@@ -52,6 +56,10 @@ def ruby_constant_alias(base: str, raw: str, language: str) -> str:
 
 
 def identifier_key(raw: str, language: str, *, quoted: bool = False) -> str:
+    """Return the result of identifier key.
+
+    Never returns ``None``.
+    """
     if language == 'bash':
         return raw.replace('\\\n', '')
     if language == 'java':

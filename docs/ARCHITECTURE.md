@@ -71,3 +71,8 @@ locks release on process exit; marked lock files remain and must not be unlinked
 locks require operator migration. Gateway owners reuse one derived encryption context per
 lifetime; ordinary independent CLI snapshots derive separately. Caller-owned standalone
 sessions have caller-owned lifetime.
+
+## Architecture decisions
+
+Key decisions reconstructed from repository history and design docs are recorded as ADRs:
+[ADR index](adr/README.md).

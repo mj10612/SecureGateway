@@ -8,7 +8,16 @@ from secure_gateway.gateway_errors import GatewayRequestError
 MODEL_ID_PATTERN = re.compile(r"[A-Za-z0-9_./:-]{1,200}")
 
 
-def validate_cache_control(value):
+def validate_cache_control(value: object) -> None:
+    """Validate a public cache-control object before forwarding.
+
+    Accepts only the supported ephemeral cache-control shape. Returns ``None``
+    on success.
+
+    Raises:
+        ValueError: If the cache control is missing required fields or uses an
+            unsupported type/TTL.
+    """
     if (
         not isinstance(value, dict)
         or set(value) - {"type", "ttl"}

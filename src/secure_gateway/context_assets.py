@@ -24,7 +24,20 @@ FILES = {
 _DOWNLOAD_RECORD = ".secure-gateway-download.json"
 
 
-def _download_identity(path: Path):
+def _download_identity(path: Path) -> list[int]:
+    """Return the device/inode identity of a download-owned path.
+
+    Args:
+        path: Expected temporary download file path.
+
+    Returns:
+        A two-integer list ``[st_dev, st_ino]`` suitable for JSON records and
+        equality checks. Never returns ``None``.
+
+    Raises:
+        ValueError: If ``path`` is a symlink or not a regular file, preventing
+            operations on a path whose identity is not the expected owned file.
+    """
     stat = path.lstat()
     if path.is_symlink() or not path.is_file():
         raise ValueError("Download path changed; no temporary files were removed.")
@@ -71,10 +84,19 @@ def _check_unowned_downloads(directory: Path) -> None:
 
 
 def default_model_directory() -> Path:
+    """Return the default per-user directory for the pinned context model.
+
+    The path is under ``~/.secure-gateway/models/<MODEL_ID>``; never ``None``.
+    """
     return Path.home() / ".secure-gateway" / "models" / MODEL_ID
 
 
 def valid_file(path: Path, size: int, digest: str) -> bool:
+    """Check that a regular file matches the expected size and SHA-256 digest.
+
+    Returns ``True`` only for a non-symlink regular file whose bytes hash to
+    ``digest``; otherwise returns ``False`` (never ``None``).
+    """
     if not path.is_file() or path.is_symlink() or path.stat().st_size != size:
         return False
     hasher = sha256()
@@ -85,6 +107,13 @@ def valid_file(path: Path, size: int, digest: str) -> bool:
 
 
 def verify_model(directory: Path) -> None:
+    """Verify all pinned model assets in ``directory``.
+
+    Returns ``None`` when every required asset is present and verified.
+
+    Raises:
+        ValueError: If any required asset is missing or fails verification.
+    """
     for name, (_, size, digest) in FILES.items():
         if not valid_file(directory / name, size, digest):
             raise ValueError("Missing or unverified local context model; run gateway model-install.")
@@ -168,12 +197,24 @@ def _remove_model(directory: Path) -> None:
 
 
 def model_metadata() -> dict:
+    """Return metadata for the pinned context model assets.
+
+    Includes model id, upstream repository/revision, total download bytes, and
+    license. Never returns ``None``.
+    """
     return {"id": MODEL_ID, "repository": REPOSITORY, "revision": REVISION,
             "download_bytes": sum(item[1] for item in FILES.values()),
             "license": "MIT"}
 
 
 def head_parameters() -> dict:
+    """Load bounded context-classifier head parameters from package data.
+
+    Returns the parsed JSON object; never returns ``None``.
+
+    Raises:
+        ValueError: If the parameter file exceeds the 128 KiB size limit.
+    """
     path = Path(__file__).with_name("data") / "context_head.json"
     if path.stat().st_size > 128 * 1024:
         raise ValueError("Context classifier parameters exceed size limit.")

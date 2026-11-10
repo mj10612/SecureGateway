@@ -10,6 +10,8 @@ from weakref import WeakMethod
 
 @dataclass
 class PendingCompletion:
+    """A queued completion-metadata retry entry with size, due time, and attempts."""
+
     metadata: dict
     size: int
     due: float
@@ -17,6 +19,7 @@ class PendingCompletion:
 
 
 class CompletionRetries:
+    """Bounded in-memory retry worker for audit completion writes."""
     MAX_PENDING = 256
     MAX_BYTES = 1024 * 1024
     DELAYS = (0.25, 0.5, 1.0, 2.0, 4.0)
@@ -34,6 +37,7 @@ class CompletionRetries:
         self._maintenance_errors = 0
 
     def enqueue(self, request_id, metadata):
+        """Handle enqueue."""
         # JSON round-trip gives the worker an independent, scalar-only snapshot.
         try:
             if any(value is not None and type(value) not in (str, int, float)
@@ -66,6 +70,7 @@ class CompletionRetries:
             return True
 
     def diagnostics(self):
+        """Handle diagnostics."""
         with self._condition:
             return {"pending": len(self._pending), "pending_bytes": self._bytes,
                     "attempts": self._attempts, "recovered": self._recovered,
@@ -79,6 +84,7 @@ class CompletionRetries:
         self._bytes -= self._pending.pop(request_id).size
 
     def maintenance_failed(self):
+        """Handle maintenance failed."""
         with self._condition:
             self._maintenance_errors += 1
 
@@ -128,6 +134,7 @@ class CompletionRetries:
                 self._condition.notify_all()
 
     def close(self):
+        """Handle close."""
         with self._condition:
             if not self._closing:
                 self._closing = True

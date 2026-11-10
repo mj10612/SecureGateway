@@ -70,6 +70,10 @@ class LocalPrivacyClient:
         )
 
     def close(self) -> None:
+        """Close the client and release vault/session mapping references.
+
+        Returns ``None``.
+        """
         self.vault.close()
 
     def __enter__(self) -> LocalPrivacyClient:

@@ -54,6 +54,7 @@ def installation_path(path: Path, pending=False):
 
 
 def runtime_directory(path: Path):
+    """Handle runtime directory."""
     return path.parent if path.name == "config.json" else path.parent / (path.name + ".state")
 
 
@@ -112,6 +113,10 @@ def _recover_install(path):
 
 
 def default_config() -> Path:
+    """Return the result of default config.
+
+    Never returns ``None``.
+    """
     return Path.home() / ".secure-gateway" / "gateway" / "config.json"
 
 
@@ -124,6 +129,7 @@ def _ensure_state_directory(path: Path) -> None:
 
 
 def atomic_bytes(path: Path, data: bytes):
+    """Handle atomic bytes."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(prefix=".secure-gateway-", dir=path.parent)
     try:
@@ -138,6 +144,10 @@ def atomic_bytes(path: Path, data: bytes):
 
 
 def load_config(path: Path):
+    """Return load config.
+
+    Returns the parsed gateway configuration dict; never returns ``None``.
+    """
     config = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(config, dict):
         raise ValueError("Gateway configuration must be a JSON object.")
@@ -227,6 +237,7 @@ def _healthy_response(config):
 
 
 def healthy(config):
+    """Handle healthy."""
     try:
         return _healthy_response(config)
     except urllib.error.HTTPError as exc:
@@ -235,6 +246,7 @@ def healthy(config):
 
 
 def ensure_gateway(path: Path):
+    """Handle ensure gateway."""
     with session_file_lock(path):
         _start_gateway(path, load_config(path))
 
@@ -301,6 +313,7 @@ def _start_gateway(path, config):
 
 
 def stop_gateway(path: Path):
+    """Handle stop gateway."""
     if not path.exists():
         return False
     config = load_config(path)
@@ -372,6 +385,7 @@ def install_gateway(
     *,
     start: bool = False,
 ):
+    """Handle install gateway."""
     path = path.resolve()
     manifest_path = installation_path(path)
     if manifest_path.exists():
@@ -643,6 +657,7 @@ def apply_settings(path: Path, config, changes, *, mirrors=None, start=False):
 
 
 def uninstall_gateway(path: Path, *, force_clean=False):
+    """Handle uninstall gateway."""
     path = path.resolve()
     if not path.parent.exists():
         if not force_clean:

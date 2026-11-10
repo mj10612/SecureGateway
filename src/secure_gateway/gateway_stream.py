@@ -14,6 +14,10 @@ from typing import Any
 
 _logger = logging.getLogger(__name__)
 
+# Default maximum bytes for SSE/stream input, group, and output buffers (16 MiB).
+# Bounds memory for long streams and malformed event groups; not user-configurable.
+DEFAULT_STREAM_LIMIT_BYTES = 16 * 1024 * 1024
+
 
 def _cleanup_diag(category: str) -> None:
     """Log a fixed-category cleanup diagnostic without sensitive details."""
@@ -28,7 +32,7 @@ class EventRestorer:
     and signed thinking retain the gateway's existing whole-group validator.
     """
 
-    def __init__(self, session, dialect=None, limit=16 * 1024 * 1024):
+    def __init__(self, session, dialect=None, limit=DEFAULT_STREAM_LIMIT_BYTES):
         self.session, self.dialect, self.limit = session, dialect, limit
         self.pending = ""
         self.text_event = None
@@ -57,7 +61,13 @@ class EventRestorer:
         self.pending = ""
         return self._emit(self.text_lines, event)
 
-    def feed(self, frame):
+    def feed(self, frame: str) -> bytes:
+        """Consume one SSE frame and return bytes safe to emit to the client.
+
+        Buffers incomplete text tokens and structured tool/thinking groups so
+        aliases are restored only at safe boundaries. Returns encoded SSE bytes
+        (possibly empty); never returns ``None``.
+        """
         lines = frame.split("\n")
         data = "\n".join(line[5:].lstrip() for line in lines if line.startswith("data:"))
         if not data:
@@ -131,7 +141,12 @@ class EventRestorer:
         self.group_size = 0
         return output
 
-    def finish(self):
+    def finish(self) -> bytes:
+        """Flush any buffered text or group and return final SSE bytes.
+
+        Preserves whole-group validation for buffered tool/thinking groups.
+        Never returns ``None``.
+        """
         output = self._flush_text()
         if self.group:
             # Preserve whole-group validation, including malformed JSON errors.
@@ -139,7 +154,7 @@ class EventRestorer:
         return output
 
 
-def relay_stream(handler, upstream, session, dialect=None, *, limit=16 * 1024 * 1024, heartbeat=5, before_complete=None):
+def relay_stream(handler, upstream, session, dialect=None, *, limit=DEFAULT_STREAM_LIMIT_BYTES, heartbeat=5, before_complete=None):
     """Send headers now and safe events as they arrive, with local heartbeats."""
     chunks: queue.Queue = queue.Queue(maxsize=4)
     cancelled = Event()

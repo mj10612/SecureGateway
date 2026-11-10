@@ -60,6 +60,7 @@ class NumericLiteralConflict(ValueError):
 
 
 class MaskingEngine:
+    """Core engine for masking and restoring text and code with session mappings."""
     def __init__(self, max_input_bytes: int = 16 * 1024 * 1024,
                  max_restore_input_bytes: int = 16 * 1024 * 1024,
                  max_restore_output_bytes: int = 16 * 1024 * 1024) -> None:
@@ -112,6 +113,10 @@ class MaskingEngine:
         preserve_capitalized_positions: frozenset[int] = frozenset(),
         preserve_spans: frozenset[tuple[int, int]] = frozenset(),
     ) -> MaskResult:
+        """Return the result of mask text.
+
+        Never returns ``None``.
+        """
         strategy = self._strategy(generator, strategy)
         self._check_input(text)
         language = natural_languages.canonical_language(language)
@@ -387,6 +392,10 @@ class MaskingEngine:
         mask_numbers: bool = False,
         sql_dialect: str = "sqlite",
     ) -> MaskResult:
+        """Return the result of mask code.
+
+        Never returns ``None``.
+        """
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
         strategy = self._strategy(generator, strategy)
@@ -613,6 +622,10 @@ class MaskingEngine:
         normalize_particles: bool = False,
         strict: bool = False,
     ) -> UnmaskResult:
+        """Return the result of unmask.
+
+        Never returns ``None``.
+        """
         if not isinstance(masked_text, str):
             raise ValueError("Restoration input must be text.")
         if len(masked_text.encode("utf-8")) > self.max_restore_input_bytes:

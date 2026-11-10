@@ -38,7 +38,9 @@ console = Console(legacy_windows=False)
 
 
 class LiteralArgumentGroup(click.Group):
+    """Click group that formats completion tokens literally in help output."""
     def main(self, *args, **kwargs):
+        """Handle main."""
         kwargs["windows_expand_args"] = False
         return super().main(*args, **kwargs)
 
@@ -303,6 +305,7 @@ def state():
 @click.option("--agent", type=click.Choice(["claude", "codex"]), default="claude")
 @click.option("--state-dir", type=click.Path(path_type=Path), default=default_state_dir)
 def state_status(agent, state_dir):
+    """Handle state status."""
     from secure_gateway.hooks import HookStore
     click.echo(json.dumps(HookStore(agent_state_dir(state_dir, agent)).snapshot_diagnostics()))
 
@@ -313,6 +316,7 @@ def state_status(agent, state_dir):
 @click.option("--apply", "apply_cleanup", is_flag=True,
               help="Retire expired snapshots; default is a read-only preview.")
 def state_gc(agent, state_dir, apply_cleanup):
+    """Handle state gc."""
     from secure_gateway.hooks import HookStore
     click.echo(json.dumps(HookStore(agent_state_dir(state_dir, agent)).gc(dry_run=not apply_cleanup)))
 
@@ -689,6 +693,7 @@ def gateway_install(agent, config, port):
 @gateway.command("ensure", hidden=True)
 @click.option("--config", type=click.Path(path_type=Path), required=True)
 def gateway_ensure(config):
+    """Handle gateway ensure."""
     from secure_gateway.gateway_install import ensure_gateway
 
     try:

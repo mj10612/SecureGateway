@@ -20,7 +20,14 @@ def validate_export_dates(filters):
         raise ValueError("Export date range exceeds 31 days")
 
 
-def handle_admin(handler):
+def handle_admin(handler) -> bool:
+    """Handle authenticated local admin HTTP requests.
+
+    Serves dashboard assets and read-only audit/policy APIs under ``/admin``.
+    Returns ``True`` when the request was handled (including auth/origin
+    failures responded to), or ``False`` when the path is not an admin route.
+    Never returns ``None``.
+    """
     url = urlsplit(handler.path)
     if url.path != "/admin" and not url.path.startswith("/admin/"):
         return False

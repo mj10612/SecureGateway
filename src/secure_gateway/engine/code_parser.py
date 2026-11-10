@@ -70,6 +70,10 @@ PREPROCESSOR_DIRECTIVES = {
 
 
 def detect_language(code: str, language: str = "auto") -> str:
+    """Return the result of detect language.
+
+    Never returns ``None``.
+    """
     language = ALIASES.get(language.lower(), language.lower())
     if language != "auto":
         if language not in LANGUAGE_KEYWORDS:
@@ -366,6 +370,10 @@ def _javascript_generator_method(words: list[str], start: int) -> bool:
 
 
 def literal_parts(value: str, subkind: str) -> tuple[str, str]:
+    """Return the result of literal parts.
+
+    Never returns ``None``.
+    """
     if subkind.startswith("literal:"):
         _, prefix_length, suffix_length = subkind.split(":")
         prefix_size, suffix_size = int(prefix_length), int(suffix_length)
@@ -559,8 +567,13 @@ def _sql_contextual_keywords(tokens: list[tuple[str, TokenType, str]]) -> None:
 
 
 class CodeParser:
+    """Language-aware lexer for masking identifiers, literals, and comments in code."""
     @staticmethod
     def tokenize(code: str, language: str = "auto") -> list[tuple[str, TokenType, str]]:
+        """Return the result of tokenize.
+
+        Never returns ``None``.
+        """
         language = detect_language(code, language)
         if language in extended_code.LANGUAGE_KEYWORDS:
             return extended_code.tokenize(code, language)
