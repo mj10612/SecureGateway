@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.7.22 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.7.23 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -1008,7 +1008,7 @@ Setup rechecks file contents after waiting for startup. Detected user changes ar
 
 ## Operational failure diagnostics
 
-Authenticated `GET /admin/api/sessions` includes `diagnostic_counts` for the current
+Authenticated `GET /admin/api/sessions` and `GET /admin/api/logs` include `diagnostic_counts` for the current
 gateway instance. Each fixed counter saturates at 2,147,483,647 and resets on
 restart. Counters describe attempts/events, not unique files or production leak
 rates. They are separate from the SQLite audit-write counters.
@@ -1024,6 +1024,7 @@ rates. They are separate from the SQLite audit-write counters.
 | `upstream_error_body` | An upstream error body could not be read/parsed within the size limit. |
 | `upstream_error_format` | Unexpected error formatter/cleanup failure required a fixed fallback. |
 | `upstream_error_close` | Closing the error stream in that fallback also failed. |
+| `upstream_error_stream_close` | Best-effort close of the sanitized upstream error stream failed. |
 | `log_delivery_failed` | A warning delivery failed; counted quietly to prevent recursive logging. |
 
 The `secure_gateway.gateway` logger emits one warning per actionable category per
@@ -1045,8 +1046,8 @@ closes its error stream and returns the fixed error schema instead of dropping
 the client connection or exposing exception contents. Normal structured provider
 errors retain their public allowlisted type/code. Standalone calls to
 `sanitized_upstream_error()` attempt a best-effort fixed warning on read/parse failure unless an
-explicit diagnostic callback is supplied; the gateway supplies its bounded
-instance callback.
+explicit diagnostic callback is supplied; close failures also produce a fixed warning.
+The gateway supplies bounded instance callbacks.
 
 A warning-handler exception does not alter the sanitized response or snapshot policy.
 Gateway instances count failed emission attempts in `log_delivery_failed` without

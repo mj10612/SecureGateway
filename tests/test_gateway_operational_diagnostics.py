@@ -96,6 +96,7 @@ def http_gateway(tmp_path):
     provider = ThreadingHTTPServer(('127.0.0.1', 0), Provider)
     provider.received, provider.status, provider.body = [], 429, b'not-json-' + PRIVATE.encode()
     gateway = PrivacyGateway(('127.0.0.1', 0), PRIVATE, state_dir=tmp_path,
+                             audit_path=tmp_path / 'audit.db',
                              upstreams={'claude': f'http://127.0.0.1:{provider.server_port}'},
                              api_upstreams={'xai': f'http://127.0.0.1:{provider.server_port}'})
     threads = [Thread(target=server.serve_forever, kwargs={'poll_interval': .01}, daemon=True)
@@ -254,7 +255,7 @@ def test_failed_error_stream_close_retains_safe_schema(code, caplog):
         assert set(json.loads(body)['error']) == {'message'}
         if code == 413:
             assert 'Prompt is too long' in json.loads(body)['error']['message']
-        assert gateway.operational_diagnostics()['upstream_error_close'] == 1
+        assert gateway.operational_diagnostics()['upstream_error_stream_close'] == 1
         assert PRIVATE not in caplog.text and PRIVATE.encode() not in body
         assert all(record.exc_info is None for record in caplog.records)
 
@@ -338,3 +339,86 @@ def test_standalone_sanitizer_survives_failed_warning_delivery(tmp_path):
         module._LOGGER.removeHandler(handler)
         handler.close()
         error.close()
+
+
+@pytest.mark.parametrize('read_fails,close_fails', [(False, True), (True, False), (True, True)])
+def test_sanitizer_closes_once_and_preserves_safe_result(read_fails, close_fails, caplog):
+    class ErrorStream:
+        code = 429
+        close_calls = 0
+
+        def read(self, _limit):
+            if read_fails:
+                raise OSError(PRIVATE)
+            return json.dumps({'error': {'type': 'rate_limit_error',
+                                         'code': 'rate_limit_exceeded',
+                                         'message': PRIVATE}}).encode()
+
+        def close(self):
+            self.close_calls += 1
+            if close_fails:
+                raise OSError(PRIVATE)
+
+    stream = ErrorStream()
+    with PrivacyGateway(('127.0.0.1', 0), PRIVATE) as gateway:
+        with caplog.at_level(logging.WARNING):
+            status, body = gateway.format_upstream_error(stream)
+        result = json.loads(body)['error']
+        assert status == 429 and stream.close_calls == 1
+        assert result['message'] == 'Upstream rejected the request.'
+        if read_fails:
+            assert set(result) == {'message'}
+        else:
+            assert result['type'] == 'rate_limit_error'
+            assert result['code'] == 'rate_limit_exceeded'
+        counts = gateway.operational_diagnostics()
+        assert counts['upstream_error_body'] == int(read_fails)
+        assert counts['upstream_error_stream_close'] == int(close_fails)
+        assert counts['upstream_error_format'] == 0
+        assert PRIVATE not in caplog.text and PRIVATE.encode() not in body
+
+
+def test_logs_endpoint_exposes_authenticated_safe_diagnostics(http_gateway, caplog):
+    gateway, _ = http_gateway
+    with caplog.at_level(logging.WARNING):
+        call(gateway)
+    assert call(gateway, '/admin/api/logs', token='wrong', method='GET')[0] == 401
+    status, body, _ = call(gateway, '/admin/api/logs', method='GET')
+    assert status == 200
+    assert json.loads(body)['diagnostic_counts'] == gateway.operational_diagnostics()
+    assert json.loads(body)['diagnostic_counts']['upstream_error_body'] == 1
+    assert PRIVATE.encode() not in body and PRIVATE not in caplog.text
+
+
+def test_http_close_failure_keeps_retry_header(http_gateway, monkeypatch, caplog):
+    from urllib.error import HTTPError
+
+    gateway, provider = http_gateway
+    provider.body = json.dumps({'error': {'type': 'rate_limit_error',
+                                          'code': 'rate_limit_exceeded',
+                                          'message': PRIVATE}}).encode()
+    original_close = HTTPError.close
+    def broken_close(error):
+        original_close(error)
+        raise OSError(PRIVATE)
+    monkeypatch.setattr(HTTPError, 'close', broken_close)
+    with caplog.at_level(logging.WARNING):
+        status, body, headers = call(gateway)
+    assert status == 429 and headers['Retry-After'] == '3'
+    assert json.loads(body)['error']['code'] == 'rate_limit_exceeded'
+    assert gateway.operational_diagnostics()['upstream_error_stream_close'] == 1
+    assert PRIVATE.encode() not in body and PRIVATE not in caplog.text
+
+
+def test_standalone_close_failure_preserves_structured_error(caplog):
+    class ErrorStream:
+        code = 429
+        def read(self, _limit):
+            return json.dumps({'error': {'type': 'rate_limit_error', 'message': PRIVATE}}).encode()
+        def close(self):
+            raise OSError(PRIVATE)
+    with caplog.at_level(logging.WARNING):
+        status, body = module.sanitized_upstream_error(ErrorStream())
+    assert status == 429 and json.loads(body)['error']['type'] == 'rate_limit_error'
+    assert PRIVATE.encode() not in body and PRIVATE not in caplog.text
+    assert 'upstream_error_stream_close' in caplog.text

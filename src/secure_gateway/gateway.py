@@ -82,6 +82,7 @@ _DIAGNOSTIC_CATEGORIES = (
     "snapshot_scan_io", "snapshot_cleanup_io", "snapshot_preserved",
     "snapshot_load_failed", "snapshot_recovered", "snapshot_recovery_io",
     "upstream_error_body", "upstream_error_format", "upstream_error_close",
+    "upstream_error_stream_close",
     "log_delivery_failed", "catalog_preload_failed",
 )
 
@@ -2505,6 +2506,7 @@ class PrivacyGateway(ThreadingHTTPServer):
         try:
             return sanitized_upstream_error(
                 exc, on_failure=lambda: self.record_diagnostic("upstream_error_body"),
+                on_close_failure=lambda: self.record_diagnostic("upstream_error_stream_close"),
             )
         except Exception:
             # A formatter bug must not disconnect clients or reflect its inputs.
@@ -3449,8 +3451,9 @@ UPSTREAM_ERROR_STATUSES = {
 }
 
 
-def sanitized_upstream_error(exc, *, on_failure: Callable[[], None] | None = None):
-    """Handle sanitized upstream error."""
+def sanitized_upstream_error(exc, *, on_failure: Callable[[], None] | None = None,
+                             on_close_failure: Callable[[], None] | None = None):
+    """Return a sanitized public error for an upstream HTTP failure; never exposes the upstream body."""
     status = exc.code if exc.code in UPSTREAM_ERROR_STATUSES else 502
     error = {"message": "Upstream rejected the request."}
     try:
@@ -3487,7 +3490,13 @@ def sanitized_upstream_error(exc, *, on_failure: Callable[[], None] | None = Non
         else:
             _warn_diagnostic("upstream_error_body")
     finally:
-        exc.close()
+        try:
+            exc.close()
+        except Exception:
+            if on_close_failure is not None:
+                on_close_failure()
+            else:
+                _warn_diagnostic("upstream_error_stream_close")
     if status == 413 or error.get("code") == "context_length_exceeded":
         error["message"] = (
             "Prompt is too long; reduce context or compact the conversation."

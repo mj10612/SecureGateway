@@ -123,6 +123,7 @@ def handle_admin(handler) -> bool:
         if not 1 <= limit <= 200 or not 0 <= offset <= 2**63 - 1:
             raise ValueError("Invalid pagination")
         result = handler.server.audit.query(filters, limit, offset)
+        result["diagnostic_counts"] = handler.server.operational_diagnostics()
         result["audit_write_errors"] = handler.server.audit_write_errors
         result["audit_error_counts"] = handler.server.audit_error_diagnostics()
         result["audit_completion_retries"] = handler.server.audit.completion_retries.diagnostics()
