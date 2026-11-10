@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.7.19 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.7.20 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -964,7 +964,7 @@ rates. They are separate from the SQLite audit-write counters.
 | `upstream_error_body` | An upstream error body could not be read/parsed within the size limit. |
 | `upstream_error_format` | Unexpected error formatter/cleanup failure required a fixed fallback. |
 | `upstream_error_close` | Closing the error stream in that fallback also failed. |
-| `log_delivery_failed` | Delivering a warning raised; counted quietly to prevent recursive logging. |
+| `log_delivery_failed` | A warning delivery failed; counted quietly to prevent recursive logging. |
 
 The `secure_gateway.gateway` logger emits one warning per actionable category per
 instance; later events remain visible in the counters. Preserved maintenance
@@ -992,4 +992,12 @@ A warning-handler exception does not alter the sanitized response or snapshot po
 Gateway instances count failed emission attempts in `log_delivery_failed` without
 recursively logging them. The stateless sanitizer also tolerates such failures.
 
-Known limitation: on some Python versions, a logging handler can report a delivery failure to standard error instead of raising it to the gateway. See [issue #340](https://github.com/mj10612/SecureGateway/issues/340).
+The foreground and daemon server entry points install a gateway-owned diagnostic
+handler and isolate it from parent logger handlers while serving. A failed open or
+write is counted once for the failed warning and is exposed in authenticated
+diagnostics as a count only; its exception and path are never printed by that
+handler. Delivery runs on a background thread through a bounded queue, so a slow
+or failed destination does not delay the HTTP response. Counts become visible
+after delivery is attempted; a full queue counts as failed delivery. Library use
+keeps the caller's logging configuration and propagation; its handlers retain
+their own error-handling behavior.

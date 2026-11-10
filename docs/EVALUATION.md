@@ -152,6 +152,27 @@ Workers are opt-in processes with call, wall-time and captured-output limits. Th
 
 ## Corpus and interpretation limits
 
+For issue #340, bisect identified `5009b4d`'s intentional #323 public-word
+policy as the cause of two newly exposed contextual schema annotations versus
+the 2.7.0 release baseline. The fix treats a tool schema title as an identifier
+context and protects related description words sharing a non-public substring
+with that title. It does not change the baseline or gold annotations. Unregistered
+names outside such an identifier context, without an explicit private rule or
+existing mapping, can still remain visible under #323; this is residual risk.
+
+The 32-case synthetic release set measures 57 of 66 annotated sensitive spans
+protected and 9 exposed, with 3 of 117 public spans overmasked. Exact restoration
+passes 31/32, semantic restoration and replay both pass 32/32. The exact miss is
+`ko-general-tool-arguments`, whose restored JSON is semantically equivalent but
+not byte-identical. The nine remaining exposures are contextual unregistered
+project/exercise names without an explicit rule or matching private identifier:
+`en-automotive-conditional-units`, `ko-general-conditional-review`,
+`en-defense-contextual-harbor`, `en-automotive-contextual-drift`,
+`en-semiconductor-contextual-yield`, `ko-general-contextual-flow`,
+`ko-defense-contextual-boundary`, `ko-automotive-contextual-rotation`, and
+`ko-semiconductor-contextual-crystal` (occurrence 0 in each). These figures
+describe only this synthetic set, not production disclosure or LLM comprehension.
+
 `src/secure_gateway/evaluation_corpus.json` has schema version `1` and corpus version `1.0.0`. Its 32 curated cases cover Korean and English across general, defense, automotive and semiconductor domains, with four cases per language/domain pair and sixteen cases per request dialect. Sixteen prose cases carry task rubrics; structured/source cases carry no comprehension rubric. Other fifteen supported languages are unmeasured by this corpus.
 
 Annotations point to string fields in the original source payload. `start` and `end` are Python/Unicode code-point offsets into those strings, with an exclusive end; they are not UTF-8 byte offsets or grapheme indexes. Preserve the NFC and NFD spellings exactly when editing. Every repeated annotated secret occurrence has its own span. The human reference minimally replaces the annotated project names and retains the original task's instructions.

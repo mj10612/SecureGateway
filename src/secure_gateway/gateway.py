@@ -6,8 +6,9 @@ text is incremental; incomplete aliases and tool JSON retain bounded buffers.
 
 from __future__ import annotations
 
-from contextlib import ExitStack, nullcontext
+from contextlib import ExitStack, contextmanager, nullcontext
 from contextvars import ContextVar
+from queue import Empty, Full, Queue
 from collections import OrderedDict, deque
 from copy import deepcopy
 from hashlib import sha256
@@ -23,7 +24,7 @@ import socket
 import sqlite3
 import time
 import unicodedata
-from threading import Condition, RLock
+from threading import Condition, Event, RLock, Thread
 from typing import Any, Callable, Iterator
 from secure_gateway import __version__
 from secure_gateway.context_model import ContextModel, load_context_model, MAX_CONTEXT_CHARS
@@ -64,6 +65,7 @@ from secure_gateway.domain_dictionaries import catalog as domain_catalog, DEFAUL
 
 LIMIT = 16 * 1024 * 1024
 _LOGGER = logging.getLogger(__name__)
+_DIAGNOSTIC_LOGGER = logging.getLogger(__name__ + ".diagnostic")
 _DIAGNOSTIC_LIMIT = 2**31 - 1
 _DIAGNOSTIC_CATEGORIES = (
     "snapshot_scan_io", "snapshot_cleanup_io", "snapshot_preserved",
@@ -73,10 +75,84 @@ _DIAGNOSTIC_CATEGORIES = (
 )
 
 
-def _warn_diagnostic(category):
+class _DiagnosticStreamHandler(logging.StreamHandler):
+    def handleError(self, record):
+        callback = getattr(record, "diagnostic_failure", None)
+        if callback is not None:
+            callback()
+
+
+class _DiagnosticFileHandler(logging.FileHandler):
+    def handleError(self, record):
+        callback = getattr(record, "diagnostic_failure", None)
+        if callback is not None:
+            callback()
+
+    def emit(self, record):
+        try:
+            super().emit(record)
+        except Exception:
+            self.handleError(record)
+
+
+class _DiagnosticQueueHandler(logging.Handler):
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def emit(self, record):
+        try:
+            self.queue.put_nowait(record)
+        except Full:
+            callback = getattr(record, "diagnostic_failure", None)
+            if callback is not None:
+                callback()
+
+
+@contextmanager
+def diagnostic_logging(*, stream=None, filename=None):
+    """Install an isolated diagnostic destination while a server process runs."""
+    destination = (_DiagnosticFileHandler(filename, delay=True) if filename is not None
+                   else _DiagnosticStreamHandler(stream))
+    queue: Queue[logging.LogRecord] = Queue(maxsize=1024)
+    handler = _DiagnosticQueueHandler(queue)
+    stopping = Event()
+
+    def deliver():
+        try:
+            while not stopping.is_set() or not queue.empty():
+                try:
+                    record = queue.get(timeout=.1)
+                except Empty:
+                    continue
+                destination.handle(record)
+        finally:
+            try:
+                destination.close()
+            except Exception:
+                pass
+
+    thread = Thread(target=deliver, name="gateway-diagnostics", daemon=True)
+    previous = _DIAGNOSTIC_LOGGER.propagate
+    _DIAGNOSTIC_LOGGER.propagate = False
+    _DIAGNOSTIC_LOGGER.addHandler(handler)
+    thread.start()
+    try:
+        yield
+    finally:
+        _DIAGNOSTIC_LOGGER.removeHandler(handler)
+        _DIAGNOSTIC_LOGGER.propagate = previous
+        handler.close()
+        stopping.set()
+        thread.join(timeout=.2)
+
+
+def _warn_diagnostic(category, on_failure=None):
     """Optional logging must not change the error response or expose its cause."""
     try:
-        _LOGGER.warning("Gateway operational event: %s; inspect authenticated diagnostics.", category)
+        logger = _DIAGNOSTIC_LOGGER if _DIAGNOSTIC_LOGGER.handlers else _LOGGER
+        logger.warning("Gateway operational event: %s; inspect authenticated diagnostics.", category,
+                       extra={"diagnostic_failure": on_failure})
     except Exception:
         return False
     return True
@@ -1039,8 +1115,8 @@ class GatewaySession:
                 self._mask_cache_bytes += size
         return result
 
-    def _force_mask(self, text: str) -> str:
-        rules: tuple[str, ...] = self.forced_rules()
+    def _force_mask(self, text: str, extra_rules: tuple[str, ...] = ()) -> str:
+        rules: tuple[str, ...] = self.forced_rules() + extra_rules
         # Never rewrite an existing alias: changing its spelling destroys the
         # only reference that permits restoration.
         forms: set[str] = {unicodedata.normalize(form, word) for word in rules for form in ("NFC", "NFD")}
@@ -1215,14 +1291,14 @@ class GatewaySession:
         return value
 
     def walk(self, value, restore=False, code=False, schema_root=None,
-             property_names=False, schema_refs=()):
+             property_names=False, schema_refs=(), schema_context=False):
         if schema_root is None:
             schema_root = value
         if isinstance(value, str):
             return self.restore(value) if restore else self.mask(value, code)
         if isinstance(value, list):
             return [self.walk(item, restore, code, schema_root,
-                              property_names, schema_refs) for item in value]
+                              property_names, schema_refs, schema_context) for item in value]
         if not isinstance(value, dict):
             return value
         reference_key = "$ref" if "$ref" in value else "$dynamicRef"
@@ -1236,12 +1312,12 @@ class GatewaySession:
             # A definition can serve both property names and ordinary values.
             # Specialize a copy here, rather than changing the shared definition.
             specialized = self.walk(target, restore, code, schema_root, True,
-                                    schema_refs + (reference,))
+                                    schema_refs + (reference,), schema_context)
             siblings = {key: item for key, item in value.items() if key != reference_key}
             if not siblings:
                 return specialized
             return {"allOf": [specialized, self.walk(
-                siblings, restore, code, schema_root, True, schema_refs)]}
+                siblings, restore, code, schema_root, True, schema_refs, schema_context)]}
         kind = value.get("type", "")
         if not isinstance(kind, str):
             kind = ""
@@ -1289,6 +1365,18 @@ class GatewaySession:
                 "Opaque fields outside recognized reasoning are unsupported."
             )
         result: dict[str, Any] = {}
+        title_terms: tuple[str, ...] = ()
+        description_terms: tuple[str, ...] = ()
+        if schema_context and not restore and isinstance(value.get("title"), str):
+            title = value["title"]
+            description = value.get("description", "")
+            if not isinstance(description, str):
+                description = ""
+            title_terms, description_terms = self._schema_prose_terms(title, description)
+            # Allocate from the original text before either field is transformed.
+            # Thus mappings made by one field cannot change its sibling on replay.
+            self._force_mask(title, title_terms)
+            self._force_mask(description, description_terms)
         for key, item in value.items():
             if key == "$schema" and isinstance(item, str):
                 # Public JSON Schema dialect URIs stay usable. Anything else is
@@ -1300,6 +1388,9 @@ class GatewaySession:
                     result[key] = self.restore(item)
                 else:
                     result[key] = self.mask(item)
+            elif schema_context and key in {"title", "description"} and isinstance(item, str):
+                terms = title_terms if key == "title" else description_terms
+                result[key] = self.restore(item) if restore else self._force_mask(self.mask(item), terms)
             elif key in {"name", "tool_name"}:
                 if not isinstance(item, str):
                     raise ValueError("Tool names must be strings.")
@@ -1404,7 +1495,7 @@ class GatewaySession:
                 item, (dict, bool)
             ):
                 self.validate_schema(item)
-                result[key] = self.walk(item, restore, schema_root=item)
+                result[key] = self.walk(item, restore, schema_root=item, schema_context=key in {"parameters", "input_schema"})
             elif key in SCHEMA_NAME_KEYWORDS:
                 if not isinstance(item, dict):
                     raise ValueError("Schema name maps must be objects.")
@@ -1413,7 +1504,7 @@ class GatewaySession:
                         [self.schema_name(name, restore) for name in v]
                         if key in {"dependentRequired", "dependencies"}
                         and isinstance(v, list)
-                        else self.walk(v, restore, schema_root=schema_root)
+                        else self.walk(v, restore, schema_root=schema_root, schema_context=schema_context)
                     )
                     for k, v in item.items()
                 }
@@ -1425,7 +1516,7 @@ class GatewaySession:
                 result[key] = self.schema_reference(item, schema_root, restore)
             elif key == "propertyNames" and isinstance(item, dict):
                 result[key] = self.walk(item, restore, schema_root=schema_root,
-                                        property_names=True, schema_refs=schema_refs)
+                                        property_names=True, schema_refs=schema_refs, schema_context=schema_context)
             elif property_names and key in {"enum", "const"}:
                 def name_value(candidate):
                     return (self.schema_name(candidate, restore)
@@ -1446,8 +1537,33 @@ class GatewaySession:
                         result[key] = self.walk_data(item, restore)
                 else:
                     result[key] = self.walk(item, restore, code, schema_root,
-                                            property_names, schema_refs)
+                                            property_names, schema_refs, schema_context)
         return result
+
+    def _schema_prose_terms(self, title, description):
+        from secure_gateway.engine.natural_languages import tokenize
+
+        language = select_gateway_language(title, detect_natural_language(title))
+        vocabulary = lexicon(language)
+        roots = tuple(chunk.text for chunk in tokenize(title, language)
+                      if chunk.is_word and not _public_surface(chunk.text, language, vocabulary))
+
+        def shares_private_root(word):
+            for root in roots:
+                shorter, longer = (word, root) if len(word) <= len(root) else (root, word)
+                for i in range(len(shorter) - 1):
+                    if shorter[i:i + 2] not in longer:
+                        continue
+                    for j in range(len(shorter), i + 1, -1):
+                        fragment = shorter[i:j]
+                        if fragment in longer and not _public_surface(fragment, language, vocabulary):
+                            return True
+            return False
+
+        related = tuple(chunk.text for chunk in tokenize(description, language)
+                        if chunk.is_word and not _public_surface(chunk.text, language, vocabulary)
+                        and shares_private_root(chunk.text))
+        return roots, related
 
     def schema_reference(self, reference, root, restore=False, resolve=False):
         if reference == "#":
@@ -2293,7 +2409,7 @@ class PrivacyGateway(ThreadingHTTPServer):
             previous = self._diagnostic_counts[category]
             self._diagnostic_counts[category] = min(previous + 1, _DIAGNOSTIC_LIMIT)
         if previous == 0 and category not in {"snapshot_preserved", "log_delivery_failed"}:
-            if not _warn_diagnostic(category):
+            if not _warn_diagnostic(category, lambda: self.record_diagnostic("log_delivery_failed")):
                 # Count directly: logging this failure could recurse forever.
                 with self._diagnostic_lock:
                     current = self._diagnostic_counts["log_delivery_failed"]

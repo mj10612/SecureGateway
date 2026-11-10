@@ -5,7 +5,7 @@ import http.client
 import json
 import logging
 import os
-from threading import Thread
+from threading import Event, Thread
 import time
 
 import pytest
@@ -259,20 +259,68 @@ def test_failed_error_stream_close_retains_safe_schema(code, caplog):
         assert all(record.exc_info is None for record in caplog.records)
 
 
-def test_failed_log_delivery_does_not_break_http_or_expose_handler_error(http_gateway, tmp_path, caplog):
+def test_failed_log_delivery_does_not_break_http_or_expose_handler_error(http_gateway, tmp_path, caplog, capfd):
     gateway, _ = http_gateway
-    handler = logging.FileHandler(tmp_path / PRIVATE / 'missing.log', delay=True)
-    module._LOGGER.addHandler(handler)
-    try:
+    with module.diagnostic_logging(filename=tmp_path / PRIVATE / 'missing.log'):
         with caplog.at_level(logging.WARNING):
             status, body, _ = call(gateway)
-        assert status == 429 and PRIVATE.encode() not in body
+        deadline = time.monotonic() + 3
+        while not gateway.operational_diagnostics()['log_delivery_failed'] and time.monotonic() < deadline:
+            time.sleep(.01)
+        assert status == 429 and PRIVATE.encode() not in body and str(tmp_path).encode() not in body
         assert gateway.operational_diagnostics()['log_delivery_failed'] == 1
         assert gateway.operational_diagnostics()['upstream_error_body'] == 1
-        assert PRIVATE not in caplog.text
+        assert PRIVATE not in caplog.text and str(tmp_path) not in caplog.text
+        stderr = capfd.readouterr().err
+        assert PRIVATE not in stderr and str(tmp_path) not in stderr
+        assert 'Summarize the report.' not in stderr + caplog.text + body.decode()
+
+
+def test_failed_log_write_is_counted_and_quiet(http_gateway, tmp_path, caplog, capfd):
+    class BrokenStream:
+        def write(self, _value):
+            raise OSError(PRIVATE + str(tmp_path))
+
+        def flush(self):
+            pass
+
+        def close(self):
+            pass
+
+    gateway, _ = http_gateway
+    with module.diagnostic_logging(stream=BrokenStream()):
+        with caplog.at_level(logging.WARNING):
+            status, body, _ = call(gateway)
+        deadline = time.monotonic() + 3
+        while not gateway.operational_diagnostics()['log_delivery_failed'] and time.monotonic() < deadline:
+            time.sleep(.01)
+        assert status == 429 and PRIVATE.encode() not in body and str(tmp_path).encode() not in body
+        assert gateway.operational_diagnostics()['log_delivery_failed'] == 1
+        assert PRIVATE not in caplog.text and str(tmp_path) not in caplog.text
+        stderr = capfd.readouterr().err
+        assert PRIVATE not in stderr and str(tmp_path) not in stderr
+        assert 'Summarize the report.' not in stderr + caplog.text + body.decode()
+
+
+def test_slow_log_destination_does_not_delay_http_response(http_gateway):
+    entered, release = Event(), Event()
+
+    class SlowStream:
+        def write(self, _value):
+            entered.set()
+            release.wait(5)
+
+        def flush(self):
+            pass
+
+    gateway, _ = http_gateway
+    try:
+        with module.diagnostic_logging(stream=SlowStream()):
+            status, _, _ = call(gateway)
+            assert status == 429
+            assert entered.wait(1)
     finally:
-        module._LOGGER.removeHandler(handler)
-        handler.close()
+        release.set()
 
 
 def test_standalone_sanitizer_survives_failed_warning_delivery(tmp_path):
