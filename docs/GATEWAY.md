@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.7.21 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.7.22 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -223,6 +223,66 @@ classification. Source category membership can contain translation or inclusion
 errors; broad protection can overmask dual-use terms. Automatically extracted
 incomplete CPC phrases remain browse-only. See [sources and exact counts](DICTIONARY_SOURCES.md)
 for reuse terms, exclusions, category coverage and review limitations.
+
+To prevent over-masking ordinary vocabulary while maintaining robust protection
+for defense concepts, domain terms are classified at catalog build time as either
+`distinctive` or `ambiguous-common` (issue #325):
+
+- **Classification basis**: Single-word terms appearing in packaged ordinary
+  or public vocabulary for their language (`gateway_vocabulary.ordinary_words()`,
+  reviewed public vocabulary) are classified as `ambiguous-common`. Curated core
+  subcomponents and programs (`active-editorial-core`) remain `distinctive`.
+- **Distinctive terms**: Behavior is unchanged; they are unconditionally
+  protected whenever their domain toggle is enabled.
+- **Ambiguous-common terms**: Protected only when anchored within the same
+  sentence or clause by:
+  1. An adjacent alphanumeric model/part-number/designator token (such as
+     `AN/APG-77`, `K2`, or digit-letter combinations).
+  2. Another `distinctive` term of the same domain in the same clause.
+  3. Membership in a multi-word dictionary term matching as a whole (e.g.
+     `phased-array radar`, `사격 관제 레이더`).
+  Otherwise, unanchored occurrences (e.g. `radar` or `레이더` in general prose)
+  remain public.
+- **Scope & Pipeline Interaction**:
+  - *End-to-End Gateway Behavior*: Behavior for `radar` and `레이더` is consistent:
+    both remain public in general prose unless a forced rule (`gateway.mask_rules`)
+    or a multi-word/non-public term applies. In the gateway prose pipeline
+    (`GatewaySession.mask`), the #323 prose rule skips single-word public domain
+    terms; when an anchored designator is present (e.g. `AN/APG-77 radar`), the
+    designator `AN/APG-77` is masked while the common word `radar` remains public
+    for prose fluency. Multi-word terms (`tactical data link`, `사격 관제 레이더`)
+    and distinctive non-public terms (`KF-21`, `radome`) are masked in prose.
+  - *Direct Catalog / CLI / MCP Paths*: The anchor policy takes full effect in
+    direct catalog calls (`DomainCatalog.spans(...)`), CLI commands, MCP tools,
+    and non-prose chunking (`protect_chunks()`), matching anchored occurrences of
+    terms such as English `radar`. Adding missing Korean counterparts (such as
+    `레이더`) to the dictionary data is deferred because any change to dictionary
+    manifest data changes `catalog().version`, requiring the owner to regenerate
+    the privacy regression baseline.
+- **Precedence**: Forced rules (`gateway.mask_rules`), sensitive patterns, and
+  existing session aliases strictly override both domain and prose policies,
+  masking terms regardless of context.
+- **Cross-language consistency**: Decisions are made per concept rather than
+  surface string; all existing language forms of a concept in the catalog share
+  identical classification.
+- **Performance & Startup Benchmarks**:
+  - Measured with `scripts/benchmark_catalog.py` under identical conditions
+    (imports excluded, default `defense` domain enabled, 5 runs median,
+    tracemalloc disabled during timing):
+    - Load duration: 1.188 s (`origin/main`) → 0.627 s (`fix/325`), ~47% faster.
+    - Tracemalloc peak heap: 146.69 MB → 78.46 MB (pre-warmed vocab) / 95.00 MB (cold).
+    - Retained memory: 142.03 MB → 37.55 MB (73.6% reduction).
+  - *60 MB Target Analysis*: The 60 MB peak heap target is not met during cold load.
+    CPython's standard `json.loads` parsing `defense.json` (2.7 MB, 19,566 entries)
+    peaks at 66.15 MB on its own due to internal parser token buffers and intermediate
+    dict/list allocations, plus 13–17 MB for frozen vocabulary tables. Cold load peak
+    heap is therefore bound by the JSON format (~78–95 MB), but post-load retained
+    memory is reduced to 37.55 MB once raw JSON structures are collected.
+  - *Daemon Preload*: `PrivacyGateway` starts a background daemon thread to preload
+    the catalog upon startup. Accessing `gateway.domain_catalog` or sessions blocks
+    until the catalog is ready; if preload fails, it transparently falls back to
+    synchronous load and logs `catalog_preload_failed`. Diagnostics report load
+    duration, enabled term counts, and memory footprint without exposing term strings.
 
 The shared read-only index is built once, then scans each original text using
 bounded Aho–Corasick transitions and compact coordinate arrays. It never downloads
