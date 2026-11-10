@@ -17,10 +17,18 @@ import unicodedata
 
 from secure_gateway import gateway
 from secure_gateway.domain_dictionaries import protect_chunks
-from secure_gateway.experiment_context import bundle_spans, name_spans, numeric_spans, structure_spans
+from secure_gateway.experiment_context import bundle_spans, name_spans
 from secure_gateway.experiment_korean import preserve_spans as korean_spans
 from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
 from secure_gateway.models import MaskMode, TokenType
+from secure_gateway.numeric_context import (
+    NumericLiteralMetadata,
+    context_numeric_spans,
+    is_protocol_number_key,
+    is_sensitive_numeric_field,
+)
+from secure_gateway.private_arithmetic import LocalArithmeticDispatcher
+from secure_gateway.structure_parser import doc_structure_spans
 
 
 CONCISE_INSTRUCTION = (
@@ -42,6 +50,15 @@ _ROLE_FIELD = re.compile(
 _ROLES = {"reviewer": "person", "person": "person", "document": "document", "organization": "organization",
           "project": "project", "받는사람": "person", "검토문서": "document", "문서": "document", "담당자": "person"}
 _ACTIVE = False
+
+PROFILE_ALIASES: dict[str, tuple[int, dict[str, Any]]] = {
+    "doc_structure": (317, {"variant": "doc_structure"}),
+    "doc_structure_policy": (317, {"variant": "doc_structure_policy"}),
+    "numeric_context": (312, {"variant": "numeric_context"}),
+    "instruction_concise": (315, {"variant": "concise"}),
+    "instruction_examples": (315, {"variant": "example"}),
+    "local_arithmetic": (319, {"variant": "local_arithmetic"}),
+}
 
 
 def _overlaps(span, blocked):
@@ -115,30 +132,57 @@ def _append_instruction(payload, text):
 
 
 @contextmanager
-def candidate_profile(issue: int, policy: dict | None = None):
+def candidate_profile(issue: int | str, policy: dict | None = None):
     """Select exactly one experimental variable; always restore baseline globals.
 
     The policy is trusted local metadata. It must not contain gold annotations,
     expected answers or a purported project identity supplied by a model.
     """
     global _ACTIVE
-    if type(issue) is not int or issue not in range(309, 319):
+    if isinstance(issue, str):
+        if issue not in PROFILE_ALIASES:
+            raise ValueError(f"Unknown candidate profile name: {issue}")
+        issue_int, default_pol = PROFILE_ALIASES[issue]
+        config: dict = deepcopy(default_pol)
+        if policy is not None:
+            if not isinstance(policy, dict):
+                raise ValueError("Candidate policy must be a local object")
+            config.update(policy)
+        issue = issue_int
+    elif type(issue) is int and issue in range(309, 320):
+        if policy is not None and not isinstance(policy, dict):
+            raise ValueError("Candidate policy must be a local object")
+        config = deepcopy(policy or {})
+    else:
         raise ValueError("Unsupported candidate issue")
+
     if _ACTIVE:
         raise ValueError("Candidate profiles cannot nest or run concurrently")
-    if policy is not None and not isinstance(policy, dict):
-        raise ValueError("Candidate policy must be a local object")
-    config: dict = deepcopy(policy or {})
-    allowed = {309: set(), 310: set(), 311: {"allow_roles", "confidential_roles"}, 312: set(),
-               313: set(), 314: set(), 315: {"variant"},
-               316: {"trusted_project", "workspace", "language", "policyrecords"},
-               317: set(), 318: {"document_sha256", "scope", "required_fields", "protect_fields"}}
+
+    allowed = {
+        309: set(),
+        310: set(),
+        311: {"allow_roles", "confidential_roles"},
+        312: {"variant"},
+        313: set(),
+        314: set(),
+        315: {"variant"},
+        316: {"trusted_project", "workspace", "language", "policyrecords"},
+        317: {"variant", "field_policy"},
+        318: {"document_sha256", "scope", "required_fields", "protect_fields"},
+        319: {"variant", "allowed", "result_units", "max_calls"},
+    }
     if set(config) - allowed[issue]:
         raise ValueError("Unsupported candidate policy fields")
     if issue == 311 and (type(config.get("allow_roles", False)) is not bool or type(config.get("confidential_roles", False)) is not bool):
         raise ValueError("Role disclosure requires explicit boolean policy")
-    if issue == 315 and config.get("variant", "concise") not in {"concise", "example"}:
+    if issue == 315 and config.get("variant", "concise") not in {"concise", "example", "instruction_concise", "instruction_examples"}:
         raise ValueError("Unknown instruction variant")
+    if issue == 317 and config.get("variant", "doc_structure") not in {"doc_structure", "doc_structure_policy"}:
+        raise ValueError("Unknown document structure variant")
+    if issue == 317 and "field_policy" in config and not isinstance(config["field_policy"], dict):
+        raise ValueError("Field policy must be a dictionary")
+
     correction_terms = _corrections(config) if issue == 316 else ()
     original_session, original_engine = gateway.GatewaySession, gateway.SharedEngine
     original_words, original_instruction = gateway.ordinary_words, gateway.PRIVACY_INSTRUCTION
@@ -157,9 +201,10 @@ def candidate_profile(issue: int, policy: dict | None = None):
                 if issue == 310:
                     spans = name_spans(text)
                 elif issue == 312:
-                    spans = numeric_spans(text)
+                    spans = context_numeric_spans(text)
                 elif issue == 317:
-                    spans = structure_spans(text)
+                    field_pol = config.get("field_policy") if config.get("variant") == "doc_structure_policy" else None
+                    spans = doc_structure_spans(text, field_policy=field_pol)
                 elif issue == 316 and correction_terms:
                     spans = _term_spans(text, correction_terms)
                 return protect_chunks(text, chunks, spans)
@@ -178,6 +223,27 @@ def candidate_profile(issue: int, policy: dict | None = None):
                     blocked.extend(self.domain_spans(text))
                 safe = {span for span in candidates if not _overlaps(span, blocked)}
                 kwargs["preserve_spans"] = frozenset(kwargs.get("preserve_spans", ())) | safe
+            elif issue in {312, 317} and not private_context:
+                from secure_gateway.numeric_context import public_numeric_spans
+                from secure_gateway.structure_parser import REVIEWED_PUBLIC_FIELDS, _FIELD_PATTERN, _normalize_label, parse_structure
+                parsed = parse_structure(text)
+                public_field_spans = set()
+                public_labels = set()
+                for match in _FIELD_PATTERN.finditer(text):
+                    label = match["label"].strip()
+                    if _normalize_label(label) in REVIEWED_PUBLIC_FIELDS:
+                        public_field_spans.add(match.span("label"))
+                        public_labels.add(label)
+                for h_str, h_start, h_end in parsed.header_spans:
+                    if _normalize_label(h_str) in REVIEWED_PUBLIC_FIELDS:
+                        public_field_spans.add((h_start, h_end))
+                        public_labels.add(h_str)
+                if issue == 312:
+                    public_field_spans.update(public_numeric_spans(text))
+                if public_labels and "sensitive_terms" in kwargs and kwargs["sensitive_terms"]:
+                    kwargs["sensitive_terms"] = set(kwargs["sensitive_terms"]) - public_labels
+                if public_field_spans:
+                    kwargs["preserve_spans"] = frozenset(kwargs.get("preserve_spans", ())) | public_field_spans
             return super().mask_text(*args, private_context=private_context, **kwargs)
 
     class CandidateSession(gateway.GatewaySession):
@@ -185,6 +251,66 @@ def candidate_profile(issue: int, policy: dict | None = None):
             super().__init__(*args, **kwargs)
             setattr(self.engine, "owner", self)
             self._profile_issue = issue
+            self._numeric_types: dict[str, NumericLiteralMetadata] = {}
+            if issue == 319:
+                self.tool_dispatcher = LocalArithmeticDispatcher(
+                    self,
+                    allowed=config.get("allowed"),
+                    result_units=config.get("result_units"),
+                    max_calls=config.get("max_calls", 16),
+                )
+
+        def values(self, value, restore=False, code=False):
+            if issue == 312:
+                if not restore and isinstance(value, dict):
+                    res: dict[str, Any] = {}
+                    for k, v in value.items():
+                        norm_k = re.sub(r"[\s_-]+", "", unicodedata.normalize("NFC", k).casefold()) if isinstance(k, str) else ""
+                        from secure_gateway.numeric_context import PUBLIC_NUMERIC_FIELDS
+                        keep_key = (
+                            is_sensitive_numeric_field(k)
+                            or is_protocol_number_key(k)
+                            or norm_k in PUBLIC_NUMERIC_FIELDS
+                        )
+                        out_k = k if keep_key else self.schema_name(k, restore=False)
+                        if is_protocol_number_key(k) or norm_k in PUBLIC_NUMERIC_FIELDS:
+                            res[out_k] = v
+                        elif is_sensitive_numeric_field(k):
+                            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                                meta = NumericLiteralMetadata(v)
+                                surrogate = self.engine._get_or_create_surrogate(
+                                    str(v),
+                                    TokenType.NUMBER,
+                                    self.session.generator,
+                                    self.session.forward_store,
+                                    self.session.reverse_store,
+                                )
+                                self._numeric_types[surrogate] = meta
+                                res[out_k] = surrogate
+                            elif isinstance(v, str):
+                                meta = NumericLiteralMetadata(v)
+                                surrogate = super().values(v, restore=False, code=code)
+                                self._numeric_types[surrogate] = meta
+                                res[out_k] = surrogate
+                            else:
+                                res[out_k] = self.values(v, restore=False, code=code)
+                        else:
+                            res[out_k] = self.values(v, restore=False, code=code)
+                    return res
+                if restore and isinstance(value, dict):
+                    res = {}
+                    for k, v in value.items():
+                        out_k = k if is_sensitive_numeric_field(k) else self.schema_name(k, restore=True)
+                        if isinstance(v, str) and v in self._numeric_types:
+                            raw = super().values(v, restore=True, code=code)
+                            res[out_k] = self._numeric_types[v].restore_value(str(raw))
+                        else:
+                            res[out_k] = self.values(v, restore=True, code=code)
+                    return res
+                if restore and isinstance(value, str) and value in self._numeric_types:
+                    raw_restored = super().values(value, restore=True, code=code)
+                    return self._numeric_types[value].restore_value(str(raw_restored))
+            return super().values(value, restore=restore, code=code)
 
         def _mask_unforced(self, text, code=False, language="auto"):
             if issue == 318 and not code:
@@ -240,7 +366,12 @@ def candidate_profile(issue: int, policy: dict | None = None):
             finally:
                 self._candidate_request = False
             if issue == 315:
-                replacement = EXAMPLE_INSTRUCTION if config.get("variant") == "example" else CONCISE_INSTRUCTION
+                variant = config.get("variant", "concise")
+                replacement = (
+                    gateway.PRIVACY_INSTRUCTION_EXAMPLES
+                    if variant in {"example", "instruction_examples"}
+                    else gateway.PRIVACY_INSTRUCTION_CONCISE
+                )
                 result = _replace_instruction(result, original_instruction, replacement)
             if issue == 311 and config.get("allow_roles") and not config.get("confidential_roles"):
                 fields = []
