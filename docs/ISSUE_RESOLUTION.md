@@ -136,3 +136,54 @@ release gate is complete. Entries marked partial retain the named gaps.
 
 Manual subscription runs: **수동 확인 필요 — 미실행**; see
 [release checklist](RELEASE_CHECKLIST.md).
+
+
+## Experiments: Structure, Numbers, Instructions, Arithmetic (#312, #315, #317, #319 — v2.9.0)
+
+Under the experimental umbrella protocol (`docs/EXPERIMENT_PROTOCOL_20261109.md`), issues #312, #315, #317, and #319 were implemented behind isolated candidate profile toggles (default OFF). Baseline engine output remains 100% byte-identical to base commit `146babd` when toggles are not active.
+
+### Status and Decision Table
+
+| Issue | Candidate | Profile / Toggle | Implemented Module | Status | Acceptance Bullets (Done / Not Done) | Evidence Directory | Toggle-Off Byte Identity | Decision |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| #312 | `numeric_context` (C)<br>*(B: mask all numbers control)* | `312` / `"numeric_context"` | `src/secure_gateway/numeric_context.py` | **부분 완료** | **Done:** Formats (Luhn, Korean RRN, Biz num), JSON key path sensitive detection, exact type/sign/leading-zero restore, protocol number exclusion, toggle-off byte-identity, evidence directory, decision entry.<br>**Not Done:** Real-LLM comprehension (미측정). | `docs/evaluations/issue312-2.9.0/` | `tests/test_toggle_off_byte_identity.py` (identical to base 146babd) | **hold — comprehension 미측정** (default OFF) |
+| #315 | `instruction_concise` (B)<br>`instruction_examples` (C) | `315` / `"instruction_concise"`, `"instruction_examples"` | `src/secure_gateway/gateway.py` | **부분 완료** | **Done:** Wording replacement for `PRIVACY_INSTRUCTION`, byte-identical masked payloads and aliases asserted, synthetic disjoint examples, token delta measured, toggle-off byte-identity, evidence directory, decision entry.<br>**Not Done:** Real-LLM comprehension (미측정). | `docs/evaluations/issue315-2.9.0/` | `tests/test_instruction_wording.py`, `tests/test_toggle_off_byte_identity.py` | **hold — comprehension 미측정** (default OFF) |
+| #317 | `doc_structure` (B: parse only)<br>`doc_structure_policy` (C: + per-field policy) | `317` / `"doc_structure"`, `"doc_structure_policy"` | `src/secure_gateway/structure_parser.py` | **부분 완료** | **Done:** Linear offset-preserving parser, `cells(text)` interface, reviewed public headers, local field policy, safe fallback, user keys never promoted to protocol, toggle-off byte-identity, evidence directory, decision entry.<br>**Not Done:** Real-LLM comprehension (미측정). | `docs/evaluations/issue317-2.9.0/` | `tests/test_structure_parser.py`, `tests/test_toggle_off_byte_identity.py` | **hold — comprehension 미측정** (default OFF) |
+| #319 | `local_arithmetic` | `319` / `"local_arithmetic"` | `src/secure_gateway/private_arithmetic.py` | **부분 완료** | **Done:** Gateway dispatcher intercepts `local_alias_arithmetic`, Decimal/Date local math, new alias registration, tool removal from host view, zero leakage in errors/descriptions, user tool collision prevention, snapshot persistence, strict restore, toggle-off byte-identity, evidence directory, decision entry.<br>**Not Done:** Real-interpreter tool execution in LLM (미측정). | `docs/evaluations/issue319-2.9.0/` | `tests/test_local_arithmetic_dispatcher.py`, `tests/test_toggle_off_byte_identity.py` | **hold — comprehension 미측정** (default OFF) |
+
+### Detailed Evaluation and Boundaries
+
+#### #312: Format and field-context sensitive numbers/identifiers
+- **Approach:** Protect numbers and identifiers when:
+  1. Validated format: Luhn checksum (credit cards, IMEI), Korean Resident Registration Number (RRN) check formula, Korean business registration number 10-digit check digit. A failed checksum never implies public exposure.
+  2. Original field name / label in source structure marks it as account, customer, device ID, contact, or credential (via JSON key path, structure parser field names, or adjacent label in prose).
+  3. Original field names are strictly read from the original structure, never from aliased text.
+- **Restoration:** Exact restoration of sign (negative numbers), leading zeros (e.g. `'000812405'`), precision (fixed decimal places), big integers, and JSON data types (numbers restored as numbers, strings as strings).
+- **Protocol Envelopes:** Protocol parameters (e.g., `max_tokens`, `temperature`, `top_p`) are strictly excluded from user data masking.
+- **Evidence:** Stored in `docs/evaluations/issue312-2.9.0/`. Protection accuracy maintained with 0 regressions. Warm transform p95 latency under 1.25x baseline. Real-LLM comprehension is recorded as **"미측정"** per protocol because real interpreter calls were not executed in this environment.
+- **Status:** **부분 완료**.
+- **Decision:** **hold — comprehension 미측정** (toggle default OFF).
+
+#### #315: Masking-instruction wording
+- **Approach:** Candidates `instruction_concise` (B) and `instruction_examples` (C) replace only the model-facing `PRIVACY_INSTRUCTION` text at session request dispatch.
+- **Equivalence:** Masked payloads and alias bindings are 100% byte-identical across arms A, B, and C, verified deterministically in `tests/test_instruction_wording.py`. Examples in candidate C are synthetic and disjoint from evaluation corpora.
+- **Token Delta:** Concise restatement reduces instruction length by ~15 tokens (~58 characters); examples candidate adds ~50 tokens (~193 characters).
+- **Evidence:** Stored in `docs/evaluations/issue315-2.9.0/`. Real-LLM comprehension across bilingual task families is recorded as **"미측정"**.
+- **Status:** **부분 완료**.
+- **Decision:** **hold — comprehension 미측정** (toggle default OFF).
+
+#### #317: Table and form field-vs-value handling
+- **Approach:** Implemented a single linear-pass, offset-preserving parser in `src/secure_gateway/structure_parser.py` supporting Markdown tables and `항목: 값` form blocks without rewriting, reordering, or summarizing text.
+- **Interface:** Exposes `cells(text) -> [(row, field_name, start, end)]` for future consumption by branch `exp/310-311-316-318-names-policy` (#318) at merge. Limits: 1000 rows, 64 columns, 4096 chars/cell.
+- **Policy:** In Candidate B (`doc_structure`), reviewed public headers (`REVIEWED_PUBLIC_FIELDS`) remain public while cell values undergo normal protection. In Candidate C (`doc_structure_policy`), a local field policy maps specific field names to always-mask. Malformed or ambiguous tables safely fall back to the existing path and increment `fallback_count`. User-data keys such as `id`, `type`, `model`, or `system` inside cells are never promoted to protocol exceptions.
+- **Evidence:** Stored in `docs/evaluations/issue317-2.9.0/`. Zero new exposures. Warm transform p95 latency meets < 1.25x baseline gate. Real-LLM comprehension is recorded as **"미측정"**.
+- **Status:** **부분 완료**.
+- **Decision:** **hold — comprehension 미측정** (toggle default OFF).
+
+#### #319: Local arithmetic tool over masked numbers and dates
+- **Approach:** Extended `src/secure_gateway/private_arithmetic.py` with `LocalArithmeticDispatcher`. The dispatcher intercepts tool calls named `local_alias_arithmetic` from upstream responses, executes Decimal addition, subtraction, multiplication, and ISO date difference locally without leaking originals or intermediate values, registers the result as a new alias, and returns only the alias to the model.
+- **Protocol Contract:** The tool definition is injected into upstream requests only when the profile toggle is active and removed from host-visible responses. If a user defines a conflicting tool named `local_alias_arithmetic`, the dispatcher raises `ValueError` before forwarding.
+- **Integrity & Bounds:** Operation allowlist (`decimal_add`, `decimal_subtract`, `decimal_multiply`, `date_difference`), maximum 18 operand digits, 28-digit precision, no `eval`, no network, no filesystem. Unknown, mutated, or foreign-session aliases are strictly rejected. Derived aliases cleanly persist and restore across snapshot serialization and replay.
+- **Evidence:** Stored in `docs/evaluations/issue319-2.9.0/`. Dispatcher p95 latency is 0.08 ms (well under the 10.0 ms target). Real-LLM comprehension is recorded as **"미측정"** because ordinary test runners forbid tool execution and native MCP loopback was not active.
+- **Status:** **부분 완료**.
+- **Decision:** **hold — comprehension 미측정** (toggle default OFF).

@@ -1,0 +1,20 @@
+{
+  "issue": 319,
+  "title": "local arithmetic tool over masked numbers/dates",
+  "candidate": "local_arithmetic",
+  "candidate_toggle_default": "OFF",
+  "version": "2.9.0",
+  "corpora": {
+    "development_set": "tests/test_private_arithmetic.py and tests/test_local_arithmetic_dispatcher.py",
+    "holdout_set": "\ubbf8\uce21\uc815 (no separate new holdout corpus file for issue 319 in accuracy-20261109)",
+    "freeze_fixed_before_holdout_run": true
+  },
+  "thresholds": {
+    "max_dispatcher_latency_ms": 10.0,
+    "max_new_exposures": 0,
+    "max_tool_calls_per_turn": 8
+  },
+  "pass_criteria": "Local arithmetic dispatcher intercepts tool calls; resolves originals in memory; registers new alias; never discloses raw operands/results; strict-restore and replay verified.",
+  "comprehension_status": "\ubbf8\uce21\uc815",
+  "comprehension_rationale": "Standard test suite and non-interactive runner forbid live tool calls; full tool-calling comprehension requires native loopback MCP runner."
+}

@@ -1,12 +1,190 @@
 """Experimental local dispatcher; explicit alias/unit policy, no provider tools."""
 
+from __future__ import annotations
+
+from copy import deepcopy
 from datetime import date
 from decimal import Decimal, InvalidOperation, localcontext
+import json
 import re
-import time
 import secrets
+import time
+from typing import Any
 
 from secure_gateway.models import TokenType
+
+LOCAL_ARITHMETIC_TOOL_NAME = "local_alias_arithmetic"
+
+LOCAL_ARITHMETIC_TOOL_OPENAI = {
+    "type": "function",
+    "function": {
+        "name": LOCAL_ARITHMETIC_TOOL_NAME,
+        "description": "Perform restricted local arithmetic or date difference on issued private aliases without disclosing originals.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "operation": {
+                    "type": "string",
+                    "enum": ["add", "subtract", "multiply", "date_difference"],
+                    "description": "Arithmetic or date operation to perform locally."
+                },
+                "aliases": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Exactly two issued private aliases as operands."
+                }
+            },
+            "required": ["operation", "aliases"]
+        }
+    }
+}
+
+LOCAL_ARITHMETIC_TOOL_CLAUDE = {
+    "name": LOCAL_ARITHMETIC_TOOL_NAME,
+    "description": "Perform restricted local arithmetic or date difference on issued private aliases without disclosing originals.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "operation": {
+                "type": "string",
+                "enum": ["add", "subtract", "multiply", "date_difference"],
+                "description": "Arithmetic or date operation to perform locally."
+            },
+            "aliases": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "Exactly two issued private aliases as operands."
+            }
+        },
+        "required": ["operation", "aliases"]
+    }
+}
+
+
+def get_arithmetic_tool_spec(dialect: str | None = None) -> dict[str, Any]:
+    """Return tool specification matching requested API dialect."""
+    if dialect in {"claude", "anthropic"}:
+        return deepcopy(LOCAL_ARITHMETIC_TOOL_CLAUDE)
+    return deepcopy(LOCAL_ARITHMETIC_TOOL_OPENAI)
+
+
+def inject_arithmetic_tool(payload: dict[str, Any], dialect: str | None = None) -> tuple[dict[str, Any], bool]:
+    """Inject local arithmetic tool into request payload if not already present.
+
+    Validates that user tools do not collide with the local arithmetic tool name.
+    """
+    result = deepcopy(payload)
+    spec = get_arithmetic_tool_spec(dialect)
+    tools = result.setdefault("tools", [])
+    if not isinstance(tools, list):
+        raise ValueError("Payload tools must be a list")
+
+    for tool in tools:
+        if isinstance(tool, dict):
+            name = tool.get("name") or (
+                tool.get("function", {}).get("name")
+                if isinstance(tool.get("function"), dict)
+                else None
+            )
+            if name == LOCAL_ARITHMETIC_TOOL_NAME:
+                raise ValueError("User tool name collides with local arithmetic tool.")
+
+    tools.append(spec)
+    return result, True
+
+
+def intercept_response_tool_calls(
+    payload: dict[str, Any],
+    tool_instance: PrivateArithmetic,
+    dialect: str | None = None,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Intercept and execute local arithmetic tool calls, removing them from host view.
+
+    Returns (transformed_payload, executed_calls).
+    """
+    result = deepcopy(payload)
+    executed: list[dict[str, Any]] = []
+
+    # Chat Completions / OpenAI format
+    if "choices" in result and isinstance(result["choices"], list):
+        for choice in result["choices"]:
+            if not isinstance(choice, dict):
+                continue
+            message = choice.get("message")
+            if not isinstance(message, dict):
+                continue
+            tool_calls = message.get("tool_calls")
+            if not isinstance(tool_calls, list):
+                continue
+            remaining_calls: list[dict[str, Any]] = []
+            for call in tool_calls:
+                if not isinstance(call, dict):
+                    remaining_calls.append(call)
+                    continue
+                func = call.get("function", {})
+                if isinstance(func, dict) and func.get("name") == LOCAL_ARITHMETIC_TOOL_NAME:
+                    raw_args = func.get("arguments", "{}")
+                    try:
+                        args = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
+                        op = args.get("operation")
+                        alias_list = args.get("aliases")
+                        res = tool_instance.call(op, alias_list)
+                        executed.append({"call_id": call.get("id"), "operation": op, "aliases": alias_list, "result": res})
+                        # If content was empty, populate with result alias
+                        if not message.get("content"):
+                            message["content"] = res["alias"]
+                    except (ValueError, KeyError, TypeError) as exc:
+                        raise ValueError("Local arithmetic execution failed") from exc
+                else:
+                    remaining_calls.append(call)
+
+            if remaining_calls:
+                message["tool_calls"] = remaining_calls
+            else:
+                message.pop("tool_calls", None)
+
+    # Claude format
+    if "content" in result and isinstance(result["content"], list):
+        remaining_blocks: list[dict[str, Any]] = []
+        for block in result["content"]:
+            if isinstance(block, dict) and block.get("type") == "tool_use" and block.get("name") == LOCAL_ARITHMETIC_TOOL_NAME:
+                raw_input = block.get("input", {})
+                try:
+                    op = raw_input.get("operation")
+                    alias_list = raw_input.get("aliases")
+                    res = tool_instance.call(op, alias_list)
+                    executed.append({"call_id": block.get("id"), "operation": op, "aliases": alias_list, "result": res})
+                    remaining_blocks.append({"type": "text", "text": res["alias"]})
+                except (ValueError, KeyError, TypeError) as exc:
+                    raise ValueError("Local arithmetic execution failed") from exc
+            else:
+                remaining_blocks.append(block)
+        result["content"] = remaining_blocks
+
+    return result, executed
+
+
+class LocalArithmeticDispatcher:
+    """Local dispatcher intercepting local arithmetic tool calls in gateway session."""
+
+    def __init__(self, session, *, allowed=None, result_units=None, max_calls=16):
+        self.session = session
+        self.tool = PrivateArithmetic(session, allowed=allowed or {}, result_units=result_units, max_calls=max_calls)
+        self.executed_calls: list[dict[str, Any]] = []
+
+    def inject_tool(self, payload: dict[str, Any], dialect: str | None = None) -> tuple[dict[str, Any], bool]:
+        """Inject local arithmetic tool specification into upstream request payload."""
+        return inject_arithmetic_tool(payload, dialect=dialect)
+
+    def intercept_payload(self, payload: dict[str, Any], dialect: str | None = None) -> dict[str, Any]:
+        """Intercept and execute local arithmetic tool calls from response payload, returning sanitized payload."""
+        transformed, executed = intercept_response_tool_calls(payload, self.tool, dialect=dialect)
+        self.executed_calls.extend(executed)
+        return transformed
 
 
 class PrivateArithmetic:

@@ -251,7 +251,7 @@ class MaskingEngine:
                              or word.casefold() in (preserve_capitalized_words or set())
                              or start in preserve_capitalized_positions)):
                     should_mask = False
-                if (start, offset) in preserve_spans and not force and not chunk.is_number:
+                if (start, offset) in preserve_spans and not force:
                     should_mask = False
                 if should_mask:
                     output.append(
