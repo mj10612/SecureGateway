@@ -363,6 +363,13 @@ def test_retention_discards_oldest_requests(tmp_path):
 
 def test_retention_failure_refuses_forwarding_without_orphan_and_can_retry(admin_gateway, monkeypatch):
     gateway, upstream = admin_gateway
+    gateway.audit.max_records = 1
+    with gateway.audit.connect() as db:
+        db.executemany(
+            "INSERT INTO requests(request_id,started_at,agent,provider,subscription,endpoint,destination,status) "
+            "VALUES (?, '2026-01-01T00:00:00+00:00', 'a', 'p', 's', 'e', 'd', 200)",
+            [("completed-1",), ("completed-2",)],
+        )
     def fail(*args, **kwargs):
         raise sqlite3.OperationalError("private-maintenance-path")
     headers = {"X-SecureGateway-Token": gateway.token, "Authorization": "Bearer eyJ-test"}
@@ -373,7 +380,8 @@ def test_retention_failure_refuses_forwarding_without_orphan_and_can_retry(admin
     assert upstream.received == [] and gateway.audit_write_errors == 1
     assert gateway.audit_error_diagnostics() == {"admission": 1, "completion": 0, "maintenance": 0}
     with gateway.audit.connect() as db:
-        assert db.execute("SELECT COUNT(*) FROM requests").fetchone()[0] == 0
+        assert db.execute("SELECT COUNT(*) FROM requests").fetchone()[0] == 2
+        assert db.execute("SELECT COUNT(*) FROM requests WHERE status IS NULL").fetchone()[0] == 0
     assert call(gateway, "/codex/responses", b'{"input":[]}', headers)[0] == 200
     assert len(upstream.received) == 1
 
