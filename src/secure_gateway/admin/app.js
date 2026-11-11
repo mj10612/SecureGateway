@@ -134,6 +134,7 @@ $("login-form").addEventListener("submit", async (event) => {
 $("logout").addEventListener("click", () => {
   token = ""; generation++; resetExport(); offset = 0; $("rows").replaceChildren(); $("detail-fields").replaceChildren();
   $("mask-rules").value = ""; $("mask-rules-status").textContent = "";
+  clearPreviewState();
   $("details").close(); $("dashboard").hidden = true; $("login").hidden = false; $("token").focus();
 });
 $("refresh").addEventListener("click", load);
@@ -256,3 +257,280 @@ $("domain-previous").addEventListener("click", () => { domainOffset = Math.max(0
 $("domain-next").addEventListener("click", () => { domainOffset += 25; searchDomain(); });
 $("close-details").addEventListener("click", () => $("details").close());
 setInterval(() => { if (token && $("auto-refresh").checked && !document.hidden && !$("dashboard").hidden) load(); }, 10000);
+
+// --- Admin Masking Preview Section (#342) ---
+let loadedFileText = "";
+let loadedFileName = "";
+let hasActiveResult = false;
+
+function decodeFileBuffer(buffer, fileName) {
+  const bytes = new Uint8Array(buffer);
+  if (bytes.length > 256 * 1024) {
+    throw new Error("파일 크기가 256 KiB를 초과합니다.");
+  }
+  const ext = (fileName.split(".").pop() || "").toLowerCase();
+  const unsupported = new Set([
+    "pdf", "docx", "doc", "zip", "tar", "gz", "png", "jpg", "jpeg", "gif", "webp", "bin", "exe",
+  ]);
+  if (unsupported.has(ext)) {
+    throw new Error("PDF, DOCX, 이미지, 압축파일, 바이너리는 지원하지 않습니다.");
+  }
+  for (let i = 0; i < bytes.length; i++) {
+    if (bytes[i] === 0) {
+      throw new Error("바이너리(NUL) 데이터가 감지되어 처리할 수 없습니다.");
+    }
+  }
+  try {
+    const decoder = new TextDecoder("utf-8", { fatal: true });
+    return decoder.decode(buffer);
+  } catch (_) {
+    throw new Error("UTF-8 인코딩으로 해석할 수 없는 파일입니다.");
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.PreviewDecoder = { decodeFileBuffer };
+}
+
+function clearPreviewState() {
+  loadedFileText = "";
+  loadedFileName = "";
+  hasActiveResult = false;
+  if ($("preview-text")) $("preview-text").value = "";
+  if ($("preview-file-input")) $("preview-file-input").value = "";
+  if ($("preview-file-info")) {
+    $("preview-file-info").textContent = "";
+    $("preview-file-info").hidden = true;
+  }
+  if ($("preview-status")) $("preview-status").textContent = "";
+  if ($("preview-stale")) $("preview-stale").hidden = true;
+  if ($("preview-summary-bar")) $("preview-summary-bar").hidden = true;
+  if ($("preview-comparison-container")) $("preview-comparison-container").replaceChildren();
+}
+
+function markPreviewStale() {
+  if (hasActiveResult && $("preview-stale")) {
+    $("preview-stale").hidden = false;
+  }
+}
+
+function updateLanguageOptions() {
+  const mode = $("preview-mode") ? $("preview-mode").value : "prose";
+  const select = $("preview-lang");
+  if (!select) return;
+
+  const proseOptions = [
+    { value: "auto", text: "자동 감지 (auto)" },
+    { value: "ko", text: "한국어 (ko)" },
+    { value: "en", text: "영어 (en)" },
+    { value: "ja", text: "일본어 (ja)" },
+    { value: "zh", text: "중국어 (zh)" },
+    { value: "de", text: "독일어 (de)" },
+    { value: "fr", text: "프랑스어 (fr)" },
+    { value: "es", text: "스페인어 (es)" },
+  ];
+
+  const codeOptions = [
+    { value: "auto", text: "자동 감지 (auto)" },
+    { value: "python", text: "Python" },
+    { value: "javascript", text: "JavaScript" },
+    { value: "typescript", text: "TypeScript" },
+    { value: "go", text: "Go" },
+    { value: "rust", text: "Rust" },
+    { value: "c", text: "C" },
+    { value: "cpp", text: "C++" },
+    { value: "java", text: "Java" },
+    { value: "sql", text: "SQL" },
+    { value: "bash", text: "Bash" },
+    { value: "powershell", text: "PowerShell" },
+  ];
+
+  const list = mode === "code" ? codeOptions : proseOptions;
+  select.replaceChildren(
+    ...list.map((opt) => {
+      const option = document.createElement("option");
+      option.value = opt.value;
+      option.textContent = opt.text;
+      return option;
+    })
+  );
+}
+
+function switchNav(hash) {
+  const target = hash === "#preview" ? "preview" : "overview";
+  if ($("nav-overview")) $("nav-overview").classList.toggle("active", target === "overview");
+  if ($("nav-preview")) $("nav-preview").classList.toggle("active", target === "preview");
+  if ($("overview")) $("overview").hidden = target !== "overview";
+  if ($("preview")) $("preview").hidden = target !== "preview";
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("hashchange", () => switchNav(typeof location !== "undefined" ? location.hash : ""));
+}
+if ($("nav-overview")) {
+  $("nav-overview").addEventListener("click", () => switchNav("#overview"));
+}
+if ($("nav-preview")) {
+  $("nav-preview").addEventListener("click", () => switchNav("#preview"));
+}
+
+if ($("tab-direct") && $("tab-file")) {
+  $("tab-direct").addEventListener("click", () => {
+    $("tab-direct").classList.add("active");
+    $("tab-direct").setAttribute("aria-selected", "true");
+    $("tab-file").classList.remove("active");
+    $("tab-file").setAttribute("aria-selected", "false");
+    $("pane-direct").hidden = false;
+    $("pane-file").hidden = true;
+    markPreviewStale();
+  });
+  $("tab-file").addEventListener("click", () => {
+    $("tab-file").classList.add("active");
+    $("tab-file").setAttribute("aria-selected", "true");
+    $("tab-direct").classList.remove("active");
+    $("tab-direct").setAttribute("aria-selected", "false");
+    $("pane-file").hidden = false;
+    $("pane-direct").hidden = true;
+    markPreviewStale();
+  });
+}
+
+if ($("preview-mode")) {
+  $("preview-mode").addEventListener("change", () => {
+    updateLanguageOptions();
+    markPreviewStale();
+  });
+}
+
+if ($("preview-lang")) {
+  $("preview-lang").addEventListener("change", markPreviewStale);
+}
+
+if ($("preview-text")) {
+  $("preview-text").addEventListener("input", markPreviewStale);
+}
+
+if ($("preview-file-input")) {
+  $("preview-file-input").addEventListener("change", (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const text = decodeFileBuffer(reader.result, file.name);
+        loadedFileText = text;
+        loadedFileName = file.name;
+        $("preview-file-info").textContent = `선택된 파일: ${file.name} (${num(file.size)} bytes, UTF-8 정상 검증)`;
+        $("preview-file-info").hidden = false;
+        $("preview-status").textContent = "";
+        markPreviewStale();
+      } catch (err) {
+        loadedFileText = "";
+        loadedFileName = "";
+        $("preview-file-input").value = "";
+        $("preview-file-info").textContent = err.message;
+        $("preview-file-info").hidden = false;
+        $("preview-status").textContent = err.message;
+      }
+    };
+    reader.onerror = () => {
+      $("preview-status").textContent = "파일을 읽을 수 없습니다.";
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+if ($("preview-clear")) {
+  $("preview-clear").addEventListener("click", clearPreviewState);
+}
+
+if ($("preview-submit")) {
+  $("preview-submit").addEventListener("click", async () => {
+    if (!token) return;
+    const isDirect = $("pane-direct") && !$("pane-direct").hidden;
+    const text = isDirect ? $("preview-text").value : loadedFileText;
+    if (!text) {
+      $("preview-status").textContent = "원문을 입력하거나 텍스트 파일을 선택하세요.";
+      return;
+    }
+    const mode = $("preview-mode") ? $("preview-mode").value : "prose";
+    const lang = $("preview-lang") ? $("preview-lang").value : "auto";
+
+    $("preview-submit").disabled = true;
+    $("preview-status").textContent = "처리 중…";
+    $("preview-status").setAttribute("aria-busy", "true");
+
+    const payload = { text, mode, language: lang };
+    if (mode === "code" && lang !== "auto") {
+      payload.code_language = lang;
+    }
+
+    try {
+      const response = await fetch("/admin/api/preview", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-SecureGateway-Token": token,
+        },
+        body: JSON.stringify(payload),
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) throw new Error("인증 토큰이 유효하지 않습니다.");
+        if (response.status === 403) throw new Error("로컬 Origin에서만 접근할 수 있습니다.");
+        if (response.status === 413) throw new Error("입력 크기가 256 KiB를 초과합니다.");
+        if (response.status === 429) throw new Error("현재 다른 미리보기를 처리 중입니다. 잠시 후 다시 시도하세요.");
+        if (response.status === 504) throw new Error("미리보기 처리 시간(10초)을 초과했습니다.");
+        throw new Error("미리보기 처리에 실패했습니다.");
+      }
+
+      const data = await response.json();
+      hasActiveResult = true;
+      if ($("preview-stale")) $("preview-stale").hidden = true;
+
+      // Update summary bar
+      if ($("prev-stat-replacements")) $("prev-stat-replacements").textContent = `${num(data.stats.replacement_count)}건`;
+      if ($("prev-stat-unique")) $("prev-stat-unique").textContent = `${num(data.stats.unique_alias_count)}개`;
+      if ($("prev-stat-latency")) {
+        $("prev-stat-latency").replaceChildren(
+          document.createTextNode(`${num(data.stats.duration_ms)} `),
+          element("em", "ms")
+        );
+      }
+      if ($("prev-stat-policy")) {
+        const modeLabel = data.stats.mode === "code" ? "코드" : "일반 문장";
+        $("prev-stat-policy").textContent = `${modeLabel} · ${data.stats.selected_language}`;
+      }
+      if ($("prev-stat-policy-detail")) {
+        const defenseOn = data.policy.domains && data.policy.domains.defense;
+        $("prev-stat-policy-detail").replaceChildren(
+          document.createTextNode(`강제 규칙 ${data.policy.forced_rule_count}건 · 방산 ${defenseOn ? "On" : "Off"} · `),
+          element("a", "설정 화면 ↗", "quiet")
+        );
+        $("prev-stat-policy-detail").querySelector("a").href = "#overview";
+      }
+      if ($("preview-summary-bar")) $("preview-summary-bar").hidden = false;
+
+      // Render Diff View
+      if (globalThis.ComparisonView && $("preview-comparison-container")) {
+        globalThis.ComparisonView.render($("preview-comparison-container"), {
+          original: text,
+          masked: data.masked,
+          spans: data.spans,
+          uncertain: data.uncertain,
+        });
+      }
+
+      $("preview-status").textContent = data.uncertain
+        ? "치환 완료 (구간 대응 불확실성 감지됨)"
+        : "치환 결과를 정상적으로 불러왔습니다.";
+    } catch (err) {
+      $("preview-status").textContent = err.message || "오류가 발생했습니다.";
+    } finally {
+      $("preview-submit").disabled = false;
+      $("preview-status").removeAttribute("aria-busy");
+    }
+  });
+}
+

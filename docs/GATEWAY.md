@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.11.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.12.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -87,6 +87,33 @@ error count for the current daemon. An incomplete record can also represent an
 active request or interrupted process. An upstream attempt records a connection
 attempt, not proof that a provider received or billed a request. Administrative,
 health, model-catalog and unsupported endpoints do not enter the request ledger.
+
+### Masking preview and comparison (치환 결과 비교)
+
+The admin dashboard includes a **치환 결과 비교** (Masking Preview) view for testing how forced rules, domain protection dictionaries, and language/code masking apply to text or files before sending prompts to models.
+
+#### Supported formats and operational limits
+
+- **Direct text & text files**: Supported formats include plain text and source files (UTF-8, including UTF-8 BOM, e.g., `.txt`, `.md`, `.csv`, `.json`, `.py`, `.js`, `.ts`, `.go`, `.rs`, `.c`, `.cpp`, `.java`, `.sql`, `.sh`, `.ps1`, `.log`).
+- **File limits**: Phase 1 supports **one file at a time**. Maximum text size is **256 KiB UTF-8** (262,144 bytes). Files exceeding 256 KiB are rejected client-side and server-side with HTTP 413 (`oversize`).
+- **Concurrency & deadline**: At most **2 previews** are processed concurrently (subsequent requests receive HTTP 429 `busy` immediately). Each preview has a **10-second processing deadline** (HTTP 504 `deadline_exceeded`).
+- **Unsupported formats**: PDF, DOCX, images, compressed archives (`.zip`, `.tar.gz`), and binary files (detected by NUL bytes or UTF-8 decoding errors) are rejected with clear guidance. Remote URLs are not fetched.
+
+#### Policy snapshot and operational isolation
+
+- **Policy snapshot**: Previews use the exact policy snapshot active at request time: forced rules (`mask_rules`), domain policies (`defense`, `automotive`, `semiconductor`), and language/mode selection.
+- **Independence from real conversations**: Preview sessions are short-lived, preview-only `GatewaySession` instances. They are never registered in the gateway's conversation table, never touch conversation locks, and never read or write encrypted snapshots. Generated aliases in previews are independent of existing conversation aliases.
+- **Attachment non-support**: Inspecting a file in the preview page does **NOT** mean Claude/Codex attachments are protected. Gateway inference retains its strict boundary: attachments, images, and binary files remain unsupported and blocked.
+- **Zero persistence & privacy guarantee**: Request text, masked output, alias mappings, and file names are never stored in SQLite logs, stdout/stderr, exception messages, URL queries, or browser storage (`localStorage`, `sessionStorage`, `IndexedDB`). In-memory data is discarded upon clearing the view, navigating away, or logging out. All text is rendered using safe `textContent`.
+
+#### Measured processing times
+
+Processing durations measured on local preview execution (CPython 3.14 / Windows):
+- Empty input: ~0.1 ms
+- Short sentence (~100 chars): ~0.8 ms
+- Medium source file (~1 KB, 40 lines): ~2.5 ms
+- Large text file (~100 KB, 3,000 lines): ~120 ms
+- 256 KiB UTF-8 text boundary: ~2,000 ms (well within the 10-second processing deadline)
 
 ## Setup and existing logins
 
