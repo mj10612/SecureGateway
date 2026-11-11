@@ -5,7 +5,6 @@ from __future__ import annotations
 import concurrent.futures
 import json
 import logging
-import re
 from threading import Semaphore
 import time
 from typing import Any
@@ -14,6 +13,7 @@ from secure_gateway.engine.code_parser import LANGUAGE_KEYWORDS
 from secure_gateway.engine.natural_languages import SUPPORTED_LANGUAGES
 from secure_gateway.gateway import GatewaySession, PrivacyGateway
 from secure_gateway.logging_config import log_failure
+from secure_gateway.span_derivation import derive_spans
 
 logger = logging.getLogger(__name__)
 
@@ -53,120 +53,6 @@ def create_preview_session(gateway: PrivacyGateway, natural_language: str = "aut
     session.engine.domain_spans = lambda text: gateway.domain_catalog.spans(text, domain_policy)
     session.domain_policy_version = snapshot["domain_policy_version"]
     return session
-
-
-def derive_spans(session: GatewaySession, original: str, masked: str) -> tuple[bool, list[dict[str, Any]]]:
-    """Derive aligned spans between original and masked text grounded in session mappings.
-
-    Reconstructs original and masked texts from aligned segments and verifies
-    session.restore(masked) == original. If verification fails for any reason,
-    returns (True, []) denoting uncertain mapping.
-    """
-    if not original:
-        return False, []
-
-    reverse_store = session.session.reverse_store
-    if not reverse_store:
-        try:
-            if session.restore(masked) != original:
-                return True, []
-        except Exception:
-            return True, []
-        return False, []
-
-    tokens: list[tuple[str, str]] = []
-    for surrogate in reverse_store:
-        tokens.append(("⟦" + surrogate + "⟧", surrogate))
-        tokens.append((surrogate, surrogate))
-    tokens.sort(key=lambda item: len(item[0]), reverse=True)
-
-    parts: list[str] = []
-    token_map: dict[str, str] = {}
-    for tok, surr in tokens:
-        if tok.startswith("⟦") and tok.endswith("⟧"):
-            pat = re.escape(tok)
-        elif tok[0].isalnum() and tok[-1].isalnum():
-            pat = r"(?<![A-Za-z0-9_])" + re.escape(tok) + r"(?![A-Za-z0-9_])"
-        else:
-            pat = re.escape(tok)
-        group_name = f"tok_{len(parts)}"
-        parts.append(f"(?P<{group_name}>{pat})")
-        token_map[group_name] = surr
-
-    pattern = re.compile("|".join(parts))
-
-    m_cursor = 0
-    o_cursor = 0
-    spans: list[dict[str, Any]] = []
-    uncertain = False
-
-    for i, match in enumerate(pattern.finditer(masked)):
-        matched_surrogate: str | None = None
-        for name, val in match.groupdict().items():
-            if val is not None:
-                matched_surrogate = token_map[name]
-                break
-        if matched_surrogate is None or matched_surrogate not in reverse_store:
-            uncertain = True
-            break
-        orig_val = reverse_store[matched_surrogate].original
-
-        public_seg = masked[m_cursor : match.start()]
-        if original[o_cursor : o_cursor + len(public_seg)] != public_seg:
-            uncertain = True
-            break
-        o_cursor += len(public_seg)
-        m_cursor = match.end()
-
-        if original[o_cursor : o_cursor + len(orig_val)] != orig_val:
-            uncertain = True
-            break
-        o_start = o_cursor
-        o_end = o_cursor + len(orig_val)
-        o_cursor = o_end
-
-        spans.append({
-            "index": i,
-            "original_start": o_start,
-            "original_end": o_end,
-            "masked_start": match.start(),
-            "masked_end": match.end(),
-            "alias": matched_surrogate,
-        })
-
-    if not uncertain:
-        trailing_m = masked[m_cursor :]
-        trailing_o = original[o_cursor :]
-        if trailing_m != trailing_o:
-            uncertain = True
-
-    if not uncertain:
-        recon_o: list[str] = []
-        recon_m: list[str] = []
-        last_o = 0
-        last_m = 0
-        for s in spans:
-            recon_o.append(original[last_o : s["original_start"]])
-            recon_o.append(reverse_store[s["alias"]].original)
-            recon_m.append(masked[last_m : s["masked_start"]])
-            recon_m.append(masked[s["masked_start"] : s["masked_end"]])
-            last_o = s["original_end"]
-            last_m = s["masked_end"]
-        recon_o.append(original[last_o :])
-        recon_m.append(masked[last_m :])
-
-        if "".join(recon_o) != original or "".join(recon_m) != masked:
-            uncertain = True
-        else:
-            try:
-                if session.restore(masked) != original:
-                    uncertain = True
-            except Exception:
-                uncertain = True
-
-    if uncertain:
-        return True, []
-    return False, spans
 
 
 def _execute_preview(

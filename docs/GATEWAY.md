@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.13.2 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.14.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -114,6 +114,18 @@ Processing durations measured on local preview execution (CPython 3.14 / Windows
 - Medium source file (~1 KB, 40 lines): ~2.5 ms
 - Large text file (~100 KB, 3,000 lines): ~120 ms
 - 256 KiB UTF-8 text boundary: ~2,000 ms (well within the 10-second processing deadline)
+
+### Content audit observability (치환·복원 감사)
+
+The admin dashboard provides an authenticated **치환·복원 감사** screen (`#audit`) for inspecting the actual recorded stages of historical gateway requests: original user input, upstream masked payload, model response, restored client text, and tool call arguments/results.
+
+#### Operational overview and limits
+
+- **Actual processing records**: Unlike the `#342` dry-run preview, this screen examines real historical executions stored in the dedicated AES-256-GCM encrypted database (`content-audit.sqlite3`).
+- **Grounded span verification**: Diff highlighting is server-verified from recorded event pairs and active/historical alias bindings. Pairs with unverified alignment, credential redactions, or missing kinds display an explicit notice ("대응 관계를 확인할 수 없음") without highlights. Unrestored aliases are highlighted with a `[미복원]` badge.
+- **Passphrase unlock & auto-lock**: Viewing decrypted content requires administrator passphrase unlock. Five consecutive incorrect attempts incur a 60-second rate-limit lockout. An idle countdown of 10 minutes automatically re-locks the store and purges decrypted content from memory upon timeout.
+- **In-memory privacy**: Decrypted audit events and passphrases are strictly ephemeral. Passphrases are cleared immediately upon API return. Decrypted data is wiped from memory upon lock, logout, screen exit, auto-lock, and page reload. No web storage is used.
+- **Explicit enablement flow**: Enabling content audit requires explicit acknowledgement of the sensitive data warning. Unobserved external tool traffic and unsupported attachments are not audited.
 
 ## Setup and existing logins
 

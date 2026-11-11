@@ -73,7 +73,7 @@
     searchInput.placeholder = "텍스트 검색…";
     searchInput.setAttribute("aria-label", "원문 및 치환 결과 내 검색");
 
-    const copyButton = el("button", "치환 결과 복사", "secondary diff-btn");
+    const copyButton = el("button", options.copyLabel || "치환 결과 복사", "secondary diff-btn");
     copyButton.type = "button";
     copyButton.setAttribute("aria-label", "치환 결과를 클립보드에 복사");
 
@@ -85,7 +85,8 @@
     if (uncertain) {
       const banner = el(
         "div",
-        "구간 대응 불확실: 변환 위치를 안전하게 일치시킬 수 없어 강조 표시를 생략했습니다. 원문과 치환 결과 텍스트 자체는 안전하게 제공됩니다.",
+        options.uncertainNotice ||
+          "대응 관계를 확인할 수 없음: 변환 위치를 안전하게 일치시킬 수 없어 강조 표시를 생략했습니다. 원문과 치환 결과 텍스트 자체는 안전하게 제공됩니다.",
         "diff-uncertain-banner"
       );
       banner.setAttribute("role", "alert");
@@ -98,19 +99,23 @@
     // Original Pane
     const origPane = el("div", undefined, "diff-pane diff-pane-original");
     const origHeader = el("div", undefined, "diff-pane-header");
-    origHeader.append(el("h3", "원문 (입력)"), el("small", "로컬 명시 확인"));
+    const origTitle = options.originalLabel || "원문 (입력)";
+    const origSubtitle = options.originalSubtitle || (options.originalLabel ? "" : "로컬 명시 확인");
+    origHeader.append(el("h3", origTitle), el("small", origSubtitle));
     const origContent = el("pre", undefined, "diff-content");
     origContent.setAttribute("tabindex", "0");
-    origContent.setAttribute("aria-label", "원문 텍스트");
+    origContent.setAttribute("aria-label", `${origTitle} 텍스트`);
     origPane.append(origHeader, origContent);
 
     // Masked Pane
     const maskPane = el("div", undefined, "diff-pane diff-pane-masked");
     const maskHeader = el("div", undefined, "diff-pane-header");
-    maskHeader.append(el("h3", "치환 결과 (마스킹)"), el("small", "전송될 형태"));
+    const maskTitle = options.maskedLabel || "치환 결과 (마스킹)";
+    const maskSubtitle = options.maskedSubtitle || (options.maskedLabel ? "" : "전송될 형태");
+    maskHeader.append(el("h3", maskTitle), el("small", maskSubtitle));
     const maskContent = el("pre", undefined, "diff-content");
     maskContent.setAttribute("tabindex", "0");
-    maskContent.setAttribute("aria-label", "치환 결과 텍스트");
+    maskContent.setAttribute("aria-label", `${maskTitle} 텍스트`);
     maskPane.append(maskHeader, maskContent);
 
     split.append(origPane, maskPane);
@@ -130,21 +135,31 @@
             document.createTextNode(original.slice(oCursor, span.original_start))
           );
         }
+        const isUnrestored = Boolean(span.unrestored);
+        const spanClass = isUnrestored
+          ? "diff-span diff-span-unrestored"
+          : "diff-span diff-span-orig";
         const spanNode = el(
           "mark",
           original.slice(span.original_start, span.original_end),
-          "diff-span diff-span-orig"
+          spanClass
         );
         spanNode.setAttribute("data-span-index", String(idx));
         spanNode.setAttribute("tabindex", "0");
         spanNode.setAttribute("role", "mark");
         spanNode.setAttribute(
           "aria-label",
-          `변경 ${idx + 1}: ${span.alias}로 치환됨`
+          isUnrestored
+            ? `미복원 별칭: ${span.alias}`
+            : `변경 ${idx + 1}: ${span.alias}로 치환됨`
         );
 
         // Badge indicator for non-color identification
-        const badge = el("span", `[${idx + 1}]`, "diff-badge");
+        const badge = el(
+          "span",
+          isUnrestored ? "[미복원]" : `[${idx + 1}]`,
+          isUnrestored ? "diff-badge diff-badge-unrestored" : "diff-badge"
+        );
         spanNode.prepend(badge);
 
         origContent.appendChild(spanNode);
@@ -164,20 +179,30 @@
             document.createTextNode(masked.slice(mCursor, span.masked_start))
           );
         }
+        const isUnrestored = Boolean(span.unrestored);
+        const spanClass = isUnrestored
+          ? "diff-span diff-span-unrestored"
+          : "diff-span diff-span-mask";
         const spanNode = el(
           "mark",
           masked.slice(span.masked_start, span.masked_end),
-          "diff-span diff-span-mask"
+          spanClass
         );
         spanNode.setAttribute("data-span-index", String(idx));
         spanNode.setAttribute("tabindex", "0");
         spanNode.setAttribute("role", "mark");
         spanNode.setAttribute(
           "aria-label",
-          `변경 ${idx + 1}: 원문 치환됨 (${span.alias})`
+          isUnrestored
+            ? `미복원 별칭: ${span.alias}`
+            : `변경 ${idx + 1}: 원문 치환됨 (${span.alias})`
         );
 
-        const badge = el("span", `[${idx + 1}]`, "diff-badge");
+        const badge = el(
+          "span",
+          isUnrestored ? "[미복원]" : `[${idx + 1}]`,
+          isUnrestored ? "diff-badge diff-badge-unrestored" : "diff-badge"
+        );
         spanNode.prepend(badge);
 
         maskContent.appendChild(spanNode);

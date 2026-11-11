@@ -19,6 +19,11 @@ from secure_gateway.content_audit_writer import ContentAuditWriter
 from secure_gateway.encrypted_session import SnapshotEncryption, decrypt_snapshot_bytes
 from secure_gateway.gateway_install import atomic_bytes
 from secure_gateway.logging_config import get_logger
+from secure_gateway.span_derivation import (
+    CREDENTIAL_PLACEHOLDER,
+    align_pair,
+    find_unrestored_aliases,
+)
 
 _logger = get_logger("content_audit")
 _REQUEST_ID = re.compile(r"[A-Za-z0-9_-]{1,128}\Z")
@@ -60,6 +65,29 @@ def _validate_settings(value: Any) -> dict[str, Any]:
     if retention["max_bytes"] < 256 * 1024:
         raise ValueError("Invalid settings")
     return deepcopy(value)
+
+
+def _extract_text(payload: Any) -> str:
+    if isinstance(payload, str):
+        return payload
+    if isinstance(payload, (int, float, bool)):
+        return str(payload)
+    if isinstance(payload, dict):
+        if "content" in payload and not any(k in payload for k in ("phase", "fields", "input", "text")):
+            return _extract_text(payload["content"])
+        if "text" in payload and isinstance(payload["text"], str):
+            return payload["text"]
+        if "fields" in payload:
+            return _extract_text(payload["fields"])
+        if "input" in payload:
+            return _extract_text(payload["input"])
+        return json.dumps(payload, ensure_ascii=False)
+    if isinstance(payload, list):
+        parts = [_extract_text(item) for item in payload]
+        if len(parts) > 1 and any("This context was masked locally" in p for p in parts):
+            parts = [p for p in parts if "This context was masked locally" not in p]
+        return "\n\n".join(parts) if len(parts) > 1 else (parts[0] if parts else "")
+    return str(payload) if payload is not None else ""
 
 
 class ContentAuditAdmin:
@@ -229,6 +257,377 @@ class ContentAuditAdmin:
     def verified_state(events: list[dict[str, Any]]) -> str:
         """Derive completeness only from an authenticated final marker."""
         return verified_state([(event["kind"], event["content"]) for event in events])
+
+    def get_bindings(self, request_id: str) -> dict[str, str]:
+        """Collect available alias->original bindings for a request."""
+        bindings: dict[str, str] = {}
+        if hasattr(self, "_test_bindings") and isinstance(self._test_bindings, dict):
+            if request_id in self._test_bindings:
+                bindings.update(self._test_bindings[request_id])
+            if "" in self._test_bindings:
+                bindings.update(self._test_bindings[""])
+        if hasattr(self, "_global_test_bindings") and isinstance(self._global_test_bindings, dict):
+            bindings.update(self._global_test_bindings)
+        return bindings
+
+    def analyze_request(self, request_id: str, events: list[dict[str, Any]], verified_state: str) -> dict[str, Any]:
+        """Analyze stages and derive verified spans between recorded pairs."""
+        input_event = None
+        sent_event = None
+        response_received = None
+        response_displayed = None
+        tool_args_masked = None
+        tool_args_restored = None
+        tool_result_orig = None
+        tool_result_remasked = None
+        review_info = None
+        finished_content: dict[str, Any] = {}
+
+        def unwrap(c: Any) -> tuple[Any, int]:
+            if isinstance(c, dict) and "content" in c and not any(k in c for k in ("phase", "fields", "input", "text")):
+                return c["content"], c.get("redactions", 0)
+            return c, 0
+
+        for event in events:
+            kind = event.get("kind")
+            raw_content = event.get("content", {})
+            content, redactions = unwrap(raw_content)
+            if kind in ("opened", "input"):
+                input_event = event
+            elif kind == "sent":
+                phase = content.get("phase", "sent") if isinstance(content, dict) else "sent"
+                if phase == "sent" or sent_event is None:
+                    sent_event = event
+            elif kind == "response":
+                phase = content.get("phase") if isinstance(content, dict) else None
+                if phase == "received" or (phase is None and response_received is None):
+                    response_received = event
+                elif phase == "displayed":
+                    response_displayed = event
+            elif kind == "tool_args":
+                phase = content.get("phase") if isinstance(content, dict) else None
+                if phase == "masked" or (phase is None and tool_args_masked is None):
+                    tool_args_masked = event
+                elif phase == "restored":
+                    tool_args_restored = event
+            elif kind == "tool_result":
+                phase = content.get("phase") if isinstance(content, dict) else None
+                if phase == "original" or (phase is None and tool_result_orig is None):
+                    tool_result_orig = event
+                elif phase == "remasked":
+                    tool_result_remasked = event
+            elif kind == "review":
+                if isinstance(content, dict):
+                    review_info = {
+                        "status": content.get("status"),
+                        "memo": content.get("memo"),
+                        "redactions": content.get("redactions", redactions),
+                    }
+            elif kind == "finished":
+                if isinstance(content, dict):
+                    finished_content = content
+
+        is_partial = (
+            verified_state != "완료"
+            or bool(finished_content.get("partial"))
+            or bool(finished_content.get("failed"))
+            or bool(finished_content.get("uncertain"))
+        )
+
+        request_bindings: dict[str, str] = dict(self.get_bindings(request_id))
+        stages: dict[str, Any] = {}
+
+        # 1. input_sent
+        if input_event is not None or sent_event is not None:
+            orig = _extract_text(input_event["content"]) if input_event else ""
+            masked = _extract_text(sent_event["content"]) if sent_event else ""
+            sent_phase = (
+                sent_event["content"].get("phase", "sent")
+                if sent_event and isinstance(sent_event.get("content"), dict)
+                else "sent"
+            )
+            if input_event is None or sent_event is None:
+                stages["input_sent"] = {
+                    "name": "입력 원문 ↔ 외부 전송",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (기록 누락)",
+                    "spans": [],
+                    "phase": sent_phase,
+                    "unrestored_aliases": [],
+                }
+            elif is_partial:
+                stages["input_sent"] = {
+                    "name": "입력 원문 ↔ 외부 전송",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (미완료 기록)",
+                    "spans": [],
+                    "phase": sent_phase,
+                    "unrestored_aliases": [],
+                }
+            elif CREDENTIAL_PLACEHOLDER in orig or CREDENTIAL_PLACEHOLDER in masked:
+                stages["input_sent"] = {
+                    "name": "입력 원문 ↔ 외부 전송",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (비밀 패턴 제거됨)",
+                    "spans": [],
+                    "phase": sent_phase,
+                    "unrestored_aliases": [],
+                }
+            else:
+                unc, spans, updated = align_pair(orig, masked, known_bindings=request_bindings)
+                if not unc:
+                    request_bindings.update(updated)
+                stages["input_sent"] = {
+                    "name": "입력 원문 ↔ 외부 전송",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": unc,
+                    "notice": "대응 관계를 확인할 수 없음" if unc else None,
+                    "spans": spans,
+                    "phase": sent_phase,
+                    "unrestored_aliases": [],
+                }
+
+        # 2. response
+        if response_received is not None or response_displayed is not None:
+            masked = _extract_text(response_received["content"]) if response_received else ""
+            orig = _extract_text(response_displayed["content"]) if response_displayed else ""
+            if response_received is None or response_displayed is None:
+                stages["response"] = {
+                    "name": "모델 수신 ↔ 로컬 표시",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (기록 누락)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            elif is_partial:
+                stages["response"] = {
+                    "name": "모델 수신 ↔ 로컬 표시",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (미완료 기록)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            elif CREDENTIAL_PLACEHOLDER in orig or CREDENTIAL_PLACEHOLDER in masked:
+                stages["response"] = {
+                    "name": "모델 수신 ↔ 로컬 표시",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (비밀 패턴 제거됨)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            else:
+                unc, spans, updated = align_pair(orig, masked, known_bindings=request_bindings)
+                if not unc:
+                    request_bindings.update(updated)
+                unrestored = find_unrestored_aliases(orig, request_bindings)
+                stages["response"] = {
+                    "name": "모델 수신 ↔ 로컬 표시",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": unc,
+                    "notice": "대응 관계를 확인할 수 없음" if unc else None,
+                    "spans": spans,
+                    "unrestored_aliases": unrestored,
+                }
+
+        # 3. tool_args
+        if tool_args_masked is not None or tool_args_restored is not None:
+            masked = _extract_text(tool_args_masked["content"]) if tool_args_masked else ""
+            orig = _extract_text(tool_args_restored["content"]) if tool_args_restored else ""
+            if tool_args_masked is None or tool_args_restored is None:
+                stages["tool_args"] = {
+                    "name": "도구 인자 (마스킹 ↔ 로컬 복원)",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (기록 누락)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            elif is_partial:
+                stages["tool_args"] = {
+                    "name": "도구 인자 (마스킹 ↔ 로컬 복원)",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (미완료 기록)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            elif CREDENTIAL_PLACEHOLDER in orig or CREDENTIAL_PLACEHOLDER in masked:
+                stages["tool_args"] = {
+                    "name": "도구 인자 (마스킹 ↔ 로컬 복원)",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (비밀 패턴 제거됨)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            else:
+                unc, spans, updated = align_pair(orig, masked, known_bindings=request_bindings)
+                if not unc:
+                    request_bindings.update(updated)
+                unrestored = find_unrestored_aliases(orig, request_bindings)
+                stages["tool_args"] = {
+                    "name": "도구 인자 (마스킹 ↔ 로컬 복원)",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": unc,
+                    "notice": "대응 관계를 확인할 수 없음" if unc else None,
+                    "spans": spans,
+                    "unrestored_aliases": unrestored,
+                }
+
+        # 4. tool_result
+        if tool_result_orig is not None or tool_result_remasked is not None:
+            orig = _extract_text(tool_result_orig["content"]) if tool_result_orig else ""
+            masked = _extract_text(tool_result_remasked["content"]) if tool_result_remasked else ""
+            if tool_result_orig is None or tool_result_remasked is None:
+                stages["tool_result"] = {
+                    "name": "도구 결과 (원문 ↔ 재마스킹)",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (기록 누락)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            elif is_partial:
+                stages["tool_result"] = {
+                    "name": "도구 결과 (원문 ↔ 재마스킹)",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (미완료 기록)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            elif CREDENTIAL_PLACEHOLDER in orig or CREDENTIAL_PLACEHOLDER in masked:
+                stages["tool_result"] = {
+                    "name": "도구 결과 (원문 ↔ 재마스킹)",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": True,
+                    "notice": "대응 관계를 확인할 수 없음 (비밀 패턴 제거됨)",
+                    "spans": [],
+                    "unrestored_aliases": [],
+                }
+            else:
+                unc, spans, updated = align_pair(orig, masked, known_bindings=request_bindings)
+                if not unc:
+                    request_bindings.update(updated)
+                stages["tool_result"] = {
+                    "name": "도구 결과 (원문 ↔ 재마스킹)",
+                    "original": orig,
+                    "masked": masked,
+                    "uncertain": unc,
+                    "notice": "대응 관계를 확인할 수 없음" if unc else None,
+                    "spans": spans,
+                    "unrestored_aliases": [],
+                }
+
+        if not stages:
+            stages["input_sent"] = {
+                "name": "입력 원문 ↔ 외부 전송",
+                "original": _extract_text(input_event["content"]) if input_event else "",
+                "masked": "",
+                "uncertain": True,
+                "notice": "대응 관계를 확인할 수 없음 (기록 누락)",
+                "spans": [],
+                "phase": "sent",
+                "unrestored_aliases": [],
+            }
+
+        top_uncertain = any(stg["uncertain"] for stg in stages.values()) if stages else True
+        all_spans: list[dict[str, Any]] = []
+        for stg in stages.values():
+            all_spans.extend(stg.get("spans", []))
+        top_spans = stages.get("input_sent", {}).get("spans") or all_spans
+
+        meta = {
+            "request_id": request_id,
+            "started_at": None,
+            "provider": None,
+            "agent": None,
+            "subscription": None,
+            "status": None,
+            "duration_ms": None,
+            "model": None,
+            "outcome": None,
+            "policy": {
+                "forced_rule_count": 0,
+                "domain_policy_version": "",
+                "domains": {},
+                "mode": "prose",
+                "language": "auto",
+            },
+        }
+        if self.gateway is not None and getattr(self.gateway, "audit", None) is not None:
+            try:
+                with self.gateway.audit.connect() as db:
+                    row = db.execute(
+                        "SELECT started_at, agent, provider, subscription, status, duration_ms, model, outcome "
+                        "FROM requests WHERE request_id=?",
+                        (request_id,),
+                    ).fetchone()
+                    if row:
+                        meta["started_at"] = row[0]
+                        meta["agent"] = row[1]
+                        meta["provider"] = row[2]
+                        meta["subscription"] = row[3]
+                        meta["status"] = row[4]
+                        meta["duration_ms"] = row[5]
+                        meta["model"] = row[6]
+                        meta["outcome"] = row[7]
+            except (sqlite3.Error, OSError, AttributeError):
+                # intentional: best-effort request metadata enrichment from audit ledger
+                pass
+
+        if self.gateway is not None and hasattr(self.gateway, "get_policy_snapshot"):
+            try:
+                snapshot = self.gateway.get_policy_snapshot()
+                meta["policy"] = {
+                    "forced_rule_count": len(snapshot.get("forced_rules", ())),
+                    "domain_policy_version": snapshot.get("domain_policy_version", ""),
+                    "domains": snapshot.get("domain_policy", {}),
+                    "mode": getattr(self.gateway, "prose_mode", "prose"),
+                    "language": getattr(self.gateway, "natural_language", "auto"),
+                }
+            except (AttributeError, RuntimeError, TypeError):
+                # intentional: best-effort gateway policy snapshot extraction
+                pass
+
+        verified_spans = {
+            "stages": stages,
+            "uncertain": top_uncertain,
+            "spans": top_spans,
+            "all_spans": all_spans,
+        }
+        for k, v in stages.items():
+            verified_spans[k] = v
+
+        return {
+            "verified_spans": verified_spans,
+            "stages": stages,
+            "metadata": meta,
+            "review": review_info,
+            "uncertain": top_uncertain,
+            "spans": top_spans,
+        }
 
     def review(self, request_id: str, status: str, memo: str) -> None:
         """Encrypt a review marker and its credential-redacted memo."""
@@ -404,7 +803,26 @@ def handle_content_admin(handler: Any) -> bool:
             if set(payload) != {"request_id"}:
                 raise ValueError("Invalid request")
             events = manager.get_request(payload["request_id"])
-            result, status = {"events": events, "verified_state": manager.verified_state(events)}, 200
+            v_state = manager.verified_state(events)
+            analysis = manager.analyze_request(payload["request_id"], events, v_state)
+            result = {
+                "events": events,
+                "verified_state": v_state,
+                "verified_spans": analysis["verified_spans"],
+                "stages": analysis["stages"],
+                "metadata": analysis["metadata"],
+                "review": analysis["review"],
+                "uncertain": analysis["uncertain"],
+                "spans": analysis["spans"],
+            }
+            status = 200
+        elif method == "POST" and endpoint in {"spans", "derive-spans", "verify-spans"}:
+            if set(payload) != {"request_id"}:
+                raise ValueError("Invalid request")
+            events = manager.get_request(payload["request_id"])
+            v_state = manager.verified_state(events)
+            analysis = manager.analyze_request(payload["request_id"], events, v_state)
+            result, status = analysis["verified_spans"], 200
         elif method == "POST" and endpoint == "review":
             if set(payload) != {"request_id", "status", "memo"}:
                 raise ValueError("Invalid request")
