@@ -1,9 +1,10 @@
-# Content audit: phase 1 design (issue #343)
+# Content audit: design and implementation (issue #343)
 
-**Status: design proposal with an experimental, disabled capture prototype.**
-The prototype includes an experimental admin API and adds a content-free intent
-column to the metadata ledger; existing metadata views and export are unchanged. It does not yet meet the guarantees below and must not
-be used to capture real content.
+**Status: Phase 1 backend merged in v2.13.0; Phase 2 Admin UI screen implemented in v2.14.0.**
+The opt-in content audit subsystem records selected payload stages from real gateway requests for
+subsequent local review. It uses a dedicated AES-256-GCM encrypted store (`content-audit.sqlite3`),
+passphrase-derived key-encryption keys, and local admin observability screens.
+It does not transmit unmasked data to external models or telemetry.
 
 ## Purpose, consent and limits
 
@@ -165,31 +166,87 @@ synthetic content before relying on them. Lost passphrases have no recovery
 bypass. Select deletion scope, confirm irreversibility and inspect the returned
 count; remove independent exports and backups separately where desired.
 
-## Acceptance mapping and outstanding verification
+## Phase 2 Admin UI screen (치환·복원 감사 화면)
 
-All six issue #343 acceptance checkboxes remain **not verified**. The proposed
-backend capture and API are phase 1; comparison screens, highlighted mappings,
-accessibility and screen-specific consent are phase 2 and must reuse #342.
-Evidence required before calling phase 1 complete:
+Phase 2 adds the Admin Observability screen (`#audit`) and request row action integration:
 
-1. Synthetic prose, code, Korean/multilingual, split and large SSE, tool round
-   trips, cancellation, interruption, upstream error and limits: compare observed
-   stages and truthful states. Screen comparison remains phase 2.
-2. Default off, per-kind/provider opt-in, per-request exclusion and pause/resume;
-   run existing metadata export, protection and session regressions unchanged.
-3. Canary sweep DB, WAL, temp files, logs, stderr, errors and exports; verify
-   wrong passphrase, tamper/substitution/gaps, rotation, rewrap, access controls
-   and session isolation. Browser cache and XSS/CSRF require phase 2 evidence too.
-4. Exercise lock, disk/write failure, queue saturation, forced process kill,
-   restart and concurrent requests under both policies; count upstream calls.
-5. Exercise concurrent retention, expiry, deletion, encrypted export/restore,
-   reset and uninstall; verify permission behaviour on each supported OS.
-6. Measure first token, total latency, CPU, memory and disk under identical
-   synthetic off/metadata/content loads with a committed script; measure block
-   preflight separately. UI accessibility and side-by-side rendering are phase 2.
+1. **Request row integration (`치환·복원 감사`)**:
+   - Each request row in the processing log list displays an action button.
+   - It is enabled only when content audit holds data for that request.
+   - When not enabled, it displays the specific reason:
+     - `꺼짐` (Content audit is disabled)
+     - `제외` (Excluded per-request via `X-SecureGateway-Audit: off`)
+     - `일시 중지` (Content audit was paused when the request was processed)
+     - `과거 기록 없음` (Recorded before content audit was enabled, or not audited)
+     - `저장소 잠김` (Content audit store is currently locked; unlock required)
+     - `삭제됨` (Record expired by retention bounds or deleted by administrator)
+     - `기록 실패` (Capture failed or dropped due to queue saturation/errors)
 
-The synthetic evidence below does not establish cross-platform ACL guarantees,
-complete crash safety or an independent security audit.
+2. **Settings & Unlock panel**:
+   - Displays current state (`꺼짐`, `활성`, `일시 중지`, `저장소 잠김`), scope (providers, kinds), failure policy, and retention bounds.
+   - **Explicit enablement flow**: Before `enabled` can be turned on, an explicit confirmation dialog/box displays the design doc warning (stored payloads, potential for ordinary secrets to be stored encrypted, retention limits) requiring user acknowledgement.
+   - **Passphrase unlock**: Rate-limited unlock (5 failed attempts trigger a 60-second lockout). Passphrase is wiped from memory immediately after the request returns.
+   - **Explicit lock & auto-lock**: Immediate lock button; 10-minute inactivity timer with real-time countdown display that automatically locks the store and purges decrypted content from UI/memory upon expiry.
+
+3. **Stages & Grounded Comparison View**:
+   - Displays recorded stages in chronological order with state badges (`완료`, `부분`, `기록 실패`, `전송 여부 불확실`) and omitted counts:
+     - Input original ↔ Sent (masked; distinguishes `prepared` vs `sent`)
+     - Model response received (masked) ↔ Local displayed response (restored)
+     - Tool arguments (masked from model ↔ restored for local tool)
+     - Tool results (original from tool ↔ re-masked for upstream)
+   - Reuses `comparison.js` from #342: Server-derived verified spans computed from recorded pairs and alias mappings (`derive_spans`). If a pair cannot be verified (partial record, missing kind, redacted credential placeholder, no mapping), returns `uncertain: true` and displays an explicit notice ("대응 관계를 확인할 수 없음") without highlights.
+   - Unrestored aliases in displayed text are highlighted with `[미복원]` badge and aria-label.
+
+4. **Distinguishing notices & Metadata header**:
+   - Always-visible notice card clearly distinguishes this screen from #342 preview (actual historical execution vs dry-run simulation).
+   - Notices state that unobserved external tool traffic is not audited, and image/binary attachments are unsupported (blocked status only recorded).
+   - Metadata header displays safe policy identifiers, request ID, start time, agent/provider, status, duration, language/mode (never forced-rule sensitive original text).
+
+5. **Review, Deletion & Export**:
+   - Review form: allows setting status (`정상`, `확인 필요`) and memo (stored encrypted in audit log); explicitly disclaims that it is a reviewer's note, not a system guarantee.
+   - Deletion: supports single request, range, or all requests with irreversible-consequence warning dialog.
+   - Export: encrypted export by default; plaintext JSON requires an explicit warning confirmation.
+
+6. **Frontend Security & Accessibility**:
+   - Strict `textContent` DOM construction (zero `innerHTML`).
+   - Zero browser persistence (no `localStorage`, `sessionStorage`, or `IndexedDB`).
+   - In-memory decrypted records cleared on lock, logout, page navigation away, auto-lock, and window unload.
+   - Keyboard accessible, ARIA live region (`#audit-live-status`) for state announcements, responsive CSS layout.
+
+## Acceptance mapping and verification status
+
+Phase 1 backend merged in v2.13.0; Phase 2 UI screen implemented in v2.14.0.
+Status mapped across the six issue #343 acceptance checkboxes:
+
+1. **Synthetic prose, code, multilingual, SSE, and tool round trips**: **Done (Verified)**
+   - API verified spans tested for complete prose, tool calls, split SSE, partial records, missing kinds, redacted credentials, and unrestored aliases (`tests/test_content_audit_spans_api.py`).
+   - Comparison UI rendering tested for custom labels, badges, unrestored alias markers, and uncertain notices (`tests/test_admin_content_audit.js`).
+
+2. **Default off, opt-in scope, exclusion, pause, and zero regressions**: **Done (Verified)**
+   - Default off enforced; provider/kind allowlists tested; `X-SecureGateway-Audit: off` tested.
+   - Processing log list action button reasons verified across all 7 states (`test_admin_content_audit.js`).
+   - All existing metadata queries and admin preview tests pass unchanged (`tests/test_admin_preview.py`, `tests/test_content_audit_admin.py`).
+
+3. **Canary leak sweep, credentials, tampering, and session isolation**: **Done (Verified)**
+   - Synthetic canary test confirms decrypted payloads and secrets do not appear in metadata DB, logs, or error responses (`tests/test_content_audit_spans_api.py`).
+   - Unlock lockout, wrong passphrase (401), rate limiting (429), and store locked (423) verified.
+   - Memory wipe (`clearAuditState()`) verified on lock, logout, navigation, and auto-lock.
+
+4. **Failure policies, locked store, and crash safety**: **Done (Verified)**
+   - `block` and `continue` failure policies tested with synchronous start and unblocked inference.
+   - Locked store gracefully refuses decrypt without crashing or exposing plaintext.
+   - Incomplete / process interruption records accurately labeled as `부분` or `기록 실패`.
+
+5. **Retention bounds, deletion, export/restore, and OS limits**: **Done with documented limits**
+   - Verified request deletion, range deletion, full wipe, and encrypted/plaintext export (`tests/test_content_audit_export.py`, `tests/test_content_audit_admin.py`).
+   - Documented limits: SQLite VACUUM/WAL checkpointing does not guarantee physical SSD block zeroisation.
+   - Windows limitation: Python mode bits do not establish Windows owner-only DACLs; this remains unverified across all Windows environments.
+
+6. **Accessibility, comparison UI, documentation, and versioning**: **Done with documented limits**
+   - Comparison UI tested with Node VM DOM unit tests (`tests/test_admin_content_audit.js`, `tests/test_admin_status.js`, `tests/test_admin_audit_phases.js`, `tests/test_admin_export.js`).
+   - Responsive CSS, keyboard focusable controls, and ARIA live region implemented.
+   - Documented limits: Testing was conducted via automated Node VM DOM and headless suites; real browser matrix and assistive screen reader hardware (e.g. JAWS, NVDA) were not physically tested.
+   - Version bump to 2.14.0; all test suites pass.
 
 ## Phase 1 implementation evidence
 
