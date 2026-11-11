@@ -295,3 +295,31 @@ def test_cancellation_does_not_wait_for_reader_buffer_lock_when_socket_wakeup_is
         unblock.set()
         worker.join(5)
     assert file_closed.wait(5), "reader thread did not close the handed-off file"
+
+
+def test_capture_errors_and_invalid_display_bytes_do_not_abort_stream(monkeypatch):
+    original_feed = EventRestorer.feed
+
+    def feed(self, value):
+        if value == ': synthetic':
+            return b': invalid \xff\n\n'
+        return original_feed(self, value)
+
+    class BrokenCapture:
+        def __init__(self):
+            self.failures = []
+
+        def observe_sse(self, *_args):
+            raise RuntimeError('synthetic capture failure')
+
+        def _failed(self, request_id):
+            self.failures.append(request_id)
+
+    monkeypatch.setattr(EventRestorer, 'feed', feed)
+    capture = BrokenCapture()
+    target = handler()
+    target.content_stream_capture = (capture, 'request1')
+    upstream = ChunkedUpstream([b': synthetic\n\ndata: [DONE]\n\n'])
+    relay_stream(target, upstream, GatewaySession(), heartbeat=0.05)
+    assert target.wfile.getvalue() == b': gateway connected\n\n: invalid \xff\n\ndata: [DONE]\n\n'
+    assert capture.failures

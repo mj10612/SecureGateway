@@ -218,6 +218,12 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=DEFAULT_STRE
     restorer = EventRestorer(session, dialect, limit)
     previous_cr = False
 
+    def capture_failure(capture):
+        try:
+            capture[0]._failed(capture[1])
+        except Exception:
+            pass
+
     def normalize(text):
         nonlocal previous_cr
         output = []
@@ -237,6 +243,14 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=DEFAULT_STRE
         handler.wfile.write(body)
         handler.wfile.flush()
         handler.stream_metrics["output_bytes"] += len(body)
+        capture = getattr(handler, "content_stream_capture", None)
+        if capture is not None:
+            try:
+                for frame in body.decode("utf-8").replace("\r\n", "\n").split("\n\n"):
+                    data = "\n".join(line[5:].lstrip() for line in frame.split("\n") if line.startswith("data:"))
+                    capture[0].observe_sse(capture[1], data, "displayed")
+            except Exception:
+                capture_failure(capture)
 
     primary: BaseException | None = None
     try:
@@ -262,6 +276,16 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=DEFAULT_STRE
                 body = restorer.feed(frame)
                 data = "\n".join(line[5:].lstrip() for line in frame.split("\n") if line.startswith("data:"))
                 event = json.loads(data) if data and data != "[DONE]" else {}
+                capture = getattr(handler, "content_stream_capture", None)
+                if capture is not None:
+                    try:
+                        capture[0].observe_sse(capture[1], data, "received")
+                    except Exception:
+                        capture_failure(capture)
+                    if data == "[DONE]" or isinstance(event, dict) and event.get("type") in {
+                        "response.completed", "message_stop"
+                    }:
+                        handler.content_stream_terminal = True
                 terminal = (data == "[DONE]" or isinstance(event, dict) and
                             event.get("type") in {"response.completed", "message_stop", "content_block_stop",
                                                   "response.output_item.done", "response.function_call_arguments.done",

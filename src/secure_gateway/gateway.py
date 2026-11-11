@@ -52,6 +52,8 @@ from secure_gateway.engine.grammar_en import CLOSED_CLASS_WORDS
 from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
 from secure_gateway.gateway_catalog import fetch_catalog
 from secure_gateway.gateway_audit import AuditMaintenanceError, AuditStore, anonymous_ref
+from secure_gateway.content_audit_capture import ContentAuditCapture
+from secure_gateway.content_audit_admin import ContentAuditAdmin, handle_content_admin
 from secure_gateway.gateway_admin import handle_admin, save_mask_rules
 from secure_gateway.gateway_vocabulary import select_gateway_language, domain_terms, DISCOURSE_WORDS, ENGLISH_NAMES, discourse_capital_positions
 from secure_gateway.gateway_name_vocabulary import NAME_WORDS
@@ -2397,11 +2399,14 @@ class PrivacyGateway(ThreadingHTTPServer):
                 raise ValueError("Rule file too large")
             self.mask_rules = self.validate_mask_rules(json.loads(decrypt_snapshot_bytes(encrypted_rules, token)))
         self.audit = AuditStore(audit_path, audit_max_records, audit_max_age_days) if audit_path is not None else None
+        # Content capture remains unavailable unless an explicit adapter is attached.
+        self.content_audit: ContentAuditCapture | None = None
         self.audit_write_errors = 0
         self.audit_error_counts = {"admission": 0, "completion": 0, "maintenance": 0}
         self._diagnostic_lock = RLock()
         self._diagnostic_counts = dict.fromkeys(_DIAGNOSTIC_CATEGORIES, 0)
         try:
+            self.content_admin = ContentAuditAdmin(self, audit_path.parent if audit_path else state_dir, token)
             if self.audit is not None:
                 self.audit.recover_incomplete(apply=True)
                 self.audit.retention(apply=True)
@@ -2409,6 +2414,9 @@ class PrivacyGateway(ThreadingHTTPServer):
             self.cleanup_expired_snapshots()
             self._start_catalog_preload()
         except BaseException:
+            manager = getattr(self, "content_admin", None)
+            if manager is not None:
+                manager.close()
             if self.audit is not None:
                 self.audit.close()
             raise
@@ -2930,6 +2938,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                 session.opaque.clear()
                 session.encryption = None
         self.sessions.clear()
+        self.content_admin.close()
         if self.audit is not None:
             self.audit.close()
 
@@ -3011,6 +3020,8 @@ class GatewayHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Handle do GET."""
+        if handle_content_admin(self):
+            return
         if handle_admin(self):
             return
         if self.path == "/xai/v1/models":
@@ -3082,6 +3093,9 @@ class GatewayHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         """Handle do POST."""
         self._request_body_consumed = False
+        self.content_stream_capture = None
+        self.content_stream_terminal = False
+        self.content_intent = "off"
         # Only fixed inference routes enter the ledger; never store caller paths,
         # query strings, error bodies, arbitrary headers or request/response text.
         request_path = self.path.partition("?")[0]
@@ -3117,16 +3131,22 @@ class GatewayHandler(BaseHTTPRequestHandler):
         agent = {"claude": "Claude Code", "codex": "Codex", "xai": "xAI client"}[provider]
         subscription = {"claude": "claude_subscription", "codex": "chatgpt_subscription",
                         "xai": "api_key"}[provider]
+        source = self.headers.get("X-SecureGateway-Agent")
+        content_agent = source if provider == "xai" and source in {"Grok Build", "Antigravity SDK"} else agent
+        capture = self.server.content_audit
+        intent = capture.intent(provider, self.headers.get("X-SecureGateway-Audit"), content_agent) if capture else "off"
         origin = urllib.parse.urlsplit(self.server.upstreams.get(provider, ""))
         destination = origin.scheme + "://" + origin.netloc.split("@")[-1] + origin.path
         try:
             request_id = audit.begin(
-                agent, provider, subscription, request_path, destination,
+                agent, provider, subscription, request_path, destination, intent,
             )
         except sqlite3.Error:
             self.server.record_audit_error("admission")
             self.send_body(503, b'{"error":"Audit storage unavailable; no request forwarded"}')
             return
+        self.content_request_id = request_id
+        self.content_intent = intent
         self.audit_metadata = {
             "agent": agent, "account_ref": None, "credential_ref": None,
             "model": None, "status": None, "outcome": "blocked",
@@ -3151,6 +3171,8 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 self.server.record_audit_error("completion")
 
     def _do_POST(self):
+        if handle_content_admin(self):
+            return
         if self.path == "/admin/api/mask-rules":
             save_mask_rules(self)
             return
@@ -3265,6 +3287,11 @@ class GatewayHandler(BaseHTTPRequestHandler):
         request_started = time.perf_counter()
         stage_started = request_started
         session = None
+        content_capture = None
+        content_id = ""
+        content_started = False
+        content_uncertain = False
+        content_complete = False
         if meta is not None:
             meta["credential_ref"] = anonymous_ref(self.server.token, "credential", auth)
             if agent == "codex":
@@ -3317,6 +3344,22 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 if meta is not None:
                     meta["new_aliases"] = max(0, len(session.session.forward_store) - before)
                 session.session.touch()
+            content_capture = self.server.content_audit
+            content_agent = {"claude": "Claude Code", "codex": "Codex", "xai": "xAI client"}[agent]
+            if agent == "xai" and self.headers.get("X-SecureGateway-Agent") in {"Grok Build", "Antigravity SDK"}:
+                content_agent = self.headers["X-SecureGateway-Agent"]
+            if self.content_intent == "capture" and content_capture is not None and content_capture.applies(
+                agent, self.headers.get("X-SecureGateway-Audit"), content_agent
+            ):
+                content_id = getattr(self, "content_request_id", None) or secrets.token_hex(16)
+                content_started = True
+                if not content_capture.begin(content_id, payload):
+                    self.send_body(503, b'{"error":"Content audit unavailable; no request forwarded"}')
+                    return
+                content_capture.observe(content_id, "tool_result", payload, "original")
+                content_capture.observe(content_id, "tool_result", masked, "remasked")
+                content_capture.observe(content_id, "sent", masked, "prepared")
+                self.content_stream_capture = (content_capture, content_id)
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": auth,
@@ -3357,9 +3400,14 @@ class GatewayHandler(BaseHTTPRequestHandler):
                     meta["upstream_attempted"] = 1
                     meta["outcome"] = "transport_error"
                 stage_started = time.perf_counter()
+                content_uncertain = content_started
                 upstream_response = opener.open(request, timeout=600)
+                content_uncertain = False
+                if content_started and content_capture is not None:
+                    content_capture.observe(content_id, "sent", masked, "sent")
                 timings["upstream_headers_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
             except urllib.error.HTTPError:
+                content_uncertain = False
                 raise
             except (OSError, http.client.HTTPException) as exc:
                 reason = getattr(exc, "reason", exc)
@@ -3386,6 +3434,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                         timings["first_event_ms"] = self.stream_metrics["first_event_ms"]
                         timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                         persist_completion()
+                        content_complete = not content_started or getattr(self, "content_stream_terminal", False)
                     except (ValueError, TypeError, KeyError, OSError, http.client.HTTPException):
                         if meta is not None:
                             meta["status"] = 502
@@ -3427,7 +3476,21 @@ class GatewayHandler(BaseHTTPRequestHandler):
                     stage_started = time.perf_counter()
                     self.server.save(agent, session)
                     timings["save_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
+            restored_response = None
+            if content_started and content_capture is not None and content_type.split(";", 1)[0].strip().lower() == "application/json":
+                try:
+                    masked_response = strict_json_loads(body)
+                    restored_response = strict_json_loads(restored)
+                except (ValueError, TypeError, UnicodeError):
+                    pass
+                else:
+                    content_capture.observe(content_id, "response", masked_response, "received")
+                    content_capture.observe(content_id, "tool_args", masked_response, "masked")
             self.send_body(200, restored, content_type)
+            if content_started and content_capture is not None and restored_response is not None:
+                content_capture.observe(content_id, "response", restored_response, "displayed")
+                content_capture.observe(content_id, "tool_args", restored_response, "restored")
+            content_complete = True
         except urllib.error.HTTPError as exc:
             if meta is not None:
                 meta["outcome"] = "upstream_rejected"
@@ -3450,6 +3513,8 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 strict_json_dumps(public_request_error(exc)).encode(),
             )
         finally:
+            if content_started and content_capture is not None:
+                content_capture.finish(content_id, uncertain=content_uncertain, interrupted=not content_complete)
             if session is not None:
                 with session.lock:
                     session.active_requests -= 1
@@ -3457,6 +3522,12 @@ class GatewayHandler(BaseHTTPRequestHandler):
             with self.server.admission:
                 self.server.recent_timings.append(timings)
             self.server.release_admission(agent)
+
+    def do_PUT(self):
+        """Handle authenticated content-audit settings updates."""
+        self._request_body_consumed = False
+        if not handle_content_admin(self):
+            self.send_body(404, b'{"error":"Unknown endpoint"}')
 
 
 def supported_query(query):
