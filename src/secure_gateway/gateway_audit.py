@@ -237,11 +237,13 @@ class AuditStore:
         """Handle begin."""
         if self.read_only or self._owner_file is None:
             raise ValueError("Audit store is read-only or closed.")
-        # Maintenance can fail independently. Complete it before publishing a
-        # request ID so admission failure cannot strand an unreachable live row.
-        self.retention(apply=True)
-        request_id = uuid4().hex
         with self.connect() as db:
+            # Check under the same writer lock as insertion so other stores
+            # cannot make retention due between the check and admission.
+            db.execute("BEGIN IMMEDIATE")
+            if self._retention_due(db):
+                self.retention(apply=True, _db=db)
+            request_id = uuid4().hex
             db.execute(
                 "INSERT INTO requests(request_id, started_at, agent, provider, "
                 "subscription, endpoint, destination, owner) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -305,13 +307,26 @@ class AuditStore:
             db.execute("BEGIN IMMEDIATE")
             self._retention_in_transaction(db, True)
 
-    def retention(self, apply=False):
+    def _retention_due(self, db):
+        completed = "(status IS NOT NULL OR outcome='interrupted')"
+        if db.execute("SELECT 1 FROM requests WHERE " + completed + " LIMIT 1 OFFSET ?",
+                      (self.max_records,)).fetchone():
+            return True
+        if self.max_age_days is not None:
+            cutoff = (datetime.now(timezone.utc) - timedelta(days=self.max_age_days)).isoformat()
+            return bool(db.execute("SELECT 1 FROM requests WHERE " + completed
+                                   + " AND started_at < ? LIMIT 1", (cutoff,)).fetchone())
+        return False
+
+    def retention(self, apply=False, *, _db=None):
         """Report candidates by default; only completed requests can be removed."""
         if apply and self.read_only:
             raise ValueError("Audit store is read-only.")
         if not self.path.exists():
             return {"max_records": self.max_records, "max_age_days": self.max_age_days,
                     "candidates": 0, "removed": 0, "dry_run": not apply}
+        if _db is not None:
+            return self._retention_in_transaction(_db, apply)
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE" if apply else "BEGIN")
             return self._retention_in_transaction(db, apply)
