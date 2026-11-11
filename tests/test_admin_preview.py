@@ -620,3 +620,15 @@ def test_client_side_decoder_logic_via_node():
     proc = subprocess.run(["node", "-e", js_test], capture_output=True, text=True)
     assert proc.returncode == 0, f"Node test failed with stdout: {proc.stdout}, stderr: {proc.stderr}"
 
+
+
+def test_preview_and_content_audit_routes_coexist(preview_gateway):
+    gateway, _, _, _ = preview_gateway
+    status, body, _ = admin_post(gateway, "/admin/api/preview", {"text": "hello"})
+    assert status == 200
+    assert body["masked"] == "hello"
+    status, body, _ = admin_post(
+        gateway, "/admin/api/content-audit/unlock",
+        {"passphrase": "synthetic-passphrase", "initialize": True},
+    )
+    assert status == 200

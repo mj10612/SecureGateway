@@ -93,6 +93,9 @@ class AuditStore:
             columns = {row[1] for row in db.execute("PRAGMA table_info(requests)")}
             if "owner" not in columns:
                 db.execute("ALTER TABLE requests ADD COLUMN owner TEXT")
+            if "content_audit" not in columns:
+                # Additive v2 extension; legacy rows remain NULL and existing exports are unchanged.
+                db.execute("ALTER TABLE requests ADD COLUMN content_audit TEXT")
             db.execute("PRAGMA user_version=2")
         path.chmod(0o600)
         owners = self.path.with_name(self.path.name + ".owners")
@@ -233,7 +236,7 @@ class AuditStore:
         finally:
             db.close()
 
-    def begin(self, agent, provider, subscription, endpoint, destination):
+    def begin(self, agent, provider, subscription, endpoint, destination, content_audit=None):
         """Handle begin."""
         if self.read_only or self._owner_file is None:
             raise ValueError("Audit store is read-only or closed.")
@@ -246,9 +249,9 @@ class AuditStore:
             request_id = uuid4().hex
             db.execute(
                 "INSERT INTO requests(request_id, started_at, agent, provider, "
-                "subscription, endpoint, destination, owner) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "subscription, endpoint, destination, owner, content_audit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (request_id, datetime.now(timezone.utc).isoformat(), agent,
-                 provider, subscription, endpoint, destination, self.owner),
+                 provider, subscription, endpoint, destination, self.owner, content_audit),
             )
         return request_id
 
@@ -390,6 +393,8 @@ class AuditStore:
                 "SELECT * FROM requests" + where + " ORDER BY id DESC LIMIT ? OFFSET ?",
                 values + [limit, offset],
             )]
+            for row in rows:
+                row.pop("content_audit", None)
         return {"summary": totals, "rows": rows, "limit": limit, "offset": offset,
                 "retention": self.retention()}
 
