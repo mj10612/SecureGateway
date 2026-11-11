@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SecureGateway · 관리자</title><link rel="icon" href="/admin/favicon.svg"><link rel="stylesheet" href="/admin/style.css">
+  <script src="/admin/comparison.js" defer></script>
   <script src="/admin/app.js" defer></script>
 </head>
 <body>
@@ -22,7 +23,9 @@
     <aside class="sidebar">
       <div class="brand"><span class="brand-icon">S</span> SecureGateway</div>
       <div class="workspace"><span class="dot"></span> 로컬 게이트웨이 <small>PRIVACY FIRST</small></div>
-      <p class="nav-label">WORKSPACE</p><a href="#overview" class="nav-item active">◈ <span>처리 로그</span></a>
+      <p class="nav-label">WORKSPACE</p>
+      <a href="#overview" id="nav-overview" class="nav-item active">◈ <span>처리 로그</span></a>
+      <a href="#preview" id="nav-preview" class="nav-item">◈ <span>치환 결과 비교</span></a>
       <div class="sidebar-bottom"><div class="local-note">SQLite 저장소<small>최근 100,000건 보관</small></div><button id="logout" class="quiet">로그아웃 ↗</button></div>
     </aside>
     <main id="overview">
@@ -78,6 +81,91 @@
         <footer class="pagination"><span id="page-info">0건</span><div><button id="previous" class="secondary" disabled>← 이전</button><button id="next" class="secondary" disabled>다음 →</button></div></footer>
       </section>
       <p class="fine footer-note">전송 시도는 업스트림 연결 시도를 뜻합니다. JSON 내보내기는 시작·종료 일시가 모두 필요하며 최대 31일, 파일당 1,000건으로 제한됩니다. 다음 파일이 있으면 연속해서 내려받을 수 있습니다. 원문, 응답, 인증 정보, 계정·자격 증명 식별자와 전송 목적지는 내보내지 않습니다.</p>
+    </main>
+    <main id="preview" hidden>
+      <header>
+        <div>
+          <p class="eyebrow">MASKING PREVIEW</p>
+          <h1>치환 결과 비교</h1>
+          <p class="muted">입력한 문장이나 텍스트 파일의 마스킹 결과를 확인하고 원문과의 대응을 살펴봅니다.</p>
+        </div>
+      </header>
+
+      <!-- Always visible notices -->
+      <section class="preview-notices-card" aria-label="미리보기 주의사항">
+        <h3>◈ 안내 및 주의사항</h3>
+        <ul class="notices-list">
+          <li><strong>대화 분리:</strong> 미리보기 별칭은 실제 대화의 이전 별칭과 독립적이며 새로 발급됩니다.</li>
+          <li><strong>첨부파일 차단 유지:</strong> 여기서 파일을 읽어볼 수 있다는 사실이 Claude/Codex 첨부파일이 보호된다는 의미가 아닙니다. 첨부파일·이미지·바이너리는 계속 지원되지 않으며 차단됩니다.</li>
+          <li><strong>강제 규칙 우선:</strong> 자동 감지가 모든 비밀을 찾아내지 못하며, 설정된 강제 치환 규칙이 항상 우선 적용됩니다.</li>
+          <li><strong>로컬 확인:</strong> 원문이 화면에 표시되는 것은 사용자가 로컬에서 명시적으로 확인을 요청했기 때문입니다. 외부 모델이나 로그로 전송되지 않습니다.</li>
+          <li><strong>단일 파일 제한:</strong> 1차 구현에서는 한 번에 1개의 로컬 텍스트 파일(최대 256 KiB UTF-8)만 지원합니다.</li>
+        </ul>
+      </section>
+
+      <!-- Input controls -->
+      <section class="routing preview-input-section">
+        <div class="preview-tabs" role="tablist" aria-label="입력 방식">
+          <button id="tab-direct" class="tab-btn active" role="tab" aria-selected="true" type="button">직접 입력</button>
+          <button id="tab-file" class="tab-btn" role="tab" aria-selected="false" type="button">파일 선택</button>
+        </div>
+
+        <div id="pane-direct" class="tab-pane">
+          <label for="preview-text" class="sr-only">원문 직접 입력</label>
+          <textarea id="preview-text" rows="8" placeholder="치환 결과를 확인할 문장이나 코드를 입력하세요…" spellcheck="false"></textarea>
+        </div>
+
+        <div id="pane-file" class="tab-pane" hidden>
+          <div class="file-picker-box">
+            <label for="preview-file-input" class="file-drop-label">
+              <span class="file-icon">📄</span>
+              <span>로컬 텍스트 파일 선택 (클릭)</span>
+              <small class="muted">지원: .txt, .md, .csv, .json, .py, .js 등 UTF-8 텍스트 (최대 256 KiB)</small>
+            </label>
+            <input id="preview-file-input" type="file" accept=".txt,.md,.csv,.json,.py,.js,.ts,.go,.rs,.c,.cpp,.h,.java,.sql,.sh,.ps1,.log">
+            <p id="preview-file-info" class="file-info" hidden></p>
+          </div>
+          <p class="fine">PDF, DOCX, 이미지, 압축파일(ZIP) 및 바이너리/원격 URL은 지원하지 않습니다.</p>
+        </div>
+
+        <div class="preview-options-bar">
+          <label>처리 모드
+            <select id="preview-mode">
+              <option value="prose">일반 문장 (prose)</option>
+              <option value="code">소스 코드 (code)</option>
+            </select>
+          </label>
+          <label id="label-lang">언어 / 힌트
+            <select id="preview-lang">
+              <option value="auto">자동 감지 (auto)</option>
+              <option value="ko">한국어 (ko)</option>
+              <option value="en">영어 (en)</option>
+              <option value="ja">일본어 (ja)</option>
+              <option value="zh">중국어 (zh)</option>
+              <option value="de">독일어 (de)</option>
+              <option value="fr">프랑스어 (fr)</option>
+              <option value="es">스페인어 (es)</option>
+            </select>
+          </label>
+          <div class="preview-actions">
+            <button id="preview-submit" type="button" class="primary">치환 결과 보기</button>
+            <button id="preview-clear" type="button" class="secondary">입력·결과 지우기</button>
+          </div>
+        </div>
+        <p id="preview-status" class="fine" role="status" aria-live="polite"></p>
+        <p id="preview-stale" class="banner" role="status" hidden>입력이 변경되었습니다. 새로운 결과를 보려면 [치환 결과 보기]를 누르세요.</p>
+      </section>
+
+      <!-- Summary bar -->
+      <section id="preview-summary-bar" class="stats" aria-label="미리보기 요약" hidden>
+        <article><span>치환 건수</span><strong id="prev-stat-replacements">0</strong><small>원문 변환 구간</small></article>
+        <article><span>고유 별칭 수</span><strong id="prev-stat-unique">0</strong><small>발급된 고유 별칭</small></article>
+        <article><span>처리 시간</span><strong id="prev-stat-latency">0 <em>ms</em></strong><small>로컬 마스킹 처리</small></article>
+        <article><span>적용 정책 / 모드</span><strong id="prev-stat-policy" style="font-size:16px;">—</strong><small id="prev-stat-policy-detail"><a href="#overview" class="quiet">설정 화면 ↗</a></small></article>
+      </section>
+
+      <!-- Comparison Container -->
+      <section id="preview-comparison-container" class="preview-diff-section"></section>
     </main>
   </div>
   <dialog id="details"><div class="detail-heading"><h2>요청 상세</h2><button id="close-details" class="quiet" aria-label="닫기">✕</button></div><dl id="detail-fields"></dl><p class="fine">계정 ID는 전달된 식별자를 익명화한 값입니다. 자격 증명 ID는 토큰이 갱신되면 변경될 수 있으며, 구독 요금제나 결제 계정을 증명하지 않습니다.</p></dialog>

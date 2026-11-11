@@ -49,6 +49,7 @@ def handle_admin(handler) -> bool:
     assets = {"/admin": ("index.html", "text/html; charset=utf-8"),
               "/admin/": ("index.html", "text/html; charset=utf-8"),
               "/admin/app.js": ("app.js", "text/javascript; charset=utf-8"),
+              "/admin/comparison.js": ("comparison.js", "text/javascript; charset=utf-8"),
               "/admin/style.css": ("style.css", "text/css; charset=utf-8"),
               "/admin/favicon.svg": ("favicon.svg", "image/svg+xml")}
     if url.path in assets:

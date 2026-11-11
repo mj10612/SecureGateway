@@ -2494,6 +2494,16 @@ class PrivacyGateway(ThreadingHTTPServer):
         return {**self.domain_catalog.status(self.domain_policy),
                 "source": self.domain_policy_origin, "persistent": self.domain_policy_path is not None}
 
+    def get_policy_snapshot(self) -> dict[str, Any]:
+        """Return a read-only policy snapshot for administrative preview."""
+        return {
+            "forced_rules": tuple(self.mask_rules),
+            "domain_policy": dict(self.domain_policy),
+            "domain_policy_version": self.domain_catalog.version + json.dumps(self.domain_policy, sort_keys=True),
+            "manifest_version": self.domain_catalog.version,
+            "domain_status": self.domain_status(),
+        }
+
     def set_domain_policy(self, value):
         """Handle set domain policy."""
         policy = self.validate_domain_policy(value)
@@ -3147,6 +3157,10 @@ class GatewayHandler(BaseHTTPRequestHandler):
         if self.path == "/admin/api/domain-policy":
             from secure_gateway.gateway_admin import save_domain_policy
             save_domain_policy(self)
+            return
+        if self.path == "/admin/api/preview":
+            from secure_gateway.admin_preview import handle_admin_preview
+            handle_admin_preview(self)
             return
         if not self.authorized():
             self.send_body(401, b'{"error":"Unauthorized"}')
