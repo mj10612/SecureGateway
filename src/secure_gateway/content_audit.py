@@ -87,6 +87,7 @@ class ContentAuditStore:
         try:
             fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
         except FileExistsError:
+            # intentional: audit store database file may already exist
             pass
         else:
             os.close(fd)
@@ -250,9 +251,9 @@ class ContentAuditStore:
         with self._mutex:
             self._require_unlocked()
             wrapping = self._wrapping_key
-            assert wrapping is not None
+            assert wrapping is not None  # invariant: guarded by _require_unlocked
             params = self._kdf_params
-            assert params is not None
+            assert params is not None  # invariant: guarded by _require_unlocked
             key = os.urandom(32)
             nonce = os.urandom(12)
             with self._connect() as db:

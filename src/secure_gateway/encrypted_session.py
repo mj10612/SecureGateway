@@ -227,7 +227,7 @@ def load_session(path: Path, password: str, session_id: str | None = None) -> Pr
             session.forward_store[key] = mapping
             session.reverse_store[mapping.surrogate] = mapping
             if mapping.identifier_base:
-                assert mapping.identifier_language is not None and mapping.identifier_key is not None
+                assert mapping.identifier_language is not None and mapping.identifier_key is not None  # invariant: validated by valid_identifier_alias
                 group = (mapping.identifier_language, mapping.identifier_key)
                 session.generator._identifier_groups.setdefault(group, []).append(mapping)
                 session.generator.restore_state([mapping.identifier_base])
@@ -276,6 +276,7 @@ def session_file_lock(path: Path):
             try:
                 os.link(temporary, lock)
             except FileExistsError:
+                # intentional: concurrent process already linked the lock file
                 pass
         finally:
             os.unlink(temporary)

@@ -482,6 +482,7 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
                 try:
                     blocked.extend(markdown_code_spans(text))
                 except ValueError:
+                    # intentional: unclosed markdown backticks fall back to unblocked text
                     pass
                 for match in re.finditer(r"https?://[^\s\"'<>]+|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", text):
                     blocked.append(match.span())

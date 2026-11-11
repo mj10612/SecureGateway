@@ -146,6 +146,7 @@ def diagnostic_logging(*, stream=None, filename=None):
             try:
                 destination.close()
             except Exception:
+                # intentional: diagnostic logger handler teardown must not raise or recurse
                 pass
 
     thread = Thread(target=deliver, name="gateway-diagnostics", daemon=True)
@@ -1291,7 +1292,7 @@ class GatewaySession:
                     allowed = set(verbs)
                     if skill_context and re.match(r"\s*Follow (?:its|the) instructions\b", sentence):
                         prefix = re.match(r"\s*Follow\b", sentence)
-                        assert prefix is not None
+                        assert prefix is not None  # invariant: guarded by broader Follow instructions match
                         output.append(self._mask_prose(prefix.group(), skill_verbs=frozenset({"follow"}), model_context_complete=False))
                         sentence = sentence[prefix.end():]
                     output.append(self._mask_prose(sentence, skill_verbs=frozenset(allowed), model_context_complete=complete))
@@ -3127,7 +3128,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
 
     def _audited_POST(self, provider, request_path):
         audit = self.server.audit
-        assert audit is not None
+        assert audit is not None  # invariant: caller checked self.server.audit is not None
         agent = {"claude": "Claude Code", "codex": "Codex", "xai": "xAI client"}[provider]
         subscription = {"claude": "claude_subscription", "codex": "chatgpt_subscription",
                         "xai": "api_key"}[provider]
@@ -3482,6 +3483,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                     masked_response = strict_json_loads(body)
                     restored_response = strict_json_loads(restored)
                 except (ValueError, TypeError, UnicodeError):
+                    # intentional: non-JSON or malformed payload skips JSON content audit capture
                     pass
                 else:
                     content_capture.observe(content_id, "response", masked_response, "received")

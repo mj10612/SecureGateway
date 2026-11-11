@@ -354,7 +354,8 @@ def stop_gateway(path: Path):
         try:
             _LOGGER.warning("gateway_shutdown forced=true")
         except Exception:
-            pass  # Optional diagnostics must not reverse a successful stop.
+            # intentional: optional diagnostics must not reverse a successful stop
+            pass
     return True
 
 

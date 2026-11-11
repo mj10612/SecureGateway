@@ -236,7 +236,7 @@ class ContentAuditAdmin:
             raise ValueError("Invalid review")
         with self._lock:
             events = self.get_request(request_id)
-            assert self.store is not None
+            assert self.store is not None  # invariant: initialized by get_request via _ensure_store
             clean, removals = redact_credentials(memo)
             self.store.append(request_id, "review", {"status": status, "memo": clean, "redactions": removals})
             last = events[-1]

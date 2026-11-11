@@ -78,7 +78,7 @@ def capture_command(
                 finished += 1
             changed.set()
 
-    assert process.stdout is not None and process.stderr is not None
+    assert process.stdout is not None and process.stderr is not None  # invariant: process spawned with stdout=PIPE and stderr=PIPE
     readers = [
         Thread(target=read_stream, args=(stream, index), daemon=True)
         for index, stream in enumerate((process.stdout, process.stderr))

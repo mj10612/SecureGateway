@@ -62,7 +62,7 @@ class SessionMappings(dict[str, TokenMapping]):
 
     def _index_original(self, original):
         node = self._original_trie
-        assert node is not None
+        assert node is not None  # invariant: _original_trie is initialized before _index_original call
         for char in original:
             node = node.setdefault(char, {})
         node[None] = original
@@ -117,7 +117,7 @@ class SessionMappings(dict[str, TokenMapping]):
             match = state if terminal[state] is not None else output[state]
             while match:
                 original = terminal[match]
-                assert original is not None
+                assert original is not None  # invariant: output links only point to terminal states with patterns
                 start = position + 1 - len(original)
                 if embedded or (not text[start].isspace() and (start == 0 or not re.match(boundary, text[start - 1]))):
                     found.add(original)

@@ -202,6 +202,7 @@ class ContentAuditWriter:
             try:
                 self._queue.put_nowait(("", "$status", None))
             except queue.Full:
+                # intentional: wake-up marker dropped because queue is full; pending states will be drained
                 pass
             else:
                 self._wake_pending = True
@@ -310,6 +311,7 @@ class ContentAuditWriter:
                 try:
                     _logger.warning("content_audit_write_failure")
                 except Exception:
+                    # intentional: logging must never raise into caller or recurse
                     pass
             try:
                 mark(request_id, state, byte_count, event_count)
@@ -317,6 +319,7 @@ class ContentAuditWriter:
                 try:
                     _logger.warning("content_audit_write_failure")
                 except Exception:
+                    # intentional: logging must never raise into caller or recurse
                     pass
                 continue
             with self._lock:

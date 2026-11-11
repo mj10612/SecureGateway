@@ -52,6 +52,7 @@ def kill_process_group(process: subprocess.Popen[bytes]) -> None:
                 check=False,
             )
         except (OSError, subprocess.TimeoutExpired):
+            # intentional: best-effort tree kill on Windows; process may already have exited
             pass
         return
     # POSIX-only: both names are absent from Windows interpreters and stubs.
@@ -61,7 +62,7 @@ def kill_process_group(process: subprocess.Popen[bytes]) -> None:
     try:
         killpg(process.pid, getattr(signal, "SIGKILL"))
     except (ProcessLookupError, PermissionError):
-        # Group termination can be unavailable even for an owned child.
+        # intentional: group termination can be unavailable even for an owned child
         pass
 
 
