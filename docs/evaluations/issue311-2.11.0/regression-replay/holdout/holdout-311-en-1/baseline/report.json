@@ -1,0 +1,497 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "8a045b2573b9402080c77365583bcad7",
+  "metadata": {
+    "package_version": "2.10.0",
+    "code_sha": "437a37d4df770abdce16d5e1ecda44e17ce4a5cc",
+    "source_hash": "70e9f4ba9edb928a1c4503b9f36566b1962db81dac08ed0cc3f88d8c6016a2ae",
+    "scoring_version": 2,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "ce5a49109da0f3b9aa35f19ede1b03906138ce80c34a8c02dd1fd351831c3000",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-311-en-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "1281496230e68abf621e5b5c10d83e14c03c28185112ce8fbfc9bc68b51fbef4",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "en"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "ko",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "holdout-311-en-1",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h311-editorial-role-card",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "reviewer_name",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "document_name",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 2,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.019323399999848334,
+      "timings_seconds": {
+        "request_transform": [
+          0.003474600000117789,
+          0.00013479999961418798
+        ],
+        "response_restore": [
+          0.00026109999998880085,
+          0.00017219999972439837
+        ]
+      },
+      "grading_alias_bindings": {},
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 17,
+          "label": "reviewer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 35,
+          "label": "document_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 8,
+          "label": "role_label",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 18,
+          "end": 26,
+          "label": "role_label",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 153,
+          "label": "intent",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 154,
+          "end": 231,
+          "label": "condition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 232,
+          "end": 276,
+          "label": "prohibition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 277,
+          "end": 325,
+          "label": "scope",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "completed",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 2,
+      "measured_sensitive": 2,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 0,
+      "full_exposures": 2,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.0,
+      "observed_accuracy": 0.0,
+      "requests_with_leak": 1,
+      "measured_requests": 1,
+      "total_requests": 1
+    },
+    "overmasking": {
+      "measured_public": 6,
+      "overmasked": 0,
+      "rate": 0.0
+    },
+    "integrity": {
+      "roundtrip_passed": 1,
+      "semantic_roundtrip_passed": 1,
+      "replay_passed": 1,
+      "measured_requests": 1,
+      "response_failures": 0,
+      "payload_replay_passed": 1,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "elapsed_seconds": 0.43021849999968254,
+  "performance": {
+    "request_transform_first_mapping_pass": {
+      "n": 1,
+      "p50": 0.003474600000117789,
+      "p95": 0.003474600000117789,
+      "p99": 0.003474600000117789
+    },
+    "request_transform_replay": {
+      "n": 1,
+      "p50": 0.00013479999961418798,
+      "p95": 0.00013479999961418798,
+      "p99": 0.00013479999961418798
+    },
+    "response_restore_first_mapping_pass": {
+      "n": 1,
+      "p50": 0.00026109999998880085,
+      "p95": 0.00026109999998880085,
+      "p99": 0.00026109999998880085
+    },
+    "response_restore_replay": {
+      "n": 1,
+      "p50": 0.00017219999972439837,
+      "p95": 0.00017219999972439837,
+      "p99": 0.00017219999972439837
+    }
+  },
+  "breakdown": {
+    "language": {
+      "en": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 0,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.0,
+          "observed_accuracy": 0.0,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 6,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "domain": {
+      "general": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 0,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.0,
+          "observed_accuracy": 0.0,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 6,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "dialect": {
+      "codex": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 0,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.0,
+          "observed_accuracy": 0.0,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 6,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "split": {
+      "holdout": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 0,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.0,
+          "observed_accuracy": 0.0,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 6,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "language_mode": {
+      "auto": {
+        "privacy": {
+          "total_sensitive": 2,
+          "measured_sensitive": 2,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 0,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.0,
+          "observed_accuracy": 0.0,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 6,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "policy": {
+      "contextual": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 0,
+        "full_exposures": 2,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.0,
+        "observed_accuracy": 0.0,
+        "requests_with_leak": 1,
+        "measured_requests": 1,
+        "total_requests": 1
+      }
+    },
+    "label": {
+      "document_name": {
+        "total_sensitive": 1,
+        "measured_sensitive": 1,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 0,
+        "full_exposures": 1,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.0,
+        "observed_accuracy": 0.0,
+        "requests_with_leak": 1,
+        "measured_requests": 1,
+        "total_requests": 1
+      },
+      "reviewer_name": {
+        "total_sensitive": 1,
+        "measured_sensitive": 1,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 0,
+        "full_exposures": 1,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.0,
+        "observed_accuracy": 0.0,
+        "requests_with_leak": 1,
+        "measured_requests": 1,
+        "total_requests": 1
+      }
+    }
+  }
+}

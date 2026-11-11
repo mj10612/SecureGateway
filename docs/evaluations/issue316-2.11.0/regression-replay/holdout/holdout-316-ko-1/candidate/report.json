@@ -1,0 +1,441 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "822844d444b347b4933146085d1da177",
+  "metadata": {
+    "package_version": "2.10.0",
+    "code_sha": "437a37d4df770abdce16d5e1ecda44e17ce4a5cc",
+    "source_hash": "70e9f4ba9edb928a1c4503b9f36566b1962db81dac08ed0cc3f88d8c6016a2ae",
+    "scoring_version": 2,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "80dadc5f4c8a596449246d4736d6426d500a57062a389567ef6f3d419025c6dc",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-316-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "2a21e0ace38828542f207218b911354e469e15bb3ba7778b938715654b22080f",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "ko"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "en",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "holdout-316-ko-1",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h316-local-correction-supply",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "project_name",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "workspace-A에서 내가 앞서 명시적으로 정정한 비공개 가상 이름은 private_symbol_1private_symbol_2 한국어 작업에만 적용합니다. 전시 소모품을 분류할 기준을 작성해 주세요. 보관 규정이 오면 그 규정만 사용하고, 아직 없으면 먼저 요청해 주세요. 정정한 이름을 공개하거나 물품을 폐기하지 마세요. 이 정정은 workspace-A에만 적용하고 이번 전시의 분류 기준만 다뤄 주세요."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "workspace-A에서 내가 앞서 명시적으로 정정한 비공개 가상 이름은 구름이며 한국어 작업에만 적용합니다. 전시 소모품을 분류할 기준을 작성해 주세요. 보관 규정이 오면 그 규정만 사용하고, 아직 없으면 먼저 요청해 주세요. 정정한 이름을 공개하거나 물품을 폐기하지 마세요. 이 정정은 workspace-A에만 적용하고 이번 전시의 분류 기준만 다뤄 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.02255590000004304,
+      "timings_seconds": {
+        "request_transform": [
+          0.0076589999998759595,
+          0.00012090000018361025
+        ],
+        "response_restore": [
+          0.00021809999998367857,
+          0.0002027000000452972
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "구름",
+        "private_symbol_2": "이며"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 41,
+          "end": 43,
+          "label": "project_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 62,
+          "end": 86,
+          "label": "intent",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 87,
+          "end": 127,
+          "label": "condition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 128,
+          "end": 155,
+          "label": "prohibition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 156,
+          "end": 202,
+          "label": "scope",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "completed",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 1,
+      "measured_sensitive": 1,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 1,
+      "full_exposures": 0,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 1.0,
+      "observed_accuracy": 1.0,
+      "requests_with_leak": 0,
+      "measured_requests": 1,
+      "total_requests": 1
+    },
+    "overmasking": {
+      "measured_public": 4,
+      "overmasked": 0,
+      "rate": 0.0
+    },
+    "integrity": {
+      "roundtrip_passed": 1,
+      "semantic_roundtrip_passed": 1,
+      "replay_passed": 1,
+      "measured_requests": 1,
+      "response_failures": 0,
+      "payload_replay_passed": 1,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "elapsed_seconds": 0.41684340000028897,
+  "performance": {
+    "request_transform_first_mapping_pass": {
+      "n": 1,
+      "p50": 0.0076589999998759595,
+      "p95": 0.0076589999998759595,
+      "p99": 0.0076589999998759595
+    },
+    "request_transform_replay": {
+      "n": 1,
+      "p50": 0.00012090000018361025,
+      "p95": 0.00012090000018361025,
+      "p99": 0.00012090000018361025
+    },
+    "response_restore_first_mapping_pass": {
+      "n": 1,
+      "p50": 0.00021809999998367857,
+      "p95": 0.00021809999998367857,
+      "p99": 0.00021809999998367857
+    },
+    "response_restore_replay": {
+      "n": 1,
+      "p50": 0.0002027000000452972,
+      "p95": 0.0002027000000452972,
+      "p99": 0.0002027000000452972
+    }
+  },
+  "breakdown": {
+    "language": {
+      "ko": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "domain": {
+      "general": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "dialect": {
+      "codex": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "split": {
+      "holdout": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "language_mode": {
+      "auto": {
+        "privacy": {
+          "total_sensitive": 1,
+          "measured_sensitive": 1,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 0,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 1.0,
+          "observed_accuracy": 1.0,
+          "requests_with_leak": 0,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "policy": {
+      "contextual": {
+        "total_sensitive": 1,
+        "measured_sensitive": 1,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 1,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 1,
+        "total_requests": 1
+      }
+    },
+    "label": {
+      "project_name": {
+        "total_sensitive": 1,
+        "measured_sensitive": 1,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 1,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 1,
+        "total_requests": 1
+      }
+    }
+  }
+}

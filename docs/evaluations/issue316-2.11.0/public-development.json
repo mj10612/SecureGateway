@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "corpus_version": "correction-public-development-2.10.0-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "dev-public-public",
+      "issue_number": 316,
+      "template_group": "public",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Review Mirel tomorrow. Ask before publishing."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 7,
+          "end": 12,
+          "label": "name"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "Review Mirel tomorrow. Ask before publishing.",
+      "smoke": true,
+      "local_policy": {
+        "trusted_project": "local-A",
+        "workspace": "local-A",
+        "language": "en",
+        "policyrecords": [],
+        "public_records": [
+          {
+            "term": "Mirel",
+            "project": "local-A",
+            "language": "en",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-public-forced",
+      "issue_number": 316,
+      "template_group": "forced",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Review Mirel tomorrow. Ask before publishing."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 7,
+          "end": 12,
+          "label": "name",
+          "fragments": [],
+          "policy": "explicit",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [
+        "Mirel"
+      ],
+      "rubric": [],
+      "human_text": "Review private_symbol_1 tomorrow. Ask before publishing.",
+      "smoke": true,
+      "local_policy": {
+        "trusted_project": "local-A",
+        "workspace": "local-A",
+        "language": "en",
+        "policyrecords": [],
+        "public_records": [
+          {
+            "term": "Mirel",
+            "project": "local-A",
+            "language": "en",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-public-wrong",
+      "issue_number": 316,
+      "template_group": "wrong",
+      "split": "development",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Review Mirel tomorrow. Ask before publishing."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 7,
+          "end": 12,
+          "label": "name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "rubric": [],
+      "human_text": "Review private_symbol_1 tomorrow. Ask before publishing.",
+      "smoke": true,
+      "local_policy": {
+        "trusted_project": "local-A",
+        "workspace": "local-A",
+        "language": "en",
+        "policyrecords": [],
+        "public_records": [
+          {
+            "term": "Mirel",
+            "project": "local-A",
+            "language": "en",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      }
+    }
+  ]
+}

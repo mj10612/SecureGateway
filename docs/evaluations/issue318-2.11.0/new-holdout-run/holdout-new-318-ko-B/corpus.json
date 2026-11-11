@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "corpus_version": "names-policy-holdout-2.10.0-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-new-318-ko-B",
+      "issue_number": 318,
+      "template_group": "holdout-new-318-ko-B",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "고객: 다온; 장소: 새빛; 기한: 2038-06-21; 상태: 대기"
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 4,
+          "end": 6,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 12,
+          "end": 14,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 20,
+          "end": 30,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Carry out the requested action."
+        },
+        {
+          "id": "condition",
+          "description": "Respect the stated condition."
+        },
+        {
+          "id": "prohibition",
+          "description": "Respect any stated prohibition."
+        },
+        {
+          "id": "scope",
+          "description": "Keep the requested output scope."
+        }
+      ],
+      "human_text": "고객: private_symbol_1; 장소: private_symbol_2; 기한: private_symbol_3; 상태: 대기",
+      "smoke": true,
+      "local_policy": {
+        "document_sha256": "91a7178367ed30c237fb900ab65fc839d67c8858e00530e86cb7036335854bd8",
+        "scope": [
+          0,
+          38
+        ],
+        "required_fields": [
+          "고객",
+          "장소",
+          "기한"
+        ],
+        "protect_fields": [
+          "고객",
+          "장소",
+          "기한"
+        ]
+      },
+      "candidate_arm": "B"
+    }
+  ]
+}

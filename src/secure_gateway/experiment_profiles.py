@@ -18,7 +18,9 @@ import unicodedata
 from secure_gateway import gateway
 from secure_gateway.engine.natural_languages import detect_natural_language
 from secure_gateway.domain_dictionaries import protect_chunks
-from secure_gateway.experiment_context import bundle_spans, name_spans
+from secure_gateway.experiment_bundle import bundle_spans
+from secure_gateway.experiment_corrections import validate_record
+from secure_gateway.experiment_name_context import role_declarations, trusted_name_spans, user_texts
 from secure_gateway.experiment_korean import preserve_spans as korean_spans
 from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
 from secure_gateway.gateway_vocabulary import (
@@ -90,10 +92,10 @@ EXAMPLE_INSTRUCTION = CONCISE_INSTRUCTION + (
     "Two different aliases do not imply equal values, and their numeric suffixes are not quantities.\n"
 )
 _ROLE_FIELD = re.compile(
-    r"(?im)(?<!\w)(?P<role>reviewer|document|person|organization|project|받는[ \t]*사람|검토[ \t]*문서|문서|담당자)"
+    r"(?im)(?<!\w)(?P<role>project[ \t]+name|company[ \t]+name|customer[ \t]+name|reviewer|document|person|organization|project|받는[ \t]*사람|검토[ \t]*문서|문서|담당자)"
     r"[ \t]*[:：][ \t]*(?P<value>[\w가-힣]+(?:[-'][\w가-힣]+)*)"
 )
-_ROLES = {"reviewer": "person", "person": "person", "document": "document", "organization": "organization",
+_ROLES = {"projectname": "project", "companyname": "organization", "customername": "organization", "reviewer": "person", "person": "person", "document": "document", "organization": "organization",
           "project": "project", "받는사람": "person", "검토문서": "document", "문서": "document", "담당자": "person"}
 _ACTIVE = False
 
@@ -108,6 +110,10 @@ PROFILE_ALIASES: dict[str, tuple[int, dict[str, Any]]] = {
     "segment_language": (313, {}),
     "vocab_conservative": (314, {"variant": "conservative"}),
     "vocab_calibrated": (314, {"variant": "calibrated"}),
+    "name_role_context": (310, {}),
+    "role_alias": (311, {}),
+    "scoped_corrections": (316, {}),
+    "attribute_bundle": (318, {}),
 }
 
 
@@ -145,6 +151,9 @@ def _corrections(policy):
     result = []
     now = datetime.now(timezone.utc).timestamp()
     for record in records:
+        if isinstance(record, dict) and set(record) == {"term", "project", "language", "source", "policy_version", "created_at", "expires_at", "revoked"}:
+            validate_record(record)
+            record = {key: record[key] for key in ("term", "project", "language", "source", "expires_at", "revoked")}
         if (not isinstance(record, dict) or set(record) != {"term", "project", "language", "source", "expires_at", "revoked"}
                 or not isinstance(record["term"], str) or not 1 <= len(record["term"]) <= 256
                 or not isinstance(record["project"], str) or record["language"] not in {"en", "ko"}
@@ -214,19 +223,19 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
     allowed = {
         309: set(),
         310: set(),
-        311: {"allow_roles", "confidential_roles"},
+        311: {"allow_roles", "confidential_roles", "with_name_context"},
         312: {"variant"},
         313: set(),
         314: {"variant", "cutoff", "cutoff_en", "cutoff_ko"},
         315: {"variant"},
-        316: {"trusted_project", "workspace", "language", "policyrecords"},
+        316: {"trusted_project", "workspace", "language", "policyrecords", "public_records"},
         317: {"variant", "field_policy"},
         318: {"document_sha256", "scope", "required_fields", "protect_fields"},
         319: {"variant", "allowed", "result_units", "max_calls"},
     }
     if set(config) - allowed[issue]:
         raise ValueError("Unsupported candidate policy fields")
-    if issue == 311 and (type(config.get("allow_roles", False)) is not bool or type(config.get("confidential_roles", False)) is not bool):
+    if issue == 311 and any(type(config.get(key, False)) is not bool for key in ("allow_roles", "confidential_roles", "with_name_context")):
         raise ValueError("Role disclosure requires explicit boolean policy")
     if issue == 315 and config.get("variant", "concise") not in {"concise", "example", "instruction_concise", "instruction_examples"}:
         raise ValueError("Unknown instruction variant")
@@ -235,7 +244,13 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
     if issue == 317 and "field_policy" in config and not isinstance(config["field_policy"], dict):
         raise ValueError("Field policy must be a dictionary")
 
-    correction_terms = _corrections(config) if issue == 316 else ()
+    correction_terms = _corrections({key: value for key, value in config.items() if key != "public_records"}) if issue == 316 else ()
+    public_terms: tuple = ()
+    if issue == 316 and "public_records" in config:
+        public_policy = {key: value for key, value in config.items() if key != "public_records"}
+        public_policy["policyrecords"] = config["public_records"]
+        public_terms = _corrections(public_policy)
+    use_names = issue == 310 or issue == 311 and config.get("with_name_context", False)
     original_session, original_engine = gateway.GatewaySession, gateway.SharedEngine
     original_words, original_instruction = gateway.ordinary_words, gateway.PRIVACY_INSTRUCTION
 
@@ -255,9 +270,7 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
             try:
                 chunks = super()._chunks(text, terms, language, literal_aliases)
                 spans = []
-                if issue == 310:
-                    spans = name_spans(text)
-                elif issue == 312:
+                if issue == 312:
                     spans = context_numeric_spans(text)
                 elif issue == 317:
                     field_pol = config.get("field_policy") if config.get("variant") == "doc_structure_policy" else None
@@ -270,6 +283,36 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
 
         def mask_text(self, *args, private_context=False, **kwargs):
             text = args[0] if args else kwargs["text"]
+            if (issue == 316 and public_terms and not private_context and self.owner is not None
+                    and (not getattr(self.owner, "_candidate_request", False)
+                         or getattr(self.owner, "_public_user_only", False))
+                    and getattr(self.owner, "_evaluation_prose", False)
+                    and kwargs.get("mode") != MaskMode.AGGRESSIVE):
+                # The evaluation arm only considers whole, alphabetic name-fallback
+                # tokens. Opaque token kinds, identifiers, domain terms, existing
+                # mappings, forced rules and additional protect rules always win.
+                protected = tuple(self.owner.forced_rules()) + tuple(correction_terms)
+                protected += tuple(self.owner.session.forward_store.originals_in(text))
+                language = kwargs.get("language", "en")
+                blocked = _term_spans(text, protected + tuple(gateway.domain_terms(text, language)))
+                if self.domain_spans is not None:
+                    blocked.extend(self.domain_spans(text))
+                safe = set()
+                offset = 0
+                for chunk in self.tokenizer.tokenize(text):
+                    start, offset = offset, offset + len(chunk.text)
+                    word = chunk.text
+                    if (word in public_terms and chunk.kind == "WORD" and word.isalpha()
+                            and not gateway._identifier_shaped(word)
+                            and not gateway._identifier_context(text, start, offset)
+                            and gateway._name_fallback(text, start, word, language)
+                            and not _overlaps((start, offset), blocked)):
+                        safe.add((start, offset))
+                if safe:
+                    terms = set(kwargs.get("sensitive_terms") or ())
+                    terms.difference_update(text[start:end] for start, end in safe)
+                    kwargs["sensitive_terms"] = terms
+                    kwargs["preserve_spans"] = frozenset(kwargs.get("preserve_spans", ())) | safe
             if issue == 309 and not private_context and kwargs.get("mode") != MaskMode.AGGRESSIVE:
                 candidates = korean_spans(text)
                 blocked = _term_spans(text, kwargs.get("sensitive_terms") or ())
@@ -372,7 +415,21 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
                     return self._numeric_types[value].restore_value(str(raw_restored))
             return super().values(value, restore=restore, code=code)
 
+        def _register_introductions(self, text):
+            if looks_like_source(text[:4096]):
+                return
+            try:
+                spans = trusted_name_spans(text)
+            except ValueError:
+                return
+            for start, end in spans:
+                self.engine._get_or_create_surrogate(
+                    text[start:end], TokenType.LITERAL, self.session.generator,
+                    self.session.forward_store, self.session.reverse_store)
+
         def _mask_unforced(self, text, code=False, language="auto"):
+            if use_names and not code and not getattr(self, "_candidate_request", False):
+                self._register_introductions(text)
             if issue == 318 and not code:
                 matches_document = sha256(text.encode()).hexdigest() == config.get("document_sha256")
                 spans = [] if getattr(self, "_candidate_request", False) and not matches_document else bundle_spans(text, config)
@@ -383,6 +440,31 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
             return super()._mask_unforced(text, code, language)
 
         def _mask_prose(self, text, preserve_task_words=True, skill_verbs=frozenset(), model_context_complete=True):
+            if use_names and preserve_task_words:
+                known = self.session.forward_store.originals_in(text)
+                for name in sorted(known, key=len, reverse=True):
+                    if not name or not all("\uac00" <= char <= "\ud7a3" for char in name):
+                        continue
+                    for suffix in ("\uc785\ub2c8\ub2e4", "\uc774\uc5d0\uc694", "\uc608\uc694"):
+                        position = text.find(name + suffix)
+                        suffix_start = position + len(name)
+                        if position < 0 or self.session.forward_store.originals_in(suffix):
+                            continue
+                        protected = tuple(self.forced_rules()) + tuple(term for term in known if term != name)
+                        if _overlaps((suffix_start, suffix_start + len(suffix)), _term_spans(text, protected)):
+                            continue
+                        if self.engine.domain_spans is not None and _overlaps(
+                                (suffix_start, suffix_start + len(suffix)), self.engine.domain_spans(text)):
+                            continue
+                        left = super()._mask_prose(text[:suffix_start], preserve_task_words, skill_verbs, model_context_complete)
+                        right = super()._mask_prose(text[suffix_start + len(suffix):], preserve_task_words, skill_verbs, model_context_complete)
+                        return left + suffix + right
+            if issue == 316 and public_terms:
+                self._evaluation_prose = True
+                try:
+                    return super()._mask_prose(text, preserve_task_words, skill_verbs, model_context_complete)
+                finally:
+                    self._evaluation_prose = False
             if issue == 313 and preserve_task_words:
                 # Sensitive-pattern, forced-rule and code-span detection run on WHOLE text first
                 known = self.session.forward_store.originals_in(text)
@@ -477,6 +559,16 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
             return super()._mask_prose(text, preserve_task_words, skill_verbs, model_context_complete)
 
         def request(self, payload, *, dialect=None):
+            contents = payload.get("messages", payload.get("input"))
+            self._public_user_only = (
+                set(payload).issubset({"model", "input", "messages"})
+                and isinstance(contents, list) and bool(contents)
+                and all(isinstance(item, dict) and item.get("role") == "user"
+                        and set(item).issubset({"role", "content"}) and isinstance(item.get("content"), str)
+                        for item in contents))
+            if use_names:
+                for text in user_texts(payload):
+                    self._register_introductions(text)
             self._candidate_request = True
             try:
                 result = super().request(payload, dialect=dialect)
@@ -492,25 +584,19 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
                 result = _replace_instruction(result, original_instruction, replacement)
             if issue == 311 and config.get("allow_roles") and not config.get("confidential_roles"):
                 fields = []
+                for text in user_texts(payload):
+                    for match in role_declarations(text, _ROLE_FIELD):
+                        role = _ROLES[re.sub(r"\s+", "", match["role"].casefold())]
+                        fields.append((match["value"], role, match["role"]))
+                        if len(fields) >= 64:
+                            break
+                    if len(fields) >= 64:
+                        break
 
-                def collect(value):
-                    if isinstance(value, str):
-                        for match in _ROLE_FIELD.finditer(value):
-                            fields.append((match["value"], _ROLES[re.sub(r"\s+", "", match["role"].casefold())]))
-                    elif isinstance(value, list):
-                        for item in value:
-                            collect(item)
-                    elif isinstance(value, dict):
-                        # Only content text, not protocol/schema names or code.
-                        for key, item in value.items():
-                            if key in {"content", "text", "messages", "input"}:
-                                collect(item)
-
-                collect(payload)
                 hints = []
-                for value, role in fields[:64]:
+                for value, role, label in fields[:64]:
                     forced: tuple[str, ...] = tuple(self.forced_rules())
-                    if any(rule in role for rule in forced):
+                    if any(rule.casefold() in {role.casefold(), label.casefold()} for rule in forced):
                         continue
                     mapping = next((m for m in self.session.forward_store.values() if m.original == value), None)
                     if mapping is not None:

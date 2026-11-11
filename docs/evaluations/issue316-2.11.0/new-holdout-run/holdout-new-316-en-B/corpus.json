@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "corpus_version": "names-policy-holdout-2.10.0-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-new-316-en-B",
+      "issue_number": 316,
+      "template_group": "holdout-new-316-en-B",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Review alder after confirmation; otherwise ask first and do not publish."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 7,
+          "end": 12,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 43,
+          "end": 52,
+          "label": "action"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Carry out the requested action."
+        },
+        {
+          "id": "condition",
+          "description": "Respect the stated condition."
+        },
+        {
+          "id": "prohibition",
+          "description": "Respect any stated prohibition."
+        },
+        {
+          "id": "scope",
+          "description": "Keep the requested output scope."
+        }
+      ],
+      "human_text": "Review private_symbol_1 after confirmation; otherwise ask first and do not publish.",
+      "smoke": true,
+      "local_policy": {
+        "trusted_project": "local-A",
+        "workspace": "local-A",
+        "language": "en",
+        "policyrecords": [
+          {
+            "term": "alder",
+            "project": "local-A",
+            "language": "en",
+            "source": "explicit-local-correction",
+            "expires_at": 4102444800,
+            "revoked": false
+          }
+        ]
+      },
+      "candidate_arm": "B"
+    }
+  ]
+}

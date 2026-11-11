@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "corpus_version": "names-policy-holdout-2.10.0-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-new-318-en-B",
+      "issue_number": 318,
+      "template_group": "holdout-new-318-en-B",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Customer: Luma; Site: EastBank; Due: 2038-06-21; State: wait"
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 14,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 22,
+          "end": 30,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 37,
+          "end": 47,
+          "label": "sensitive",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Carry out the requested action."
+        },
+        {
+          "id": "condition",
+          "description": "Respect the stated condition."
+        },
+        {
+          "id": "prohibition",
+          "description": "Respect any stated prohibition."
+        },
+        {
+          "id": "scope",
+          "description": "Keep the requested output scope."
+        }
+      ],
+      "human_text": "Customer: private_symbol_1; Site: private_symbol_2; Due: private_symbol_3; State: wait",
+      "smoke": true,
+      "local_policy": {
+        "document_sha256": "db00b5a99efe605d6f514dc33133be21db296aae56a88891cbdf17c01726f92f",
+        "scope": [
+          0,
+          60
+        ],
+        "required_fields": [
+          "Customer",
+          "Site",
+          "Due"
+        ],
+        "protect_fields": [
+          "Customer",
+          "Site",
+          "Due"
+        ]
+      },
+      "candidate_arm": "B"
+    }
+  ]
+}

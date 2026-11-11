@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-holdout-20261109-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-310-ko-1",
+      "issue_number": 310,
+      "template_group": "h310-seed-envelope",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "이 비공개 연구의 이름은 보리입니다. 씨앗 봉투를 정리할 점검 목록을 써 주세요. 품종 목록을 받은 경우에만 분류 항목을 정하고, 목록이 없으면 먼저 요청해 주세요. 품종을 만들어 내거나 봉투 라벨을 변경하지 마세요. 오늘 받은 봉투 묶음 하나만 다뤄 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 14,
+          "end": 16,
+          "label": "research_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 21,
+          "end": 45,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 46,
+          "end": 92,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 93,
+          "end": 121,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 122,
+          "end": 145,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "씨앗 봉투 정리 점검 목록을 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "품종 목록이 없으면 요청하고 받은 목록만으로 분류한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "품종을 꾸며내거나 실제 라벨을 변경하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "오늘 받은 봉투 묶음 하나만 다룬다."
+        }
+      ],
+      "human_text": "이 비공개 연구의 이름은 [PRIVATE_1]입니다. 씨앗 봉투를 정리할 점검 목록을 써 주세요. 품종 목록을 받은 경우에만 분류 항목을 정하고, 목록이 없으면 먼저 요청해 주세요. 품종을 만들어 내거나 봉투 라벨을 변경하지 마세요. 오늘 받은 봉투 묶음 하나만 다뤄 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    }
+  ]
+}

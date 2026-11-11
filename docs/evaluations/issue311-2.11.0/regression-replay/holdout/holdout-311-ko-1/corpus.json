@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-holdout-20261109-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-311-ko-1",
+      "issue_number": 311,
+      "template_group": "h311-archive-role-card",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Reviewer: 하린숲\nDocument: 은모루\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 13,
+          "label": "reviewer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 24,
+          "end": 27,
+          "label": "document_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 8,
+          "label": "role_label"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 14,
+          "end": 22,
+          "label": "role_label"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 99,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 100,
+          "end": 137,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 138,
+          "end": 167,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 168,
+          "end": 193,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Reviewer와 Document 역할 표기를 유지한 보관 인계 메모를 작성한다."
+        },
+        {
+          "id": "conditions",
+          "description": "보관 위치가 없으면 질문하며 받은 위치만 기재한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "개별 이름을 노출하거나 보관 완료를 주장하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이 문서 한 건의 인계 절차만 설명한다."
+        }
+      ],
+      "human_text": "Reviewer: [PRIVATE_1]\nDocument: [PRIVATE_2]\n위 두 값은 가상의 비공개 이름입니다. Reviewer와 Document라는 역할 표기를 살려 보관 인계 메모를 작성해 주세요. 보관 위치를 받은 뒤에만 위치를 적고, 없으면 먼저 물어봐 주세요. 개별 이름을 드러내거나 보관이 끝났다고 쓰지 마세요. 이 문서 한 건의 인계 절차만 설명해 주세요.",
+      "smoke": true,
+      "local_policy": {
+        "allow_roles": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-holdout-20261109-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-311-en-1",
+      "issue_number": 311,
+      "template_group": "h311-editorial-role-card",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Reviewer: Sovalin\nDocument: Midlark\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 17,
+          "label": "reviewer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 35,
+          "label": "document_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 0,
+          "end": 8,
+          "label": "role_label"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 18,
+          "end": 26,
+          "label": "role_label"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 88,
+          "end": 153,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 154,
+          "end": 231,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 232,
+          "end": 276,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 277,
+          "end": 325,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Write a handoff note retaining the public role labels Reviewer and Document."
+        },
+        {
+          "id": "conditions",
+          "description": "Request the deadline if no date is supplied."
+        },
+        {
+          "id": "prohibition",
+          "description": "Reveal neither private name and do not claim approval."
+        },
+        {
+          "id": "scope",
+          "description": "Limit the handoff to the single draft."
+        }
+      ],
+      "human_text": "Reviewer: [PRIVATE_1]\nDocument: [PRIVATE_2]\nThe two names above are confidential fixture names. Write a handoff note using the role labels Reviewer and Document. Include a review deadline only when a date is supplied; ask if it is missing. Do not reveal either name or imply approval. Describe the handoff for this single draft only.",
+      "smoke": true,
+      "local_policy": {
+        "allow_roles": true
+      }
+    }
+  ]
+}

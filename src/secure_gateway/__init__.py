@@ -1,6 +1,6 @@
 """Local multilingual masking and trusted-client restoration with MCP utilities."""
 
-__version__ = "2.10.0"
+__version__ = "2.11.0"
 __author__ = "SecureGateway Contributors"
 __license__ = "Apache-2.0"
 

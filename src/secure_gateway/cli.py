@@ -330,6 +330,57 @@ def state_gc(agent, state_dir, apply_cleanup):
     click.echo(json.dumps(HookStore(agent_state_dir(state_dir, agent)).gc(dry_run=not apply_cleanup)))
 
 
+@main.group("corrections")
+def corrections():
+    """Preview and explicitly save experimental local protection rules."""
+
+
+@corrections.command("preview")
+@click.option("--project", required=True)
+@click.option("--language", type=click.Choice(["en", "ko"]), required=True)
+def corrections_preview(project, language):
+    """Preview one correction in an isolated experimental session."""
+    from secure_gateway import gateway
+    from secure_gateway.experiment_profiles import candidate_profile
+
+    term = click.prompt("Phrase to protect", hide_input=True)
+    sample = click.prompt("Preview text", hide_input=True)
+    policy = {"trusted_project": project, "workspace": project, "language": language,
+              "policyrecords": [{"term": term, "project": project, "language": language,
+                                 "source": "explicit-local-correction", "expires_at": time.time() + 3600,
+                                 "revoked": False}]}
+    try:
+        with candidate_profile(316, policy):
+            masked = gateway.GatewaySession(natural_language=language).mask(sample)
+        click.echo("Protected" if term and term in sample and term not in masked else "Not protected")
+    except (ValueError, OSError) as exc:
+        raise click.ClickException("Correction preview failed: " + type(exc).__name__) from None
+
+
+@corrections.command("save")
+@click.option("--file", "path", type=click.Path(dir_okay=False, path_type=Path), required=True)
+@click.option("--project", required=True)
+@click.option("--language", type=click.Choice(["en", "ko"]), required=True)
+@click.option("--yes", is_flag=True, help="Explicitly save the correction.")
+def corrections_save(path, project, language, yes):
+    """Encrypt and save one explicitly confirmed local correction."""
+    if not yes:
+        raise click.ClickException("Explicit confirmation required (--yes).")
+    from secure_gateway.experiment_corrections import save_record
+
+    term = click.prompt("Phrase to protect", hide_input=True)
+    password = click.prompt("Encryption password", hide_input=True)
+    now = time.time()
+    record = {"term": term, "project": project, "language": language,
+              "source": "explicit-local-correction", "policy_version": 1, "created_at": now,
+              "expires_at": now + 30 * 86400, "revoked": False}
+    try:
+        save_record(path, password, record)
+    except (ValueError, OSError) as exc:
+        raise click.ClickException("Correction save failed: " + type(exc).__name__) from None
+    click.echo("Correction saved")
+
+
 @main.command(hidden=True)
 @click.option("--agent", type=click.Choice(["claude", "codex"]), default="claude")
 @click.option("--state-dir", type=click.Path(path_type=Path), required=True)
