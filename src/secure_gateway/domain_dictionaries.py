@@ -76,11 +76,13 @@ def _common_words(language: str) -> frozenset[str]:
     words: set[str] = set()
     try:
         words.update(gateway_vocabulary.ordinary_words(language))
-    except Exception:
+    except (ValueError, KeyError):
+        # intentional: language may not have packaged vocabulary; fallback to empty common words
         pass
     try:
         words.update(gateway_public_vocabulary.ordinary_words(language))
-    except Exception:
+    except (ValueError, KeyError):
+        # intentional: language may not have public vocabulary; fallback to empty common words
         pass
     return frozenset(words)
 
@@ -241,7 +243,7 @@ class TermIndex:
         # Aho–Corasick failure links: on mismatch, fall back to the longest proper
         # suffix that is also a pattern prefix; propagate dictionary links along failures.
         root = self.edges[0]
-        assert isinstance(root, dict)
+        assert isinstance(root, dict)  # invariant: root edges[0] is always initialized to dict
         queue = deque(root.values())
         while queue:
             state = queue.popleft()
@@ -288,7 +290,7 @@ class TermIndex:
         raw_matches = []
         state = count = 0
         root = self.edges[0]
-        assert isinstance(root, dict)
+        assert isinstance(root, dict)  # invariant: root edges[0] is always initialized to dict
         for pos, char in enumerate(normalized):
             # Automaton walk: follow failure links until a transition matches.
             while state:

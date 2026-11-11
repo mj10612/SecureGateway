@@ -109,6 +109,7 @@ class ContentAuditCapture:
             try:
                 self.writer.begin(request_id, "continue", None)
             except Exception:
+                # intentional: best-effort fallback begin before marking request failed
                 pass
             self._failed(request_id)
             return self.policy == "continue"
@@ -117,6 +118,7 @@ class ContentAuditCapture:
         try:
             self.writer.fail(request_id)
         except Exception:
+            # intentional: best-effort fail notification when audit writer is already broken
             pass
 
     def observe(self, request_id: str, kind: str, value: Any, phase: str, *, stream: bool = False) -> None:

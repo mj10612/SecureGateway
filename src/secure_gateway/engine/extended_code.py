@@ -74,7 +74,7 @@ def _payload(raw: str) -> list[Token]:
         start = position
         if raw[position] in {"\\", "`"} and position + 1 < len(raw):
             escape = re.compile(r"\\(?:u\{[0-9a-fA-F]+\}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|x[0-9a-fA-F]{1,4}|.)|`.", re.DOTALL).match(raw, position)
-            assert escape is not None
+            assert escape is not None  # invariant: escape pattern with fallback dot matches any trailing character
             position += len(escape[0])
             chunks.append(_grammar(raw[start:position]))
             continue
@@ -1171,7 +1171,7 @@ def tokenize(code: str, language: str) -> list[Token]:
                 if line_end < 0:
                     line_end = len(code)
                 indentation = re.compile(r"[ \t]*").match(code, line_start)
-                assert indentation is not None
+                assert indentation is not None  # invariant: zero-or-more whitespace pattern always matches
                 at_instruction = indentation.end() == position
                 operand = re.compile(r"[ \t]+([A-Za-z][A-Za-z0-9]*)\s*(?:,|$)").match(code, end, line_end)
                 # An explicit instruction field followed by a register operand

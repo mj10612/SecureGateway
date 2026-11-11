@@ -108,7 +108,7 @@ def configure_antigravity(path: Path, install=True):
                 record["installed"] = installed
             servers["secure-gateway"] = installed
         else:
-            assert record is not None
+            assert record is not None  # invariant: guarded by early return on missing record
             if record["had_entry"]:
                 servers["secure-gateway"] = record["original"]
             else:

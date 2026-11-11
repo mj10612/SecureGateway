@@ -116,7 +116,8 @@ class CompletionRetries:
                     applied = callback(request_id, item.metadata)
                     success = True
             except (sqlite3.Error, ValueError, TypeError, OverflowError, OSError):
-                pass  # Retry only the ledger write, without recording private errors.
+                # intentional: retry only the ledger write, without recording private errors
+                pass
             finally:
                 del callback  # Do not retain the store while sleeping between attempts.
             with self._condition:

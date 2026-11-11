@@ -79,7 +79,7 @@ def export_requests(store: ContentAuditStore, request_ids: list[str], kinds: set
         return document
     data = json.dumps(document, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode("utf-8")
     salt, wrapping_nonce, data_nonce, data_key = os.urandom(16), os.urandom(12), os.urandom(12), os.urandom(32)
-    assert passphrase is not None
+    assert passphrase is not None  # invariant: validated earlier when not plaintext
     wrapped = AESGCM(_derive(passphrase, salt)).encrypt(wrapping_nonce, data_key, b"content-audit-export-key-v1")
     ciphertext = AESGCM(data_key).encrypt(data_nonce, data, b"content-audit-export-data-v1")
     return {"format": "secure-gateway-content-audit-v1", "kdf": {"name": "scrypt", "n": 131072, "r": 8,

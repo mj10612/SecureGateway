@@ -661,7 +661,7 @@ class CodeParser:
                 token_type, kind = TokenType.LITERAL, "regex"
             elif cpp or rust:
                 match = cpp or rust
-                assert match is not None
+                assert match is not None  # invariant: guarded by cpp or rust condition
                 suffix = ")" + match[1] + '"' if cpp else '"' + match[1]
                 end = code.find(suffix, i + len(match[0]))
                 if end < 0:
@@ -698,7 +698,7 @@ class CodeParser:
                 i += 1
             elif string or prefixed:
                 match = string or prefixed
-                assert match is not None
+                assert match is not None  # invariant: guarded by string or prefixed condition
                 quote = match[1]
                 qstart = i + len(match[0]) - len(quote)
                 i = quoted_end(code, qstart, quote, "f" in match[0].lower(), language=language)
@@ -708,7 +708,7 @@ class CodeParser:
                 c == "." and i + 1 < len(code) and code[i + 1].isdigit()
             ):
                 number = NUMBER.match(code, i)
-                assert number is not None
+                assert number is not None  # invariant: NUMBER regex matches digit or leading dot digit prefix
                 i = number.end()
                 token_type, kind = TokenType.NUMBER, "number"
             else:

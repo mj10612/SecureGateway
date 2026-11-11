@@ -222,6 +222,7 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=DEFAULT_STRE
         try:
             capture[0]._failed(capture[1])
         except Exception:
+            # intentional: content capture failure notification must not interrupt streaming
             pass
 
     def normalize(text):

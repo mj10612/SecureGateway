@@ -57,7 +57,8 @@ class AuditStore:
             try:
                 fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
             except FileExistsError:
-                pass  # Another gateway created the same database concurrently.
+                # intentional: another gateway created the same database concurrently
+                pass
             else:
                 os.close(fd)
         with self.connect() as db:
@@ -129,6 +130,7 @@ class AuditStore:
             try:
                 self._owner_path.unlink(missing_ok=True)
             except OSError:
+                # intentional: best-effort cleanup of owner lock file during audit close
                 pass
 
     def __del__(self):

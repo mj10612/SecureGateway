@@ -220,19 +220,21 @@ def capture_worker_process(
             changed.set()
 
     def write_input() -> None:
-        assert process.stdin is not None
+        assert process.stdin is not None  # invariant: process spawned with stdin=PIPE
         try:
             process.stdin.write(input_bytes)
             process.stdin.flush()
         except (BrokenPipeError, OSError, ValueError):
+            # intentional: worker process may exit or close stdin before input completes
             pass
         finally:
             try:
                 process.stdin.close()
             except (BrokenPipeError, OSError):
+                # intentional: best-effort close of stdin during teardown
                 pass
 
-    assert process.stdout is not None and process.stderr is not None
+    assert process.stdout is not None and process.stderr is not None  # invariant: process spawned with stdout=PIPE and stderr=PIPE
     threads = [
         Thread(target=read_stream, args=(stream, index), daemon=True)
         for index, stream in enumerate((process.stdout, process.stderr))
