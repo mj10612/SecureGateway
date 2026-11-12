@@ -47,6 +47,8 @@ def create_preview_session(gateway: PrivacyGateway, natural_language: str = "aut
         prose_mode=gateway.prose_mode,
         common_words=gateway.common_words,
         context_model=gateway.context_model,
+        # Preview with the same per-session features as live conversations (#354).
+        features=getattr(gateway, "features", None),
         **gateway.restore_limits,
     )
     session.forced_rules = lambda: mask_rules

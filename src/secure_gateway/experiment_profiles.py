@@ -3,14 +3,18 @@
 These profiles are never selected by normal gateway installation. They are not
 thread-safe feature flags: use one isolated evaluation process per comparison.
 The context restores all changed module globals, including on failure.
+
+Issues #309, #310, #316, #318 and #319 are productized as per-session
+``GatewayFeatures`` (issue #354). For those issues this context is only a
+compatibility wrapper: sessions created inside it receive the equivalent
+feature flags, so frozen evaluation scripts keep their exact behaviour. The
+remaining (rejected) candidates keep their original process-global swaps.
 """
 
 from __future__ import annotations
 
 from contextlib import contextmanager
 from copy import deepcopy
-from datetime import datetime, timezone
-from hashlib import sha256
 import re
 from typing import Any
 import unicodedata
@@ -18,24 +22,23 @@ import unicodedata
 from secure_gateway import gateway
 from secure_gateway.engine.natural_languages import detect_natural_language
 from secure_gateway.domain_dictionaries import protect_chunks
-from secure_gateway.experiment_bundle import bundle_spans
-from secure_gateway.experiment_corrections import validate_record
-from secure_gateway.experiment_name_context import role_declarations, trusted_name_spans, user_texts
-from secure_gateway.experiment_korean import preserve_spans as korean_spans
+from secure_gateway.experiment_name_context import role_declarations, user_texts
+from secure_gateway.gateway_features import GatewayFeatures
+# Compatibility re-exports for evaluation scripts written against 2.11-2.15.
+from secure_gateway.gateway_features import _overlaps, _term_spans, correction_terms as _corrections  # noqa: F401
 from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
 from secure_gateway.gateway_vocabulary import (
     available_languages, read_cBpack, GENERAL_WORDS, INDIC_WORDS, HOUSEHOLD_WORDS,
     DISCOURSE_WORDS, ENGLISH_NAMES
 )
 from secure_gateway.gateway_name_vocabulary import NAME_WORDS
-from secure_gateway.models import MaskMode, TokenType
+from secure_gateway.models import TokenType
 from secure_gateway.numeric_context import (
     NumericLiteralMetadata,
     context_numeric_spans,
     is_protocol_number_key,
     is_sensitive_numeric_field,
 )
-from secure_gateway.private_arithmetic import LocalArithmeticDispatcher
 from secure_gateway.structure_parser import doc_structure_spans
 
 AMBIGUOUS_WORDS_EN: frozenset[str] = frozenset(ENGLISH_NAMES | {
@@ -117,53 +120,22 @@ PROFILE_ALIASES: dict[str, tuple[int, dict[str, Any]]] = {
 }
 
 
-def _overlaps(span, blocked):
-    return any(start < span[1] and end > span[0] for start, end in blocked)
+MIGRATED_ISSUES = frozenset({309, 310, 316, 318, 319})
 
 
-def _term_spans(text, terms):
-    """Small session/rule inventory only; no source normalization is returned."""
-    spans = []
-    normalized = unicodedata.normalize("NFC", text)
-    for term in terms:
-        if not term:
-            continue
-        # Exact offsets for the ordinary case. Ambiguous NFC/NFD offsets block
-        # the whole candidate preservation rather than invent an alignment.
-        if term not in text and unicodedata.normalize("NFC", term) in normalized:
-            return [(0, len(text))]
-        start = text.find(term)
-        while start >= 0:
-            spans.append((start, start + len(term)))
-            start = text.find(term, start + len(term))
-    return spans
-
-
-def _corrections(policy):
-    """Trusted local scope is an input from the runner, never model text."""
-    if set(policy) - {"trusted_project", "workspace", "language", "policyrecords"}:
-        raise ValueError("Unsupported correction policy fields")
-    trusted, workspace = policy.get("trusted_project"), policy.get("workspace")
-    language, records = policy.get("language"), policy.get("policyrecords", [])
-    if (not isinstance(trusted, str) or not trusted or not isinstance(workspace, str)
-            or language not in {"en", "ko"} or not isinstance(records, list) or len(records) > 256):
-        raise ValueError("Invalid scoped correction policy")
-    result = []
-    now = datetime.now(timezone.utc).timestamp()
-    for record in records:
-        if isinstance(record, dict) and set(record) == {"term", "project", "language", "source", "policy_version", "created_at", "expires_at", "revoked"}:
-            validate_record(record)
-            record = {key: record[key] for key in ("term", "project", "language", "source", "expires_at", "revoked")}
-        if (not isinstance(record, dict) or set(record) != {"term", "project", "language", "source", "expires_at", "revoked"}
-                or not isinstance(record["term"], str) or not 1 <= len(record["term"]) <= 256
-                or not isinstance(record["project"], str) or record["language"] not in {"en", "ko"}
-                or record["source"] != "explicit-local-correction" or type(record["revoked"]) is not bool
-                or type(record["expires_at"]) not in {int, float}):
-            raise ValueError("Invalid local correction record")
-        if (trusted == workspace == record["project"] and language == record["language"]
-                and not record["revoked"] and record["expires_at"] > now):
-            result.append(record["term"])
-    return tuple(result)
+def profile_features(issue: int, config: dict) -> GatewayFeatures:
+    """Return the per-session features equivalent to one migrated profile."""
+    if issue == 309:
+        return GatewayFeatures(ko_conjugation_split=True)
+    if issue == 310:
+        return GatewayFeatures(contextual_name_spans=True)
+    if issue == 316:
+        return GatewayFeatures(scoped_corrections=config)
+    if issue == 318:
+        return GatewayFeatures(attribute_bundle=config)
+    if issue == 319:
+        return GatewayFeatures(local_arithmetic={key: value for key, value in config.items() if key != "variant"})
+    raise ValueError("Unsupported candidate issue")
 
 
 def _replace_instruction(payload, original, replacement):
@@ -244,24 +216,34 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
     if issue == 317 and "field_policy" in config and not isinstance(config["field_policy"], dict):
         raise ValueError("Field policy must be a dictionary")
 
-    correction_terms = _corrections({key: value for key, value in config.items() if key != "public_records"}) if issue == 316 else ()
-    public_terms: tuple = ()
-    if issue == 316 and "public_records" in config:
-        public_policy = {key: value for key, value in config.items() if key != "public_records"}
-        public_policy["policyrecords"] = config["public_records"]
-        public_terms = _corrections(public_policy)
-    use_names = issue == 310 or issue == 311 and config.get("with_name_context", False)
     original_session, original_engine = gateway.GatewaySession, gateway.SharedEngine
     original_words, original_instruction = gateway.ordinary_words, gateway.PRIVACY_INSTRUCTION
+    if issue in MIGRATED_ISSUES:
+        # Compatibility wrapper (#354): the behaviour lives in per-session
+        # GatewayFeatures; only the session factory is swapped while active.
+        features = profile_features(issue, config)
+
+        class FeatureProfileSession(gateway.GatewaySession):
+            def __init__(self, *args, **kwargs):
+                selected = kwargs.get("features")
+                if selected is None or not selected.any_enabled:
+                    kwargs["features"] = features
+                super().__init__(*args, **kwargs)
+
+        _ACTIVE = True
+        try:
+            setattr(gateway, "GatewaySession", FeatureProfileSession)
+            yield
+        finally:
+            setattr(gateway, "GatewaySession", original_session)
+            _ACTIVE = False
+        return
+    name_features = (GatewayFeatures(contextual_name_spans=True)
+                     if issue == 311 and config.get("with_name_context", False) else None)
 
     class CandidateEngine(gateway.SharedEngine):
         owner: Any = None
         _candidate_depth = 0
-        _profile_issue: int | None = issue_id
-
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self._profile_issue = issue_id
 
         def _chunks(self, text, terms, language="en", literal_aliases=None):
             if self._candidate_depth:
@@ -275,55 +257,13 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
                 elif issue == 317:
                     field_pol = config.get("field_policy") if config.get("variant") == "doc_structure_policy" else None
                     spans = doc_structure_spans(text, field_policy=field_pol)
-                elif issue == 316 and correction_terms:
-                    spans = _term_spans(text, correction_terms)
                 return protect_chunks(text, chunks, spans)
             finally:
                 self._candidate_depth -= 1
 
         def mask_text(self, *args, private_context=False, **kwargs):
             text = args[0] if args else kwargs["text"]
-            if (issue == 316 and public_terms and not private_context and self.owner is not None
-                    and (not getattr(self.owner, "_candidate_request", False)
-                         or getattr(self.owner, "_public_user_only", False))
-                    and getattr(self.owner, "_evaluation_prose", False)
-                    and kwargs.get("mode") != MaskMode.AGGRESSIVE):
-                # The evaluation arm only considers whole, alphabetic name-fallback
-                # tokens. Opaque token kinds, identifiers, domain terms, existing
-                # mappings, forced rules and additional protect rules always win.
-                protected = tuple(self.owner.forced_rules()) + tuple(correction_terms)
-                protected += tuple(self.owner.session.forward_store.originals_in(text))
-                language = kwargs.get("language", "en")
-                blocked = _term_spans(text, protected + tuple(gateway.domain_terms(text, language)))
-                if self.domain_spans is not None:
-                    blocked.extend(self.domain_spans(text))
-                safe = set()
-                offset = 0
-                for chunk in self.tokenizer.tokenize(text):
-                    start, offset = offset, offset + len(chunk.text)
-                    word = chunk.text
-                    if (word in public_terms and chunk.kind == "WORD" and word.isalpha()
-                            and not gateway._identifier_shaped(word)
-                            and not gateway._identifier_context(text, start, offset)
-                            and gateway._name_fallback(text, start, word, language)
-                            and not _overlaps((start, offset), blocked)):
-                        safe.add((start, offset))
-                if safe:
-                    terms = set(kwargs.get("sensitive_terms") or ())
-                    terms.difference_update(text[start:end] for start, end in safe)
-                    kwargs["sensitive_terms"] = terms
-                    kwargs["preserve_spans"] = frozenset(kwargs.get("preserve_spans", ())) | safe
-            if issue == 309 and not private_context and kwargs.get("mode") != MaskMode.AGGRESSIVE:
-                candidates = korean_spans(text)
-                blocked = _term_spans(text, kwargs.get("sensitive_terms") or ())
-                if self.owner is not None:
-                    blocked.extend(_term_spans(text, self.owner.forced_rules()))
-                    blocked.extend(_term_spans(text, self.owner.session.forward_store.originals_in(text)))
-                if self.domain_spans is not None:
-                    blocked.extend(self.domain_spans(text))
-                safe = {span for span in candidates if not _overlaps(span, blocked)}
-                kwargs["preserve_spans"] = frozenset(kwargs.get("preserve_spans", ())) | safe
-            elif issue in {312, 317} and not private_context:
+            if issue in {312, 317} and not private_context:
                 from secure_gateway.numeric_context import public_numeric_spans
                 from secure_gateway.structure_parser import REVIEWED_PUBLIC_FIELDS, _FIELD_PATTERN, _normalize_label, parse_structure
                 parsed = parse_structure(text)
@@ -347,21 +287,13 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
             return super().mask_text(*args, private_context=private_context, **kwargs)
 
     class CandidateSession(gateway.GatewaySession):
-        _profile_issue: int | None = issue_id
-
         def __init__(self, *args, **kwargs):
+            selected = kwargs.get("features")
+            if name_features is not None and (selected is None or not selected.any_enabled):
+                kwargs["features"] = name_features
             super().__init__(*args, **kwargs)
             setattr(self.engine, "owner", self)
-            setattr(self.engine, "_profile_issue", issue_id)
-            self._profile_issue = issue_id
             self._numeric_types: dict[str, NumericLiteralMetadata] = {}
-            if issue == 319:
-                self.tool_dispatcher = LocalArithmeticDispatcher(
-                    self,
-                    allowed=config.get("allowed"),
-                    result_units=config.get("result_units"),
-                    max_calls=config.get("max_calls", 16),
-                )
 
         def values(self, value, restore=False, code=False):
             if issue == 312:
@@ -415,56 +347,7 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
                     return self._numeric_types[value].restore_value(str(raw_restored))
             return super().values(value, restore=restore, code=code)
 
-        def _register_introductions(self, text):
-            if looks_like_source(text[:4096]):
-                return
-            try:
-                spans = trusted_name_spans(text)
-            except ValueError:
-                return
-            for start, end in spans:
-                self.engine._get_or_create_surrogate(
-                    text[start:end], TokenType.LITERAL, self.session.generator,
-                    self.session.forward_store, self.session.reverse_store)
-
-        def _mask_unforced(self, text, code=False, language="auto"):
-            if use_names and not code and not getattr(self, "_candidate_request", False):
-                self._register_introductions(text)
-            if issue == 318 and not code:
-                matches_document = sha256(text.encode()).hexdigest() == config.get("document_sha256")
-                spans = [] if getattr(self, "_candidate_request", False) and not matches_document else bundle_spans(text, config)
-                for start, end in spans:
-                    self.engine._get_or_create_surrogate(
-                        text[start:end], TokenType.LITERAL, self.session.generator,
-                        self.session.forward_store, self.session.reverse_store)
-            return super()._mask_unforced(text, code, language)
-
         def _mask_prose(self, text, preserve_task_words=True, skill_verbs=frozenset(), model_context_complete=True):
-            if use_names and preserve_task_words:
-                known = self.session.forward_store.originals_in(text)
-                for name in sorted(known, key=len, reverse=True):
-                    if not name or not all("\uac00" <= char <= "\ud7a3" for char in name):
-                        continue
-                    for suffix in ("\uc785\ub2c8\ub2e4", "\uc774\uc5d0\uc694", "\uc608\uc694"):
-                        position = text.find(name + suffix)
-                        suffix_start = position + len(name)
-                        if position < 0 or self.session.forward_store.originals_in(suffix):
-                            continue
-                        protected = tuple(self.forced_rules()) + tuple(term for term in known if term != name)
-                        if _overlaps((suffix_start, suffix_start + len(suffix)), _term_spans(text, protected)):
-                            continue
-                        if self.engine.domain_spans is not None and _overlaps(
-                                (suffix_start, suffix_start + len(suffix)), self.engine.domain_spans(text)):
-                            continue
-                        left = super()._mask_prose(text[:suffix_start], preserve_task_words, skill_verbs, model_context_complete)
-                        right = super()._mask_prose(text[suffix_start + len(suffix):], preserve_task_words, skill_verbs, model_context_complete)
-                        return left + suffix + right
-            if issue == 316 and public_terms:
-                self._evaluation_prose = True
-                try:
-                    return super()._mask_prose(text, preserve_task_words, skill_verbs, model_context_complete)
-                finally:
-                    self._evaluation_prose = False
             if issue == 313 and preserve_task_words:
                 # Sensitive-pattern, forced-rule and code-span detection run on WHOLE text first
                 known = self.session.forward_store.originals_in(text)
@@ -560,21 +443,7 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
             return super()._mask_prose(text, preserve_task_words, skill_verbs, model_context_complete)
 
         def request(self, payload, *, dialect=None):
-            contents = payload.get("messages", payload.get("input"))
-            self._public_user_only = (
-                set(payload).issubset({"model", "input", "messages"})
-                and isinstance(contents, list) and bool(contents)
-                and all(isinstance(item, dict) and item.get("role") == "user"
-                        and set(item).issubset({"role", "content"}) and isinstance(item.get("content"), str)
-                        for item in contents))
-            if use_names:
-                for text in user_texts(payload):
-                    self._register_introductions(text)
-            self._candidate_request = True
-            try:
-                result = super().request(payload, dialect=dialect)
-            finally:
-                self._candidate_request = False
+            result = super().request(payload, dialect=dialect)
             if issue == 315:
                 variant = config.get("variant", "concise")
                 replacement = (

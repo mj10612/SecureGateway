@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.15.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.16.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -515,6 +515,109 @@ Old `<agent>.enc` snapshots remain untouched for rollback; the snapshot reader s
 legacy aliases. After upgrading from 0.5.0, start new Claude/Codex conversations once so
 previous reasoning does not replay against the new alias table. Do not delete old state
 until you no longer need rollback.
+
+
+## Opt-in masking features (2.16.0, #354)
+
+Five evaluated candidates are available as independent per-session features.
+**All of them are OFF by default in 2.16.0**; the default masking path is
+unchanged. Default enablement of the adopted candidates will be decided only
+after a joint real-LLM evaluation with all adopted features enabled together;
+until then enabling any feature is an explicit local choice.
+
+| Feature key | Issue | Real-LLM decision | Gateway-wide setting |
+|---|---|---|---|
+| `ko_conjugation_split` | #309 | under evaluation | boolean |
+| `contextual_name_spans` | #310 | adopt (pending joint evaluation) | boolean |
+| `scoped_corrections` | #316 | adopt, protect-only condition B (pending joint evaluation) | encrypted records file |
+| `attribute_bundle` | #318 | adopt (pending joint evaluation) | not available; per-session only |
+| `local_arithmetic` | #319 | blocked by #363 | boolean |
+
+- `ko_conjugation_split` keeps reviewed Korean condition/negation/request
+  endings public while the stem is judged by the normal policy. Forced rules,
+  existing aliases and domain matches still win.
+- `contextual_name_spans` protects a name introduced in direct, unquoted user
+  prose (`Project name: drift`, `프로젝트명은 흐름`) and keeps protecting it in
+  later turns of the same conversation. Quoted assertions and tool results do
+  not register names.
+- `scoped_corrections` adds protection for explicitly saved local correction
+  records (`secure-gateway corrections save`) bound to one project and
+  language, honouring expiry and revocation. Only the protect-only arm is a
+  product feature; the evaluation-only public-exception arm (`public_records`)
+  is accepted by the session API for frozen evaluations but never by gateway
+  settings.
+- `attribute_bundle` protects co-present form/table fields under a trusted
+  policy bound to one document hash and scope. Such a policy cannot be a
+  gateway-wide setting, so enabling it in gateway settings is refused at start;
+  use `GatewaySession(features=GatewayFeatures(attribute_bundle=policy))`.
+- `local_arithmetic` injects the `local_alias_arithmetic` tool and executes
+  calls locally, returning only a result alias. Gateway settings provide no
+  per-alias unit policy, so calls are refused (fail closed) until a policy
+  path exists; real-model tool use is unmeasured and the feature remains
+  blocked by #363.
+- #311, #312, #313, #314, #315 and #317 were rejected and remain
+  evaluation-only `candidate_profile` arms; they are not settings.
+
+### Enabling, disabling and rollback
+
+Each feature has its own setting. Precedence is CLI > environment > config
+file > default (OFF):
+
+```json
+{"port": 38117, "token": "...",
+ "features": {"ko_conjugation_split": true, "contextual_name_spans": true,
+              "scoped_corrections": {"project": "alpha", "language": "en",
+                                     "records_file": "C:/Users/me/corrections.enc"}}}
+```
+
+- Environment: `SECURE_GATEWAY_FEATURE_<KEY>=on|off` (also `1/0`, `true/false`),
+  for example `SECURE_GATEWAY_FEATURE_CONTEXTUAL_NAME_SPANS=on`.
+  `scoped_corrections` reads its records password from
+  `SECURE_GATEWAY_CORRECTIONS_PASSWORD`; a missing password, wrong password,
+  unsafe or missing records file stops the gateway with a fixed message rather
+  than silently running without the requested protection.
+- CLI: `secure-gateway gateway run --feature contextual_name_spans=on` (repeatable,
+  also on `gateway api-run`).
+- Disable everything: `secure-gateway gateway run --features-off` ignores the
+  config file and environment and runs the 2.15 default path.
+- Rollback: remove the key (or set it to `false`) and restart the gateway.
+  Aliases created while a feature was on stay in the encrypted conversation
+  snapshot and remain restorable after the feature is turned off.
+
+Package upgrades do not touch `config.json`, and `gateway install` reloads and
+rewrites the existing object with all of its keys, so explicit `features`
+values are preserved. A configuration without a `features` key keeps every
+feature OFF; no migration writes a default into the file. Expiry of correction records is evaluated when the gateway starts.
+
+### When changes apply
+
+Feature settings are read once at gateway start and are fixed for the process.
+Every conversation session created or restored from a snapshot after that start
+uses the new settings; changing the file or environment has no effect until the
+next restart. The selection is an immutable per-session value: two
+conversations, providers or concurrent requests never share feature state or
+aliases, and no module global is changed.
+
+### Diagnostics
+
+`secure-gateway gateway features [--config ...]` prints, without contacting the
+gateway, the default, effective state and source (`default`, `config`, `env`,
+`cli`, `cli-off`) that the next start would use. The running gateway reports
+the same fields under `features` in `secure-gateway gateway diagnostics` and in
+the authenticated Admin endpoints `/admin/api/features` and
+`/admin/api/sessions`. Diagnostics never include correction terms, document
+hashes, file paths or other policy contents. The Admin masking preview uses the
+running gateway's feature selection.
+
+### Evaluation compatibility
+
+`experiment_profiles.candidate_profile(309|310|316|318|319, policy)` is now a
+thin wrapper that creates sessions with the equivalent `GatewayFeatures`. On
+the candidates' own corpora and unit inputs (1,320 deterministic captures,
+including the frozen #309/#310/#311/#313/#316/#318 evaluation cases and the #319
+tool path), its masked output is byte-identical to the 2.15.0 profile
+implementation. Profiles still cannot nest; direct `GatewaySession(features=...)`
+has no such limit.
 
 ## Protection boundary and tests
 

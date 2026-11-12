@@ -85,6 +85,12 @@ def handle_admin(handler) -> bool:
         else:
             handler.send_body(200, json.dumps({"rules": handler.server.mask_rules}, ensure_ascii=False).encode())
         return True
+    if url.path == "/admin/api/features":
+        if url.query:
+            handler.send_body(400, b'{"error":"Invalid request"}')
+        else:
+            handler.send_body(200, json.dumps(handler.server.feature_settings()).encode())
+        return True
     if url.path == "/admin/api/sessions":
         if url.query:
             handler.send_body(400, b'{"error":"Session diagnostics take no filters"}')

@@ -1,6 +1,6 @@
 # Public API Reference
 
-This document describes the supported public Python surface, CLI entry points, and MCP tools for **SecureGateway 2.15.1**. It is checked by `tests/test_api_doc_331.py` against the real package exports.
+This document describes the supported public Python surface, CLI entry points, and MCP tools for **SecureGateway 2.16.0**. It is checked by `tests/test_api_doc_331.py` against the real package exports.
 
 ## Package exports (`secure_gateway.__all__`)
 
@@ -77,6 +77,18 @@ masked = session.mask("Review private_symbol_1 handling")
 restored = session.restore(masked)
 ```
 
+Opt-in masking features (#354) are passed per session as an immutable
+`GatewayFeatures` value from `secure_gateway.gateway_features`; the default
+enables nothing. Sessions with different feature sets can run in one process
+at the same time. See "Opt-in masking features" in `docs/GATEWAY.md`.
+
+```python
+from secure_gateway.gateway import GatewaySession
+from secure_gateway.gateway_features import GatewayFeatures
+
+session = GatewaySession(features=GatewayFeatures(ko_conjugation_split=True, contextual_name_spans=True))
+```
+
 ## CLI commands (`secure-gateway`)
 
 The CLI is exposed as `secure-gateway` / `python -m secure_gateway`. Common commands:
@@ -86,6 +98,7 @@ The CLI is exposed as `secure-gateway` / `python -m secure_gateway`. Common comm
 - `secure-gateway serve` ??run local MCP utilities over stdio (no unauthenticated network transports).
 - `secure-gateway gateway install` ??configure the loopback subscription gateway and user-login startup.
 - `secure-gateway gateway run` ??run the configured gateway in the foreground.
+- `secure-gateway gateway features` — show opt-in feature defaults, sources and the state the next start would use; `gateway run`/`api-run` accept `--feature NAME=on|off` and `--features-off`.
 - `secure-gateway gateway status` / `stop` / `uninstall` / `reset` / `admin` ??gateway lifecycle and diagnostics.
 - `secure-gateway gateway audit-gc` / `audit-export` ??inspect/apply audit retention or export bounded metadata.
 - `secure-gateway doctor`, `init`, `uninstall`, `stats`, `state`, `restore`, `exec` ??hook/integration and local session utilities.
