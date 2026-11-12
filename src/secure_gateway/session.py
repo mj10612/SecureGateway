@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from collections import deque
+from collections import OrderedDict, deque
 import math
 import re
 from threading import TIMEOUT_MAX, Event, RLock, Thread
@@ -14,6 +14,12 @@ import weakref
 from secure_gateway.engine.strategies import StrategyGenerator
 from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, mapping_size, positive_budget, snapshot_budget
 from secure_gateway.models import MaskMode, SessionStats, SurrogateStrategy, TokenMapping
+
+# Bounds for the per-store embedded-original memo (issue #356); same entry count
+# as the gateway mask cache. Texts above the per-text bound are never memoized.
+_EMBEDDED_MEMO_ENTRIES = 4096
+_EMBEDDED_MEMO_CHARS = 4 * 1024 * 1024
+_EMBEDDED_MEMO_TEXT_CHARS = 1024 * 1024
 
 
 def validate_ttl(ttl: float) -> None:
@@ -37,6 +43,20 @@ class SessionMappings(dict[str, TokenMapping]):
         self._original_trie: dict | None = None
         self._original_automaton: tuple[list[dict[str, int]], list[int], list[str | None], list[int]] | None = None
         self.nonstandard_surrogates: set[str] = set()
+        # Issue #356: embedded-original results per text, valid for one
+        # removal/replacement revision. Originals added since a result was
+        # computed are checked incrementally (``_added`` is append-only within
+        # a revision). Bounded like the gateway mask cache; dropped on clear().
+        self._revision = 0
+        self._added: list[str] = []
+        self._embedded_memo: OrderedDict[str, tuple[int, int, frozenset[str]]] = OrderedDict()
+        self._embedded_memo_chars = 0
+
+    def _reset_embedded_memo(self):
+        self._revision += 1
+        self._added.clear()
+        self._embedded_memo.clear()
+        self._embedded_memo_chars = 0
 
     def __setitem__(self, key, mapping):
         if self.account_bytes and isinstance(mapping, TokenMapping):
@@ -49,9 +69,12 @@ class SessionMappings(dict[str, TokenMapping]):
         self._original_automaton = None
         if key in self:
             self._original_trie = None
+            self._reset_embedded_memo()
             previous = self[key]
             if isinstance(previous, TokenMapping):
                 self.nonstandard_surrogates.discard(previous.surrogate)
+        elif isinstance(mapping, TokenMapping):
+            self._added.append(mapping.original)
         super().__setitem__(key, mapping)
         if not isinstance(mapping, TokenMapping):
             return
@@ -124,10 +147,42 @@ class SessionMappings(dict[str, TokenMapping]):
                 match = output[match]
         return found
 
+    def embedded_originals(self, text: str) -> frozenset[str]:
+        """Return ``originals_in(text, embedded=True)``, memoized per text.
+
+        Embedded matching has no boundary rule, so it equals the set of
+        nonempty originals occurring as substrings. A memoized result stays
+        exact while no mapping is removed or replaced (``_revision``); only
+        originals added after it was computed need a substring check.
+        """
+        entry = self._embedded_memo.get(text)
+        if entry is not None and entry[0] == self._revision:
+            _, seen, found = entry
+            if seen < len(self._added):
+                new = {original for original in self._added[seen:] if original and original in text}
+                if new:
+                    found = found | new
+                self._embedded_memo[text] = (self._revision, len(self._added), found)
+            self._embedded_memo.move_to_end(text)
+            return found
+        found = frozenset(self.originals_in(text, embedded=True))
+        if len(text) <= _EMBEDDED_MEMO_TEXT_CHARS:
+            if entry is not None:
+                self._embedded_memo_chars -= len(text)
+                del self._embedded_memo[text]
+            while self._embedded_memo and (len(self._embedded_memo) >= _EMBEDDED_MEMO_ENTRIES
+                                           or self._embedded_memo_chars + len(text) > _EMBEDDED_MEMO_CHARS):
+                old, _ = self._embedded_memo.popitem(last=False)
+                self._embedded_memo_chars -= len(old)
+            self._embedded_memo[text] = (self._revision, len(self._added), found)
+            self._embedded_memo_chars += len(text)
+        return found
+
     def __delitem__(self, key):
         if key in self._entry_bytes:
             self.mapping_bytes -= self._entry_bytes.pop(key)
         self._original_automaton = None
+        self._reset_embedded_memo()
         mapping = self[key]
         super().__delitem__(key)
         if isinstance(mapping, TokenMapping):
@@ -139,6 +194,7 @@ class SessionMappings(dict[str, TokenMapping]):
         self.mapping_bytes = 0
         self._entry_bytes.clear()
         self._original_automaton = None
+        self._reset_embedded_memo()
         super().clear()
         self.nonstandard_surrogates.clear()
         self._original_trie = None
@@ -159,6 +215,7 @@ class SessionMappings(dict[str, TokenMapping]):
     def popitem(self):
         """Handle popitem."""
         self._original_automaton = None
+        self._reset_embedded_memo()
         key, mapping = super().popitem()
         self.mapping_bytes -= self._entry_bytes.pop(key, 0)
         if isinstance(mapping, TokenMapping):
