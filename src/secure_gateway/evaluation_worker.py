@@ -164,8 +164,13 @@ def capture_worker_process(
     command: list[str], input_bytes: bytes, *, timeout: float, cwd: Path,
     env: dict[str, str] | None = None,
     new_process_group: bool = True,
+    check: bool = True,
 ) -> subprocess.CompletedProcess[bytes]:
-    """Bound both output pipes and a potentially blocked stdin writer."""
+    """Bound both output pipes and a potentially blocked stdin writer.
+
+    With ``check=False`` a nonzero exit returns the captured (still bounded)
+    output so the caller can classify it; the caller must then fail closed itself.
+    """
     if (
         isinstance(timeout, bool)
         or not isinstance(timeout, (int, float))
@@ -249,7 +254,7 @@ def capture_worker_process(
             if error is not None:
                 raise ValueError(error)
             if drained and process.poll() is not None:
-                if process.returncode:
+                if process.returncode and check:
                     raise ValueError("Worker executable failed.")
                 return subprocess.CompletedProcess(
                     command, process.returncode, b"".join(chunks[0]), b"".join(chunks[1])

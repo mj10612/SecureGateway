@@ -1,0 +1,46 @@
+{
+  "issue": 364,
+  "frozen_utc": "2026-11-12",
+  "purpose": "Decide whether the lean session and batched interpretation/grading can replace one-call-per-item Codex evaluation without changing results.",
+  "reference": {
+    "run": "#313 segment_language, individual native calls (docs/evaluations/comprehension-2.11.1/313/comprehension, copied to reference-313/ with sha256 in reference-313.sha256)",
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "low",
+    "cases": 88,
+    "arms": ["A", "C", "D1"],
+    "raw_tokens": 5561605,
+    "raw_tokens_per_case": 63200,
+    "decision": "REJECT"
+  },
+  "fixed_settings": {
+    "model": "gpt-6.1-sol (same as reference so that only the transport changes)",
+    "reasoning_effort": "low",
+    "adapter": "secure_gateway.evaluation_batch.run_lean_worker",
+    "interpret_batch_size": 8,
+    "interpret_grouping": "same arm only; order shuffled with seed 364; opaque task labels",
+    "interpret_max_output_tokens_per_item": 512,
+    "grade_batch_size": 4,
+    "grade_rules": "identical per-case grade requests as the reference runner (blind labels, rubric text, quote rule), combined with build_grade_batch",
+    "quote_verification": "per case against that case's own responses; a failing case is re-graded once alone with the reference retry message; still failing = ungraded",
+    "failed_batch": "a batch whose answer cannot be split is retried once; still failing = run incomplete"
+  },
+  "stages": {
+    "G_grading_only": "Batched lean grading of the reference's stored first responses.",
+    "I_full_pipeline": "Batched lean interpretation of the reference's exact model-visible inputs, then batched lean grading."
+  },
+  "acceptance": {
+    "G1": "criterion-level agreement (case, arm, criterion) with reference grades >= 0.95",
+    "G2": "whole-task agreement (case, arm) with reference >= 0.90",
+    "I1": "whole-task agreement (case, arm) with reference >= 0.85",
+    "I2": "per-arm whole-task pass count within +-5 of the reference over all 88 cases",
+    "direction": "in both stages the paired C vs D1 comparison keeps the reference direction (D-only > C-only)",
+    "decision": "the frozen #313 rule applied to each stage is reported next to the reference decision; a difference is explained (the reference REJECT rests on a 2-case margin)",
+    "tokens": "raw Codex tokens per case of stage I (interpretation + grading) at least 70% below the reference (<= 18,960)"
+  },
+  "fallback": "If G fails: grade batch 2, else individual lean grading. If I1/I2/direction fail while G passes: keep interpretation one call per item (lean session) and batch grading only, then recompute the token reduction. No threshold is changed after seeing results.",
+  "limitations": [
+    "No test-retest run of the individual method exists; part of any disagreement is ordinary run-to-run variation, so the thresholds are conservative.",
+    "Interpreter and grader are the same model family.",
+    "Validated on one candidate's case set; other task families should re-check agreement on a small sample when first run batched."
+  ]
+}
