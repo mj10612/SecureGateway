@@ -15,10 +15,19 @@ is a second, explicitly selected adapter that lowers Codex subscription usage:
   reach an interpreter. Order is shuffled with a recorded seed and tasks get
   opaque labels.
 
-Isolation is unchanged: fresh ephemeral session, empty working directory,
-read-only sandbox, ChatGPT subscription login only (no API key fallback) and any
-non-message event fails closed. A usage/credit limit is reported as a distinct
-fixed error so runners can stop cleanly and resume later.
+Isolation: fresh ephemeral session, empty working directory, read-only sandbox,
+ChatGPT subscription login only (no API key fallback), and any non-message event
+fails closed. A usage/credit limit is reported as a distinct fixed error so
+runners can stop cleanly and resume later.
+
+Code mode (issue #372): on codex-cli 0.167.x the evaluation models are
+``code_mode_only``, so the session offers an ``exec`` tool (JavaScript in a V8
+isolate that can call nested tools). A successful ``exec`` call leaves no item in
+``codex exec --json`` events and nothing on stderr, so the event filter alone
+cannot see it. The lean session therefore disables ``code_mode_host``: every
+``exec`` call then fails inside the CLI, and the CLI's fixed "code mode
+unavailable" warning is the only extra item accepted. Any failed tool call is
+logged by the CLI's tool router on stderr, and that log also fails closed.
 """
 
 from __future__ import annotations
@@ -43,17 +52,28 @@ from secure_gateway.platform_utils import in_process_group_leader
 # Codex CLI feature flags a semantic task never needs. Measured on codex-cli
 # 0.167.1 (docs/EVALUATION_COST.md): together with LEAN_BASE_INSTRUCTIONS the
 # fixed input per call fell from about 15,100 to about 7,070 tokens.
-# ``code_mode_host`` is deliberately kept: disabling it emits a warning item that
-# the fail-closed event filter would (correctly) treat as a non-message event.
+# ``code_mode_host`` (issue #372) makes the code-mode ``exec`` tool fail instead of
+# running silently; see the module docstring and CODE_MODE_HOST_DISABLED_WARNING.
 LEAN_DISABLED_FEATURES = (
     "shell_tool", "unified_exec", "apps", "plugins", "image_generation", "view_image",
     "goals", "skill_search", "tool_suggest", "sleep_tool", "computer_use", "browser_use",
     "browser_use_external", "in_app_browser", "hooks", "remote_plugin",
     "plugin_discovery_prefetch", "incremental_tools", "deferred_tool_world_state",
     "memories", "fast_mode", "ultrafast_mode", "guardian_approval", "mentions_v2",
-    "workspace_dependencies", "in_app_chat", "multi_agent",
+    "workspace_dependencies", "in_app_chat", "multi_agent", "code_mode_host",
 )
 LEAN_BASE_INSTRUCTIONS = "You are a careful assistant. Answer only from the user's message."
+# The one warning item codex-cli 0.167.2 emits, before the turn starts, when the
+# model is code-mode-only and ``code_mode_host`` is disabled. Only this exact text
+# is accepted; any other warning or item still fails closed.
+CODE_MODE_HOST_DISABLED_WARNING = (
+    "Code Mode is unavailable because code-mode host is disabled. Code mode will fail "
+    "closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+)
+# Tracing target of the CLI's tool dispatcher; it logs every failed tool call
+# (including a rejected ``exec``) on stderr. Its absence proves nothing by itself.
+_TOOL_LOG_MARKER = b"codex_core::tools"
+_TOOL_USED = "Codex used a tool during a semantic task."
 
 # Model for NEW preregistered runs (owner's choice, 2026-11-12). Runs frozen with
 # another model keep that model; never mix models inside one comparison.
@@ -114,9 +134,15 @@ def lean_command(
 
 
 def parse_events(raw: bytes) -> dict[str, int] | None:
-    """Accept only message/reasoning events; classify subscription limits."""
+    """Accept only message/reasoning events; classify subscription limits.
+
+    The single exception is :data:`CODE_MODE_HOST_DISABLED_WARNING`, accepted at
+    most once and only before the turn starts.
+    """
     usage = None
     completed = False
+    started = False
+    warned = False
     for line in raw.splitlines():
         if not line.strip():
             continue
@@ -132,10 +158,20 @@ def parse_events(raw: bytes) -> dict[str, int] | None:
             raise ValueError("Codex inference failed.")
         if kind.startswith("item."):
             item = event.get("item")
+            if (
+                kind == "item.completed" and not started and not warned
+                and isinstance(item, dict) and set(item) == {"id", "type", "message"}
+                and isinstance(item["id"], str) and item["type"] == "error"
+                and item["message"] == CODE_MODE_HOST_DISABLED_WARNING
+            ):
+                warned = True
+                continue
             if not isinstance(item, dict) or item.get("type") not in ("agent_message", "reasoning"):
-                # Unknown item types, including CLI warnings, fail closed.
-                raise ValueError("Codex used a tool during a semantic task.")
-        elif kind not in ("thread.started", "turn.started", "turn.completed"):
+                # Unknown item types, including other CLI warnings, fail closed.
+                raise ValueError(_TOOL_USED)
+        elif kind == "turn.started":
+            started = True
+        elif kind not in ("thread.started", "turn.completed"):
             raise ValueError("Codex returned an unsupported event.")
         if kind == "turn.completed":
             if completed:
@@ -228,6 +264,8 @@ def run_lean_worker(request: dict, *, batch: bool = False) -> dict:
         # Classify the event stream first so a usage/credit limit (which also exits
         # nonzero) stops the run cleanly; any other nonzero exit still fails closed.
         usage = parse_events(events.stdout)
+        if _TOOL_LOG_MARKER in events.stderr:
+            raise ValueError(_TOOL_USED)
         if events.returncode:
             raise ValueError("Worker executable failed.")
         try:
@@ -250,6 +288,7 @@ def run_lean_worker(request: dict, *, batch: bool = False) -> dict:
             "requested_reasoning_effort": request.get("reasoning_effort", "cli_default_unverified"),
             "adapter": "lean-batch", "adapter_source_sha256": adapter_hash(),
             "disabled_features": list(LEAN_DISABLED_FEATURES),
+            "tool_call_checks": ["json events", "cli tool-router log", "code_mode_host disabled"],
             "base_instructions_sha256": sha256(LEAN_BASE_INSTRUCTIONS.encode("utf-8")).hexdigest(),
             "task_response_mode": (
                 "independent_grade" if request["role"] == "grade"

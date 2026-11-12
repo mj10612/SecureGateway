@@ -1,0 +1,720 @@
+{
+ "probe": "offline fake Responses endpoint; real Codex CLI; empty CODEX_HOME; no model, no account",
+ "codex_cli": "codex-cli 0.167.2",
+ "model_metadata": "gpt-6-luna",
+ "fake_usage_per_model_request": 11,
+ "results": [
+  {
+   "config": "lean-2.17.0",
+   "scenario": "answer",
+   "fake_model_call": null,
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 1,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 11,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 7,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [],
+   "stderr_tool_router": [],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "accepted"
+  },
+  {
+   "config": "lean-2.17.0",
+   "scenario": "exec lists nested tools",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify(ALL_TOOLS.map(t => t.name)));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "[{'type': 'input_text', 'text': 'Script completed\\nWall time 0.0 seconds\\nOutput:\\n'}, {'type': 'input_text', 'text': '[\"apply_patch\",\"clock__curr_time\",\"list_mcp_resource_templates\",\"list_mcp_resources\",\"read_mcp_resource\"]'}]"
+   ],
+   "stderr_tool_router": [],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "accepted"
+  },
+  {
+   "config": "lean-2.17.0",
+   "scenario": "exec calls clock",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify(await tools.clock__curr_time({})));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "[{'type': 'input_text', 'text': 'Script completed\\nWall time 0.0 seconds\\nOutput:\\n'}, {'type': 'input_text', 'text': '{\"current_time\":\"2026-11-12 23:04:17 UTC\"}'}]"
+   ],
+   "stderr_tool_router": [],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "accepted"
+  },
+  {
+   "config": "lean-2.17.0",
+   "scenario": "exec probes globals",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify([typeof require, typeof process, typeof fetch, typeof Deno]));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "[{'type': 'input_text', 'text': 'Script completed\\nWall time 0.0 seconds\\nOutput:\\n'}, {'type': 'input_text', 'text': '[\"undefined\",\"undefined\",\"undefined\",\"undefined\"]'}]"
+   ],
+   "stderr_tool_router": [],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "accepted"
+  },
+  {
+   "config": "lean-2.17.0",
+   "scenario": "exec calls apply_patch",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify(await tools.apply_patch(\"*** Begin Patch\\n*** Add File: probe_written.txt\\n+hello\\n*** End Patch\\n\")));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "[{'type': 'input_text', 'text': 'Script failed\\nWall time 0.0 seconds\\nOutput:\\n'}, {'type': 'input_text', 'text': 'Script error:\\npatch rejected: writing is blocked by read-only sandbox; rejected by user approval settings'}]"
+   ],
+   "stderr_tool_router": [
+    "ERROR codex_core::tools::router: error=patch rejected: writing is blocked by read-only sandbox; rejected by user approval settings"
+   ],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "rejected (stderr tool log)"
+  },
+  {
+   "config": "lean-2.17.1",
+   "scenario": "answer",
+   "fake_model_call": null,
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 1,
+   "event_shapes": [
+    "thread.started",
+    "item.completed/error",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [
+    "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+   ],
+   "turn_usage": {
+    "input_tokens": 11,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 7,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [],
+   "stderr_tool_router": [],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "accepted"
+  },
+  {
+   "config": "lean-2.17.1",
+   "scenario": "exec lists nested tools",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify(ALL_TOOLS.map(t => t.name)));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "item.completed/error",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [
+    "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+   ],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "code-mode host is disabled"
+   ],
+   "stderr_tool_router": [
+    "ERROR codex_core::tools::router: error=code-mode host is disabled"
+   ],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "rejected (stderr tool log)"
+  },
+  {
+   "config": "lean-2.17.1",
+   "scenario": "exec calls clock",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify(await tools.clock__curr_time({})));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "item.completed/error",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [
+    "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+   ],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "code-mode host is disabled"
+   ],
+   "stderr_tool_router": [
+    "ERROR codex_core::tools::router: error=code-mode host is disabled"
+   ],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "rejected (stderr tool log)"
+  },
+  {
+   "config": "lean-2.17.1",
+   "scenario": "wait",
+   "fake_model_call": [
+    "function",
+    "wait",
+    "{\"cell_id\": \"1\"}"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "item.completed/error",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [
+    "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+   ],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "code-mode host is disabled"
+   ],
+   "stderr_tool_router": [
+    "ERROR codex_core::tools::router: error=code-mode host is disabled"
+   ],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "rejected (stderr tool log)"
+  },
+  {
+   "config": "lean-2.17.1",
+   "scenario": "direct apply_patch",
+   "fake_model_call": [
+    "custom",
+    "apply_patch",
+    "*** Begin Patch\n*** Add File: probe_written.txt\n+hello\n*** End Patch\n"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "item.completed/error",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [
+    "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+   ],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "patch rejected: writing is blocked by read-only sandbox; rejected by user approval settings"
+   ],
+   "stderr_tool_router": [
+    "ERROR codex_core::tools::router: error=patch rejected: writing is blocked by read-only sandbox; rejected by user approval settings"
+   ],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "rejected (stderr tool log)"
+  },
+  {
+   "config": "lean-2.17.1",
+   "scenario": "spawn_agent",
+   "fake_model_call": [
+    "function",
+    "spawn_agent",
+    "{\"message\": \"hi\"}"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "item.completed/error",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [
+    "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+   ],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "unsupported call: spawn_agent"
+   ],
+   "stderr_tool_router": [
+    "ERROR codex_core::tools::router: error=unsupported call: spawn_agent"
+   ],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "rejected (stderr tool log)"
+  },
+  {
+   "config": "lean-2.17.1",
+   "scenario": "request_user_input_async",
+   "fake_model_call": [
+    "function",
+    "request_user_input_async",
+    "{\"questions\": [{\"title\": \"Which one?\"}]}"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "item.completed/error",
+    "turn.started",
+    "item.completed/agent_message",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [
+    "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+   ],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "{\"accepted\":true}"
+   ],
+   "stderr_tool_router": [],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "accepted"
+  },
+  {
+   "config": "native",
+   "scenario": "answer",
+   "fake_model_call": null,
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "clock/sleep",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 1,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 11,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 7,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [],
+   "stderr_tool_router": [],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "accepted"
+  },
+  {
+   "config": "native",
+   "scenario": "exec lists nested tools",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify(ALL_TOOLS.map(t => t.name)));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "clock/sleep",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "[{'type': 'input_text', 'text': 'Script completed\\nWall time 0.0 seconds\\nOutput:\\n'}, {'type': 'input_text', 'text': '[\"apply_patch\",\"clock__curr_time\",\"create_goal\",\"exec_command\",\"get_goal\",\"list_mcp_resource_templates\",\"list_mcp_resources\",\"read_mcp_resource\",\"update_goal\",\"view_image\",\"write_st"
+   ],
+   "stderr_tool_router": [],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "accepted"
+  },
+  {
+   "config": "native",
+   "scenario": "exec runs a command",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify(await tools.exec_command({cmd: 'echo hi'})));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "clock/sleep",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "[{'type': 'input_text', 'text': 'Script failed\\nWall time 0.0 seconds\\nOutput:\\n'}, {'type': 'input_text', 'text': 'Script error:\\nexec_command failed: CreateProcess { message: \"Rejected(\\\\\"`\\\\\\\\\\\\\"C:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\WINDOWS\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\System32\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\WindowsPowerShell\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\v1.0"
+   ],
+   "stderr_tool_router": [
+    "ERROR codex_core::tools::router: error=exec_command failed: CreateProcess { message: \"Rejected(\\\"`\\\\\\\"C:\\\\\\\\\\\\\\\\WINDOWS\\\\\\\\\\\\\\\\System32\\\\\\\\\\\\\\\\WindowsPowerShell\\\\\\\\\\\\\\\\v1.0\\\\\\\\\\\\\\\\powershell.exe\\\\\\\" -Command 'echo hi'` rejected: blocked by policy\\\")\" }"
+   ],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "rejected (stderr tool log)"
+  },
+  {
+   "config": "native",
+   "scenario": "exec views a file outside cwd",
+   "fake_model_call": [
+    "custom",
+    "exec",
+    "text(JSON.stringify(await tools.view_image({path: '../outside.txt'})));"
+   ],
+   "exit_code": 0,
+   "offered_tools": [
+    "functions/exec",
+    "functions/wait",
+    "functions/request_user_input",
+    "functions/request_user_input_async",
+    "clock/sleep",
+    "collaboration/followup_task",
+    "collaboration/interrupt_agent",
+    "collaboration/list_agents",
+    "collaboration/send_message",
+    "collaboration/spawn_agent",
+    "collaboration/wait_agent"
+   ],
+   "model_requests": 2,
+   "event_shapes": [
+    "thread.started",
+    "turn.started",
+    "item.completed/agent_message",
+    "turn.completed"
+   ],
+   "warning_items": [],
+   "turn_usage": {
+    "input_tokens": 22,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 14,
+    "reasoning_output_tokens": 0
+   },
+   "tool_output_seen_by_model": [
+    "[{'type': 'input_text', 'text': 'Script failed\\nWall time 0.0 seconds\\nOutput:\\n'}, {'type': 'input_text', 'text': 'Script error:\\nunable to process image: invalid or unsupported image data'}]"
+   ],
+   "stderr_tool_router": [
+    "ERROR codex_core::tools::router: error=unable to process image: invalid or unsupported image data"
+   ],
+   "workspace_files_after": [],
+   "lean_adapter_2_17_1_checks": "rejected (stderr tool log)"
+  }
+ ]
+}

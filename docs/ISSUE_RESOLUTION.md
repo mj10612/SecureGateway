@@ -344,6 +344,10 @@ Default engine only, 17 languages × 2 everyday requests plus known requests: 72
 
 From 2.15.0 evaluations use the lean transport validated in `evaluations/eval-cost-364/` (about −53% raw tokens per case versus the native one-call-per-item method, with the lean grader somewhat stricter). Runs never mix transports or models inside one comparison.
 
+### Isolation correction (#372, 2.17.1)
+
+The statements above that interpretations "used zero tools" mean zero tool events. Guaranteed in every run: a fresh ephemeral session, an empty temporary working directory, the read-only sandbox, subscription login only and no user/project configuration; the lean transport also disabled 27 tool features. Not guaranteed: on codex-cli 0.167.x the evaluation models run in code mode, and calls to its `exec` tool (and the tools it calls) leave no `--json` event, so the event check could not see them. Offline (real CLI, fake model endpoint, no account), lean `exec` could reach only a patch tool rejected by the sandbox, a clock and empty MCP resource listing; native `exec` also reached a command tool (rejected by policy in the probe; the owner's setup was not tested) and an image viewer. No saved evidence suggests a tool was used: a tool round trip at least doubles a call's reported input tokens, and no saved call without an MCP tool arm shows that (details in `docs/EVALUATION_COST.md`). From 2.17.1 the lean session disables `code_mode_host` so `exec` cannot run, and fails closed on the CLI's stderr tool-router log. Recorded results and their adapter hashes are unchanged and are not re-run.
+
 
 ## #354 opt-in feature foundation (2.16.0)
 
