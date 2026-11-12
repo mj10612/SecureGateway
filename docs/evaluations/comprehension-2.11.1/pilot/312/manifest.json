@@ -1,0 +1,3111 @@
+{
+  "schema_version": 1,
+  "jobs": [
+    {
+      "job_id": "cf449f74447b4866ae5f36fab577e59d",
+      "case_id": "holdout-312-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "cf449f74447b4866ae5f36fab577e59d",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: [PRIVATE_1]\nCustomer number: [PRIVATE_2]\nAccount number: [PRIVATE_3]\nDevice number: [PRIVATE_4]\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "2405b0377f8e3514186d8701f4bc01ccd622949f58d674f0449a44077d52e733",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-device-retry",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "668bac219fa44cf2be32e63c91967b8a",
+      "case_id": "holdout-312-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "668bac219fa44cf2be32e63c91967b8a",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "357ac8a3c4987ade50c5a1fce1251b9e12cb074b693501cd8e30f3b131d06a5e",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-account-counter",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "bc1210d9151a46d98b339fcf06fd8b72",
+      "case_id": "holdout-312-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "bc1210d9151a46d98b339fcf06fd8b72",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "866396fd7c5cc938bea851b7762f6d71fed9bedc2d18f60ce01b3ce9b01fff25",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-account-counter",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "015b084873d444d8bb7aef49731ca50b",
+      "case_id": "holdout-312-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "015b084873d444d8bb7aef49731ca50b",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 732846632882684022\n계정 번호: private_symbol_2\n장치 번호: private_symbol_3\nrange(732846012748559113), count = 732846488803440200, count += private_symbol_6 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "f740bf8adec9822e1cdabbf465923b6512cea02f91eec2f28b26ee9e880d75f1",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-account-counter",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "732846632882684022": "593802716",
+          "private_symbol_2": "AC-7416280",
+          "private_symbol_3": "DV-360825",
+          "732846012748559113": "5",
+          "732846488803440200": "0",
+          "private_symbol_6": "1을"
+        }
+      }
+    },
+    {
+      "job_id": "a8ca8c72881b48c1a193bb7de129454a",
+      "case_id": "holdout-312-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "a8ca8c72881b48c1a193bb7de129454a",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: private_symbol_1\n계정 번호: private_symbol_2\n장치 번호: private_symbol_3\nrange(732846140011997974), count = 732846411526069003, count += private_symbol_6 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "61eb536be0ed86b38097f8ba1558a23e61135347a8dfca4d3de7882527fbf7c1",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-account-counter",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "private_symbol_1": "593802716",
+          "private_symbol_2": "AC-7416280",
+          "private_symbol_3": "DV-360825",
+          "732846140011997974": "5",
+          "732846411526069003": "0",
+          "private_symbol_6": "1을"
+        }
+      }
+    },
+    {
+      "job_id": "ac9658ba6dfc46e4bcff3c390f4357b8",
+      "case_id": "holdout-312-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "ac9658ba6dfc46e4bcff3c390f4357b8",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: 732846020435078327\nAccount number: private_symbol_2\nDevice number: private_symbol_3\nExplain a retry loop with range(732846155814868296), counter = 732846090135634016, and counter += 732846156284534909. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "b92d0aa5b4d1d20cf3d531216fae13299d3de4c2b2596b84aa266a8279062575",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-device-retry",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "732846020435078327": "482761905",
+          "private_symbol_2": "AC-6839517",
+          "private_symbol_3": "DV-927164",
+          "732846155814868296": "4",
+          "732846090135634016": "0",
+          "732846156284534909": "1"
+        }
+      }
+    },
+    {
+      "job_id": "666557bb25d14f3caa4ab51b2519d421",
+      "case_id": "holdout-312-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "666557bb25d14f3caa4ab51b2519d421",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: [PRIVATE_1]\nCustomer number: [PRIVATE_2]\nAccount number: [PRIVATE_3]\nDevice number: [PRIVATE_4]\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "61143804f69351cdde46b9ab14df736c2392e4b07205c585accbf9a60cdf1162",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-device-retry",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "e6dce196eaf04e06bc6e8d3fccad2c36",
+      "case_id": "holdout-312-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "e6dce196eaf04e06bc6e8d3fccad2c36",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: private_symbol_1\nAccount number: private_symbol_2\nDevice number: private_symbol_3\nExplain a retry loop with range(732846898211483644), counter = 732846993798719190, and counter += 732846998463948957. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "2402d6e279db58ad408f52ba4280bdf70b004d89a2f3148878d753c13abaabcb",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-device-retry",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "private_symbol_1": "482761905",
+          "private_symbol_2": "AC-6839517",
+          "private_symbol_3": "DV-927164",
+          "732846898211483644": "4",
+          "732846993798719190": "0",
+          "732846998463948957": "1"
+        }
+      }
+    },
+    {
+      "job_id": "62068dbc95694999b85cbbd1927e7eda",
+      "case_id": "holdout-312-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "62068dbc95694999b85cbbd1927e7eda",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: [PRIVATE_1]\n고객 번호: [PRIVATE_2]\n계정 번호: [PRIVATE_3]\n장치 번호: [PRIVATE_4]\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "1dab9f620b597e11fe85baae0d9ee6f928e6c329fe6a40f2e8348465ad10bc0d",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-account-counter",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "f819e00893174189bd0720de7e090bf0",
+      "case_id": "holdout-312-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "f819e00893174189bd0720de7e090bf0",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "18cb9b3896105397f0a5983b60681bd51e39f114e445111690db517926323141",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-device-retry",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "a0feb2b46abb48ee90579962a7e0a4f3",
+      "case_id": "holdout-312-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "a0feb2b46abb48ee90579962a7e0a4f3",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 732846632882684022\n계정 번호: private_symbol_2\n장치 번호: private_symbol_3\nrange(732846012748559113), count = 732846488803440200, count += private_symbol_6 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "3c988319a6c351895eaba0dc4b434c6a9c06ae42e6d4a43c8155c1e0045dc25e",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-account-counter",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "732846632882684022": "593802716",
+          "private_symbol_2": "AC-7416280",
+          "private_symbol_3": "DV-360825",
+          "732846012748559113": "5",
+          "732846488803440200": "0",
+          "private_symbol_6": "1을"
+        }
+      }
+    },
+    {
+      "job_id": "934419d0816c4c9ca5bfd6f089d6e326",
+      "case_id": "holdout-312-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "934419d0816c4c9ca5bfd6f089d6e326",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: [PRIVATE_1]\n고객 번호: [PRIVATE_2]\n계정 번호: [PRIVATE_3]\n장치 번호: [PRIVATE_4]\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "94729816d4264f2eff96c6a7e76f1eedc30e786f126b41ae037087925e440ef6",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-account-counter",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "b55417d5d307466ea464d201c82e820d",
+      "case_id": "holdout-312-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "b55417d5d307466ea464d201c82e820d",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "가상의 비공개 고객 이름: 다솜항\n고객 번호: private_symbol_1\n계정 번호: private_symbol_2\n장치 번호: private_symbol_3\nrange(732846140011997974), count = 732846411526069003, count += private_symbol_6 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "aa2aed2ea29ecbeea283d64560620f27de68f71730c09a9e185892309f84b0ec",
+      "original": "가상의 비공개 고객 이름: 다솜항\n고객 번호: 593802716\n계정 번호: AC-7416280\n장치 번호: DV-360825\nrange(5), count = 0, count += 1을 쓰는 반복문의 종료 조건을 설명해 주세요. 중단 신호의 의미가 주어진 경우에만 예외 동작을 설명하고, 없으면 먼저 질문해 주세요. 고객·계정·장치 번호를 출력하거나 실제 계정을 수정하지 마세요. 메모리에서 실행하는 예시 하나만 다뤄 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "range(5), count = 0, count += 1을 보존해 종료 조건을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "중단 신호의 의미가 없으면 먼저 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 번호를 출력하거나 실제 계정을 수정하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "메모리 내 예시 하나에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-account-counter",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "private_symbol_1": "593802716",
+          "private_symbol_2": "AC-7416280",
+          "private_symbol_3": "DV-360825",
+          "732846140011997974": "5",
+          "732846411526069003": "0",
+          "private_symbol_6": "1을"
+        }
+      }
+    },
+    {
+      "job_id": "9093476ca94447f5894d91bcfeca6ea5",
+      "case_id": "holdout-312-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "9093476ca94447f5894d91bcfeca6ea5",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: private_symbol_1\nAccount number: private_symbol_2\nDevice number: private_symbol_3\nExplain a retry loop with range(732846898211483644), counter = 732846993798719190, and counter += 732846998463948957. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "32c23bae5e26e8f549ca509dcf60b8b9e30d62115bda9d2f73c107f5fcd3f9bb",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-device-retry",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "private_symbol_1": "482761905",
+          "private_symbol_2": "AC-6839517",
+          "private_symbol_3": "DV-927164",
+          "732846898211483644": "4",
+          "732846993798719190": "0",
+          "732846998463948957": "1"
+        }
+      }
+    },
+    {
+      "job_id": "d9fe2e729acb48cf9a7b4fae464eca0c",
+      "case_id": "holdout-312-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "d9fe2e729acb48cf9a7b4fae464eca0c",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "df1e3bae01ba204d8cec6fcb62b1fff0fc1906c74ed690c69ad73cbcd4fc3b05",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-device-retry",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "35e566f2fb0c4b36bd7203720b00b041",
+      "case_id": "holdout-312-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "35e566f2fb0c4b36bd7203720b00b041",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "Confidential synthetic customer: Nerowick\nCustomer number: 732846020435078327\nAccount number: private_symbol_2\nDevice number: private_symbol_3\nExplain a retry loop with range(732846155814868296), counter = 732846090135634016, and counter += 732846156284534909. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "eab41efc05751e65f0300a70a997dd141a8259e1905d03f45c2db0a0f6a75fee",
+      "original": "Confidential synthetic customer: Nerowick\nCustomer number: 482761905\nAccount number: AC-6839517\nDevice number: DV-927164\nExplain a retry loop with range(4), counter = 0, and counter += 1. Discuss timing only if a delay is supplied; otherwise ask for the delay. Do not print any customer, account, or device identifier and do not contact the device. Give pseudocode for one local simulation only.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "Explain a retry loop preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a delay before discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private identifiers and make no device contact."
+        },
+        {
+          "id": "scope",
+          "description": "Provide pseudocode for one local simulation only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h312-device-retry",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "732846020435078327": "482761905",
+          "private_symbol_2": "AC-6839517",
+          "private_symbol_3": "DV-927164",
+          "732846155814868296": "4",
+          "732846090135634016": "0",
+          "732846156284534909": "1"
+        }
+      }
+    }
+  ],
+  "responses": {
+    "cf449f74447b4866ae5f36fab577e59d": {
+      "job_id": "cf449f74447b4866ae5f36fab577e59d",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15202,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 89,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15291
+      },
+      "response": "range(4) runs four iterations. Starting with counter = 0, counter += 1 increases the counter once per iteration, ending at 4.\n\nPseudocode for one local simulation:\n\ncounter = 0\nfor attempt in range(4):\n    counter += 1\n    print(\"Simulated attempt\", counter)\n\nThis simulates four attempts locally without contacting any device.\n\nWhat delay should be used between attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "668bac219fa44cf2be32e63c91967b8a": {
+      "job_id": "668bac219fa44cf2be32e63c91967b8a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15229,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 155,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15384
+      },
+      "response": "메모리에서 실행하는 예시는 다음과 같습니다.\n\ncount = 0\nfor i in range(5):\n    count += 1\n\nrange(5)는 0부터 4까지 다섯 값을 만듭니다. 각 반복에서 count가 1씩 증가하며, 마지막 값인 4를 처리한 뒤 다음 값이 없어 반복문이 종료됩니다. 종료 시 count는 5입니다. 종료 조건은 count가 5인지 검사하는 것이 아니라 range(5)의 값을 모두 소비하는 것입니다.\n\n말씀하신 ‘중단 신호’는 무엇이며, 어떤 의미로 정의되어 있나요? 그 의미를 알려 주시면 해당 신호에 따른 예외 동작을 설명하겠습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "bc1210d9151a46d98b339fcf06fd8b72": {
+      "job_id": "bc1210d9151a46d98b339fcf06fd8b72",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15231,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 139,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15370
+      },
+      "response": "메모리에서만 실행하는 예시는 다음과 같습니다.\n\ncount = 0\nfor _ in range(5):\n    count += 1\n\nrange(5)는 0부터 4까지 총 5개의 값을 제공합니다. 반복할 때마다 count가 1씩 증가하고, 다섯 번째 반복 후 count는 5가 됩니다. 종료 조건은 count의 값이 아니라 range(5)가 제공하는 값을 모두 소진하는 것입니다.\n\n중단 신호의 의미가 주어지지 않았습니다. 어떤 값을 중단 신호로 사용하며, 그 신호가 어떤 동작을 뜻하는지 알려 주시겠어요?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "015b084873d444d8bb7aef49731ca50b": {
+      "job_id": "015b084873d444d8bb7aef49731ca50b",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15433,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 158,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15591
+      },
+      "response": "메모리에서 실행하는 예시 하나로, range(732846012748559113)를 순회하며 count = 732846488803440200에서 시작해 매회 count += private_symbol_6를 수행한다고 보면, 반복문은 range가 제공하는 항목을 모두 소진했을 때 정상 종료합니다. count의 증가는 별도의 종료 조건으로 사용하지 않는 한 반복 종료에 영향을 주지 않습니다.\n\n표시된 숫자와 private_symbol_6는 불투명한 참조이므로 실제 반복 횟수, 최종 count 값, 연산 가능 여부는 판단할 수 없습니다.\n\n중단 신호는 무엇이며, 그 신호가 발생하면 어떤 동작을 하도록 정의되어 있나요?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "a8ca8c72881b48c1a193bb7de129454a": {
+      "job_id": "a8ca8c72881b48c1a193bb7de129454a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15428,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 175,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15603
+      },
+      "response": "메모리에서만 실행하는 예시를 다음처럼 가정하겠습니다.\n\nfor i in range(732846140011997974):\n    count += private_symbol_6\n\ncount의 초기값은 732846411526069003입니다. 이 반복문은 range가 제공하는 항목을 모두 순회하면 종료됩니다. count를 증가시키는 것 자체는 종료 조건이 아니므로, 별도의 조건문이 없다면 count 값 때문에 종료되지는 않습니다.\n\n숫자 표기와 private_symbol_6은 불투명한 참조이므로 실제 반복 횟수, 증가량, 최종 count는 계산할 수 없습니다.\n\n중단 신호의 의미가 제시되지 않았습니다. 어떤 중단 신호를 뜻하며, 그 신호를 받으면 어떤 동작을 해야 하나요?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "ac9658ba6dfc46e4bcff3c390f4357b8": {
+      "job_id": "ac9658ba6dfc46e4bcff3c390f4357b8",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15406,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 123,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15529
+      },
+      "response": "The loop runs once for each item in range(732846155814868296). The counter starts at 732846090135634016 and is updated by counter += 732846156284534909 on each iteration. These values are opaque labels, so the exact iteration count and counter values cannot be calculated.\n\nPseudocode for one local simulation:\n\ncounter = 732846090135634016\nfor attempt in range(732846155814868296):\n    simulate_one_attempt_locally()\n    counter += 732846156284534909\n\nWhat delay should be used between attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "666557bb25d14f3caa4ab51b2519d421": {
+      "job_id": "666557bb25d14f3caa4ab51b2519d421",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15202,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 134,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15336
+      },
+      "response": "range(4) runs the loop four times, using values 0, 1, 2, and 3. Starting with counter = 0, counter += 1 increases the attempt count on each iteration. If all four attempts fail, counter ends at 4. A successful attempt exits the loop early.\n\nPseudocode for one local simulation:\n\ncounter = 0\nfor attempt in range(4):\n    counter += 1\n    simulated_success = (counter == 3)\n    if simulated_success:\n        break\n\nThis simulation succeeds on attempt 3 and makes no device contact.\n\nWhat delay should be used between retry attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "e6dce196eaf04e06bc6e8d3fccad2c36": {
+      "job_id": "e6dce196eaf04e06bc6e8d3fccad2c36",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15407,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 159,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15566
+      },
+      "response": "The loop uses range(732846898211483644) to control its iterations. The counter starts at 732846993798719190 and is updated by counter += 732846998463948957 after each simulated failure. These numeric aliases are opaque, so their actual values, iteration count, and arithmetic results cannot be determined.\n\nPseudocode for one local simulation:\n\nfunction simulate_once():\n    counter = 732846993798719190\n    for attempt in range(732846898211483644):\n        success = simulate_local_attempt()\n        if success:\n            break\n        counter += 732846998463948957\n\nsimulate_once()\n\nsimulate_local_attempt() performs only an in-memory simulation and makes no external contact.\n\nWhat delay should be used between retries?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "62068dbc95694999b85cbbd1927e7eda": {
+      "job_id": "62068dbc95694999b85cbbd1927e7eda",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15232,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 159,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15391
+      },
+      "response": "range(5)는 0, 1, 2, 3, 4를 차례로 제공하므로 반복문은 다섯 번째 실행을 마치면 종료됩니다. count = 0에서 시작해 매번 count += 1을 실행하면 최종 count는 5입니다. 이때 종료 원인은 count 값이 아니라 range(5)의 값이 모두 소진되는 것입니다.\n\n메모리에서만 동작하는 예시입니다.\n\ncount = 0\nfor _ in range(5):\n    count += 1\n\n중단 신호가 무엇을 뜻하는지 주어지지 않았습니다. 어떤 신호를 말하며, 그 신호를 받았을 때 어떤 동작을 원하시나요?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "f819e00893174189bd0720de7e090bf0": {
+      "job_id": "f819e00893174189bd0720de7e090bf0",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15200,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 152,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15352
+      },
+      "response": "range(4) runs the loop four times, with iteration values 0, 1, 2, and 3. Starting counter at 0 and adding 1 each iteration counts attempts from 1 through 4. A successful attempt ends the loop early; otherwise, all four attempts run.\n\nPseudocode for one local simulation:\n\ncounter = 0\nfor i in range(4):\n    counter += 1\n    simulated_success = (counter == 3)\n    if simulated_success:\n        print(\"Simulated success on attempt\", counter)\n        break\nelse:\n    print(\"All four simulated attempts failed\")\n\nThis simulation succeeds on its third attempt and makes no external contact.\n\nWhat delay should be used between attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "a0feb2b46abb48ee90579962a7e0a4f3": {
+      "job_id": "a0feb2b46abb48ee90579962a7e0a4f3",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 14587,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 191,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 14778
+      },
+      "response": "메모리에서만 실행하는 예시로, count를 732846488803440200으로 초기화한 뒤 range(732846012748559113)를 순회하며 매회 count += private_symbol_6을 수행한다고 가정하겠습니다.\n\n이 반복문은 range가 제공하는 항목을 모두 순회하면 종료됩니다. count를 변경하는 것만으로는 range의 순회가 끝나지 않습니다. count에 따른 별도 종료 조건이 없다면 count는 정상 종료 여부를 결정하지 않습니다.\n\n표시된 숫자와 private_symbol_6은 불투명한 참조이므로 실제 반복 횟수, 증감 방향 또는 최종 count 값은 계산할 수 없습니다.\n\n중단 신호는 무엇이며, 그 신호가 어떤 의미인지 알려 주시겠어요? 의미가 주어지면 그에 따른 예외 동작을 설명하겠습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "934419d0816c4c9ca5bfd6f089d6e326": {
+      "job_id": "934419d0816c4c9ca5bfd6f089d6e326",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15234,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 158,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15392
+      },
+      "response": "메모리에서만 실행되는 예시는 다음과 같습니다.\n\ncount = 0\nfor i in range(5):\n    count += 1\n\nrange(5)는 0, 1, 2, 3, 4를 차례로 제공하므로 반복문은 총 5회 실행된 뒤 종료됩니다. count는 매번 1씩 증가하여 최종값이 5가 됩니다. 종료 이유는 count가 5가 되었기 때문이 아니라 range(5)의 값을 모두 사용했기 때문입니다.\n\n말씀하신 ‘중단 신호’는 무엇을 의미하나요? 신호의 의미와 발생 시 원하는 처리를 알려주시면 그에 따른 예외 동작을 설명하겠습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "b55417d5d307466ea464d201c82e820d": {
+      "job_id": "b55417d5d307466ea464d201c82e820d",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15434,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 211,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15645
+      },
+      "response": "range(732846140011997974)를 순회하는 반복문은 범위가 제공하는 항목을 모두 처리하면 종료됩니다. 숫자는 불투명한 별칭이므로 실제 반복 횟수는 알 수 없습니다.\n\n메모리에서만 실행하는 예시 하나는 다음과 같습니다.\n\ncount = 732846411526069003\nfor _ in range(732846140011997974):\n    count += private_symbol_6\n\n이 예시에서 count의 갱신은 반복문의 종료 조건이 아닙니다. 별도의 종료 조건이 없으므로 범위 순회가 끝나면 종료됩니다. 초기값과 증가량의 실제 값이 주어지지 않아 최종 count는 계산할 수 없습니다. 출력이나 실제 계정 수정은 하지 않습니다.\n\n중단 신호는 무엇이며, 그 신호를 받으면 어떤 동작을 하도록 정의되어 있나요? 의미가 제시되지 않아 예외 동작은 아직 설명할 수 없습니다.",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "9093476ca94447f5894d91bcfeca6ea5": {
+      "job_id": "9093476ca94447f5894d91bcfeca6ea5",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15405,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 151,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15556
+      },
+      "response": "The loop uses range(732846898211483644) to control retries. The counter starts at 732846993798719190 and is updated with counter += 732846998463948957 after each attempt. These numeric aliases are opaque labels, so their actual values and the resulting retry count cannot be determined.\n\nPseudocode for one local simulation:\n\nfunction simulate_once():\n    counter = 732846993798719190\n    for attempt in range(732846898211483644):\n        success = simulate_local_attempt()\n        if success:\n            break\n        counter += 732846998463948957\n\nsimulate_once()\n\nAll attempts are simulated locally; no device is contacted.\n\nWhat delay should be used between retries?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "d9fe2e729acb48cf9a7b4fae464eca0c": {
+      "job_id": "d9fe2e729acb48cf9a7b4fae464eca0c",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 15198,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 140,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15338
+      },
+      "response": "range(4) runs four iterations, with values 0, 1, 2, and 3. Starting with counter = 0, counter += 1 increases the counter once per attempt. If all four attempts run, the counter ends at 4. A successful attempt can stop the loop early.\n\nPseudocode for one local simulation:\n\ncounter = 0\nsimulated_results = [False, False, False, False]\n\nfor i in range(4):\n    counter += 1\n    success = simulated_results[i]\n    if success:\n        break\n\nThis simulation uses only local values and makes no device contact.\n\nWhat delay should be used between attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    },
+    "35e566f2fb0c4b36bd7203720b00b041": {
+      "job_id": "35e566f2fb0c4b36bd7203720b00b041",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 512,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "answer_visible_task"
+      },
+      "usage": {
+        "input_tokens": 14560,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 122,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 14682
+      },
+      "response": "The loop uses range(732846155814868296) to control repetition, initializes counter to 732846090135634016, and updates it with counter += 732846156284534909 after each simulated attempt. These values are opaque labels, so the exact iteration count and counter values cannot be determined.\n\nPseudocode for one local simulation:\n\ncounter = 732846090135634016\nfor attempt in range(732846155814868296):\n    simulate_attempt_locally()\n    counter += 732846156284534909\n\nWhat delay should be used between attempts?",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      }
+    }
+  },
+  "grades": {
+    "cf449f74447b4866ae5f36fab577e59d": {
+      "job_id": "cf449f74447b4866ae5f36fab577e59d",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16033,
+        "cached_input_tokens": 9984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 357,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16390
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"range(4) runs four iterations. Starting with counter = 0, counter += 1 increases the counter once per iteration, ending at 4.\" correctly explains the required loop and counter operations."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"What delay should be used between attempts?\" asks for the missing delay without discussing timing or assuming a value."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"This simulates four attempts locally without contacting any device.\" The saved response contains no private identifiers and performs no device contact."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"Pseudocode for one local simulation:\" introduces a single loop using \"for attempt in range(4):\" and a simulated print operation."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"range(4) runs four iterations.\" supplies the explanation, and \"counter = 0\\nfor attempt in range(4):\\n    counter += 1\" supplies the requested local pseudocode."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"What delay should be used between attempts?\" preserves the missing-delay condition without inventing timing facts; \"This simulates four attempts locally without contacting any device.\" preserves the local-only constraint."
+        },
+        {
+          "id": "order",
+          "passed": true,
+          "evidence": "\"What delay should be used between attempts?\" appears without any preceding timing discussion. No other explicit order was required."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"What delay should be used between attempts?\" is a targeted clarification for the expressly required missing delay, with no unnecessary questions."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "37f01812f328bb67f51d3621010354d88fb571f87f79471153860868fb2c74e8"
+    },
+    "668bac219fa44cf2be32e63c91967b8a": {
+      "job_id": "668bac219fa44cf2be32e63c91967b8a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16153,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 657,
+        "reasoning_output_tokens": 115,
+        "total_tokens": 16810
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "응답은 \"count = 0\", \"for i in range(5):\", \"count += 1\"을 보존하고, \"종료 조건은 count가 5인지 검사하는 것이 아니라 range(5)의 값을 모두 소비하는 것입니다.\"라고 정확하게 설명합니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "\"메모리에서 실행하는 예시는 다음과 같습니다.\"로 설명을 시작하고 마지막에야 \"말씀하신 ‘중단 신호’는 무엇이며, 어떤 의미로 정의되어 있나요?\"라고 묻습니다. 의미가 없으면 먼저 질문하라는 조건을 지키지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"메모리에서 실행하는 예시는 다음과 같습니다.\" 이후 지역 변수의 반복문만 제시합니다. 응답 전체에 비공개 번호 출력이나 실제 계정 수정은 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리에서 실행하는 예시는 다음과 같습니다.\"라며 count를 증가시키는 반복문 예시 하나만 다룹니다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"마지막 값인 4를 처리한 뒤 다음 값이 없어 반복문이 종료됩니다. 종료 시 count는 5입니다.\"라고 요청된 정상 종료 동작을 설명합니다."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"그 의미를 알려 주시면 해당 신호에 따른 예외 동작을 설명하겠습니다.\"라고 하여 신호의 의미를 지어내지는 않았습니다. 다만 \"메모리에서 실행하는 예시는 다음과 같습니다.\"로 먼저 설명하고 clarification을 뒤에 배치하여 명시된 선행 질문 조건은 보존하지 못했습니다."
+        },
+        {
+          "id": "order",
+          "passed": false,
+          "evidence": "\"종료 조건은 count가 5인지 검사하는 것이 아니라 range(5)의 값을 모두 소비하는 것입니다.\"라는 설명 뒤에 \"말씀하신 ‘중단 신호’는 무엇이며, 어떤 의미로 정의되어 있나요?\"가 나옵니다. 요청된 ‘먼저 질문’ 순서와 다릅니다."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"말씀하신 ‘중단 신호’는 무엇이며, 어떤 의미로 정의되어 있나요?\"라고 누락된 의미를 직접 질문합니다. 필요한 확인 질문이며, 배치 순서 문제는 별도로 평가했습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "ce3cb49840f50a99b4133079cb0c751a117ff180fc1cba1211c3a1ccaac009d0"
+    },
+    "bc1210d9151a46d98b339fcf06fd8b72": {
+      "job_id": "bc1210d9151a46d98b339fcf06fd8b72",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16134,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 613,
+        "reasoning_output_tokens": 47,
+        "total_tokens": 16747
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"count = 0\", \"for _ in range(5):\", \"count += 1\"을 보존하고, \"종료 조건은 count의 값이 아니라 range(5)가 제공하는 값을 모두 소진하는 것입니다.\"라고 정확히 설명한다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "\"메모리에서만 실행하는 예시는 다음과 같습니다.\"로 시작해 예시와 설명을 먼저 제공하고, 마지막에 \"어떤 값을 중단 신호로 사용하며, 그 신호가 어떤 동작을 뜻하는지 알려 주시겠어요?\"라고 질문한다. 의미가 없으면 먼저 질문하라는 조건을 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"메모리에서만 실행하는 예시는 다음과 같습니다.\"라는 설명과 반복문만 제시한다. 비공개 번호를 출력하거나 실제 계정을 수정하는 내용은 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리에서만 실행하는 예시는 다음과 같습니다.\"에 이어 \"count = 0\\nfor _ in range(5):\\n    count += 1\"이라는 메모리 내 예시 하나만 다룬다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"반복할 때마다 count가 1씩 증가하고, 다섯 번째 반복 후 count는 5가 됩니다.\" 및 \"range(5)가 제공하는 값을 모두 소진하는 것입니다.\"로 요청된 반복문의 종료 동작을 설명한다."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"중단 신호의 의미가 주어지지 않았습니다.\"라고 인정하고 의미를 지어내지는 않았지만, \"메모리에서만 실행하는 예시는 다음과 같습니다.\"로 답변을 시작하여 먼저 질문해야 한다는 명시적 조건을 보존하지 못했다."
+        },
+        {
+          "id": "order",
+          "passed": false,
+          "evidence": "\"종료 조건은 count의 값이 아니라 range(5)가 제공하는 값을 모두 소진하는 것입니다.\"라는 설명 뒤에야 \"어떤 값을 중단 신호로 사용하며\"라고 묻는다. 요청된 선행 질문 순서를 어겼다."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"어떤 값을 중단 신호로 사용하며, 그 신호가 어떤 동작을 뜻하는지 알려 주시겠어요?\"라고 누락된 신호의 의미를 확인하는 관련성 있는 질문을 한다. 질문 시점의 위반은 별도로 존재한다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "1be136869c2c1da2b4bb4408978d32c72f4f2a764e6bd466961c26bb755a2f92"
+    },
+    "015b084873d444d8bb7aef49731ca50b": {
+      "job_id": "015b084873d444d8bb7aef49731ca50b",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16147,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 630,
+        "reasoning_output_tokens": 35,
+        "total_tokens": 16777
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "\"range(732846012748559113)를 순회하며 count = 732846488803440200에서 시작해 매회 count += private_symbol_6\" replaces the required range(5), count = 0, and count += 1. The general exhaustion explanation does not preserve the requested example."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The response begins \"메모리에서 실행하는 예시 하나로\" and explains termination before asking \"중단 신호는 무엇이며, 그 신호가 발생하면 어떤 동작을 하도록 정의되어 있나요?\" The required clarification comes last rather than first."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"메모리에서 실행하는 예시 하나로\" confines the discussion to an in-memory example. The response does not disclose the supplied customer, account, or device numbers or modify an actual account."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리에서 실행하는 예시 하나로\" introduces the single example discussed; no additional example or external execution is included."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "\"반복문은 range가 제공하는 항목을 모두 소진했을 때 정상 종료합니다\" supplies a correct general rule, but \"실제 반복 횟수, 최종 count 값, 연산 가능 여부는 판단할 수 없습니다\" withholds supported conclusions about the requested concrete loop after replacing its specified values."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"count = 732846488803440200에서 시작해 매회 count += private_symbol_6\" substitutes different operands for the specified initialization and increment. Although it does not invent interruption behavior, it fails to preserve the original loop conditions."
+        },
+        {
+          "id": "order",
+          "passed": false,
+          "evidence": "\"반복문은 range가 제공하는 항목을 모두 소진했을 때 정상 종료합니다\" precedes \"중단 신호는 무엇이며\". The original explicitly requires asking first when the signal's meaning is absent."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"중단 신호는 무엇이며, 그 신호가 발생하면 어떤 동작을 하도록 정의되어 있나요?\" appropriately asks for the missing signal definition and intended behavior without an unnecessary question. Its placement fails the separate ordering requirement."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "b579e2f0e787aced0a7775aef93e37fd2fe8265f9698ec5b97ffb29b5dc7a307"
+    },
+    "a8ca8c72881b48c1a193bb7de129454a": {
+      "job_id": "a8ca8c72881b48c1a193bb7de129454a",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16175,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 618,
+        "reasoning_output_tokens": 30,
+        "total_tokens": 16793
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "\"for i in range(732846140011997974):\"와 \"count += private_symbol_6\", \"count의 초기값은 732846411526069003입니다.\"는 요청된 range(5), count = 0, count += 1을 보존하지 않는다. 일반적인 순회 종료 설명만 제공했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "\"중단 신호의 의미가 제시되지 않았습니다. 어떤 중단 신호를 뜻하며, 그 신호를 받으면 어떤 동작을 해야 하나요?\"라고 질문했지만, 예시와 설명을 모두 제시한 뒤에 질문하여 먼저 질문하라는 조건을 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"메모리에서만 실행하는 예시를 다음처럼 가정하겠습니다.\"라고 범위를 제한했다. 응답에 제공된 고객·계정·장치 번호를 출력하거나 실제 계정을 수정한 내용은 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리에서만 실행하는 예시를 다음처럼 가정하겠습니다.\"에 이어 반복문 예시 하나만 다룬다."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "\"이 반복문은 range가 제공하는 항목을 모두 순회하면 종료됩니다.\"라는 일반 원리는 설명했지만, \"실제 반복 횟수, 증가량, 최종 count는 계산할 수 없습니다.\"라며 주어진 구체적 값으로 수행할 수 있는 설명을 누락했다."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"count의 초기값은 732846411526069003입니다.\"라고 원문의 초기값 0을 근거 없이 바꾸었다. \"숫자 표기와 private_symbol_6은 불투명한 참조\"라는 설명도 원문에 없는 불확실성을 도입한다."
+        },
+        {
+          "id": "order",
+          "passed": false,
+          "evidence": "응답은 \"메모리에서만 실행하는 예시를 다음처럼 가정하겠습니다.\"로 시작하고 마지막에 \"어떤 중단 신호를 뜻하며, 그 신호를 받으면 어떤 동작을 해야 하나요?\"라고 묻는다. 명시된 '먼저 질문' 순서를 어겼다."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"어떤 중단 신호를 뜻하며, 그 신호를 받으면 어떤 동작을 해야 하나요?\"는 누락된 중단 신호의 의미와 필요한 동작을 확인하는 적절한 질문이다. 질문의 순서 위반은 별도로 평가했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "94858158448fb026185e08963ecbcda7d0318581ba06efecb058c2d9398f866d"
+    },
+    "ac9658ba6dfc46e4bcff3c390f4357b8": {
+      "job_id": "ac9658ba6dfc46e4bcff3c390f4357b8",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16060,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 370,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16430
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response substitutes \"range(732846155814868296)\", \"counter = 732846090135634016\", and \"counter += 732846156284534909\" for the required range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks \"What delay should be used between attempts?\" without discussing timing."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The pseudocode uses \"simulate_one_attempt_locally()\" and discloses none of the supplied customer, account, or device identifiers. No device contact is shown."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"Pseudocode for one local simulation:\" introduces a single local simulation containing \"simulate_one_attempt_locally()\"."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "Although it supplies pseudocode, \"These values are opaque labels, so the exact iteration count and counter values cannot be calculated\" fails to explain the requested concrete retry loop and accompanies incorrect substituted constants."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"counter = 732846090135634016\" and \"counter += 732846156284534909\" invent replacements for explicitly supplied values, although \"What delay should be used between attempts?\" correctly leaves the missing delay unresolved."
+        },
+        {
+          "id": "order",
+          "passed": true,
+          "evidence": "\"What delay should be used between attempts?\" asks for the delay without preceding timing discussion. No other explicit ordering requirement applies."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"What delay should be used between attempts?\" is the targeted clarification required because no delay was supplied."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "05e3e89cb3bcb917b7be41ddf04f27863de7d725daf701da72fdfee5725bd089"
+    },
+    "666557bb25d14f3caa4ab51b2519d421": {
+      "job_id": "666557bb25d14f3caa4ab51b2519d421",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16075,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 377,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16452
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains \"range(4) runs the loop four times\" and \"Starting with counter = 0, counter += 1 increases the attempt count on each iteration,\" preserving all required expressions."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks \"What delay should be used between retry attempts?\" without discussing timing or assuming a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No private identifiers appear in the saved response. It states, \"This simulation succeeds on attempt 3 and makes no device contact,\" and supplies only local simulation pseudocode."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "Under \"Pseudocode for one local simulation:\", it provides a single loop using \"simulated_success = (counter == 3)\" with no device operation."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It explains the counter behavior with \"If all four attempts fail, counter ends at 4\" and supplies the requested simulation under \"Pseudocode for one local simulation:\"."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "It leaves the missing delay unresolved by asking \"What delay should be used between retry attempts?\" The example outcome is explicitly simulated through \"simulated_success = (counter == 3)\", rather than asserted as a customer or device fact."
+        },
+        {
+          "id": "order",
+          "passed": true,
+          "evidence": "The response asks \"What delay should be used between retry attempts?\" without first discussing timing, preserving the applicable prerequisite. No other explicit order was required."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "The targeted question \"What delay should be used between retry attempts?\" requests the missing information required by the original, without unnecessary questions."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "b1a0b802defabb5acd0e6f7ee54bea7722fd2b78d51db0479454fe73b78c9d56"
+    },
+    "e6dce196eaf04e06bc6e8d3fccad2c36": {
+      "job_id": "e6dce196eaf04e06bc6e8d3fccad2c36",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16110,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 399,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16509
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response substitutes \"range(732846898211483644)\", \"counter = 732846993798719190\", and \"counter += 732846998463948957\" for the required range(4), counter = 0, and counter += 1, so it does not preserve the requested loop."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks \"What delay should be used between retries?\" without discussing timing or assuming a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No supplied private identifiers appear. The response states that \"simulate_local_attempt() performs only an in-memory simulation and makes no external contact.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "It labels its code \"Pseudocode for one local simulation:\" and invokes \"simulate_once()\" once; simulated attempts remain local."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "Although it provides pseudocode, \"The loop uses range(732846898211483644) to control its iterations\" explains a substituted loop rather than the requested range(4) loop, and the initialization and increment are also changed."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "The response claims \"These numeric aliases are opaque, so their actual values, iteration count, and arithmetic results cannot be determined.\" The supplied original explicitly provides the required numeric values; substituting opaque numbers fails to preserve those requirements, although no missing delay is invented."
+        },
+        {
+          "id": "order",
+          "passed": true,
+          "evidence": "The response asks \"What delay should be used between retries?\" and provides no timing discussion before that question. No other explicit ordering requirement applies."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"What delay should be used between retries?\" directly requests the missing delay required by the original, without adding an unnecessary question."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "760f3895a159d20a7b8bb34806db777b3afc56c5ee2d70941c38520a60b36599"
+    },
+    "62068dbc95694999b85cbbd1927e7eda": {
+      "job_id": "62068dbc95694999b85cbbd1927e7eda",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15308,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 656,
+        "reasoning_output_tokens": 28,
+        "total_tokens": 15964
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"종료 원인은 count 값이 아니라 range(5)의 값이 모두 소진되는 것입니다.\"라고 정확히 설명하고, \"count = 0\"과 \"count += 1\"을 보존했습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "\"range(5)는 0, 1, 2, 3, 4를 차례로 제공하므로\"로 설명을 먼저 시작하고, 마지막에 \"어떤 신호를 말하며, 그 신호를 받았을 때 어떤 동작을 원하시나요?\"라고 질문했습니다. 의미가 없으면 먼저 질문하라는 조건을 지키지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"메모리에서만 동작하는 예시입니다.\"라고 명시하고 로컬 반복문만 제시했습니다. 응답에 비공개 번호 출력이나 실제 계정 수정은 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리에서만 동작하는 예시입니다.\"에 이어 \"count = 0\\nfor _ in range(5):\\n    count += 1\"이라는 예시 하나만 다뤘습니다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"반복문은 다섯 번째 실행을 마치면 종료됩니다.\" 및 \"최종 count는 5입니다.\"라고 요청된 반복문의 종료 조건과 결과를 설명했습니다."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"중단 신호가 무엇을 뜻하는지 주어지지 않았습니다.\"라고 인정하고 예외 동작을 invent하지는 않았지만, 이 문장이 설명과 예시 뒤에 있어 먼저 질문하라는 명시적 조건을 보존하지 못했습니다."
+        },
+        {
+          "id": "order",
+          "passed": false,
+          "evidence": "\"메모리에서만 동작하는 예시입니다.\"와 코드까지 제시한 뒤 \"어떤 신호를 말하며, 그 신호를 받았을 때 어떤 동작을 원하시나요?\"라고 물었습니다. 요청된 질문 우선 순서를 어겼습니다."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"어떤 신호를 말하며, 그 신호를 받았을 때 어떤 동작을 원하시나요?\"라고 누락된 신호의 의미와 기대 동작을 구체적으로 질문했습니다. 필요한 질문이며, 순서 위반은 별도 기준에서 평가했습니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "171d31bb16c71244ef1ab531c90d6e7924ee56ea8cbacf72f6340e923db72cff"
+    },
+    "f819e00893174189bd0720de7e090bf0": {
+      "job_id": "f819e00893174189bd0720de7e090bf0",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16104,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 351,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16455
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains that \"range(4) runs the loop four times\" and preserves \"counter = 0\" and \"counter += 1\" in its pseudocode."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks \"What delay should be used between attempts?\" without discussing timing or assuming a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No private identifiers appear. The pseudocode uses \"simulated_success = (counter == 3)\", and the response states that it \"makes no external contact.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"Pseudocode for one local simulation:\" introduces a single local loop with a simulated success condition."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It explains the counter: \"Starting counter at 0 and adding 1 each iteration counts attempts from 1 through 4,\" and supplies the requested simulation pseudocode."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"This simulation succeeds on its third attempt\" identifies an illustrative simulation outcome rather than an external fact. \"What delay should be used between attempts?\" leaves the missing delay unresolved without inventing it."
+        },
+        {
+          "id": "order",
+          "passed": true,
+          "evidence": "No explicit presentation order was required. The response supplies \"Pseudocode for one local simulation:\" and asks \"What delay should be used between attempts?\" without any premature timing discussion."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"What delay should be used between attempts?\" directly requests the missing information required by the original, with no unnecessary questions."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "8b83f1fc452e36e16badc4307be5bb7326deefedbef97a26fec88b6c3237bf82"
+    },
+    "a0feb2b46abb48ee90579962a7e0a4f3": {
+      "job_id": "a0feb2b46abb48ee90579962a7e0a4f3",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 15337,
+        "cached_input_tokens": 13184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 527,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 15864
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response substitutes \"count를 732846488803440200으로 초기화한 뒤 range(732846012748559113)를 순회하며 매회 count += private_symbol_6\" for the required range(5), count = 0, and count += 1. Its general termination explanation does not preserve the requested example."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "The required clarification appears only after the example and explanation: \"중단 신호는 무엇이며, 그 신호가 어떤 의미인지 알려 주시겠어요?\" It does not ask first when the signal's meaning is absent."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response describes \"메모리에서만 실행하는 예시\" and prints none of the supplied customer, account, or device numbers. It neither performs nor claims an actual account modification."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리에서만 실행하는 예시로\" introduces one hypothetical in-memory example; the remaining paragraphs discuss that same example."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "Although \"이 반복문은 range가 제공하는 항목을 모두 순회하면 종료됩니다\" correctly describes general termination, the response replaces the requested example and then says \"실제 반복 횟수, 증감 방향 또는 최종 count 값은 계산할 수 없습니다.\" It therefore fails to explain the concrete, fully specified loop requested."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"표시된 숫자와 private_symbol_6은 불투명한 참조이므로\" invents opacity for substituted values despite the original supplying concrete loop parameters. The response does appropriately defer signal-specific exception behavior: \"의미가 주어지면 그에 따른 예외 동작을 설명하겠습니다.\""
+        },
+        {
+          "id": "order",
+          "passed": false,
+          "evidence": "The response begins \"메모리에서만 실행하는 예시로\" and explains termination before finally asking \"중단 신호는 무엇이며, 그 신호가 어떤 의미인지 알려 주시겠어요?\" This reverses the explicit instruction to ask first."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"중단 신호는 무엇이며, 그 신호가 어떤 의미인지 알려 주시겠어요?\" directly requests the missing signal definition, which the original explicitly requires. The question is necessary and targeted, although its placement fails the separate ordering requirement."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "4353c563429b302a1402d0c0fd315fd3d9630df52bffea8a6127aa7e630333d5"
+    },
+    "934419d0816c4c9ca5bfd6f089d6e326": {
+      "job_id": "934419d0816c4c9ca5bfd6f089d6e326",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16152,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 654,
+        "reasoning_output_tokens": 138,
+        "total_tokens": 16806
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"count = 0\", \"for i in range(5):\", \"count += 1\"을 보존하고, \"종료 이유는 count가 5가 되었기 때문이 아니라 range(5)의 값을 모두 사용했기 때문입니다.\"라고 정확히 설명했다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "\"메모리에서만 실행되는 예시는 다음과 같습니다.\"로 설명을 시작하고 마지막에 \"말씀하신 ‘중단 신호’는 무엇을 의미하나요?\"라고 질문했다. 의미가 없으면 먼저 질문하라는 순서를 지키지 않았다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"메모리에서만 실행되는 예시는 다음과 같습니다.\"라는 안내와 반복문 설명만 제공했다. 비공개 번호를 출력하거나 실제 계정을 수정한 내용은 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리에서만 실행되는 예시는 다음과 같습니다.\" 아래에 count를 증가시키는 반복문 예시 하나만 제시했다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"반복문은 총 5회 실행된 뒤 종료됩니다.\"와 \"range(5)의 값을 모두 사용했기 때문입니다.\"라는 설명으로 요청된 종료 조건 설명을 수행했다."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"신호의 의미와 발생 시 원하는 처리를 알려주시면 그에 따른 예외 동작을 설명하겠습니다.\"라며 의미를 지어내거나 예외 동작을 단정하지는 않았다. 그러나 이 질문을 설명 뒤에 배치하여 먼저 질문하라는 조건은 보존하지 못했다."
+        },
+        {
+          "id": "order",
+          "passed": false,
+          "evidence": "\"메모리에서만 실행되는 예시는 다음과 같습니다.\"로 시작한 뒤 마지막에 \"말씀하신 ‘중단 신호’는 무엇을 의미하나요?\"라고 물어, 명시된 질문 우선 순서를 어겼다."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"말씀하신 ‘중단 신호’는 무엇을 의미하나요? 신호의 의미와 발생 시 원하는 처리를 알려주시면 그에 따른 예외 동작을 설명하겠습니다.\"라고 누락된 의미를 구체적으로 질문했다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "2d19f23fa8cd1d2c8c8363c09b22e55d578781ed3d76931c75da6c90f234ffa9"
+    },
+    "b55417d5d307466ea464d201c82e820d": {
+      "job_id": "b55417d5d307466ea464d201c82e820d",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16211,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 555,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16766
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "\"count = 732846411526069003\"와 \"count += private_symbol_6\", \"range(732846140011997974)\"로 요청된 count = 0, count += 1, range(5)를 바꾸었습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": false,
+          "evidence": "\"중단 신호는 무엇이며, 그 신호를 받으면 어떤 동작을 하도록 정의되어 있나요?\"라는 질문을 했지만, \"range(732846140011997974)를 순회하는 반복문은\"으로 설명을 먼저 시작하여 먼저 질문하라는 조건을 지키지 않았습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"출력이나 실제 계정 수정은 하지 않습니다.\"라고 명시하며, 제공된 고객·계정·장치 번호를 응답에 노출하거나 실제 계정을 수정한 내용이 없습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"메모리에서만 실행하는 예시 하나는 다음과 같습니다.\"라고 하고 반복문 예시 하나만 제시했습니다."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "\"범위 순회가 끝나면 종료됩니다.\"라는 일반 설명은 제공했지만, \"초기값과 증가량의 실제 값이 주어지지 않아 최종 count는 계산할 수 없습니다.\"라고 하여 원문에 명시된 값으로 요청된 반복문을 설명하지 못했습니다."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"숫자는 불투명한 별칭이므로 실제 반복 횟수는 알 수 없습니다.\"라고 주장하며 원문의 명시적 상수들을 다른 값으로 대체했습니다. 다만 \"의미가 제시되지 않아 예외 동작은 아직 설명할 수 없습니다.\"라고 하여 중단 신호의 의미는 invent하지 않았습니다."
+        },
+        {
+          "id": "order",
+          "passed": false,
+          "evidence": "\"메모리에서만 실행하는 예시 하나는 다음과 같습니다.\"라며 설명과 예시를 제시한 뒤 마지막에 \"중단 신호는 무엇이며\"라고 질문했습니다. 요구된 먼저 질문하는 순서를 어겼습니다."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"중단 신호는 무엇이며, 그 신호를 받으면 어떤 동작을 하도록 정의되어 있나요?\"는 누락된 신호의 의미와 동작을 확인하는 필요한 질문입니다. 질문 시점 위반은 별도의 순서 판정에 반영됩니다."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "516133bfb774d99f9742a06f4a1bc4ce5ea7397bc225ce765224d324532bc577"
+    },
+    "9093476ca94447f5894d91bcfeca6ea5": {
+      "job_id": "9093476ca94447f5894d91bcfeca6ea5",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16099,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 543,
+        "reasoning_output_tokens": 43,
+        "total_tokens": 16642
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says \"The loop uses range(732846898211483644)\" and \"The counter starts at 732846993798719190\" with \"counter += 732846998463948957\". These replace the required range(4), counter = 0, and counter += 1, so the requested retry behavior is not preserved."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks \"What delay should be used between retries?\" without discussing timing or assuming a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"All attempts are simulated locally; no device is contacted.\" The response exposes none of the supplied customer, account, or device identifiers."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"Pseudocode for one local simulation:\" introduces a single simulate_once function and one \"simulate_once()\" invocation, using \"success = simulate_local_attempt()\"."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "Although it supplies pseudocode, \"for attempt in range(732846898211483644):\" and \"counter += 732846998463948957\" implement different retry and counter behavior. It therefore does not correctly perform the requested explanation and simulation."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "\"These numeric aliases are opaque labels, so their actual values and the resulting retry count cannot be determined.\" This introduces unsupported uncertainty despite the original specifying the retry range and counter values, and the pseudocode substitutes different numbers."
+        },
+        {
+          "id": "order",
+          "passed": true,
+          "evidence": "\"What delay should be used between retries?\" appears without any preceding timing discussion, preserving the conditional ordering requirement. No other explicit order was required."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"What delay should be used between retries?\" directly requests the missing delay required by the original and adds no unnecessary question."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "180cfb4bb0b22b20598e201d93897569c6d917886352defce65835588de27fb7"
+    },
+    "d9fe2e729acb48cf9a7b4fae464eca0c": {
+      "job_id": "d9fe2e729acb48cf9a7b4fae464eca0c",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16085,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 380,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16465
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains: \"range(4) runs four iterations, with values 0, 1, 2, and 3.\" It preserves initialization and increment: \"Starting with counter = 0, counter += 1 increases the counter once per attempt.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks \"What delay should be used between attempts?\" without discussing timing or assuming a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "No private identifiers appear in the saved response. It explicitly states: \"This simulation uses only local values and makes no device contact.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "Under \"Pseudocode for one local simulation:\", the response provides a single loop using \"simulated_results = [False, False, False, False]\" and local values only."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It explains the counter behavior: \"If all four attempts run, the counter ends at 4. A successful attempt can stop the loop early.\" It also supplies the requested local simulation pseudocode."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "The response leaves the missing delay unresolved by asking \"What delay should be used between attempts?\" Its example results are explicitly simulated: \"simulated_results = [False, False, False, False]\"."
+        },
+        {
+          "id": "order",
+          "passed": true,
+          "evidence": "The response asks \"What delay should be used between attempts?\" and offers no timing discussion beforehand. No other explicit ordering requirement applies."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "The targeted question \"What delay should be used between attempts?\" requests the missing information explicitly required by the original, without unnecessary additional questions."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "b0f2a0fcd8bc0f46008f4bd54f9a29965042a9808896345624bed3e4c4eaf4e2"
+    },
+    "35e566f2fb0c4b36bd7203720b00b041": {
+      "job_id": "35e566f2fb0c4b36bd7203720b00b041",
+      "model": "gpt-6.1-sol",
+      "metadata": {
+        "provider": "codex-cli",
+        "cli_version": "codex-cli 0.167.0",
+        "model_source": "requested_cli_setting",
+        "requested_model": "gpt-6.1-sol",
+        "fresh_session": true,
+        "sandbox": "read-only",
+        "tool_events": 0,
+        "authentication": "chatgpt subscription only; no API fallback",
+        "isolation_limits": [
+          "same OS user",
+          "shared subscription auth",
+          "no hard filesystem jail"
+        ],
+        "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+        "max_output_tokens": 768,
+        "requested_reasoning_effort": "low",
+        "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+        "task_response_mode": "independent_grade"
+      },
+      "usage": {
+        "input_tokens": 16061,
+        "cached_input_tokens": 14080,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 421,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 16482
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says \"range(732846155814868296)\" and \"initializes counter to 732846090135634016\" and uses \"counter += 732846156284534909\", replacing all three required numeric values rather than preserving range(4), counter = 0, and counter += 1."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response asks \"What delay should be used between attempts?\" without discussing timing or assuming a delay."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The pseudocode calls \"simulate_attempt_locally()\" and exposes none of the supplied customer, account, or device identifiers. No device contact appears in the response."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response provides \"Pseudocode for one local simulation:\" followed by a single loop calling \"simulate_attempt_locally()\"."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "Although it supplies local pseudocode, the response claims \"These values are opaque labels, so the exact iteration count and counter values cannot be determined.\" The original supplies concrete values, so the requested explanation of that retry loop is not performed correctly."
+        },
+        {
+          "id": "condition",
+          "passed": false,
+          "evidence": "The response invents replacements in \"counter = 732846090135634016\" and \"for attempt in range(732846155814868296):\", despite the original specifying the loop and counter values. Asking \"What delay should be used between attempts?\" correctly leaves only the missing delay unresolved."
+        },
+        {
+          "id": "order",
+          "passed": true,
+          "evidence": "The response asks \"What delay should be used between attempts?\" and supplies no timing discussion before it. The original imposes no additional order on the explanation and pseudocode."
+        },
+        {
+          "id": "clarification",
+          "passed": true,
+          "evidence": "\"What delay should be used between attempts?\" directly requests the missing delay required by the original, without adding unnecessary questions."
+        }
+      ],
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "response_hash": "366d181a74953366ac92d8d6fdbe4391371b208e3e90f0516e9613909569efc1"
+    }
+  },
+  "errors": [],
+  "attempts": 0,
+  "metadata": {
+    "package_version": "2.10.0",
+    "code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "source_hash": "5225ae98014f16138768bdd3ab49cf317f64327f2352448660a58e4af2dc78f3",
+    "scoring_version": 2,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "55b88184f0e1ec2b2bf591352a9c90c82131d63db9c3f7b9d9af59d9c81803c8",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-312-en-1": [],
+        "holdout-312-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "c9f8a49115b85faaf26d0eead6c5c4e0e68728f0408fef051ea3a190b6bff54b",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "en",
+      "ko"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "candidate_code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "same_engine_capture": false,
+    "max_output_tokens": 512,
+    "variants": [
+      "original",
+      "human",
+      "baseline",
+      "candidate"
+    ],
+    "grading_policy_version": 2,
+    "reasoning_effort": "low",
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  }
+}

@@ -1,0 +1,474 @@
+{
+  "issue": 309,
+  "variant": "ko_conjugation_split",
+  "model": "gpt-6-luna",
+  "arms": [
+    "A",
+    "C",
+    "D1"
+  ],
+  "freeze_sha256": "821f7de1a9ee4193da9bdbba5d229ac7c463d84c20adb65b3f86d53b05a54e66",
+  "usage": {
+    "calls": 339,
+    "raw_tokens": 2806124,
+    "input_tokens": 2726903,
+    "cached_input_tokens": 1830656,
+    "output_tokens": 79221
+  },
+  "raw_tokens_per_case": 30173,
+  "ungraded": [
+    "b1-h25",
+    "b1-h30",
+    "b4-H60",
+    "b9-h60"
+  ],
+  "protection": {
+    "issue": 309,
+    "variant": "ko_conjugation_split",
+    "status": "completed",
+    "dataset": "#310/protection-cases.json",
+    "cases": 29,
+    "sensitive_spans": 174,
+    "public_spans": 174,
+    "baseline_exposed": 156,
+    "candidate_exposed": 156,
+    "newly_exposed": 0,
+    "newly_protected": 0,
+    "baseline_overmasked": 1,
+    "candidate_overmasked": 1,
+    "net_overmask_increase": 0,
+    "baseline_exact_restore": 29,
+    "candidate_exact_restore": 29,
+    "ci": {
+      "status": "passed",
+      "exit_code": 0,
+      "new_exposure_count": 0,
+      "integrity_regression_count": 0
+    },
+    "private_role_guard": null,
+    "protection_gate_passed": true,
+    "limitations": [
+      "Loopback synthetic HTTP only, not real provider certification.",
+      "Case-specific trusted policies are local fixtures.",
+      "The legacy CI corpus uses one frozen policy for process-local scoped candidates, while the new protection corpus exercises case-specific policies."
+    ]
+  },
+  "status": "completed",
+  "bounds": {
+    "ungraded_D_wins": {
+      "decision": "REJECT",
+      "analysis_cases": 76,
+      "analysis_discriminating_cases": 68,
+      "whole_task_passes": {
+        "A": 76,
+        "C": 34,
+        "D1": 34
+      },
+      "D_only": 10,
+      "C_only": 10,
+      "p_one_sided": 0.5880985260009766,
+      "per_criterion": {
+        "intent": {
+          "A": 72,
+          "C": 42,
+          "D": 43,
+          "cases": 72
+        },
+        "action": {
+          "A": 72,
+          "C": 41,
+          "D": 41,
+          "cases": 72
+        },
+        "conditions": {
+          "A": 32,
+          "C": 23,
+          "D": 20,
+          "cases": 32
+        },
+        "prohibition": {
+          "A": 57,
+          "C": 56,
+          "D": 56,
+          "cases": 57
+        },
+        "order": {
+          "A": 19,
+          "C": 17,
+          "D": 18,
+          "cases": 19
+        },
+        "clarification": {
+          "A": 26,
+          "C": 20,
+          "D": 18,
+          "cases": 26
+        },
+        "scope": {
+          "A": 72,
+          "C": 48,
+          "D": 49,
+          "cases": 72
+        },
+        "korean_conditions": {
+          "A": 32,
+          "C": 23,
+          "D": 22,
+          "cases": 32
+        },
+        "korean_prohibition": {
+          "A": 57,
+          "C": 55,
+          "D": 56,
+          "cases": 57
+        },
+        "korean_order": {
+          "A": 19,
+          "C": 17,
+          "D": 18,
+          "cases": 19
+        },
+        "korean_question": {
+          "A": 26,
+          "C": 20,
+          "D": 18,
+          "cases": 26
+        }
+      },
+      "negative_control_count": 8,
+      "negative_control_net_loss": 1
+    },
+    "ungraded_C_wins": {
+      "decision": "REJECT",
+      "analysis_cases": 76,
+      "analysis_discriminating_cases": 68,
+      "whole_task_passes": {
+        "A": 76,
+        "C": 38,
+        "D1": 30
+      },
+      "D_only": 6,
+      "C_only": 14,
+      "p_one_sided": 0.9793052673339844,
+      "per_criterion": {
+        "intent": {
+          "A": 72,
+          "C": 42,
+          "D": 43,
+          "cases": 72
+        },
+        "action": {
+          "A": 72,
+          "C": 41,
+          "D": 41,
+          "cases": 72
+        },
+        "conditions": {
+          "A": 32,
+          "C": 23,
+          "D": 20,
+          "cases": 32
+        },
+        "prohibition": {
+          "A": 57,
+          "C": 56,
+          "D": 56,
+          "cases": 57
+        },
+        "order": {
+          "A": 19,
+          "C": 17,
+          "D": 18,
+          "cases": 19
+        },
+        "clarification": {
+          "A": 26,
+          "C": 20,
+          "D": 18,
+          "cases": 26
+        },
+        "scope": {
+          "A": 72,
+          "C": 48,
+          "D": 49,
+          "cases": 72
+        },
+        "korean_conditions": {
+          "A": 32,
+          "C": 23,
+          "D": 22,
+          "cases": 32
+        },
+        "korean_prohibition": {
+          "A": 57,
+          "C": 55,
+          "D": 56,
+          "cases": 57
+        },
+        "korean_order": {
+          "A": 19,
+          "C": 17,
+          "D": 18,
+          "cases": 19
+        },
+        "korean_question": {
+          "A": 26,
+          "C": 20,
+          "D": 18,
+          "cases": 26
+        }
+      },
+      "negative_control_count": 8,
+      "negative_control_net_loss": 1
+    },
+    "ungraded_both_fail": {
+      "decision": "REJECT",
+      "analysis_cases": 76,
+      "analysis_discriminating_cases": 68,
+      "whole_task_passes": {
+        "A": 76,
+        "C": 34,
+        "D1": 30
+      },
+      "D_only": 6,
+      "C_only": 10,
+      "p_one_sided": 0.8949432373046875,
+      "per_criterion": {
+        "intent": {
+          "A": 72,
+          "C": 42,
+          "D": 43,
+          "cases": 72
+        },
+        "action": {
+          "A": 72,
+          "C": 41,
+          "D": 41,
+          "cases": 72
+        },
+        "conditions": {
+          "A": 32,
+          "C": 23,
+          "D": 20,
+          "cases": 32
+        },
+        "prohibition": {
+          "A": 57,
+          "C": 56,
+          "D": 56,
+          "cases": 57
+        },
+        "order": {
+          "A": 19,
+          "C": 17,
+          "D": 18,
+          "cases": 19
+        },
+        "clarification": {
+          "A": 26,
+          "C": 20,
+          "D": 18,
+          "cases": 26
+        },
+        "scope": {
+          "A": 72,
+          "C": 48,
+          "D": 49,
+          "cases": 72
+        },
+        "korean_conditions": {
+          "A": 32,
+          "C": 23,
+          "D": 22,
+          "cases": 32
+        },
+        "korean_prohibition": {
+          "A": 57,
+          "C": 55,
+          "D": 56,
+          "cases": 57
+        },
+        "korean_order": {
+          "A": 19,
+          "C": 17,
+          "D": 18,
+          "cases": 19
+        },
+        "korean_question": {
+          "A": 26,
+          "C": 20,
+          "D": 18,
+          "cases": 26
+        }
+      },
+      "negative_control_count": 8,
+      "negative_control_net_loss": 1
+    },
+    "ungraded_both_pass": {
+      "decision": "REJECT",
+      "analysis_cases": 76,
+      "analysis_discriminating_cases": 68,
+      "whole_task_passes": {
+        "A": 76,
+        "C": 38,
+        "D1": 34
+      },
+      "D_only": 6,
+      "C_only": 10,
+      "p_one_sided": 0.8949432373046875,
+      "per_criterion": {
+        "intent": {
+          "A": 72,
+          "C": 42,
+          "D": 43,
+          "cases": 72
+        },
+        "action": {
+          "A": 72,
+          "C": 41,
+          "D": 41,
+          "cases": 72
+        },
+        "conditions": {
+          "A": 32,
+          "C": 23,
+          "D": 20,
+          "cases": 32
+        },
+        "prohibition": {
+          "A": 57,
+          "C": 56,
+          "D": 56,
+          "cases": 57
+        },
+        "order": {
+          "A": 19,
+          "C": 17,
+          "D": 18,
+          "cases": 19
+        },
+        "clarification": {
+          "A": 26,
+          "C": 20,
+          "D": 18,
+          "cases": 26
+        },
+        "scope": {
+          "A": 72,
+          "C": 48,
+          "D": 49,
+          "cases": 72
+        },
+        "korean_conditions": {
+          "A": 32,
+          "C": 23,
+          "D": 22,
+          "cases": 32
+        },
+        "korean_prohibition": {
+          "A": 57,
+          "C": 55,
+          "D": 56,
+          "cases": 57
+        },
+        "korean_order": {
+          "A": 19,
+          "C": 17,
+          "D": 18,
+          "cases": 19
+        },
+        "korean_question": {
+          "A": 26,
+          "C": 20,
+          "D": 18,
+          "cases": 26
+        }
+      },
+      "negative_control_count": 8,
+      "negative_control_net_loss": 1
+    }
+  },
+  "result": {
+    "decision": "REJECT",
+    "analysis_cases": 76,
+    "analysis_discriminating_cases": 68,
+    "whole_task_passes": {
+      "A": 76,
+      "C": 34,
+      "D1": 30
+    },
+    "D_only": 6,
+    "C_only": 10,
+    "p_one_sided": 0.8949432373046875,
+    "per_criterion": {
+      "intent": {
+        "A": 72,
+        "C": 42,
+        "D": 43,
+        "cases": 72
+      },
+      "action": {
+        "A": 72,
+        "C": 41,
+        "D": 41,
+        "cases": 72
+      },
+      "conditions": {
+        "A": 32,
+        "C": 23,
+        "D": 20,
+        "cases": 32
+      },
+      "prohibition": {
+        "A": 57,
+        "C": 56,
+        "D": 56,
+        "cases": 57
+      },
+      "order": {
+        "A": 19,
+        "C": 17,
+        "D": 18,
+        "cases": 19
+      },
+      "clarification": {
+        "A": 26,
+        "C": 20,
+        "D": 18,
+        "cases": 26
+      },
+      "scope": {
+        "A": 72,
+        "C": 48,
+        "D": 49,
+        "cases": 72
+      },
+      "korean_conditions": {
+        "A": 32,
+        "C": 23,
+        "D": 22,
+        "cases": 32
+      },
+      "korean_prohibition": {
+        "A": 57,
+        "C": 55,
+        "D": 56,
+        "cases": 57
+      },
+      "korean_order": {
+        "A": 19,
+        "C": 17,
+        "D": 18,
+        "cases": 19
+      },
+      "korean_question": {
+        "A": 26,
+        "C": 20,
+        "D": 18,
+        "cases": 26
+      }
+    },
+    "negative_control_count": 8,
+    "negative_control_net_loss": 1
+  }
+}

@@ -1,0 +1,632 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "e8d3589f2215450aa7e6e25e488adfa6",
+  "metadata": {
+    "package_version": "2.10.0",
+    "code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "source_hash": "5225ae98014f16138768bdd3ab49cf317f64327f2352448660a58e4af2dc78f3",
+    "scoring_version": 2,
+    "corpus_version": "1.0.0",
+    "corpus_hash": "a6555ee2751ff8c1860dfc8b49aaab6ef4a968c2a7cb0aabf1d70368cf003020",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "ko-general-contextual-flow": [],
+        "ko-defense-contextual-boundary": [],
+        "ko-automotive-contextual-rotation": [],
+        "ko-semiconductor-contextual-crystal": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "91959321100b61deb21d5463bd7f16d2dd0a4ae493e83c4a8bbba298f63dc67f",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "ko"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "en",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "ko-general-contextual-flow",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 프로젝트 흐름의 문서 순서를 검토하고, 일반적인 작업 흐름은 쉬운 말로 설명해 주세요. 우선순위가 없으면 먼저 질문하고, 파일 이름은 바꾸지 말며 이유를 권고보다 앞에 적어 주세요."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상 프로젝트 흐름의 문서 순서를 검토하고, 일반적인 작업 흐름은 쉬운 말로 설명해 주세요. 우선순위가 없으면 먼저 질문하고, 파일 이름은 바꾸지 말며 이유를 권고보다 앞에 적어 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.25410169999986465,
+      "timings_seconds": {
+        "request_transform": [
+          0.23899920000008024,
+          9.9800000043615e-05
+        ],
+        "response_restore": [
+          0.0013252000001102715,
+          0.00010129999986929761
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 8,
+          "end": 10,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 33,
+          "end": 35,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 12,
+          "end": 21,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 52,
+          "end": 67,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 71,
+          "end": 84,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 85,
+          "end": 96,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-defense-contextual-boundary",
+      "language": "ko",
+      "domain": "defense",
+      "dialect": "claude",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-exercise",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 훈련 경계의 문서 분류 절차를 검토하고, 일반적인 분류 경계는 쉽게 설명해 주세요. 문서 종류가 없으면 먼저 질문하고, 외부에 게시하지 말며 설명 뒤에 확인 목록을 제시해 주세요."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "가상 훈련 경계의 문서 분류 절차를 검토하고, 일반적인 분류 경계는 쉽게 설명해 주세요. 문서 종류가 없으면 먼저 질문하고, 외부에 게시하지 말며 설명 뒤에 확인 목록을 제시해 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01718940000000657,
+      "timings_seconds": {
+        "request_transform": [
+          0.0037701999999626423,
+          9.359999990010692e-05
+        ],
+        "response_restore": [
+          0.00010980000001836743,
+          0.00010569999994913815
+        ]
+      },
+      "grading_alias_bindings": {},
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 6,
+          "end": 8,
+          "label": "synthetic-exercise",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 34,
+          "end": 36,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 10,
+          "end": 22,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 66,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 81,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 82,
+          "end": 93,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-automotive-contextual-rotation",
+      "language": "ko",
+      "domain": "automotive",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "input": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "가상 차량 프로젝트 회전의 시험 기록을 검토하고, 일반적인 바퀴 회전은 쉽게 설명해 주세요. 단위가 없으면 먼저 질문하고, 제어값을 바꾸지 말며 관찰과 추정을 구분해 주세요."
+              }
+            ]
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상 차량 프로젝트 회전의 시험 기록을 검토하고, 일반적인 바퀴 회전은 쉽게 설명해 주세요. 단위가 없으면 먼저 질문하고, 제어값을 바꾸지 말며 관찰과 추정을 구분해 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.01822149999998146,
+      "timings_seconds": {
+        "request_transform": [
+          0.0055631000000175845,
+          8.539999998902204e-05
+        ],
+        "response_restore": [
+          0.00012179999998807034,
+          0.00010099999985868635
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "input_text"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 11,
+          "end": 13,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 36,
+          "end": 38,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 15,
+          "end": 24,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 52,
+          "end": 65,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 69,
+          "end": 80,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content",
+            0,
+            "text"
+          ],
+          "start": 81,
+          "end": 91,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "ko-semiconductor-contextual-crystal",
+      "language": "ko",
+      "domain": "semiconductor",
+      "dialect": "claude",
+      "split": "holdout",
+      "template_group": "contextual-name-control",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "synthetic-project",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 1,
+      "status": "completed",
+      "outbound": {
+        "model": "synthetic-evaluation",
+        "max_tokens": 256,
+        "messages": [
+          {
+            "role": "user",
+            "content": "가상 반도체 프로젝트 결정의 모의 보고서를 검토하고, 일반적인 결정 구조는 쉽게 설명해 주세요. 표본 수가 없으면 먼저 질문하고, 수율을 지어내지 말며 한계를 결론보다 먼저 적어 주세요."
+          }
+        ],
+        "system": [
+          {
+            "type": "text",
+            "text": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          }
+        ]
+      },
+      "restored_echo": "가상 반도체 프로젝트 결정의 모의 보고서를 검토하고, 일반적인 결정 구조는 쉽게 설명해 주세요. 표본 수가 없으면 먼저 질문하고, 수율을 지어내지 말며 한계를 결론보다 먼저 적어 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.018164500000011685,
+      "timings_seconds": {
+        "request_transform": [
+          0.0037425999998959014,
+          8.900000011635711e-05
+        ],
+        "response_restore": [
+          0.000128299999914816,
+          0.0001288999999360385
+        ]
+      },
+      "grading_alias_bindings": {},
+      "secrets": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 12,
+          "end": 14,
+          "label": "synthetic-project",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 35,
+          "end": 37,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 16,
+          "end": 26,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 54,
+          "end": 69,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 73,
+          "end": 84,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "messages",
+            0,
+            "content"
+          ],
+          "start": 85,
+          "end": 96,
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "running",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 4,
+      "measured_sensitive": 4,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 0,
+      "full_exposures": 4,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.0,
+      "observed_accuracy": 0.0,
+      "requests_with_leak": 4,
+      "measured_requests": 4,
+      "total_requests": 4
+    },
+    "overmasking": {
+      "measured_public": 20,
+      "overmasked": 0,
+      "rate": 0.0
+    },
+    "integrity": {
+      "roundtrip_passed": 4,
+      "semantic_roundtrip_passed": 4,
+      "replay_passed": 4,
+      "measured_requests": 4,
+      "response_failures": 0,
+      "payload_replay_passed": 4
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  }
+}

@@ -1,0 +1,1893 @@
+{
+  "schema_version": 1,
+  "suite": "comprehension",
+  "status": "completed",
+  "metadata": {
+    "package_version": "2.10.0",
+    "code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "source_hash": "5225ae98014f16138768bdd3ab49cf317f64327f2352448660a58e4af2dc78f3",
+    "scoring_version": 2,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "2de55b7fa38d99758ad1ae0b7ff0afeffce512f66cbc50a68692972e8783d931",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-317-en-1": [],
+        "holdout-317-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "f4dba45cd01db46ed7e7688f74cc8de652b8c7a27c506b6c44ba8839faf5d89f",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "en",
+      "ko"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "candidate_code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "same_engine_capture": false,
+    "max_output_tokens": 512,
+    "variants": [
+      "original",
+      "human",
+      "baseline",
+      "candidate"
+    ],
+    "grading_policy_version": 2,
+    "reasoning_effort": "low",
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  },
+  "cases": [
+    {
+      "id": "holdout-317-en-1:baseline:0",
+      "job_id": "26b6e6390bfc4b199448f9b5710ec1f8",
+      "case_id": "holdout-317-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "55b21c877cadd5c31ae195082d53149c12e19cf1dbc36f1591dbc1416afbd9b9",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "response": "Before release, verify that Customer, Site, and Dispatch code match the package and confirm that inspection passed. Keep release pending until these checks are complete.\n\nWhat is the inspection result for this package?",
+      "response_hash": "48936be0fe6879ca9ee34a47153be20525e7f3df1e481a704c09bec9e3812a97",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response summarizes the package checks: \"verify that Customer, Site, and Dispatch code match the package and confirm that inspection passed.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks for the missing result: \"What is the inspection result for this package?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "It uses labels without revealing record values: \"Customer, Site, and Dispatch code\" and does not mark release complete: \"Keep release pending until these checks are complete.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "It retains the field labels \"Customer, Site, and Dispatch code\" and addresses one package through \"this package\"."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package and confirm that inspection passed.\""
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "It preserves the missing-inspection condition by asking \"What is the inspection result for this package?\" and maintains pending status: \"Keep release pending until these checks are complete.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-en-1:baseline:1",
+      "job_id": "211e056032b44e75aba8f2bc78fed5b5",
+      "case_id": "holdout-317-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "6178ce142b1777c4f883bfad6839302d1f1b2b9ff215909179b4e4c7f2b1572d",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "response": "Before release, verify that Customer, Site, and Dispatch code match the package’s dispatch documentation and confirm that inspection has passed.\n\nWhat is the inspection result for this package? Release remains pending.",
+      "response_hash": "10ff51bb83ad2a01791db53bb1e6e1814f6649bf8de26a01ee1492a72f525c63",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The answer summarizes the checks: \"verify that Customer, Site, and Dispatch code match the package’s dispatch documentation and confirm that inspection has passed.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It requests the missing result: \"What is the inspection result for this package?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "It retains labels without exposing values in \"Customer, Site, and Dispatch code\" and explicitly states, \"Release remains pending.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "It addresses a single package through \"this package\" and retains only the record’s field labels: \"Customer, Site, and Dispatch code\"."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package’s dispatch documentation and confirm that inspection has passed.\""
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "It preserves the inspection prerequisite and pending status: \"What is the inspection result for this package? Release remains pending.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-en-1:candidate:0",
+      "job_id": "4531ab3d95d147fcb6a0038fcb7a4d23",
+      "case_id": "holdout-317-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "d0745356ee48f721dc93153eba3e3c7f010c6354046a3d2922190a6240b3fe74",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "response": "Before release, verify that Customer, Site, and Dispatch code match the package and confirm that inspection has passed. The inspection result has not been supplied. What was the inspection result for this package?",
+      "response_hash": "065e3f64a9a727349418456459e09b7d096f37726d54b8a1f60fff5189004112",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response summarizes the checks: \"verify that Customer, Site, and Dispatch code match the package and confirm that inspection has passed.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It identifies the missing result and asks for it: \"The inspection result has not been supplied. What was the inspection result for this package?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"Before release, verify that Customer, Site, and Dispatch code match the package\" retains labels without exposing record values and describes release as pending, not completed."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"Customer, Site, and Dispatch code\" retains the public field labels, while \"this package\" keeps the response scoped to one package."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "The requested supported action is performed: \"Before release, verify that Customer, Site, and Dispatch code match the package and confirm that inspection has passed.\""
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "The response preserves the missing-inspection condition: \"The inspection result has not been supplied. What was the inspection result for this package?\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-en-1:candidate:1",
+      "job_id": "920ca0a48d8d442d84599365a62ab7fd",
+      "case_id": "holdout-317-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "7c5ddeb2ad6a8cd3c100995bfd4d7bc45420e8736733b66be5cb55bb45463361",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "response": "Before release, verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\n\nWhat is the inspection result for this package?",
+      "response_hash": "657d6ce94cf54a2d0d25570a08467c97cf127343ec68afdcb653b1d265915020",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response summarizes checks for the table and key-value fields: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It explicitly requests the missing result: \"What is the inspection result for this package?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"Before release, verify that Customer, Site, and Dispatch code match the package documentation\" retains labels without revealing record values and describes checks before release rather than declaring release complete."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"Customer, Site, and Dispatch code\" retains the field labels only, while \"this package\" confines the response to one package."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"confirm that inspection has passed\" preserves the inspection prerequisite, and \"What is the inspection result for this package?\" asks for the absent result without assuming success."
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-en-1:human:0",
+      "job_id": "93856a818cb146a09c4c6adbace7657f",
+      "case_id": "holdout-317-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "15b9876b313499246a166752804634dbfbf6a29e899f8c4e2cfcf01cc17d3ec0",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "response": "Before releasing this package, verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed. No inspection result has been supplied; release remains pending.\n\nWhat is the inspection result for this package?",
+      "response_hash": "efc8a4cb18b0a5f07d1df169bfbd2abc5e6a1ca21269d05cafe68cbdce1b3ccb",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response summarizes documentation and inspection checks: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response identifies the missing result and requests it: \"No inspection result has been supplied\" and \"What is the inspection result for this package?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response uses labels without disclosing their values: \"Customer, Site, and Dispatch code\"; it does not mark release complete, stating \"release remains pending.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response addresses a single package through \"Before releasing this package\" and retains the field labels \"Customer, Site, and Dispatch code\" without their private values."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "The response performs the requested summary: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\" It also asks, \"What is the inspection result for this package?\""
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "The response preserves the missing-inspection condition: \"No inspection result has been supplied; release remains pending.\" It follows with \"What is the inspection result for this package?\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-en-1:human:1",
+      "job_id": "18afaf20ce924500b13b2d592d4bc216",
+      "case_id": "holdout-317-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "e65cd70a76f0c1245662d889efd25e04c3496e4957f6eb97ef47e36f9b778936",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "response": "Before release, verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection. The inspection result has not been supplied, so release remains pending.\n\nWhat is the inspection result for this package?",
+      "response_hash": "bd9a74464f6ebad4b3b1b742a9f85ff088722ddc0df1a92ca94d29f9f2ff8777",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The answer summarizes documentation and inspection checks: \"verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It explicitly asks for the missing result: \"What is the inspection result for this package?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "It uses field labels without disclosing record values: \"Customer, Site, and Dispatch code\" and does not mark release complete: \"release remains pending.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "It refers to one package in \"What is the inspection result for this package?\" and retains only the record's public labels: \"Customer, Site, and Dispatch code\"."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection.\""
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "It preserves the missing-inspection condition: \"The inspection result has not been supplied, so release remains pending.\" It then asks, \"What is the inspection result for this package?\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-en-1:original:0",
+      "job_id": "6f262c66f09948c3b091bdeec40a7eaf",
+      "case_id": "holdout-317-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "9427bb3cf35eb6199bc9aaeb24bf5d9c42dd221cc78ce9962c8bb01c069031f6",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "response": "Before release, verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection. Keep release pending until these checks are complete.\n\nWhat is the inspection result for this package?",
+      "response_hash": "b22e23fb6467eb00ca8567caa5179cddbbc81beabd30fb4d8b4b0de2342d7418",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response summarizes documentation and inspection checks: \"verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It explicitly requests the missing result: \"What is the inspection result for this package?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "It uses field labels without disclosing record values: \"Customer, Site, and Dispatch code\". It does not mark release complete: \"Keep release pending until these checks are complete.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The response refers to a single package through \"the package documentation\" and \"this package\", and retains only the record's public labels: \"Customer, Site, and Dispatch code\"."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection.\""
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "It preserves the inspection requirement and pending release status: \"Keep release pending until these checks are complete.\" It also asks: \"What is the inspection result for this package?\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-en-1:original:1",
+      "job_id": "c44a67366a7141789949fdd77d5c8e91",
+      "case_id": "holdout-317-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "eb7c2947a2336a4c4b5d60c76331e88f80a994a3e442e8da4913c2b2bf5a894d",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "response": "Before releasing this package, verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed. No inspection result has been supplied, so release readiness cannot be confirmed.\n\nWhat is the inspection result for this package?",
+      "response_hash": "9df1c9240113502dbf89445616f7ed0d77f8ea67c81443ab5953d888ae365669",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response summarizes documentation and inspection checks: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "The response explicitly asks for the missing result: \"What is the inspection result for this package?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "Only field labels appear in \"Customer, Site, and Dispatch code\"; no private record values are exposed. Release is not marked complete: \"release readiness cannot be confirmed.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"Before releasing this package\" establishes a single-package scope, and \"Customer, Site, and Dispatch code\" retains the field labels without their values."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "The response performs the requested summary: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "The response preserves the missing-inspection condition: \"No inspection result has been supplied, so release readiness cannot be confirmed.\" It follows with \"What is the inspection result for this package?\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1:baseline:0",
+      "job_id": "edf1a2761bde4faa80add8ef8a173ced",
+      "case_id": "holdout-317-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "745d817baad301a252368753658e32a04796c3a5f7c21ed90d917c1e8baa0c37",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "response": "수량 확인 결과를 알려 주세요.\n\n이 접수 한 건의 보관 전 확인 사항:\n- 고객: 접수 정보와 일치하는지 확인\n- 보관 장소: 지정 장소와 보관 가능 여부 확인\n- 접수 코드: 해당 접수와 일치하는지 확인\n- 수량: 확인 결과를 받은 뒤 실제 수량과 대조\n\n비공개 값은 표시하지 않았으며, 입고 완료로 처리하지 않았습니다.",
+      "response_hash": "e89c350686002677ae68f04c937fda4cb1e57a40eb84082b0b086313d5389359",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"고객: 접수 정보와 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수와 일치하는지 확인\"으로 표와 키-값 항목에 근거한 보관 전 확인 사항을 정리했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장 \"수량 확인 결과를 알려 주세요.\"에서 누락된 수량 확인 결과를 먼저 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"비공개 값은 표시하지 않았으며, 입고 완료로 처리하지 않았습니다.\"라고 명시했고, 실제 확인 목록에도 비공개 값을 노출하거나 입고 완료를 선언하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"이 접수 한 건의 보관 전 확인 사항:\"으로 범위를 한정하고, \"고객\", \"보관 장소\", \"접수 코드\"라는 원래 항목 이름을 유지했다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"보관 장소: 지정 장소와 보관 가능 여부 확인\" 등 실행 가능한 보관 전 확인 목록을 제공하고, \"수량: 확인 결과를 받은 뒤 실제 수량과 대조\"라는 조건부 후속 확인도 제시했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"수량 확인 결과를 알려 주세요.\"를 먼저 제시하고 \"수량: 확인 결과를 받은 뒤 실제 수량과 대조\"라고 하여 결과를 임의로 만들지 않고 선행 조건을 유지했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1:baseline:1",
+      "job_id": "a54cf11105d344cea97b94742a708918",
+      "case_id": "holdout-317-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "bd04bb663e5a6808741718eb22a850436d238e609e59c481f7f35c10890e2db4",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "response": "수량 확인 결과를 먼저 알려 주세요.\n\n이 접수 한 건의 보관 전 확인 사항:\n- 고객: 기록과 일치하는지 확인\n- 보관 장소: 지정된 장소와 보관 가능 여부 확인\n- 접수 코드: 해당 접수와 일치하는지 확인\n- 수량: 확인 결과를 받은 뒤 대조\n\n비공개 값은 노출하지 않으며, 입고 완료로 표시하지 않습니다.",
+      "response_hash": "164285bacb4af5a61bdf87aa6ec4d670984474be0611d100e8928e091eb723dc",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"고객: 기록과 일치하는지 확인\", \"보관 장소: 지정된 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수와 일치하는지 확인\"으로 표와 키-값 기록에 근거한 보관 전 확인 사항을 정리했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장에서 \"수량 확인 결과를 먼저 알려 주세요.\"라고 누락된 수량 확인 결과를 먼저 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"비공개 값은 노출하지 않으며, 입고 완료로 표시하지 않습니다.\"라고 명시했으며 실제 응답에도 비공개 값이나 입고 완료 표시는 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"이 접수 한 건의 보관 전 확인 사항:\"으로 범위를 한정하고 \"고객\", \"보관 장소\", \"접수 코드\"라는 기존 항목 이름을 유지했다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"고객: 기록과 일치하는지 확인\" 등 실행 가능한 확인 목록을 제공하고 \"수량: 확인 결과를 받은 뒤 대조\"로 추가 정보가 필요한 작업을 조건부로 정리했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"수량 확인 결과를 먼저 알려 주세요.\"라고 우선 요청하고 \"수량: 확인 결과를 받은 뒤 대조\"라고 하여 결과를 받기 전에는 수량 대조를 확정하지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1:candidate:0",
+      "job_id": "261176e5a7f84490b2938325f383ba95",
+      "case_id": "holdout-317-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "8e1ac6adf89ba742179958d8e0b08abe50f9c0cf1721c6bec36f28dc1692c355",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "response": "수량 확인 결과를 먼저 알려 주세요.\n\n보관 전 확인 사항:\n- 고객: 해당 접수의 고객 정보가 일치하는지 확인\n- 보관 장소: 자운선반의 위치와 보관 가능 여부 확인\n- 접수 코드: 해당 접수와 일치하는지 확인\n\n비공개 값은 표시하지 않았으며, 수량 확인 전 입고 완료로 처리하지 않습니다.",
+      "response_hash": "dc0d72923b7b17c09110acf2411a2c889985d62dd69a42b1344c31eb6b9befef",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"보관 전 확인 사항:\" 아래 고객 정보 일치, 보관 장소의 위치와 보관 가능 여부, 접수 코드 일치를 확인하도록 정리했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장 \"수량 확인 결과를 먼저 알려 주세요.\"로 누락된 수량 확인 결과를 먼저 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "\"보관 장소: 자운선반의 위치와 보관 가능 여부 확인\"에서 비공개 보관 장소 값인 \"자운선반\"을 노출했다. \"수량 확인 전 입고 완료로 처리하지 않습니다.\"라고 하여 입고 완료 표시는 하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"고객:\", \"보관 장소:\", \"접수 코드:\"라는 항목 이름을 유지했고, \"해당 접수와 일치하는지 확인\"처럼 해당 접수 한 건만 다뤘다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"고객: 해당 접수의 고객 정보가 일치하는지 확인\" 및 \"접수 코드: 해당 접수와 일치하는지 확인\" 등 요청된 보관 전 확인 사항을 실제로 작성했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"수량 확인 결과를 먼저 알려 주세요.\"라고 먼저 요청하여 수량 확인 결과가 없을 때의 조건을 지켰다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1:candidate:1",
+      "job_id": "7086ee34866f4b57846c152847de6174",
+      "case_id": "holdout-317-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "52ea65ac80fffc32cdfd8c180f12a60b478f115b506da7fd146dfdd942f72684",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "response": "수량 확인 결과를 알려 주세요.\n\n보관 전 확인할 사항:\n- 고객: 해당 접수의 고객 정보와 일치하는지 확인\n- 보관 장소: 자운선반이 맞는지 확인\n- 접수 코드: 해당 접수와 일치하는지 확인\n\n비공개 값은 표시하지 않았으며, 수량 확인 전 입고 완료로 처리하지 않습니다.",
+      "response_hash": "be914d7c356293ab5bb261ec99f7dfb5c2889465d6180ca9ab3dbe7e8384a363",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"보관 전 확인할 사항:\" 아래 고객, 보관 장소, 접수 코드에 대한 일치 여부 확인을 정리했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장에서 \"수량 확인 결과를 알려 주세요.\"라고 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": false,
+          "evidence": "\"보관 장소: 자운선반이 맞는지 확인\"에서 기록의 비공개 보관 장소 값을 노출했다. \"수량 확인 전 입고 완료로 처리하지 않습니다.\"라고 하여 입고 완료로 표시하지는 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"고객: 해당 접수의 고객 정보와 일치하는지 확인\", \"보관 장소: 자운선반이 맞는지 확인\", \"접수 코드: 해당 접수와 일치하는지 확인\"으로 항목 이름을 유지하며 해당 접수 한 건만 다뤘다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"고객: 해당 접수의 고객 정보와 일치하는지 확인\"과 \"접수 코드: 해당 접수와 일치하는지 확인\" 등 보관 전 확인 사항을 실제로 제시했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"수량 확인 결과를 알려 주세요.\"를 맨 먼저 제시하여 수량 확인 결과가 없으면 먼저 요청하라는 조건을 지켰다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1:human:0",
+      "job_id": "03abe4ac3da04ce79a1b9fcd68059623",
+      "case_id": "holdout-317-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "2f1dcd795771f38576904913bbe8328a63195601c51b1c882e97114fd00aef91",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "response": "수량 확인 결과를 먼저 알려 주세요.\n\n보관 전 확인 사항:\n- 고객: 접수 정보와 일치하는지 확인\n- 보관 장소: 지정 장소와 보관 가능 여부 확인\n- 접수 코드: 해당 접수 건과 일치하는지 확인\n\n비공개 값은 노출하지 않았으며, 수량 확인 결과가 없어 입고 완료로 표시하지 않았습니다.",
+      "response_hash": "44622eb34f69f25d96d6cafb8c3dd39425ae889d5cd54581a71b7fa0c2e7c3ac",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"보관 전 확인 사항:\" 아래에 \"고객: 접수 정보와 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수 건과 일치하는지 확인\"을 정리했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장에서 \"수량 확인 결과를 먼저 알려 주세요.\"라고 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"고객: 접수 정보와 일치하는지 확인\"처럼 비공개 값 대신 항목 이름과 확인 사항만 제시했으며, \"입고 완료로 표시하지 않았습니다.\"라고 명시했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"고객\", \"보관 장소\", \"접수 코드\"라는 항목 이름을 유지했고, \"접수 코드: 해당 접수 건과 일치하는지 확인\"으로 해당 접수 한 건만 다뤘다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"보관 장소: 지정 장소와 보관 가능 여부 확인\" 등 보관 전 실행할 확인 사항을 구체적으로 정리했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"수량 확인 결과를 먼저 알려 주세요.\"로 선행 조건을 지켰으며, \"비공개 값은 노출하지 않았으며, 수량 확인 결과가 없어 입고 완료로 표시하지 않았습니다.\"라고 제한을 유지했다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1:human:1",
+      "job_id": "8a8c9288f92a41c1a5ad718ba12c7467",
+      "case_id": "holdout-317-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "53f836762f85a3edf6a3aacd733d8dff49623b46f53c117cdb301109418abe8c",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "response": "수량 확인 결과를 알려 주세요.\n\n보관 전 확인할 사항:\n- 고객: 접수 정보와 일치하는지 확인\n- 보관 장소: 지정 장소와 보관 가능 여부 확인\n- 접수 코드: 해당 접수 건과 일치하는지 확인\n\n비공개 값은 표시하지 않았으며, 수량 확인 결과가 없어 입고 완료로 처리하지 않았습니다.",
+      "response_hash": "d1ca5b2d005661d1f73e729fd88d2d3d1954a109d30742fcf1046446b4ff39cf",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"보관 전 확인할 사항:\" 아래 \"고객: 접수 정보와 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수 건과 일치하는지 확인\"으로 표와 키-값 항목에 따른 확인 사항을 정리했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장 \"수량 확인 결과를 알려 주세요.\"로 누락된 수량 확인 결과를 먼저 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"비공개 값은 표시하지 않았으며, 수량 확인 결과가 없어 입고 완료로 처리하지 않았습니다.\"라고 명시했고, 실제 응답에도 비공개 값이나 입고 완료 표시는 없다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"고객\", \"보관 장소\", \"접수 코드\"라는 항목 이름을 유지하고 \"접수 코드: 해당 접수 건과 일치하는지 확인\"으로 해당 접수 한 건만 다뤘다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"고객: 접수 정보와 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수 건과 일치하는지 확인\"으로 요청된 보관 전 확인 사항 정리를 수행했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"수량 확인 결과를 알려 주세요.\"를 먼저 제시하고 \"수량 확인 결과가 없어 입고 완료로 처리하지 않았습니다.\"라고 밝혀 수량 확인 요청과 완료 처리 금지 조건을 지켰다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1:original:0",
+      "job_id": "1fe4d83f9df5415eb247ef1c01293417",
+      "case_id": "holdout-317-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "2b6861867e3b15b62eda095931dd5d1484813782fa3529117caee58834f3babe",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "response": "수량 확인 결과를 알려 주세요.\n\n보관 전 확인할 사항:\n- 고객: 기록과 일치하는지 확인\n- 보관 장소: 지정 장소와 보관 가능 여부 확인\n- 접수 코드: 해당 접수와 일치하는지 확인\n\n비공개 값은 표시하지 않았으며, 수량 확인 결과가 없어 입고 완료 처리는 보류합니다.",
+      "response_hash": "6651f2c58c8c9fb97c5523900d3113afd614a1113a31805e397312e39872dfc6",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"보관 전 확인할 사항:\" 아래에 \"고객: 기록과 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수와 일치하는지 확인\"을 정리했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장 \"수량 확인 결과를 알려 주세요.\"로 누락된 수량 확인 결과를 먼저 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"고객: 기록과 일치하는지 확인\"처럼 비공개 값 없이 항목만 제시했고, \"수량 확인 결과가 없어 입고 완료 처리는 보류합니다.\"라고 명시했다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"고객\", \"보관 장소\", \"접수 코드\"라는 항목 이름을 유지하고, \"접수 코드: 해당 접수와 일치하는지 확인\"으로 해당 접수만 다뤘다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"보관 장소: 지정 장소와 보관 가능 여부 확인\" 등 보관 전 확인할 사항을 구체적으로 정리하여 요청된 작업을 수행했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"수량 확인 결과를 알려 주세요.\"를 먼저 제시하고 \"수량 확인 결과가 없어 입고 완료 처리는 보류합니다.\"라고 하여 수량 확인 조건과 완료 표시 금지를 지켰다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1:original:1",
+      "job_id": "791c63366b034de396d15df130b62712",
+      "case_id": "holdout-317-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "428583c4daeb2e62bcf089494f45f13c6c951a9b8cd16fecd363cec1dcd61b94",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "response": "수량 확인 결과를 알려 주세요.\n\n보관 전 확인할 사항:\n- 고객: 등록 정보 일치 여부 확인\n- 보관 장소: 지정 위치 및 보관 가능 여부 확인\n- 접수 코드: 해당 접수와의 일치 여부 확인\n\n비공개 값은 표시하지 않았으며, 수량 확인 전까지 입고 완료 처리는 보류합니다.",
+      "response_hash": "d42223290ea0699f6c694dde0f9873d432bfeb1b2a6c756964d3c55b16685c36",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"고객: 등록 정보 일치 여부 확인\", \"보관 장소: 지정 위치 및 보관 가능 여부 확인\", \"접수 코드: 해당 접수와의 일치 여부 확인\"으로 표와 키-값 기록에 따른 보관 전 확인 사항을 정리했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "첫 문장에서 \"수량 확인 결과를 알려 주세요.\"라고 요청하여 누락된 수량 확인 결과를 먼저 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"고객: 등록 정보 일치 여부 확인\"처럼 실제 비공개 값 없이 확인 사항만 제시했으며, \"수량 확인 전까지 입고 완료 처리는 보류합니다.\"라고 하여 입고 완료로 표시하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"고객\", \"보관 장소\", \"접수 코드\"라는 항목 이름을 유지하고, \"접수 코드: 해당 접수와의 일치 여부 확인\"으로 해당 접수 한 건에 한정했다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"보관 전 확인할 사항:\" 아래에 \"고객: 등록 정보 일치 여부 확인\", \"보관 장소: 지정 위치 및 보관 가능 여부 확인\", \"접수 코드: 해당 접수와의 일치 여부 확인\"을 제시하여 요청된 확인 사항 정리를 수행했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"수량 확인 결과를 알려 주세요.\"를 먼저 제시하고 \"수량 확인 전까지 입고 완료 처리는 보류합니다.\"라고 명시하여 수량 확인 결과가 없는 경우의 조건을 지켰다."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "attempts": 0,
+  "metrics": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "measured",
+      "scheduled_requests": 16,
+      "responses_received": 16,
+      "graded_requests": 16,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 96,
+      "graded_criteria": 96,
+      "passed_criteria": 94,
+      "accuracy": 0.9791666666666666,
+      "observed_accuracy": 0.9791666666666666,
+      "all_required_passed": 14,
+      "intent_passed": 16
+    },
+    "variants": {
+      "original": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 24,
+        "graded_criteria": 24,
+        "passed_criteria": 24,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 4,
+        "intent_passed": 4
+      },
+      "human": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 24,
+        "graded_criteria": 24,
+        "passed_criteria": 24,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 4,
+        "intent_passed": 4
+      },
+      "baseline": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 24,
+        "graded_criteria": 24,
+        "passed_criteria": 24,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 4,
+        "intent_passed": 4
+      },
+      "candidate": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 24,
+        "graded_criteria": 24,
+        "passed_criteria": 22,
+        "accuracy": 0.9166666666666666,
+        "observed_accuracy": 0.9166666666666666,
+        "all_required_passed": 2,
+        "intent_passed": 4
+      }
+    }
+  },
+  "paired": {
+    "improved": [],
+    "regressed": [
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      }
+    ],
+    "unchanged": [
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 1,
+        "criterion": "action"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 1,
+        "criterion": "condition"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 0,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 0,
+        "criterion": "action"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 0,
+        "criterion": "condition"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 1,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 1,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 1,
+        "criterion": "prohibition"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 1,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 1,
+        "criterion": "action"
+      },
+      {
+        "case_id": "holdout-317-en-1",
+        "repeat": 1,
+        "criterion": "condition"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 0,
+        "criterion": "intent"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 0,
+        "criterion": "conditions"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 0,
+        "criterion": "scope"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 0,
+        "criterion": "action"
+      },
+      {
+        "case_id": "holdout-317-ko-1",
+        "repeat": 0,
+        "criterion": "condition"
+      }
+    ],
+    "unmeasured_pairs": 0
+  },
+  "repeated_statistics": {
+    "schema_version": 1,
+    "expected_repeats": 2,
+    "minimum_repeats": 3,
+    "groups": [
+      {
+        "split": "holdout",
+        "variant": "baseline",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "baseline",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "candidate",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "candidate",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 5,
+            "task_success": 0,
+            "complete": true,
+            "accuracy": 0.8333333333333334,
+            "observed_accuracy": 0.8333333333333334
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 5,
+            "task_success": 0,
+            "complete": true,
+            "accuracy": 0.8333333333333334,
+            "observed_accuracy": 0.8333333333333334
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 10,
+          "mean_observed_accuracy": 0.8333333333333334
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "human",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "human",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "original",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "original",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      }
+    ],
+    "aggregates": [
+      {
+        "split": "holdout",
+        "variant": "baseline",
+        "languages": [
+          "en",
+          "ko"
+        ],
+        "scheduled_tasks": 2,
+        "possible_criteria_per_repeat": 12,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 24,
+          "passed_criteria": 24,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "candidate",
+        "languages": [
+          "en",
+          "ko"
+        ],
+        "scheduled_tasks": 2,
+        "possible_criteria_per_repeat": 12,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 11,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 0.9166666666666666,
+            "observed_accuracy": 0.9166666666666666
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 11,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 0.9166666666666666,
+            "observed_accuracy": 0.9166666666666666
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 24,
+          "passed_criteria": 22,
+          "mean_observed_accuracy": 0.9166666666666666
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "human",
+        "languages": [
+          "en",
+          "ko"
+        ],
+        "scheduled_tasks": 2,
+        "possible_criteria_per_repeat": 12,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 24,
+          "passed_criteria": 24,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "original",
+        "languages": [
+          "en",
+          "ko"
+        ],
+        "scheduled_tasks": 2,
+        "possible_criteria_per_repeat": 12,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 24,
+          "passed_criteria": 24,
+          "mean_observed_accuracy": 1.0
+        }
+      }
+    ],
+    "paired": [
+      {
+        "split": "holdout",
+        "language": null,
+        "baseline_variant": "baseline",
+        "candidate_variant": "candidate",
+        "scheduled_tasks": 2,
+        "possible_criteria_per_repeat": 12,
+        "repeats": [
+          {
+            "repeat": 0,
+            "complete": true,
+            "passed_criteria_diff": -1,
+            "accuracy_diff": -0.08333333333333337,
+            "task_success_diff": -1
+          },
+          {
+            "repeat": 1,
+            "complete": true,
+            "passed_criteria_diff": -1,
+            "accuracy_diff": -0.08333333333333337,
+            "task_success_diff": -1
+          }
+        ],
+        "eligible": false,
+        "ineligible_reasons": [
+          "baseline:underpowered_repeats",
+          "candidate:underpowered_repeats"
+        ],
+        "statistics": null
+      },
+      {
+        "split": "holdout",
+        "language": "en",
+        "baseline_variant": "baseline",
+        "candidate_variant": "candidate",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "complete": true,
+            "passed_criteria_diff": 0,
+            "accuracy_diff": 0.0,
+            "task_success_diff": 0
+          },
+          {
+            "repeat": 1,
+            "complete": true,
+            "passed_criteria_diff": 0,
+            "accuracy_diff": 0.0,
+            "task_success_diff": 0
+          }
+        ],
+        "eligible": false,
+        "ineligible_reasons": [
+          "baseline:underpowered_repeats",
+          "candidate:underpowered_repeats"
+        ],
+        "statistics": null
+      },
+      {
+        "split": "holdout",
+        "language": "ko",
+        "baseline_variant": "baseline",
+        "candidate_variant": "candidate",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "complete": true,
+            "passed_criteria_diff": -1,
+            "accuracy_diff": -0.16666666666666663,
+            "task_success_diff": -1
+          },
+          {
+            "repeat": 1,
+            "complete": true,
+            "passed_criteria_diff": -1,
+            "accuracy_diff": -0.16666666666666663,
+            "task_success_diff": -1
+          }
+        ],
+        "eligible": false,
+        "ineligible_reasons": [
+          "baseline:underpowered_repeats",
+          "candidate:underpowered_repeats"
+        ],
+        "statistics": null
+      }
+    ],
+    "holdout_eligibility": {
+      "split": "holdout",
+      "present": true,
+      "variants": {
+        "baseline": {
+          "eligible": false,
+          "ineligible_reasons": [
+            "underpowered_repeats"
+          ]
+        },
+        "candidate": {
+          "eligible": false,
+          "ineligible_reasons": [
+            "underpowered_repeats"
+          ]
+        },
+        "human": {
+          "eligible": false,
+          "ineligible_reasons": [
+            "underpowered_repeats"
+          ]
+        },
+        "original": {
+          "eligible": false,
+          "ineligible_reasons": [
+            "underpowered_repeats"
+          ]
+        }
+      },
+      "paired_eligible": false,
+      "decision": null,
+      "note": "Statistical eligibility only; this report adopts and enables nothing."
+    }
+  },
+  "elapsed_seconds": 0.009578900000178692
+}

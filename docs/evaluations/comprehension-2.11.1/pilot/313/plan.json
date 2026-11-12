@@ -1,0 +1,100 @@
+{
+  "issue": 313,
+  "candidate": "segment_language",
+  "source_commit": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+  "cases": [
+    "holdout-313-ko-1",
+    "holdout-313-en-1"
+  ],
+  "repeats": 2,
+  "conditions": [
+    "original",
+    "human",
+    "baseline",
+    "candidate"
+  ],
+  "rubric": {
+    "holdout-313-ko-1": [
+      {
+        "id": "intent",
+        "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+      },
+      {
+        "id": "conditions",
+        "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+      },
+      {
+        "id": "prohibition",
+        "description": "수거 예약을 하지 않는다."
+      },
+      {
+        "id": "scope",
+        "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+      },
+      {
+        "id": "action",
+        "description": "Does the response perform the supported action requested by the original?"
+      },
+      {
+        "id": "condition",
+        "description": "Does the response preserve the original conditions and not invent missing facts?"
+      },
+      {
+        "id": "order",
+        "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+      },
+      {
+        "id": "clarification",
+        "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+      }
+    ],
+    "holdout-313-en-1": [
+      {
+        "id": "intent",
+        "description": "List checks for the two supplied inspection stations."
+      },
+      {
+        "id": "conditions",
+        "description": "Ask for a missing station address before sequencing the visit."
+      },
+      {
+        "id": "prohibition",
+        "description": "Do not dispatch personnel."
+      },
+      {
+        "id": "scope",
+        "description": "Answer in English and cover tomorrow morning’s draft route only."
+      },
+      {
+        "id": "action",
+        "description": "Does the response perform the supported action requested by the original?"
+      },
+      {
+        "id": "condition",
+        "description": "Does the response preserve the original conditions and not invent missing facts?"
+      },
+      {
+        "id": "order",
+        "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+      },
+      {
+        "id": "clarification",
+        "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+      }
+    ]
+  },
+  "decision": "hold unless protection does not regress and comprehension improves, or comprehension has zero criterion loss and exposure falls; no one-case effect claim",
+  "limits": {
+    "calls": 32,
+    "seconds": 600,
+    "interpret_output": 512,
+    "grade_output": 768,
+    "content_tokens": 32768
+  },
+  "model": "gpt-6.1-sol",
+  "codex_cli": "0.167.0",
+  "reasoning_effort": "low",
+  "measured_fixed_input_tokens": 15093,
+  "deviation": "The protocol limits of at most 32 LLM calls per candidate, 600 seconds total, 512 output tokens per interpretation and 768 per grade stay in force unchanged. The reported total usage ceiling 32,768 tokens was written for in-session subagents and is infeasible with the Codex CLI, whose fixed per-call input overhead was measured. For this run the ceiling applies to CONTENT tokens: per call, content = reported input tokens minus the fixed overhead baseline (measure the baseline once per session as the input-token count of a minimal one-word prompt under the same flags, and record it) plus output tokens; ceiling 32,768 content tokens per candidate. Record both the raw reported usage and the content-token figure for every call. The owner authorised running these evaluations through the Codex subscription; this deviation changes a cost limit only and no accuracy criterion.",
+  "limitations": "two published synthetic tasks; same model family interpreter and grader; same user no hard filesystem jail; zero-tool-event filter; requested model identity not independently verified"
+}

@@ -1,0 +1,17 @@
+{
+  "status": "draft; requires review before holdout execution",
+  "cases": "Every validated #318 comprehension case, including both active and out-of-scope bundle policies.",
+  "catalogue": "Author-generated eight-row synthetic catalogue per case; target_id matches exactly one row. Do not reveal target_id or gold labels to the attacker.",
+  "conditions": {
+    "prior": "Catalogue and neutral identification question only, without any task payload.",
+    "C": "Same catalogue and baseline provider-visible payload.",
+    "D": "Same catalogue and candidate provider-visible payload."
+  },
+  "attacker": "Fresh read-only zero-tool-event Codex call per case and condition. No original, gold, parent context, other condition responses, outside search or evaluation labels. Allow abstention.",
+  "output": "Rank up to three catalogue identifiers and a brief rationale, or abstain. Top-1 is first valid identifier, top-3 is target among first three; malformed or missing responses make the run incomplete.",
+  "scoring": "Compare paired C and D top-1 success rates on the same targets, with catalogue-only prior and top-3, abstention and unsupported-guess counts separately. D must have strictly fewer top-1 successes than C and no direct exposure increase to pass the extra gate.",
+  "calls": 144,
+  "content_budget": "Included in #318 budget.json; record raw and content usage per call.",
+  "limitations": "A synthetic catalogue measures only the specified attacker and available clues; it does not estimate real-world identification probability.",
+  "catalogue_order": "Randomly permute catalogue rows once per case using a recorded seed and use that same permutation in all three conditions."
+}

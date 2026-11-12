@@ -1,0 +1,718 @@
+{
+  "schema_version": 1,
+  "suite": "privacy",
+  "run_id": "16cb4ad610db41f4b5a42ef09f330ed4",
+  "metadata": {
+    "package_version": "2.10.0",
+    "code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "source_hash": "5225ae98014f16138768bdd3ab49cf317f64327f2352448660a58e4af2dc78f3",
+    "scoring_version": 2,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "2de55b7fa38d99758ad1ae0b7ff0afeffce512f66cbc50a68692972e8783d931",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-317-en-1": [],
+        "holdout-317-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "f4dba45cd01db46ed7e7688f74cc8de652b8c7a27c506b6c44ba8839faf5d89f",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "en",
+      "ko"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification"
+  },
+  "cases": [
+    {
+      "id": "holdout-317-en-1",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h317-table-and-dispatch",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "customer_name",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "site_name",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "dispatch_code",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Confidential synthetic dispatch record:\n| Customer | Site |\n| --- | --- |\n| private_symbol_1 | Orchard Quay |\nDispatch code: private_symbol_2\nSummarize the checks required before releasing the package described in the table and key-value line. Ask for the inspection result if it has not been supplied. Do not expose the record values or mark the package as released. Cover this single package and retain the field labels only."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "Confidential synthetic dispatch record:\n| Customer | Site |\n| --- | --- |\n| Velmora | Orchard Quay |\nDispatch code: DX-618405\nSummarize the checks required before releasing the package described in the table and key-value line. Ask for the inspection result if it has not been supplied. Do not expose the record values or mark the package as released. Cover this single package and retain the field labels only.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.019296499999882144,
+      "timings_seconds": {
+        "request_transform": [
+          0.004532500000095752,
+          0.00013169999988349446
+        ],
+        "response_restore": [
+          0.00019930000007661874,
+          0.00019300000008115603
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "Velmora",
+        "private_symbol_2": "DX-618405"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 76,
+          "end": 83,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 86,
+          "end": 98,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 116,
+          "end": 125,
+          "label": "dispatch_code",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 126,
+          "end": 227,
+          "label": "intent",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 228,
+          "end": 286,
+          "label": "condition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 287,
+          "end": 351,
+          "label": "prohibition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 352,
+          "end": 411,
+          "label": "scope",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    },
+    {
+      "id": "holdout-317-ko-1",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "split": "holdout",
+      "template_group": "h317-table-and-storage",
+      "language_mode": "auto",
+      "sensitive_annotations": [
+        {
+          "label": "customer_name",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "site_name",
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "label": "intake_code",
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "sensitive_count": 3,
+      "status": "completed",
+      "outbound": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "가상의 비공개 보관 기록입니다.\n| 고객 | 보관 장소 |\n| --- | --- |\n| 푸른비늘 | 자운선반 |\n접수 코드: private_symbol_1\n표와 키-값 줄의 항목을 참고해 보관 전 확인할 사항을 정리해 주세요. 수량 확인 결과가 없으면 먼저 요청해 주세요. 기록의 비공개 값을 노출하거나 입고 완료로 표시하지 마세요. 이 접수 한 건만 다루고 항목 이름은 유지해 주세요."
+          }
+        ],
+        "store": false,
+        "instructions": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+      },
+      "restored_echo": "가상의 비공개 보관 기록입니다.\n| 고객 | 보관 장소 |\n| --- | --- |\n| 푸른비늘 | 자운선반 |\n접수 코드: IN-537206\n표와 키-값 줄의 항목을 참고해 보관 전 확인할 사항을 정리해 주세요. 수량 확인 결과가 없으면 먼저 요청해 주세요. 기록의 비공개 값을 노출하거나 입고 완료로 표시하지 마세요. 이 접수 한 건만 다루고 항목 이름은 유지해 주세요.",
+      "roundtrip": true,
+      "semantic_roundtrip": true,
+      "replay": true,
+      "payload_replay": true,
+      "response_status": 200,
+      "replay_response_status": 200,
+      "http_seconds": 0.018805199999860633,
+      "timings_seconds": {
+        "request_transform": [
+          0.005260299999918061,
+          9.650000015426485e-05
+        ],
+        "response_restore": [
+          0.00014609999993808742,
+          0.0001415000001543376
+        ]
+      },
+      "grading_alias_bindings": {
+        "private_symbol_1": "IN-537206"
+      },
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 49,
+          "end": 53,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 56,
+          "end": 60,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": true,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 79,
+          "label": "intake_code",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high",
+          "full_exposure": false,
+          "partial_exposure": false,
+          "alignment_ambiguous": false
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 119,
+          "label": "intent",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 120,
+          "end": 145,
+          "label": "condition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 146,
+          "end": 179,
+          "label": "prohibition",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 180,
+          "end": 209,
+          "label": "scope",
+          "overmasked": false,
+          "alignment_ambiguous": false
+        }
+      ]
+    }
+  ],
+  "status": "completed",
+  "metrics": {
+    "privacy": {
+      "total_sensitive": 6,
+      "measured_sensitive": 6,
+      "unmeasured_sensitive": 0,
+      "fully_protected": 3,
+      "full_exposures": 3,
+      "partial_exposures": 0,
+      "ambiguous_possible_exposures": 0,
+      "accuracy": 0.5,
+      "observed_accuracy": 0.5,
+      "requests_with_leak": 2,
+      "measured_requests": 2,
+      "total_requests": 2
+    },
+    "overmasking": {
+      "measured_public": 8,
+      "overmasked": 0,
+      "rate": 0.0
+    },
+    "integrity": {
+      "roundtrip_passed": 2,
+      "semantic_roundtrip_passed": 2,
+      "replay_passed": 2,
+      "measured_requests": 2,
+      "response_failures": 0,
+      "payload_replay_passed": 2,
+      "session_isolation": true,
+      "snapshot_restart": true
+    },
+    "comprehension": {
+      "status": "not_measured"
+    }
+  },
+  "elapsed_seconds": 0.432199300000093,
+  "performance": {
+    "request_transform_first_mapping_pass": {
+      "n": 2,
+      "p50": 0.004532500000095752,
+      "p95": 0.004532500000095752,
+      "p99": 0.004532500000095752
+    },
+    "request_transform_replay": {
+      "n": 2,
+      "p50": 9.650000015426485e-05,
+      "p95": 9.650000015426485e-05,
+      "p99": 9.650000015426485e-05
+    },
+    "response_restore_first_mapping_pass": {
+      "n": 2,
+      "p50": 0.00014609999993808742,
+      "p95": 0.00014609999993808742,
+      "p99": 0.00014609999993808742
+    },
+    "response_restore_replay": {
+      "n": 2,
+      "p50": 0.0001415000001543376,
+      "p95": 0.0001415000001543376,
+      "p99": 0.0001415000001543376
+    }
+  },
+  "breakdown": {
+    "language": {
+      "en": {
+        "privacy": {
+          "total_sensitive": 3,
+          "measured_sensitive": 3,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 2,
+          "full_exposures": 1,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.6666666666666666,
+          "observed_accuracy": 0.6666666666666666,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      },
+      "ko": {
+        "privacy": {
+          "total_sensitive": 3,
+          "measured_sensitive": 3,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 1,
+          "full_exposures": 2,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.3333333333333333,
+          "observed_accuracy": 0.3333333333333333,
+          "requests_with_leak": 1,
+          "measured_requests": 1,
+          "total_requests": 1
+        },
+        "overmasking": {
+          "measured_public": 4,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 1,
+          "semantic_roundtrip_passed": 1,
+          "replay_passed": 1,
+          "measured_requests": 1,
+          "response_failures": 0,
+          "payload_replay_passed": 1
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "domain": {
+      "general": {
+        "privacy": {
+          "total_sensitive": 6,
+          "measured_sensitive": 6,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 3,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.5,
+          "observed_accuracy": 0.5,
+          "requests_with_leak": 2,
+          "measured_requests": 2,
+          "total_requests": 2
+        },
+        "overmasking": {
+          "measured_public": 8,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 2,
+          "semantic_roundtrip_passed": 2,
+          "replay_passed": 2,
+          "measured_requests": 2,
+          "response_failures": 0,
+          "payload_replay_passed": 2
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "dialect": {
+      "codex": {
+        "privacy": {
+          "total_sensitive": 6,
+          "measured_sensitive": 6,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 3,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.5,
+          "observed_accuracy": 0.5,
+          "requests_with_leak": 2,
+          "measured_requests": 2,
+          "total_requests": 2
+        },
+        "overmasking": {
+          "measured_public": 8,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 2,
+          "semantic_roundtrip_passed": 2,
+          "replay_passed": 2,
+          "measured_requests": 2,
+          "response_failures": 0,
+          "payload_replay_passed": 2
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "split": {
+      "holdout": {
+        "privacy": {
+          "total_sensitive": 6,
+          "measured_sensitive": 6,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 3,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.5,
+          "observed_accuracy": 0.5,
+          "requests_with_leak": 2,
+          "measured_requests": 2,
+          "total_requests": 2
+        },
+        "overmasking": {
+          "measured_public": 8,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 2,
+          "semantic_roundtrip_passed": 2,
+          "replay_passed": 2,
+          "measured_requests": 2,
+          "response_failures": 0,
+          "payload_replay_passed": 2
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "language_mode": {
+      "auto": {
+        "privacy": {
+          "total_sensitive": 6,
+          "measured_sensitive": 6,
+          "unmeasured_sensitive": 0,
+          "fully_protected": 3,
+          "full_exposures": 3,
+          "partial_exposures": 0,
+          "ambiguous_possible_exposures": 0,
+          "accuracy": 0.5,
+          "observed_accuracy": 0.5,
+          "requests_with_leak": 2,
+          "measured_requests": 2,
+          "total_requests": 2
+        },
+        "overmasking": {
+          "measured_public": 8,
+          "overmasked": 0,
+          "rate": 0.0
+        },
+        "integrity": {
+          "roundtrip_passed": 2,
+          "semantic_roundtrip_passed": 2,
+          "replay_passed": 2,
+          "measured_requests": 2,
+          "response_failures": 0,
+          "payload_replay_passed": 2
+        },
+        "comprehension": {
+          "status": "not_measured"
+        }
+      }
+    },
+    "policy": {
+      "contextual": {
+        "total_sensitive": 6,
+        "measured_sensitive": 6,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 3,
+        "full_exposures": 3,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.5,
+        "observed_accuracy": 0.5,
+        "requests_with_leak": 2,
+        "measured_requests": 2,
+        "total_requests": 2
+      }
+    },
+    "label": {
+      "customer_name": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 1,
+        "full_exposures": 1,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.5,
+        "observed_accuracy": 0.5,
+        "requests_with_leak": 1,
+        "measured_requests": 2,
+        "total_requests": 2
+      },
+      "dispatch_code": {
+        "total_sensitive": 1,
+        "measured_sensitive": 1,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 1,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 1,
+        "total_requests": 1
+      },
+      "intake_code": {
+        "total_sensitive": 1,
+        "measured_sensitive": 1,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 1,
+        "full_exposures": 0,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "requests_with_leak": 0,
+        "measured_requests": 1,
+        "total_requests": 1
+      },
+      "site_name": {
+        "total_sensitive": 2,
+        "measured_sensitive": 2,
+        "unmeasured_sensitive": 0,
+        "fully_protected": 0,
+        "full_exposures": 2,
+        "partial_exposures": 0,
+        "ambiguous_possible_exposures": 0,
+        "accuracy": 0.0,
+        "observed_accuracy": 0.0,
+        "requests_with_leak": 2,
+        "measured_requests": 2,
+        "total_requests": 2
+      }
+    }
+  }
+}

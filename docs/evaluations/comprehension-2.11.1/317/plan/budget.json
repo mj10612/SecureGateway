@@ -1,0 +1,28 @@
+{
+  "issue": 317,
+  "planned_cases": 63,
+  "interpretation_conditions": 4,
+  "interpretation_calls": 330,
+  "fresh_grading_calls": 110,
+  "optional_regrades_max": 110,
+  "inference_attack_calls": 0,
+  "expected_initial_calls": 440,
+  "maximum_calls_including_one_regrade_per_case": 550,
+  "interpretation_output_cap": 512,
+  "grading_output_cap": 2048,
+  "grading_cap_rationale": "A single grade covers multiple responses and seven or more verdicts per response; JSON verdicts and verified quotes cannot reliably fit 768 tokens.",
+  "inference_attack_output_cap": null,
+  "estimated_initial_raw_tokens": 6975870,
+  "estimated_initial_content_tokens": 334950,
+  "estimate_basis": "Pilot #309 means: 15424 raw / 331 content per interpretation, 16145 raw / 1052 content per one-response grade; add 500 tokens for each additional response graded. Estimates only, actual usage recorded per call; separately budget authoring, quote regrades, failures and #318 attack calls.",
+  "accounting": "Per-call content = reported input minus same-session minimal-prompt overhead plus reported output; record raw and content, latency and retries. Unknown failed-call usage stops the candidate.",
+  "regrades_raw_upper_estimate": 1885950,
+  "authoring": "Independent fresh case author calls are additional and reported separately, including excluded contaminated author runs.",
+  "conditions": "A, C, D structure, D structure-policy; separate decisions.",
+  "provisional_separate_variants": {
+    "structure_cases": 63,
+    "policy_cases": 47,
+    "structure_status": "preflight incomplete",
+    "policy_status": "preflight passed"
+  }
+}

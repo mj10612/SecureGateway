@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-holdout-20261109-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-317-en-1",
+      "issue_number": 317,
+      "template_group": "h317-table-and-dispatch",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Confidential synthetic dispatch record:\n| Customer | Site |\n| --- | --- |\n| Velmora | Orchard Quay |\nDispatch code: DX-618405\nSummarize the checks required before releasing the package described in the table and key-value line. Ask for the inspection result if it has not been supplied. Do not expose the record values or mark the package as released. Cover this single package and retain the field labels only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 76,
+          "end": 83,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 86,
+          "end": 98,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 116,
+          "end": 125,
+          "label": "dispatch_code",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 126,
+          "end": 227,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 228,
+          "end": 286,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 287,
+          "end": 351,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 352,
+          "end": 411,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Summarize checks for the package represented by a table and a key-value line."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for the inspection result when absent."
+        },
+        {
+          "id": "prohibition",
+          "description": "Expose no private record values and do not mark release complete."
+        },
+        {
+          "id": "scope",
+          "description": "Cover one package while retaining public field labels only."
+        },
+        {
+          "id": "action",
+          "description": "Does the answer perform the requested supported action?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the answer preserve the conditions in the original task?"
+        }
+      ],
+      "human_text": "Confidential synthetic dispatch record:\n| Customer | Site |\n| --- | --- |\n| [PRIVATE_1] | [PRIVATE_2] |\nDispatch code: [PRIVATE_3]\nSummarize the checks required before releasing the package described in the table and key-value line. Ask for the inspection result if it has not been supplied. Do not expose the record values or mark the package as released. Cover this single package and retain the field labels only.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-317-ko-1",
+      "issue_number": 317,
+      "template_group": "h317-table-and-storage",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "가상의 비공개 보관 기록입니다.\n| 고객 | 보관 장소 |\n| --- | --- |\n| 푸른비늘 | 자운선반 |\n접수 코드: IN-537206\n표와 키-값 줄의 항목을 참고해 보관 전 확인할 사항을 정리해 주세요. 수량 확인 결과가 없으면 먼저 요청해 주세요. 기록의 비공개 값을 노출하거나 입고 완료로 표시하지 마세요. 이 접수 한 건만 다루고 항목 이름은 유지해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 49,
+          "end": 53,
+          "label": "customer_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 56,
+          "end": 60,
+          "label": "site_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 70,
+          "end": 79,
+          "label": "intake_code",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 80,
+          "end": 119,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 120,
+          "end": 145,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 146,
+          "end": 179,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 180,
+          "end": 209,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "표와 키-값 기록을 바탕으로 보관 전 확인 사항을 정리한다."
+        },
+        {
+          "id": "conditions",
+          "description": "수량 확인 결과가 없으면 먼저 요청한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "비공개 값을 드러내거나 입고 완료로 표시하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "해당 접수 한 건만 다루며 항목 이름을 유지한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the answer perform the requested supported action?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the answer preserve the conditions in the original task?"
+        }
+      ],
+      "human_text": "가상의 비공개 보관 기록입니다.\n| 고객 | 보관 장소 |\n| --- | --- |\n| [PRIVATE_1] | [PRIVATE_2] |\n접수 코드: [PRIVATE_3]\n표와 키-값 줄의 항목을 참고해 보관 전 확인할 사항을 정리해 주세요. 수량 확인 결과가 없으면 먼저 요청해 주세요. 기록의 비공개 값을 노출하거나 입고 완료로 표시하지 마세요. 이 접수 한 건만 다루고 항목 이름은 유지해 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    }
+  ]
+}

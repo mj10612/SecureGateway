@@ -1,0 +1,130 @@
+{
+  "issue": 310,
+  "status": "completed",
+  "interpretations": 144,
+  "grades": 48,
+  "raw_tokens": 3360436,
+  "content_tokens": 476788,
+  "resume_events": [
+    {
+      "event": "resume-with-validated-inputs",
+      "timestamp_utc": "2026-11-11T08:59:25Z",
+      "original_run_identity": "bfe0b3520fd4f76a4c864433ba1e193d4975f2c964d5969b1894baec061a197a",
+      "reason": "Frozen source and uncommitted plan/runner combination could not be re-derived after rebase; coordinator approved validated-input continuation.",
+      "manifest_sha256": "810261a0570e38a9bed94cc47596bd7698fa7c242543c47ffcc57ceeee8027a3",
+      "responses_sha256_before_resume": "0f4de64e50836ee8437d82fa72345c7e805918993b1c6e31e5e6a84e86f18320",
+      "grades_sha256_before_resume": "325741e8bcb17ed0dbbcb8b1144f6c06ca21b36cecde9f9b76e2ee97e158eafb",
+      "response_count": 144,
+      "grade_count": 21,
+      "rubric_sha256": "565a7bf3cbdc7f61e04e3e57284d504b8d2af3e8080d1d2c78438dfae46671f3",
+      "decision_sha256": "941a333c8c4ec63566b8c45c337a0fb27e540a36be05a3ae59ee1d5f7dc35641",
+      "adapter_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "rubric_verification": "Manifest embedded rubric digest and criterion definitions matched.",
+      "decision_verification": "Byte identical to pre-rebase backup; rule checked against approved summary. A byte-level match to decision file at run creation cannot be proven.",
+      "source_provenance": "Grading uses 4c4e8ac source snapshot and matching adapter; 96 rebased model-facing inputs matched after alias canonicalization."
+    },
+    {
+      "event": "resume",
+      "run_identity": "bfe0b3520fd4f76a4c864433ba1e193d4975f2c964d5969b1894baec061a197a",
+      "saved_valid_responses": 144,
+      "remaining_responses": 0,
+      "timestamp_utc": "2026-11-11T08:59:25Z"
+    }
+  ],
+  "results": {
+    "310": {
+      "decision": "ADOPT",
+      "analysis_cases": 30,
+      "analysis_discriminating_cases": 23,
+      "analysis_discrimination_missing": 0,
+      "whole_task_passes": {
+        "A": 30,
+        "C": 27,
+        "D1": 27
+      },
+      "D_only": 0,
+      "C_only": 0,
+      "p_one_sided": 1.0,
+      "per_criterion": {
+        "intent": {
+          "A": 30,
+          "C": 28,
+          "D": 28,
+          "cases": 30
+        },
+        "action": {
+          "A": 30,
+          "C": 27,
+          "D": 27,
+          "cases": 30
+        },
+        "conditions": {
+          "A": 8,
+          "C": 8,
+          "D": 8,
+          "cases": 8
+        },
+        "prohibition": {
+          "A": 24,
+          "C": 23,
+          "D": 24,
+          "cases": 24
+        },
+        "order": {
+          "A": 10,
+          "C": 10,
+          "D": 10,
+          "cases": 10
+        },
+        "clarification": {
+          "A": 8,
+          "C": 8,
+          "D": 8,
+          "cases": 8
+        },
+        "scope": {
+          "A": 30,
+          "C": 27,
+          "D": 27,
+          "cases": 30
+        }
+      },
+      "negative_control_count": 7,
+      "negative_control_net_loss": 0,
+      "protection": {
+        "issue": 310,
+        "variant": "310",
+        "status": "completed",
+        "dataset": "#310/introducer-cases.json",
+        "cases": 22,
+        "sensitive_spans": 132,
+        "public_spans": 132,
+        "baseline_exposed": 132,
+        "candidate_exposed": 44,
+        "newly_exposed": 0,
+        "newly_protected": 88,
+        "baseline_overmasked": 0,
+        "candidate_overmasked": 0,
+        "net_overmask_increase": 0,
+        "baseline_exact_restore": 22,
+        "candidate_exact_restore": 22,
+        "ci": {
+          "status": "passed",
+          "exit_code": 0,
+          "new_exposure_count": 0,
+          "integrity_regression_count": 0
+        },
+        "private_role_guard": null,
+        "protection_gate_passed": true,
+        "limitations": [
+          "Loopback synthetic HTTP only, not real provider certification.",
+          "Case-specific trusted policies are local fixtures.",
+          "The legacy CI corpus uses one frozen policy for process-local scoped candidates, while the new protection corpus exercises case-specific policies."
+        ]
+      },
+      "additional_missing": null
+    }
+  },
+  "limitation": "Interpreter and grader are the same model family; sample is enriched for observable input differences.",
+  "provenance_limitation": "Decision rule matches pre-rebase backup and approved summary; a byte-level match to decision file at run creation cannot be proven. The original run identity could not be re-derived. Grading continued with the matching adapter and validated saved inputs. All 96 current-main payloads match modulo alias renaming and original bindings."
+}

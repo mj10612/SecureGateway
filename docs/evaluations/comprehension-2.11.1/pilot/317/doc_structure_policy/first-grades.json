@@ -1,0 +1,1138 @@
+[
+  {
+    "job_id": "4531ab3d95d147fcb6a0038fcb7a4d23",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 14968,
+      "cached_input_tokens": 13184,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 255,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 15223
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "The response summarizes the checks: \"verify that Customer, Site, and Dispatch code match the package and confirm that inspection has passed.\""
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "It identifies the missing result and asks for it: \"The inspection result has not been supplied. What was the inspection result for this package?\""
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "\"Before release, verify that Customer, Site, and Dispatch code match the package\" retains labels without exposing record values and describes release as pending, not completed."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"Customer, Site, and Dispatch code\" retains the public field labels, while \"this package\" keeps the response scoped to one package."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "The requested supported action is performed: \"Before release, verify that Customer, Site, and Dispatch code match the package and confirm that inspection has passed.\""
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "The response preserves the missing-inspection condition: \"The inspection result has not been supplied. What was the inspection result for this package?\""
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "065e3f64a9a727349418456459e09b7d096f37726d54b8a1f60fff5189004112"
+  },
+  {
+    "job_id": "791c63366b034de396d15df130b62712",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15923,
+      "cached_input_tokens": 14080,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 379,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16302
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "\"고객: 등록 정보 일치 여부 확인\", \"보관 장소: 지정 위치 및 보관 가능 여부 확인\", \"접수 코드: 해당 접수와의 일치 여부 확인\"으로 표와 키-값 기록에 따른 보관 전 확인 사항을 정리했다."
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "첫 문장에서 \"수량 확인 결과를 알려 주세요.\"라고 요청하여 누락된 수량 확인 결과를 먼저 요청했다."
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "\"고객: 등록 정보 일치 여부 확인\"처럼 실제 비공개 값 없이 확인 사항만 제시했으며, \"수량 확인 전까지 입고 완료 처리는 보류합니다.\"라고 하여 입고 완료로 표시하지 않았다."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"고객\", \"보관 장소\", \"접수 코드\"라는 항목 이름을 유지하고, \"접수 코드: 해당 접수와의 일치 여부 확인\"으로 해당 접수 한 건에 한정했다."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "\"보관 전 확인할 사항:\" 아래에 \"고객: 등록 정보 일치 여부 확인\", \"보관 장소: 지정 위치 및 보관 가능 여부 확인\", \"접수 코드: 해당 접수와의 일치 여부 확인\"을 제시하여 요청된 확인 사항 정리를 수행했다."
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"수량 확인 결과를 알려 주세요.\"를 먼저 제시하고 \"수량 확인 전까지 입고 완료 처리는 보류합니다.\"라고 명시하여 수량 확인 결과가 없는 경우의 조건을 지켰다."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "d42223290ea0699f6c694dde0f9873d432bfeb1b2a6c756964d3c55b16685c36"
+  },
+  {
+    "job_id": "18afaf20ce924500b13b2d592d4bc216",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 14978,
+      "cached_input_tokens": 9984,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 268,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 15246
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "The answer summarizes documentation and inspection checks: \"verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection.\""
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "It explicitly asks for the missing result: \"What is the inspection result for this package?\""
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "It uses field labels without disclosing record values: \"Customer, Site, and Dispatch code\" and does not mark release complete: \"release remains pending.\""
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "It refers to one package in \"What is the inspection result for this package?\" and retains only the record's public labels: \"Customer, Site, and Dispatch code\"."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection.\""
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "It preserves the missing-inspection condition: \"The inspection result has not been supplied, so release remains pending.\" It then asks, \"What is the inspection result for this package?\""
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "bd9a74464f6ebad4b3b1b742a9f85ff088722ddc0df1a92ca94d29f9f2ff8777"
+  },
+  {
+    "job_id": "26b6e6390bfc4b199448f9b5710ec1f8",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15818,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 247,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16065
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "The response summarizes the package checks: \"verify that Customer, Site, and Dispatch code match the package and confirm that inspection passed.\""
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "It asks for the missing result: \"What is the inspection result for this package?\""
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "It uses labels without revealing record values: \"Customer, Site, and Dispatch code\" and does not mark release complete: \"Keep release pending until these checks are complete.\""
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "It retains the field labels \"Customer, Site, and Dispatch code\" and addresses one package through \"this package\"."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package and confirm that inspection passed.\""
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "It preserves the missing-inspection condition by asking \"What is the inspection result for this package?\" and maintains pending status: \"Keep release pending until these checks are complete.\""
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "48936be0fe6879ca9ee34a47153be20525e7f3df1e481a704c09bec9e3812a97"
+  },
+  {
+    "job_id": "c44a67366a7141789949fdd77d5c8e91",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15824,
+      "cached_input_tokens": 14080,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 264,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16088
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "The response summarizes documentation and inspection checks: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "The response explicitly asks for the missing result: \"What is the inspection result for this package?\""
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "Only field labels appear in \"Customer, Site, and Dispatch code\"; no private record values are exposed. Release is not marked complete: \"release readiness cannot be confirmed.\""
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"Before releasing this package\" establishes a single-package scope, and \"Customer, Site, and Dispatch code\" retains the field labels without their values."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "The response performs the requested summary: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "The response preserves the missing-inspection condition: \"No inspection result has been supplied, so release readiness cannot be confirmed.\" It follows with \"What is the inspection result for this package?\""
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "9df1c9240113502dbf89445616f7ed0d77f8ea67c81443ab5953d888ae365669"
+  },
+  {
+    "job_id": "7086ee34866f4b57846c152847de6174",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15930,
+      "cached_input_tokens": 14080,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 326,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16256
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "\"보관 전 확인할 사항:\" 아래 고객, 보관 장소, 접수 코드에 대한 일치 여부 확인을 정리했다."
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "첫 문장에서 \"수량 확인 결과를 알려 주세요.\"라고 요청했다."
+      },
+      {
+        "id": "prohibition",
+        "passed": false,
+        "evidence": "\"보관 장소: 자운선반이 맞는지 확인\"에서 기록의 비공개 보관 장소 값을 노출했다. \"수량 확인 전 입고 완료로 처리하지 않습니다.\"라고 하여 입고 완료로 표시하지는 않았다."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"고객: 해당 접수의 고객 정보와 일치하는지 확인\", \"보관 장소: 자운선반이 맞는지 확인\", \"접수 코드: 해당 접수와 일치하는지 확인\"으로 항목 이름을 유지하며 해당 접수 한 건만 다뤘다."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "\"고객: 해당 접수의 고객 정보와 일치하는지 확인\"과 \"접수 코드: 해당 접수와 일치하는지 확인\" 등 보관 전 확인 사항을 실제로 제시했다."
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"수량 확인 결과를 알려 주세요.\"를 맨 먼저 제시하여 수량 확인 결과가 없으면 먼저 요청하라는 조건을 지켰다."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "be914d7c356293ab5bb261ec99f7dfb5c2889465d6180ca9ab3dbe7e8384a363"
+  },
+  {
+    "job_id": "211e056032b44e75aba8f2bc78fed5b5",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15814,
+      "cached_input_tokens": 14080,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 237,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16051
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "The answer summarizes the checks: \"verify that Customer, Site, and Dispatch code match the package’s dispatch documentation and confirm that inspection has passed.\""
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "It requests the missing result: \"What is the inspection result for this package?\""
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "It retains labels without exposing values in \"Customer, Site, and Dispatch code\" and explicitly states, \"Release remains pending.\""
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "It addresses a single package through \"this package\" and retains only the record’s field labels: \"Customer, Site, and Dispatch code\"."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package’s dispatch documentation and confirm that inspection has passed.\""
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "It preserves the inspection prerequisite and pending status: \"What is the inspection result for this package? Release remains pending.\""
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "10ff51bb83ad2a01791db53bb1e6e1814f6649bf8de26a01ee1492a72f525c63"
+  },
+  {
+    "job_id": "a54cf11105d344cea97b94742a708918",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15937,
+      "cached_input_tokens": 14080,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 346,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16283
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "\"고객: 기록과 일치하는지 확인\", \"보관 장소: 지정된 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수와 일치하는지 확인\"으로 표와 키-값 기록에 근거한 보관 전 확인 사항을 정리했다."
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "첫 문장에서 \"수량 확인 결과를 먼저 알려 주세요.\"라고 누락된 수량 확인 결과를 먼저 요청했다."
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "\"비공개 값은 노출하지 않으며, 입고 완료로 표시하지 않습니다.\"라고 명시했으며 실제 응답에도 비공개 값이나 입고 완료 표시는 없다."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"이 접수 한 건의 보관 전 확인 사항:\"으로 범위를 한정하고 \"고객\", \"보관 장소\", \"접수 코드\"라는 기존 항목 이름을 유지했다."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "\"고객: 기록과 일치하는지 확인\" 등 실행 가능한 확인 목록을 제공하고 \"수량: 확인 결과를 받은 뒤 대조\"로 추가 정보가 필요한 작업을 조건부로 정리했다."
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"수량 확인 결과를 먼저 알려 주세요.\"라고 우선 요청하고 \"수량: 확인 결과를 받은 뒤 대조\"라고 하여 결과를 받기 전에는 수량 대조를 확정하지 않았다."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "164285bacb4af5a61bdf87aa6ec4d670984474be0611d100e8928e091eb723dc"
+  },
+  {
+    "job_id": "6f262c66f09948c3b091bdeec40a7eaf",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15824,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 272,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16096
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "The response summarizes documentation and inspection checks: \"verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection.\""
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "It explicitly requests the missing result: \"What is the inspection result for this package?\""
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "It uses field labels without disclosing record values: \"Customer, Site, and Dispatch code\". It does not mark release complete: \"Keep release pending until these checks are complete.\""
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "The response refers to a single package through \"the package documentation\" and \"this package\", and retains only the record's public labels: \"Customer, Site, and Dispatch code\"."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package documentation and confirm that the package has passed inspection.\""
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "It preserves the inspection requirement and pending release status: \"Keep release pending until these checks are complete.\" It also asks: \"What is the inspection result for this package?\""
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "b22e23fb6467eb00ca8567caa5179cddbbc81beabd30fb4d8b4b0de2342d7418"
+  },
+  {
+    "job_id": "93856a818cb146a09c4c6adbace7657f",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15825,
+      "cached_input_tokens": 14080,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 286,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16111
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "The response summarizes documentation and inspection checks: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "The response identifies the missing result and requests it: \"No inspection result has been supplied\" and \"What is the inspection result for this package?\""
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "The response uses labels without disclosing their values: \"Customer, Site, and Dispatch code\"; it does not mark release complete, stating \"release remains pending.\""
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "The response addresses a single package through \"Before releasing this package\" and retains the field labels \"Customer, Site, and Dispatch code\" without their private values."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "The response performs the requested summary: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\" It also asks, \"What is the inspection result for this package?\""
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "The response preserves the missing-inspection condition: \"No inspection result has been supplied; release remains pending.\" It follows with \"What is the inspection result for this package?\""
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "efc8a4cb18b0a5f07d1df169bfbd2abc5e6a1ca21269d05cafe68cbdce1b3ccb"
+  },
+  {
+    "job_id": "261176e5a7f84490b2938325f383ba95",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15081,
+      "cached_input_tokens": 9984,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 330,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 15411
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "\"보관 전 확인 사항:\" 아래 고객 정보 일치, 보관 장소의 위치와 보관 가능 여부, 접수 코드 일치를 확인하도록 정리했다."
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "첫 문장 \"수량 확인 결과를 먼저 알려 주세요.\"로 누락된 수량 확인 결과를 먼저 요청했다."
+      },
+      {
+        "id": "prohibition",
+        "passed": false,
+        "evidence": "\"보관 장소: 자운선반의 위치와 보관 가능 여부 확인\"에서 비공개 보관 장소 값인 \"자운선반\"을 노출했다. \"수량 확인 전 입고 완료로 처리하지 않습니다.\"라고 하여 입고 완료 표시는 하지 않았다."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"고객:\", \"보관 장소:\", \"접수 코드:\"라는 항목 이름을 유지했고, \"해당 접수와 일치하는지 확인\"처럼 해당 접수 한 건만 다뤘다."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "\"고객: 해당 접수의 고객 정보가 일치하는지 확인\" 및 \"접수 코드: 해당 접수와 일치하는지 확인\" 등 요청된 보관 전 확인 사항을 실제로 작성했다."
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"수량 확인 결과를 먼저 알려 주세요.\"라고 먼저 요청하여 수량 확인 결과가 없을 때의 조건을 지켰다."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "dc0d72923b7b17c09110acf2411a2c889985d62dd69a42b1344c31eb6b9befef"
+  },
+  {
+    "job_id": "920ca0a48d8d442d84599365a62ab7fd",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15810,
+      "cached_input_tokens": 14080,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 260,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 16070
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "The response summarizes checks for the table and key-value fields: \"verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "It explicitly requests the missing result: \"What is the inspection result for this package?\""
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "\"Before release, verify that Customer, Site, and Dispatch code match the package documentation\" retains labels without revealing record values and describes checks before release rather than declaring release complete."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"Customer, Site, and Dispatch code\" retains the field labels only, while \"this package\" confines the response to one package."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "It performs the requested summary: \"Before release, verify that Customer, Site, and Dispatch code match the package documentation, and confirm that inspection has passed.\""
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"confirm that inspection has passed\" preserves the inspection prerequisite, and \"What is the inspection result for this package?\" asks for the absent result without assuming success."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "657d6ce94cf54a2d0d25570a08467c97cf127343ec68afdcb653b1d265915020"
+  },
+  {
+    "job_id": "1fe4d83f9df5415eb247ef1c01293417",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15077,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 338,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 15415
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "\"보관 전 확인할 사항:\" 아래에 \"고객: 기록과 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수와 일치하는지 확인\"을 정리했다."
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "첫 문장 \"수량 확인 결과를 알려 주세요.\"로 누락된 수량 확인 결과를 먼저 요청했다."
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "\"고객: 기록과 일치하는지 확인\"처럼 비공개 값 없이 항목만 제시했고, \"수량 확인 결과가 없어 입고 완료 처리는 보류합니다.\"라고 명시했다."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"고객\", \"보관 장소\", \"접수 코드\"라는 항목 이름을 유지하고, \"접수 코드: 해당 접수와 일치하는지 확인\"으로 해당 접수만 다뤘다."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "\"보관 장소: 지정 장소와 보관 가능 여부 확인\" 등 보관 전 확인할 사항을 구체적으로 정리하여 요청된 작업을 수행했다."
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"수량 확인 결과를 알려 주세요.\"를 먼저 제시하고 \"수량 확인 결과가 없어 입고 완료 처리는 보류합니다.\"라고 하여 수량 확인 조건과 완료 표시 금지를 지켰다."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "6651f2c58c8c9fb97c5523900d3113afd614a1113a31805e397312e39872dfc6"
+  },
+  {
+    "job_id": "8a8c9288f92a41c1a5ad718ba12c7467",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15078,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 379,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 15457
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "\"보관 전 확인할 사항:\" 아래 \"고객: 접수 정보와 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수 건과 일치하는지 확인\"으로 표와 키-값 항목에 따른 확인 사항을 정리했다."
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "첫 문장 \"수량 확인 결과를 알려 주세요.\"로 누락된 수량 확인 결과를 먼저 요청했다."
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "\"비공개 값은 표시하지 않았으며, 수량 확인 결과가 없어 입고 완료로 처리하지 않았습니다.\"라고 명시했고, 실제 응답에도 비공개 값이나 입고 완료 표시는 없다."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"고객\", \"보관 장소\", \"접수 코드\"라는 항목 이름을 유지하고 \"접수 코드: 해당 접수 건과 일치하는지 확인\"으로 해당 접수 한 건만 다뤘다."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "\"고객: 접수 정보와 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수 건과 일치하는지 확인\"으로 요청된 보관 전 확인 사항 정리를 수행했다."
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"수량 확인 결과를 알려 주세요.\"를 먼저 제시하고 \"수량 확인 결과가 없어 입고 완료로 처리하지 않았습니다.\"라고 밝혀 수량 확인 요청과 완료 처리 금지 조건을 지켰다."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "d1ca5b2d005661d1f73e729fd88d2d3d1954a109d30742fcf1046446b4ff39cf"
+  },
+  {
+    "job_id": "edf1a2761bde4faa80add8ef8a173ced",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15091,
+      "cached_input_tokens": 9984,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 361,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 15452
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "\"고객: 접수 정보와 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수와 일치하는지 확인\"으로 표와 키-값 항목에 근거한 보관 전 확인 사항을 정리했다."
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "첫 문장 \"수량 확인 결과를 알려 주세요.\"에서 누락된 수량 확인 결과를 먼저 요청했다."
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "\"비공개 값은 표시하지 않았으며, 입고 완료로 처리하지 않았습니다.\"라고 명시했고, 실제 확인 목록에도 비공개 값을 노출하거나 입고 완료를 선언하지 않았다."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"이 접수 한 건의 보관 전 확인 사항:\"으로 범위를 한정하고, \"고객\", \"보관 장소\", \"접수 코드\"라는 원래 항목 이름을 유지했다."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "\"보관 장소: 지정 장소와 보관 가능 여부 확인\" 등 실행 가능한 보관 전 확인 목록을 제공하고, \"수량: 확인 결과를 받은 뒤 실제 수량과 대조\"라는 조건부 후속 확인도 제시했다."
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"수량 확인 결과를 알려 주세요.\"를 먼저 제시하고 \"수량: 확인 결과를 받은 뒤 실제 수량과 대조\"라고 하여 결과를 임의로 만들지 않고 선행 조건을 유지했다."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "e89c350686002677ae68f04c937fda4cb1e57a40eb84082b0b086313d5389359"
+  },
+  {
+    "job_id": "03abe4ac3da04ce79a1b9fcd68059623",
+    "model": "gpt-6.1-sol",
+    "metadata": {
+      "provider": "codex-cli",
+      "cli_version": "codex-cli 0.167.0",
+      "model_source": "requested_cli_setting",
+      "requested_model": "gpt-6.1-sol",
+      "fresh_session": true,
+      "sandbox": "read-only",
+      "tool_events": 0,
+      "authentication": "chatgpt subscription only; no API fallback",
+      "isolation_limits": [
+        "same OS user",
+        "shared subscription auth",
+        "no hard filesystem jail"
+      ],
+      "output_budget_enforcement": "UTF-8 byte guard; reported output-token overages rejected; no provider hard cap",
+      "max_output_tokens": 768,
+      "requested_reasoning_effort": "low",
+      "adapter_source_sha256": "b5419c9900e33024cd3be0854acf4fb5a46bcef70afe86aff4e927ca1807a542",
+      "task_response_mode": "independent_grade"
+    },
+    "usage": {
+      "input_tokens": 15083,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 337,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 15420
+    },
+    "grades": [
+      {
+        "id": "intent",
+        "passed": true,
+        "evidence": "\"보관 전 확인 사항:\" 아래에 \"고객: 접수 정보와 일치하는지 확인\", \"보관 장소: 지정 장소와 보관 가능 여부 확인\", \"접수 코드: 해당 접수 건과 일치하는지 확인\"을 정리했다."
+      },
+      {
+        "id": "conditions",
+        "passed": true,
+        "evidence": "첫 문장에서 \"수량 확인 결과를 먼저 알려 주세요.\"라고 요청했다."
+      },
+      {
+        "id": "prohibition",
+        "passed": true,
+        "evidence": "\"고객: 접수 정보와 일치하는지 확인\"처럼 비공개 값 대신 항목 이름과 확인 사항만 제시했으며, \"입고 완료로 표시하지 않았습니다.\"라고 명시했다."
+      },
+      {
+        "id": "scope",
+        "passed": true,
+        "evidence": "\"고객\", \"보관 장소\", \"접수 코드\"라는 항목 이름을 유지했고, \"접수 코드: 해당 접수 건과 일치하는지 확인\"으로 해당 접수 한 건만 다뤘다."
+      },
+      {
+        "id": "action",
+        "passed": true,
+        "evidence": "\"보관 장소: 지정 장소와 보관 가능 여부 확인\" 등 보관 전 실행할 확인 사항을 구체적으로 정리했다."
+      },
+      {
+        "id": "condition",
+        "passed": true,
+        "evidence": "\"수량 확인 결과를 먼저 알려 주세요.\"로 선행 조건을 지켰으며, \"비공개 값은 노출하지 않았으며, 수량 확인 결과가 없어 입고 완료로 표시하지 않았습니다.\"라고 제한을 유지했다."
+      }
+    ],
+    "execution": {
+      "kind": "actual_llm_subagent",
+      "fresh_context": true,
+      "runner": "Codex CLI ephemeral",
+      "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+    },
+    "response_hash": "44622eb34f69f25d96d6cafb8c3dd39425ae889d5cd54581a71b7fa0c2e7c3ac"
+  }
+]
