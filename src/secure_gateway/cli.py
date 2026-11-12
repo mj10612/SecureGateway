@@ -762,11 +762,48 @@ def gateway_ensure(config):
         raise click.ClickException(str(exc)) from None
 
 
+def _feature_options(function):
+    """Shared opt-in feature flags (#354); every feature defaults to OFF."""
+    function = click.option("--features-off", is_flag=True,
+                            help="Disable every opt-in feature regardless of config or environment.")(function)
+    return click.option("--feature", "feature_flags", multiple=True, metavar="NAME=on|off",
+                        help="Enable or disable one opt-in feature for this run (repeatable).")(function)
+
+
+def _resolve_features(settings, feature_flags, features_off):
+    from secure_gateway.gateway_features import FEATURES, _parse_bool, resolve_settings
+
+    cli = {}
+    for item in feature_flags:
+        name, separator, value = item.partition("=")
+        if not separator or name not in FEATURES:
+            raise ValueError("Use --feature NAME=on|off with a known feature name.")
+        cli[name] = _parse_bool(value, name)
+    return resolve_settings(settings, cli=cli, all_off=features_off)
+
+
+@gateway.command("features")
+@click.option("--config", type=click.Path(path_type=Path))
+@_feature_options
+def gateway_features(config, feature_flags, features_off):
+    """Show opt-in feature defaults, sources and the state the next start would use."""
+    from secure_gateway.gateway_install import default_config, load_config
+
+    try:
+        settings = load_config(config or default_config())
+        _, report = _resolve_features(settings, feature_flags, features_off)
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from None
+    click.echo(json.dumps({"configured": report, "change_requires": "gateway restart",
+                           "running": "see gateway diagnostics"}))
+
+
 @gateway.command("run")
 @click.option("--config", type=click.Path(path_type=Path))
 @click.option("--mapping-limit", type=click.IntRange(1), default=None)
 @click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
-def gateway_run(config, mapping_limit, mask_numbers):
+@_feature_options
+def gateway_run(config, mapping_limit, mask_numbers, feature_flags, features_off):
     """Run the subscription gateway in the foreground (normally auto-started)."""
     from secure_gateway.gateway import PrivacyGateway, diagnostic_logging
     from secure_gateway.gateway_install import default_config, load_config, runtime_directory
@@ -776,6 +813,7 @@ def gateway_run(config, mapping_limit, mask_numbers):
         if settings.get("mode", "subscription") != "subscription":
             raise ValueError("Use gateway api-run for API configuration.")
         state = runtime_directory((config or default_config()).resolve()) / "sessions"
+        features, feature_report = _resolve_features(settings, feature_flags, features_off)
         with PrivacyGateway(
             ("127.0.0.1", settings["port"]),
             settings["token"],
@@ -796,6 +834,8 @@ def gateway_run(config, mapping_limit, mask_numbers):
             sql_dialect=settings.get("sql_dialect", "sqlite"),
             max_active_requests=settings.get("max_active_requests", 32),
             max_provider_requests=settings.get("max_provider_requests", 8),
+            features=features,
+            feature_report=feature_report,
         ) as server:
             # Only this dedicated CLI process can safely self-terminate.
             main_spec = getattr(sys.modules.get("__main__"), "__spec__", None)
@@ -1086,7 +1126,8 @@ def gateway_api_install(provider, model, config, grok_home, port):
 @gateway.command("api-run")
 @click.option("--config", type=click.Path(path_type=Path))
 @click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
-def gateway_api_run(config, mask_numbers):
+@_feature_options
+def gateway_api_run(config, mask_numbers, feature_flags, features_off):
     """Run the isolated xAI API gateway in the foreground; Ctrl+C stops it."""
     from secure_gateway.gateway import API_UPSTREAMS, PrivacyGateway, diagnostic_logging
     from secure_gateway.gateway_install import runtime_directory
@@ -1095,6 +1136,7 @@ def gateway_api_run(config, mask_numbers):
     path = config or default_api_config()
     try:
         settings = load_api_config(path)
+        features, feature_report = _resolve_features(settings, feature_flags, features_off)
         with PrivacyGateway(
             ("127.0.0.1", settings["port"]),
             settings["token"],
@@ -1117,6 +1159,8 @@ def gateway_api_run(config, mask_numbers):
             max_provider_requests=settings.get("max_provider_requests", 8),
             state_dir=runtime_directory(path.resolve()) / "sessions",
             audit_path=runtime_directory(path.resolve()) / "logs.sqlite3",
+            features=features,
+            feature_report=feature_report,
         ) as server:
             configure_logging()
             with diagnostic_logging():

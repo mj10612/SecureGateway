@@ -71,6 +71,8 @@ from secure_gateway.domain_dictionaries import (
     DEFAULTS as DOMAIN_DEFAULTS,
     protect_chunks,
 )
+from secure_gateway import gateway_features as _features
+from secure_gateway.gateway_features import DEFAULT_FEATURES, GatewayFeatures
 
 # Maximum request/stream payload size in bytes (16 MiB). Bounds memory use and
 # rejects oversized JSON/SSE payloads before deeper processing; not user-configurable.
@@ -747,8 +749,22 @@ class SharedEngine(MaskingEngine):
     """One alias for an original in prompts, code, paths and tool results."""
     domain_spans: Callable | None = None
     _domain_depth = 0
+    # Per-session opt-in features (#354); the owning GatewaySession sets these.
+    features: GatewayFeatures = DEFAULT_FEATURES
+    owner: Any = None
+    _feature_depth = 0
 
     def _chunks(self, text, terms, language="en", literal_aliases=None):
+        if self._feature_depth or self.features.scoped_corrections is None:
+            return self._domain_chunks(text, terms, language, literal_aliases)
+        self._feature_depth += 1
+        try:
+            return _features.apply_chunk_features(
+                self, text, self._domain_chunks(text, terms, language, literal_aliases))
+        finally:
+            self._feature_depth -= 1
+
+    def _domain_chunks(self, text, terms, language="en", literal_aliases=None):
         if self._domain_depth or self.domain_spans is None:
             return super()._chunks(text, terms, language, literal_aliases)
         self._domain_depth += 1
@@ -770,6 +786,8 @@ class SharedEngine(MaskingEngine):
 
     def mask_text(self, *args, private_context=False, **kwargs):
         """Handle mask text."""
+        if self.features.ko_conjugation_split or self.features.public_terms:
+            _features.apply_mask_text_features(self, args, kwargs, private_context)
         token = _private_prose.set(private_context)
         try:
             return super().mask_text(*args, **kwargs)
@@ -855,9 +873,14 @@ def _prose_policy(prose_mode, common_words):
 class GatewaySession:
     """Per-conversation masking/restoration state shared by gateway request handling."""
     def __init__(self, session=None, mapping_limit=100_000, mask_numbers=False, natural_language="auto", sql_dialect="sqlite", prose_mode="content_words", common_words=None, max_mapping_bytes=DEFAULT_MAPPING_BYTES,
-                 max_snapshot_bytes=DEFAULT_SNAPSHOT_BYTES, context_model: ContextModel | None = None, **restore_limits):
+                 max_snapshot_bytes=DEFAULT_SNAPSHOT_BYTES, context_model: ContextModel | None = None,
+                 features: GatewayFeatures | None = None, **restore_limits):
         if type(mask_numbers) is not bool:
             raise ValueError("mask_numbers must be a boolean.")
+        if features is not None and not isinstance(features, GatewayFeatures):
+            raise ValueError("features must be GatewayFeatures.")
+        # Immutable per-session selection (#354); never shared mutable state.
+        self.features: GatewayFeatures = DEFAULT_FEATURES if features is None else features
         self.mask_numbers = mask_numbers
         self.context_model = context_model
         self.prose_mode, self.common_words = _prose_policy(prose_mode, common_words)
@@ -888,7 +911,14 @@ class GatewaySession:
         self.storage_key: str | None = None
         self.domain_policy_version = ""
         self.tool_dispatcher: Any = None
-        self._profile_issue: int | None = None
+        self._feature_request = False
+        self._evaluation_prose = False
+        self._public_user_only = False
+        if self.features.any_enabled:
+            self.engine.features = self.features
+            self.engine.owner = self
+            self.engine.ko_conjugation_split = self.features.ko_conjugation_split
+            self.tool_dispatcher = _features.tool_dispatcher(self)
 
     def _opaque_key(self, block):
         stable = {
@@ -904,6 +934,12 @@ class GatewaySession:
 
     def _mask_prose(self, text: str, preserve_task_words: bool = True, skill_verbs: frozenset[str] = frozenset(),
                     model_context_complete: bool = True) -> str:
+        if self.features.contextual_name_spans or self.features.public_terms:
+            return _features.mask_prose(self, text, preserve_task_words, skill_verbs, model_context_complete)
+        return self._mask_prose_core(text, preserve_task_words, skill_verbs, model_context_complete)
+
+    def _mask_prose_core(self, text: str, preserve_task_words: bool = True, skill_verbs: frozenset[str] = frozenset(),
+                         model_context_complete: bool = True) -> str:
         s = self.session
         # Existing source aliases take precedence over prose grammar (e.g. A).
         terms = s.forward_store.originals_in(text)
@@ -1022,7 +1058,7 @@ class GatewaySession:
             task_words = task_words | DISCOURSE_WORDS.get(selected, frozenset()) | operator_words(selected)
         if selected in {"en", "ko"} and self.prose_mode != MaskMode.AGGRESSIVE:
             task_words = task_words | SKILL_TASK_WORDS
-        if self._profile_issue == 309 and selected == "ko":
+        if self.features.ko_conjugation_split and selected == "ko":
             self._apply_ko_conjugation_split(terms, relevant, general)
         # Single-word generic domain spans that are ordinary public words stay
         # public; any actual private registration or mapping still wins.
@@ -1084,7 +1120,7 @@ class GatewaySession:
         return masked
 
     def _apply_ko_conjugation_split(self, terms: set[str], relevant: set[str], general: frozenset[str]) -> None:
-        """Decompose Korean terms into stems and grammatical endings for candidate profile #309."""
+        """Decompose Korean terms into stems and grammatical endings (feature #309)."""
         terms.update(self.forced_rules())
         for term in list(terms):
             stem, ending, _ = self.engine.ko_grammar.decompose_token(term, general, allow_conjugation=True)
@@ -1209,6 +1245,8 @@ class GatewaySession:
             return "".join(parts)
 
     def _mask_unforced(self, text: str, code: bool = False, language: str = "auto") -> str:
+        if self.features.contextual_name_spans or self.features.attribute_bundle is not None:
+            _features.before_mask_unforced(self, text, code)
         if code:
             return self._mask_source(text, language)
         if looks_like_source(text):
@@ -1914,6 +1952,16 @@ class GatewaySession:
 
         Never returns ``None``.
         """
+        if not self.features.any_enabled:
+            return self._budgeted_request(payload, dialect=dialect)
+        _features.begin_request(self, payload)
+        self._feature_request = True
+        try:
+            return self._budgeted_request(payload, dialect=dialect)
+        finally:
+            self._feature_request = False
+
+    def _budgeted_request(self, payload: dict[str, Any], *, dialect=None) -> dict[str, Any]:
         with self.context_model.request_budget() if self.context_model is not None else nullcontext():
             return self._request(payload, dialect=dialect)
 
@@ -2315,7 +2363,15 @@ class PrivacyGateway(ThreadingHTTPServer):
         prose_mode="content_words",
         common_words=None,
         context_model_path=None,
+        features: GatewayFeatures | None = None,
+        feature_report: dict[str, Any] | None = None,
     ):
+        if features is not None and not isinstance(features, GatewayFeatures):
+            raise ValueError("features must be GatewayFeatures.")
+        # Gateway-wide feature selection (#354), fixed for this process. Every
+        # session created or restored by this gateway receives it.
+        self.features = DEFAULT_FEATURES if features is None else features
+        self.feature_report = deepcopy(feature_report) if feature_report is not None else _features.report_for(self.features)
         self.restore_limits = {"max_restore_input_bytes": max_restore_input_bytes,
                                "max_restore_output_bytes": max_restore_output_bytes}
         MaskingEngine(**self.restore_limits)
@@ -2658,7 +2714,15 @@ class PrivacyGateway(ThreadingHTTPServer):
                 "audit_error_counts": self.audit_error_diagnostics(),
                 "diagnostic_counts": self.operational_diagnostics(),
                 "domain_catalog": self.domain_status(),
+                "features": self.feature_settings(),
                 "audit_completion_retries": self.audit.completion_retries.diagnostics() if self.audit else None}
+
+    def feature_settings(self):
+        """Return feature defaults, sources and effective states; never policy contents."""
+        return {"applies_to": "sessions created or restored after gateway start",
+                "change_requires": "gateway restart",
+                "enabled": list(self.features.enabled_names()),
+                "settings": deepcopy(self.feature_report)}
 
     def _recover_snapshot(self, key: str, *, opaque_only: bool = False) -> None:
         """Quarantine proven-corrupt local snapshot state for this conversation.
@@ -2827,6 +2891,7 @@ class PrivacyGateway(ThreadingHTTPServer):
                                      max_snapshot_bytes=self.max_snapshot_bytes,
                                      prose_mode=self.prose_mode, common_words=self.common_words,
                                      context_model=self.context_model,
+                                     features=self.features,
                                      **self.restore_limits)
             session.forced_rules = lambda: self.mask_rules
             session.engine.domain_spans = lambda text: self.domain_catalog.spans(text, self.domain_policy)

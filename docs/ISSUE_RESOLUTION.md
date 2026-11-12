@@ -344,3 +344,20 @@ Default engine only, 17 languages × 2 everyday requests plus known requests: 72
 
 From 2.15.0 evaluations use the lean transport validated in `evaluations/eval-cost-364/` (about −53% raw tokens per case versus the native one-call-per-item method, with the lean grader somewhat stricter). Runs never mix transports or models inside one comparison.
 
+
+## #354 opt-in feature foundation (2.16.0)
+
+Status: **부분 완료 (foundation only)**. No default changed.
+
+Done in 2.16.0:
+
+- #309 `ko_conjugation_split`, #310 `contextual_name_spans`, #316 `scoped_corrections` (protect-only condition B; the rejected public-exception arm stays evaluation-only), #318 `attribute_bundle` and #319 `local_arithmetic` are per-session `GatewayFeatures` values carried by `GatewaySession`/`SharedEngine` instead of process-global monkeypatching. Any combination can be enabled in one process; sessions, providers and concurrent requests keep separate feature state and aliases (tests: `tests/test_gateway_features.py`).
+- `candidate_profile(309|310|316|318|319, ...)` is a compatibility wrapper over these flags. A deterministic capture of 1,320 cases (frozen #309/#313 corpora, the #310/#311/#316/#318 2.11.0 regression/holdout corpora, unit-test inputs, the #319 tool path and all unmigrated profiles) was byte-identical between origin/main (bb074bb, 2.15.0) and this change. The existing experiment, toggle-off byte-identity and full suites pass unchanged.
+- Gateway settings: one key per feature, all default OFF, precedence CLI (`--feature NAME=on|off`, `--features-off`) > `SECURE_GATEWAY_FEATURE_<KEY>` > `config.json` `features` > default; sources and effective states appear in `gateway features`, `gateway diagnostics`, `/admin/api/features` and `/admin/api/sessions`. Settings apply at gateway start to all sessions created or restored afterwards; rollback is removing the key and restarting, and existing aliases stay restorable.
+
+Not done / limits:
+
+- No feature is enabled by default. Default enablement of the adopted candidates (#310, #316 B, #318) waits for the joint real-LLM evaluation with all adopted features enabled together; #309 is still being evaluated; #319 is blocked by #363.
+- #318 needs a per-document trusted policy and is available per session only; enabling it gateway-wide is refused. #319 has no gateway-level per-alias unit policy, so gateway-enabled tool calls are refused (fail closed). #316 at gateway level loads one project's encrypted records with a password from `SECURE_GATEWAY_CORRECTIONS_PASSWORD`; record expiry is evaluated at start.
+- #313 was rejected and was not migrated; it and #311, #312, #314, #315, #317 remain process-global evaluation profiles.
+- The Korean/English corpus expansion, holdout and real-LLM comprehension, Claude/Codex protocol tool-use evaluation and OFF/ON latency/memory measurements required by #354 are not part of this change.

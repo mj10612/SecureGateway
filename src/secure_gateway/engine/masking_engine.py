@@ -65,7 +65,8 @@ class NumericLiteralConflict(ConfigurationError, ValueError):
 class MaskingEngine:
     """Core engine for masking and restoring text and code with session mappings."""
 
-    _profile_issue: int | None = None
+    # Opt-in Korean conjugation split (#354/#309); set per session by the gateway.
+    ko_conjugation_split: bool = False
     def __init__(self, max_input_bytes: int = 16 * 1024 * 1024,
                  max_restore_input_bytes: int = 16 * 1024 * 1024,
                  max_restore_output_bytes: int = 16 * 1024 * 1024) -> None:
@@ -191,7 +192,7 @@ class MaskingEngine:
                     token_type, should_mask = TokenType.NUMBER, True
                 elif not force and is_hangul_string(word):
                     # Mixed Korean/English input is handled per token, even with language=en.
-                    allow_conj = (self._profile_issue == 309)
+                    allow_conj = self.ko_conjugation_split
                     stem, suffix, token_type = self.ko_grammar.decompose_token(
                         word, known, allow_conjugation=allow_conj
                     )
@@ -329,7 +330,7 @@ class MaskingEngine:
                              if chunk.is_word and chunk.text.endswith(tuple(protected_possessives))}
         suffixes = set(KOREAN_JOSA_LIST) | set(KOREAN_COPULA_LIST)
         suffixes.update(KOREAN_PLURAL + particle for particle in KOREAN_JOSA_LIST)
-        if self._profile_issue == 309:
+        if self.ko_conjugation_split:
             suffixes.update(KOREAN_CONJUGATION_ENDINGS)
         # Keep a possessive suffix attached when an existing private stem is
         # split out. Retokenizing the tail would invent an unrelated `s` alias.
