@@ -274,7 +274,7 @@ The earlier screening is retained only as [pilot evidence](evaluations/comprehen
 | #319 local arithmetic | REJECT, underpowered | 4 solvable eligible cases; replication blocked by #363 |
 | #291 multilingual baseline | descriptive | no candidate |
 
-Adopted toggles stay off until a joint evaluation of all adopted candidates enabled together (requires the per-instance feature flags of #354).
+Adopted toggles stayed off until a joint evaluation of all adopted candidates enabled together (requires the per-instance feature flags of #354). That joint decision, ADOPT-JOINT, was made in 2.17.0 without a model run because the joint input was identical to each candidate's own input ([decision](evaluations/joint-adopted-2.16/DECISION.md)). The gateway defaults changed accordingly; see "Adopted features enabled by default (2.17.0)" below.
 
 
 ### Coordinator-directed preflight decisions (not LLM results)
@@ -302,17 +302,17 @@ Both `instruction_concise` and `instruction_examples` are **REJECT** under the f
 
 ### #310 real-LLM name-context comparison
 
-**ADOPT** under the frozen protection-target rule: 88 of 132 sensitive spans became protected, none became exposed, public overmasking stayed 0/132, exact restoration was 22/22 in both arms, and CI passed. Among 30 original-control-eligible cases A/C/D passed 30/27/27, with 0/0 discordances. All 96 C/D payloads matched current main modulo alias renaming and original bindings. The original run identity could not be re-derived after rebasing; saved responses, rubric digest and adapter were verified, and the decision file matches the pre-rebase backup and approved summary, but its bytes at run creation cannot be proven. The same model family interpreted and graded; see [evidence](evaluations/comprehension-2.11.1/310/comprehension/summary.md). The toggle remains off pending the separate activation PR.
+**ADOPT** under the frozen protection-target rule: 88 of 132 sensitive spans became protected, none became exposed, public overmasking stayed 0/132, exact restoration was 22/22 in both arms, and CI passed. Among 30 original-control-eligible cases A/C/D passed 30/27/27, with 0/0 discordances. All 96 C/D payloads matched current main modulo alias renaming and original bindings. The original run identity could not be re-derived after rebasing; saved responses, rubric digest and adapter were verified, and the decision file matches the pre-rebase backup and approved summary, but its bytes at run creation cannot be proven. The same model family interpreted and graded; see [evidence](evaluations/comprehension-2.11.1/310/comprehension/summary.md). The toggle stayed off pending the activation PR; from 2.17.0 `contextual_name_spans` is **on by default** in gateway settings (joint ADOPT).
 
 
 ### #316 real-LLM scoped-correction comparison
 
-**ADOPT** under the frozen protection-target rule: an independently authored correction-sensitive replacement protected 104/104 previously exposed spans with zero new exposures, 0/104 public overmasks in both arms, 208/208 exact restoration in both, and a passing CI comparison. The earlier REJECT was withdrawn because its protection set had no baseline exposures. Existing comprehension results were reused: 35 A-eligible cases, A/C/D 35/31/29 and D-only/C-only 0/2, within the two-case non-inferiority bound. Interpreter and grader share a model family. See [evidence](evaluations/comprehension-2.11.1/316/comprehension/summary.md); the toggle remains off.
+**ADOPT** under the frozen protection-target rule: an independently authored correction-sensitive replacement protected 104/104 previously exposed spans with zero new exposures, 0/104 public overmasks in both arms, 208/208 exact restoration in both, and a passing CI comparison. The earlier REJECT was withdrawn because its protection set had no baseline exposures. Existing comprehension results were reused: 35 A-eligible cases, A/C/D 35/31/29 and D-only/C-only 0/2, within the two-case non-inferiority bound. Interpreter and grader share a model family. See [evidence](evaluations/comprehension-2.11.1/316/comprehension/summary.md). From 2.17.0 `scoped_corrections` (protect-only) is on by default in gateway settings and active whenever a records file is configured; without one it is a no-op.
 
 
 ### #318 real-LLM bundle comparison
 
-**ADOPT** under the frozen protection-target and attack rules. The replacement offline set newly protected 108/108 baseline-exposed targets, introduced zero exposures and zero public overmasks among 108 controls, restored 27/27 in both arms, and passed CI. Of 36 original-control-eligible comprehension cases A/C/D passed 36/29/29 with 0/0 discordances. In the independent 48-case synthetic catalogue attack, top-1 baseline/candidate/prior was 39/8/0; top-3 was also 39/8/0. Field groups were previously baseline-screened in a failed form format, limiting offline holdout independence; interpreter, grader and attacker share a model family. See [evidence](evaluations/comprehension-2.11.1/318/comprehension/summary.md). The toggle remains off.
+**ADOPT** under the frozen protection-target and attack rules. The replacement offline set newly protected 108/108 baseline-exposed targets, introduced zero exposures and zero public overmasks among 108 controls, restored 27/27 in both arms, and passed CI. Of 36 original-control-eligible comprehension cases A/C/D passed 36/29/29 with 0/0 discordances. In the independent 48-case synthetic catalogue attack, top-1 baseline/candidate/prior was 39/8/0; top-3 was also 39/8/0. Field groups were previously baseline-screened in a failed form format, limiting offline holdout independence; interpreter, grader and attacker share a model family. See [evidence](evaluations/comprehension-2.11.1/318/comprehension/summary.md). From 2.17.0 its gateway default is "on, policy-gated". Gateway settings have no per-document policy source, so it is inactive at gateway level and applies only where a session is created with a trusted policy.
 
 
 ### #317 real-LLM document-structure policy comparison
@@ -361,3 +361,18 @@ Not done / limits:
 - #318 needs a per-document trusted policy and is available per session only; enabling it gateway-wide is refused. #319 has no gateway-level per-alias unit policy, so gateway-enabled tool calls are refused (fail closed). #316 at gateway level loads one project's encrypted records with a password from `SECURE_GATEWAY_CORRECTIONS_PASSWORD`; record expiry is evaluated at start.
 - #313 was rejected and was not migrated; it and #311, #312, #314, #315, #317 remain process-global evaluation profiles.
 - The Korean/English corpus expansion, holdout and real-LLM comprehension, Claude/Codex protocol tool-use evaluation and OFF/ON latency/memory measurements required by #354 are not part of this change.
+
+
+## Adopted features enabled by default (2.17.0)
+
+Joint decision: **ADOPT-JOINT** for #310, #316 B and #318, made without a model run ([decision](evaluations/joint-adopted-2.16/DECISION.md)). With 2.16.0 per-session flags, the joint configuration produced model-visible input identical to each candidate's own frozen D on 144/144 comprehension cases (alias-canonicalized), and joint outbound payloads identical to single-candidate payloads on all 257 protection cases. The offline gate passed on every set (newly protected 88/104/108, 0 new exposures, 0 public overmask, exact restore unchanged), and the CI compare with all three on passed. Comprehension non-inferiority transfers from each candidate's measured result (A/C/D 30/27/27, 35/31/29, 36/29/29). Limits: those runs used `gpt-6.1-sol` on the native transport, and #316/#318 never co-occur on a case, so their interaction is tested only on the CI corpus. The prepared preregistration was never frozen.
+
+Gateway setting defaults (`SETTING_DEFAULTS`):
+
+- #310 `contextual_name_spans`: **on** for new installs and for existing configurations without an explicit value. An explicit `false`/`off` (config, environment, `--feature`) is preserved, and `--features-off` restores the 2.15/2.16 path byte-for-byte (`tests/test_feature_defaults.py`).
+- #316 `scoped_corrections` (protect-only B): on, but active only with a configured records file. Without one it is a byte-identical no-op and never blocks start. An explicit enable without records, or a configured file that cannot be loaded, still stops the gateway.
+- #318 `attribute_bundle`: on, but policy-gated. Gateway settings have no per-document policy source, so it is **inactive at gateway level** (`inactive_reason: per-session-policy-only`) and applies only to sessions created with a trusted policy. Explicit gateway-wide enabling is still refused.
+- #309 and #319 stay off. The library default (`GatewaySession()`/`PrivacyGateway()` without `features`) stays all-off.
+- Diagnostics add `default_mode`, `active` and `inactive_reason`.
+
+CI privacy comparison, new versus old default on the legacy corpus ([evidence](evaluations/defaults-2.17.0/README.md)): both exit 0 with no regression, 0 new and 0 resolved exposures, and integrity unchanged. Public overmask goes from 3 to 4 of 117. **Known false positive:** the Korean introducer rule masks `바꾸지` in `파일 이름은 바꾸지 말며`, hiding a prohibition verb. It is not fixed here because the fix would change the evaluated #310 behaviour; it needs a follow-up. Rollback: `"contextual_name_spans": false` or `--features-off`, then restart.

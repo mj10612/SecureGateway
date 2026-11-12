@@ -1,5 +1,10 @@
 # Joint evaluation of the adopted candidates (#310, #316 B, #318) — prepared, not run
 
+> **Decided without a model run: ADOPT-JOINT — see [DECISION.md](DECISION.md).**
+> J was identical to each candidate's original D on all 144 cases, so the
+> comprehension run, the freeze and the attack were not performed.
+> `preregistration.json` was never frozen. The commands below are kept for the record only.
+
 Question: can `contextual_name_spans` (#310), `scoped_corrections` protect-only
 (#316 condition B) and `attribute_bundle` (#318) be enabled **together** by
 default? The decision rule is in [`preregistration.json`](preregistration.json).

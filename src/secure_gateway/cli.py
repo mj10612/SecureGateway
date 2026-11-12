@@ -763,11 +763,12 @@ def gateway_ensure(config):
 
 
 def _feature_options(function):
-    """Shared opt-in feature flags (#354); every feature defaults to OFF."""
+    """Shared feature flags (#354); defaults are SETTING_DEFAULTS (2.17.0)."""
     function = click.option("--features-off", is_flag=True,
-                            help="Disable every opt-in feature regardless of config or environment.")(function)
+                            help="Disable every masking feature (including default-on ones) regardless of "
+                                 "config or environment; restores the 2.15 masking path.")(function)
     return click.option("--feature", "feature_flags", multiple=True, metavar="NAME=on|off",
-                        help="Enable or disable one opt-in feature for this run (repeatable).")(function)
+                        help="Enable or disable one masking feature for this run (repeatable).")(function)
 
 
 def _resolve_features(settings, feature_flags, features_off):
@@ -786,7 +787,7 @@ def _resolve_features(settings, feature_flags, features_off):
 @click.option("--config", type=click.Path(path_type=Path))
 @_feature_options
 def gateway_features(config, feature_flags, features_off):
-    """Show opt-in feature defaults, sources and the state the next start would use."""
+    """Show masking feature defaults, sources and the state the next start would use."""
     from secure_gateway.gateway_install import default_config, load_config
 
     try:

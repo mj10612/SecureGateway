@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.16.3 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.17.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -517,21 +517,62 @@ previous reasoning does not replay against the new alias table. Do not delete ol
 until you no longer need rollback.
 
 
-## Opt-in masking features (2.16.0, #354)
+## Masking features and defaults (2.17.0, #354)
 
 Five evaluated candidates are available as independent per-session features.
-**All of them are OFF by default in 2.16.0**; the default masking path is
-unchanged. Default enablement of the adopted candidates will be decided only
-after a joint real-LLM evaluation with all adopted features enabled together;
-until then enabling any feature is an explicit local choice.
+After the joint evaluation of the adopted candidates
+([decision](evaluations/joint-adopted-2.16/DECISION.md): ADOPT-JOINT),
+**gateway settings enable #310 by default from 2.17.0**. #316 B and #318 are
+also on by default, but they are *policy-gated*: they act only when a trusted
+local policy exists, and without one they are a byte-identical no-op that never
+blocks gateway start. #309 and #319 stay opt-in.
 
-| Feature key | Issue | Real-LLM decision | Gateway-wide setting |
-|---|---|---|---|
-| `ko_conjugation_split` | #309 | under evaluation | boolean |
-| `contextual_name_spans` | #310 | adopt (pending joint evaluation) | boolean |
-| `scoped_corrections` | #316 | adopt, protect-only condition B (pending joint evaluation) | encrypted records file |
-| `attribute_bundle` | #318 | adopt (pending joint evaluation) | not available; per-session only |
-| `local_arithmetic` | #319 | blocked by #363 | boolean |
+| Feature key | Issue | Real-LLM decision | Gateway default (2.17.0) | Gateway-wide setting |
+|---|---|---|---|---|
+| `ko_conjugation_split` | #309 | reject | off | boolean |
+| `contextual_name_spans` | #310 | adopt (joint) | **on** | boolean |
+| `scoped_corrections` | #316 | adopt, protect-only condition B (joint) | on, active only with a configured records file | encrypted records file |
+| `attribute_bundle` | #318 | adopt (joint) | on, active only with a per-session policy; gateway settings have no policy source, so it is inactive at gateway level | not available; per-session only |
+| `local_arithmetic` | #319 | blocked by #363 | off | boolean |
+
+These defaults apply to the gateway (`gateway run`, `gateway api-run`, auto-start).
+The Python library default is unchanged: `GatewaySession()` and
+`PrivacyGateway(...)` without `features` enable nothing.
+
+### Upgrading to 2.17.0
+
+- **Existing installs with no `features` key, or no `contextual_name_spans`
+  key:** after the gateway restarts, a name introduced in direct, unquoted user
+  prose (`Project name: drift`, `프로젝트명은 흐름`) and its later mentions in
+  the same conversation are masked. Nothing else changes. On the frozen #310 sets,
+  88 of 132 previously exposed name spans became protected with no new exposure,
+  no public overmask and unchanged exact restoration. On the legacy CI privacy
+  corpus, compared with the old default, privacy and integrity metrics are
+  unchanged (57/66 protected, the same 9 known exposures, 0 new, 0 resolved),
+  and public overmasking rises from 3 to 4 of 117 spans
+  ([evidence](evaluations/defaults-2.17.0/README.md)).
+- **Known false positive:** the Korean introducer rule also reads
+  `이름은 <word>` inside an instruction as an introduction. For example, in
+  `파일 이름은 바꾸지 말며` ("do not change the file names") the verb `바꾸지` is
+  masked, which hides the prohibition from the model. A sentence-initial
+  modifier before `프로젝트` (`가상 프로젝트 …`) can also be masked. Use
+  `--feature contextual_name_spans=off` if this affects your prompts.
+- **#316/#318:** nothing changes unless you configure a policy. A configured
+  `scoped_corrections` records file is used as in 2.16 (and a missing password or
+  unreadable file still stops the gateway).
+- **Explicit settings are kept.** `"contextual_name_spans": false` (config),
+  `SECURE_GATEWAY_FEATURE_CONTEXTUAL_NAME_SPANS=off` or
+  `--feature contextual_name_spans=off` keeps 2.16 behaviour. Package upgrades and
+  `gateway install` keep the existing `features` object. No migration writes a value.
+- **Roll back:** set `"contextual_name_spans": false` (or use the environment
+  variable) and restart, or run with `--features-off` to restore the complete
+  2.15/2.16 default masking path. Aliases created while the feature was on stay in
+  the encrypted snapshot and remain restorable.
+- Diagnostics (`gateway features`, `gateway diagnostics`, `/admin/api/features`)
+  show per feature `default` (on by default), `default_mode` (`on`, `policy`,
+  `off`), `enabled` (requested), `active` (applied to sessions), `source`, and for
+  an inactive policy-gated default an `inactive_reason` (`no-policy-configured`,
+  `per-session-policy-only`). The top-level `enabled` list names only active features.
 
 - `ko_conjugation_split` keeps reviewed Korean condition/negation/request
   endings public while the stem is judged by the normal policy. Forced rules,
@@ -548,8 +589,9 @@ until then enabling any feature is an explicit local choice.
   settings.
 - `attribute_bundle` protects co-present form/table fields under a trusted
   policy bound to one document hash and scope. Such a policy cannot be a
-  gateway-wide setting, so enabling it in gateway settings is refused at start;
-  use `GatewaySession(features=GatewayFeatures(attribute_bundle=policy))`.
+  gateway-wide setting, so explicitly enabling it in gateway settings is refused
+  at start (its policy-gated default is simply inactive); use
+  `GatewaySession(features=GatewayFeatures(attribute_bundle=policy))`.
 - `local_arithmetic` injects the `local_alias_arithmetic` tool and executes
   calls locally, returning only a result alias. Gateway settings provide no
   per-alias unit policy, so calls are refused (fail closed) until a policy
@@ -564,7 +606,7 @@ until then enabling any feature is an explicit local choice.
 ### Enabling, disabling and rollback
 
 Each feature has its own setting. Precedence is CLI > environment > config
-file > default (OFF):
+file > default (see the table above):
 
 ```json
 {"port": 38117, "token": "...",
@@ -578,19 +620,22 @@ file > default (OFF):
   `scoped_corrections` reads its records password from
   `SECURE_GATEWAY_CORRECTIONS_PASSWORD`; a missing password, wrong password,
   unsafe or missing records file stops the gateway with a fixed message rather
-  than silently running without the requested protection.
+  than silently running without the requested protection. Only the
+  policy-gated *default* without any configured records is a silent no-op;
+  explicitly enabling `scoped_corrections` without records settings is refused.
 - CLI: `secure-gateway gateway run --feature contextual_name_spans=on` (repeatable,
   also on `gateway api-run`).
 - Disable everything: `secure-gateway gateway run --features-off` ignores the
-  config file and environment and runs the 2.15 default path.
+  config file, environment and 2.17.0 defaults and runs the 2.15 default path.
 - Rollback: remove the key (or set it to `false`) and restart the gateway.
   Aliases created while a feature was on stay in the encrypted conversation
   snapshot and remain restorable after the feature is turned off.
 
 Package upgrades do not touch `config.json`, and `gateway install` reloads and
 rewrites the existing object with all of its keys, so explicit `features`
-values are preserved. A configuration without a `features` key keeps every
-feature OFF; no migration writes a default into the file. Expiry of correction records is evaluated when the gateway starts.
+values are preserved. A configuration without a `features` key uses the
+2.17.0 defaults (#310 on, #316/#318 policy-gated, others off); no migration
+writes a default into the file. Expiry of correction records is evaluated when the gateway starts.
 
 ### When changes apply
 
@@ -604,8 +649,9 @@ aliases, and no module global is changed.
 ### Diagnostics
 
 `secure-gateway gateway features [--config ...]` prints, without contacting the
-gateway, the default, effective state and source (`default`, `config`, `env`,
-`cli`, `cli-off`) that the next start would use. The running gateway reports
+gateway, the default and default mode, requested and active state, source
+(`default`, `config`, `env`, `cli`, `cli-off`) and any `inactive_reason` that
+the next start would use. The running gateway reports
 the same fields under `features` in `secure-gateway gateway diagnostics` and in
 the authenticated Admin endpoints `/admin/api/features` and
 `/admin/api/sessions`. Diagnostics never include correction terms, document
