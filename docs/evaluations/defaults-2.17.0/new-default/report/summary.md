@@ -22,8 +22,8 @@ The two quality axes are independent. Missing measurements are not successes.
   },
   "overmasking": {
     "measured_public": 117,
-    "overmasked": 4,
-    "rate": 0.03418803418803419
+    "overmasked": 3,
+    "rate": 0.02564102564102564
   },
   "integrity": {
     "roundtrip_passed": 31,

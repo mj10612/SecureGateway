@@ -375,4 +375,17 @@ Gateway setting defaults (`SETTING_DEFAULTS`):
 - #309 and #319 stay off. The library default (`GatewaySession()`/`PrivacyGateway()` without `features`) stays all-off.
 - Diagnostics add `default_mode`, `active` and `inactive_reason`.
 
-CI privacy comparison, new versus old default on the legacy corpus ([evidence](evaluations/defaults-2.17.0/README.md)): both exit 0 with no regression, 0 new and 0 resolved exposures, and integrity unchanged. Public overmask goes from 3 to 4 of 117. **Known false positive:** the Korean introducer rule masks `바꾸지` in `파일 이름은 바꾸지 말며`, hiding a prohibition verb. It is not fixed here because the fix would change the evaluated #310 behaviour; it needs a follow-up. Rollback: `"contextual_name_spans": false` or `--features-off`, then restart.
+#310 predicate guard (same release): the unchanged #310 rule masked the prohibition verb `바꾸지` in `파일 이름은 바꾸지 말며` on the CI corpus (public overmask 3 → 4/117). It also masked the modifiers `가상`/`차량`/`반도체` in `가상 (차량) 프로젝트 <name>의`. `experiment_context.name_spans` now rejects:
+
+- predicate values after an introducer: Korean conjugated, negated or request forms via the `grammar_ko` ending table, connective plus negation or auxiliary, `-ㄹ` plus bound noun, and English modals;
+- spaced premodifiers in `<word> 프로젝트 <name>의`.
+
+Forced rules and earlier registrations still win.
+
+Evidence ([defaults-2.17.0](evaluations/defaults-2.17.0/README.md)):
+
+- **(a)** Re-captured frozen comprehension inputs: C 144/144 unchanged; J equals the original D on 143/144. The only change is `310:targeted-H30`, where the masked prohibition verb `덧붙이지` is now visible. That case was a three-arm all-pass tie in the original run, so the transferred result is unaffected.
+- **(b)** Offline protection is unchanged: 88/132, 104/104 and 108/108 newly protected, with 0 new exposure, 0 public overmask and exact restore unchanged.
+- **(c)** CI privacy comparison, new versus old default: every metric is identical (exit 0, no regression, 0 new/resolved exposures, 57/66 protected, public overmask 3/117).
+
+Remaining ambiguity: a real name directly followed by `말고`/`않` (`사과 말고`) is treated as a predicate. Regression tests: `tests/test_name_context_predicates.py`. Rollback: `"contextual_name_spans": false` or `--features-off`, then restart.

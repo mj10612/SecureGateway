@@ -547,16 +547,19 @@ The Python library default is unchanged: `GatewaySession()` and
   the same conversation are masked. Nothing else changes. On the frozen #310 sets,
   88 of 132 previously exposed name spans became protected with no new exposure,
   no public overmask and unchanged exact restoration. On the legacy CI privacy
-  corpus, compared with the old default, privacy and integrity metrics are
-  unchanged (57/66 protected, the same 9 known exposures, 0 new, 0 resolved),
-  and public overmasking rises from 3 to 4 of 117 spans
+  corpus, every metric equals the old default (57/66 protected, the same 9 known
+  exposures, 0 new, 0 resolved, public overmask 3/117)
   ([evidence](evaluations/defaults-2.17.0/README.md)).
-- **Known false positive:** the Korean introducer rule also reads
-  `이름은 <word>` inside an instruction as an introduction. For example, in
-  `파일 이름은 바꾸지 말며` ("do not change the file names") the verb `바꾸지` is
-  masked, which hides the prohibition from the model. A sentence-initial
-  modifier before `프로젝트` (`가상 프로젝트 …`) can also be masked. Use
-  `--feature contextual_name_spans=off` if this affects your prompts.
+- **Predicates are never names (2.17.0 guard).** A verb, adjective or
+  prohibition form after a name noun is not registered as a name and stays
+  visible to the model. This covers Korean conjugated or negated forms
+  (`파일 이름은 바꾸지 말며`, `프로젝트 이름은 수정하지 마세요`, `바꿔 주세요`,
+  `바꿀 수 없어요`) and English modals (`Customer name: must stay hidden`). A
+  spaced modifier in `<modifier> 프로젝트 <name>의` (`가상 프로젝트 흐름의`) is not
+  a name either. Forced rules and names registered earlier in the conversation
+  still win. Remaining ambiguity: a real name ending in an open vowel or in
+  `-지` immediately followed by `말고`/`않` (`사과 말고`) is treated as a
+  predicate and is not protected by this feature.
 - **#316/#318:** nothing changes unless you configure a policy. A configured
   `scoped_corrections` records file is used as in 2.16 (and a missing password or
   unreadable file still stops the gateway).

@@ -42,9 +42,12 @@ _KO_PREDICATE_ENDINGS = frozenset(
     if " " not in ending and ending not in {"면", "으면", "기", "지", "된", "한", "는", "은", "ㄴ"})
 _KO_COPULA = ("입니다", "이에요", "예요", "이다", "이야")
 _KO_FINAL = ("습니다", "니다", "십시오", "세요", "했다", "었다", "았다", "였다", "해요", "어요", "아요", "도록", "한다")
-_KO_CONNECTIVE = ("지", "고", "게", "도록", "기", "어", "아", "여", "해", "워", "와", "줘")
-_KO_AUXILIARY = ("말", "마", "맙", "않", "못", "없", "있", "주", "줘", "줄", "줍", "보", "봐", "하", "해", "되", "돼",
-                 "싶", "버리", "놓", "두")
+_KO_CONNECTIVE = ("지", "고", "게", "도록", "기")
+# Open-syllable vowels of the -어/-아 connective (바꿔, 고쳐, 써, 해, 놔): ㅏ ㅐ ㅓ ㅕ ㅘ ㅙ ㅝ.
+_KO_CONNECTIVE_VOWELS = frozenset({0, 1, 4, 6, 9, 10, 14})
+_KO_NEGATION = ("말", "마", "맙", "않", "못")
+_KO_AUXILIARY = ("없", "있", "주", "줘", "줄", "줍", "보", "봐", "하", "해", "되", "돼", "싶", "버리", "놓", "두")
+_KO_CLAUSE_END = ("요", "다", "며", "줘", "세요", "십시오", "니다", "라", "자")
 _KO_BOUND = frozenset({"수", "것", "거", "때", "줄", "뿐"})
 _EN_PREDICATE = frozenset({"must", "should", "shall", "will", "would", "can", "could", "may", "might", "cannot",
                            "not", "never", "is", "are", "was", "were", "be", "been", "to", "later", "it"})
@@ -179,8 +182,13 @@ def _predicate_value(text: str, start: int, end: int) -> bool:
         return True
     if not re.fullmatch(r"[가-힣]+", word) or not nxt:
         return False
-    # Connective + auxiliary/negation: 바꾸지 말며, 덧붙이지 마세요, 쓰고 있다, 바꿔 주세요.
-    if word.endswith(_KO_CONNECTIVE) and nxt.startswith(_KO_AUXILIARY):
+    # Connective + negation (바꾸지 말며, 덧붙이지 마세요) or + an auxiliary verb that is
+    # itself conjugated (쓰고 있다, 바꿔 주세요); a following noun (보고서) is not enough.
+    code = ord(word[-1]) - 0xAC00
+    connective = word.endswith(_KO_CONNECTIVE) or (code % 28 == 0 and (code % 588) // 28 in _KO_CONNECTIVE_VOWELS)
+    if connective and nxt.startswith(_KO_NEGATION):
+        return True
+    if connective and nxt.startswith(_KO_AUXILIARY) and (_ko_predicate_word(nxt) or nxt.endswith(_KO_CLAUSE_END)):
         return True
     # Adnominal -ㄹ/-을 + bound noun: 바꿀 수 없다.
     return nxt in _KO_BOUND and ((ord(word[-1]) - 0xAC00) % 28 == 8 or word.endswith("을"))
@@ -192,7 +200,7 @@ def _project_premodifier(text: str, match: re.Match) -> bool:
     if "프로젝트" not in tail or not any(ch in " \t" for ch in tail):
         return False
     following = _NEXT_WORD.match(text, match.end())
-    return bool(following) and len(following[1]) > 1 and following[1].endswith("의")
+    return following is not None and len(following[1]) > 1 and following[1].endswith("의")
 
 
 def name_spans(text: str) -> list[tuple[int, int]]:

@@ -59,6 +59,16 @@ because the model-visible input under J is identical to that candidate's D:
 Pooled net paired loss is 2, and negative controls have no net loss in any
 of the three.
 
+## Post-decision change (2.17.0 #310 predicate guard)
+
+Before default enablement, a #310 false positive was found on the CI corpus: a
+prohibition verb after `이름은` was registered as a name. The guard added in
+2.17.0 changes exactly one of these 144 inputs. In `310:targeted-H30` the
+previously masked prohibition verb `덧붙이지` is now visible, and the name stays
+masked. In the original run that case was an all-pass tie in A, C and D. All
+offline numbers above are unchanged. See
+[`../defaults-2.17.0/README.md`](../defaults-2.17.0/README.md).
+
 ## Limitations
 
 - The transferred comprehension results come from `gpt-6.1-sol` on the native
