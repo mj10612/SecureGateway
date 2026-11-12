@@ -307,14 +307,17 @@ def test_forced_rule_matches_canonical_unicode_equivalents():
     assert session.restore(masked) == "vérifie"
 
 
-def test_forced_rules_block_leaks_in_protocol_fields_and_numbers():
+def test_forced_rules_leave_protocol_settings_but_block_identifier_leaks():
+    # #363: a protocol setting equal to a forced value is not user content.
     session = GatewaySession()
     session.forced_rules = lambda: ("private_symbol_1",)
-    with pytest.raises(ValueError, match="protocol field"):
-        session.request({"model": "private_symbol_1", "input": []})
+    assert session.request({"model": "private_symbol_1", "input": []})["model"] == "private_symbol_1"
     session.forced_rules = lambda: ("123",)
+    assert session.request({"model": "m", "input": [], "max_output_tokens": 123})["max_output_tokens"] == 123
+    # A forwarded identifier cannot be rewritten, so a whole-token match still fails closed.
     with pytest.raises(ValueError, match="protocol field"):
-        session.request({"model": "m", "input": [], "max_output_tokens": 123})
+        session.request({"model": "m", "input": [
+            {"type": "function_call", "call_id": "call-123", "name": "exec_command", "arguments": "{}"}]})
 
 
 # Small task-focused examples, not a representative privacy or fluency benchmark.

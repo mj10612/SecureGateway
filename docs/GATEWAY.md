@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.16.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.16.1 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -1151,6 +1151,27 @@ If a later host-file write fails, setup stops and reaps the daemon it started an
 
 Setup rechecks file contents after waiting for startup. Detected user changes are preserved; a conflicting `installation.pending.json` remains for explicit merge/retry instead of overwriting them. Normal activation failure removes the journal after successful rollback. Ctrl+C stops a newly started child while retaining the journal for the existing interrupted-install recovery path. Startup diagnostics redact the configured local token, including a token split by the diagnostic capture limit. Only temporary synthetic host settings and local child processes are needed to test these paths; no model provider calls are involved.
 
+## Forced numeric and date rules
+
+Since 2.16.1 (#363) a forced rule containing a digit (an ISO date such as
+`2032-02-28`, a signed or zero-padded number such as `-3.25`, `7.20` or `007`,
+or mixes such as `03/04/2033` and `2037-11-01 01:15`) is replaced in prose as
+one complete span before prose tokenization, so it maps to exactly one alias and
+restores with its original spelling. Repeated occurrences reuse that alias.
+A digit at the edge of a rule only matches a whole number: `4` does not bind
+the 4 inside `12.40`, `1,234` or an existing numeric alias. Inline/fenced code
+and source text keep their lexer, which already keeps such literals whole. JSON
+numbers in tool arguments and data positions that equal a numeric rule become
+numeric aliases and are restored as JSON numbers.
+
+A protocol setting that merely equals a forced value (model name, token limits,
+temperature, reasoning effort, type/role tags, pinned tool names) is forwarded
+unchanged and no longer refuses the request; only user content is masked. The
+request is still refused with the fixed `forced_rule_protocol_conflict` error
+when a forced value appears as a whole token in a forwarded identifier
+(`id`, `call_id`, `tool_use_id`, `tool_call_id`) or remains visible in forwarded
+content outside aliases. The reason category is counted below without content.
+
 ## Operational failure diagnostics
 
 Authenticated `GET /admin/api/sessions` and `GET /admin/api/logs` include `diagnostic_counts` for the current
@@ -1171,6 +1192,8 @@ rates. They are separate from the SQLite audit-write counters.
 | `upstream_error_close` | Closing the error stream in that fallback also failed. |
 | `upstream_error_stream_close` | Best-effort close of the sanitized upstream error stream failed. |
 | `log_delivery_failed` | A warning delivery failed; counted quietly to prevent recursive logging. |
+| `forced_rule_protocol_identifier` | A forced rule matched a forwarded call/message identifier as a whole token; the request was refused. |
+| `forced_rule_unmasked_content` | A forced rule remained visible in forwarded content outside aliases; the request was refused. |
 
 The `secure_gateway.gateway` logger emits one warning per actionable category per
 instance; later events remain visible in the counters. Preserved maintenance
