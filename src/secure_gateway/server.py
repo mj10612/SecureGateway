@@ -64,7 +64,8 @@ def mask_text(
     sensitive_terms forces explicit words/phrases; custom_preserve opts terms out of masking.
     common_vocabulary extends the local ordinary-word list in uncommon_words mode.
     code_language selects a code lexer when mode=code_aware.
-    mask_numbers=True masks code numbers; the default preserves them.
+    mask_numbers=True masks text and code numbers; the default preserves numbers and dates
+    except forced terms and sensitive numeric patterns (cards, phone, account, ID numbers).
     """
     mask_mode, strat = MaskMode(mode), SurrogateStrategy(strategy)
     language = canonical_language(language)

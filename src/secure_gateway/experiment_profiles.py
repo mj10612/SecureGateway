@@ -295,7 +295,7 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
             setattr(self.engine, "owner", self)
             self._numeric_types: dict[str, NumericLiteralMetadata] = {}
 
-        def values(self, value, restore=False, code=False):
+        def values(self, value, restore=False, code=False, key=None):
             if issue == 312:
                 if not restore and isinstance(value, dict):
                     res: dict[str, Any] = {}
@@ -324,7 +324,7 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
                                 res[out_k] = surrogate
                             elif isinstance(v, str):
                                 meta = NumericLiteralMetadata(v)
-                                surrogate = super().values(v, restore=False, code=code)
+                                surrogate = super().values(v, restore=False, code=code, key=k)
                                 self._numeric_types[surrogate] = meta
                                 res[out_k] = surrogate
                             else:
@@ -345,7 +345,7 @@ def candidate_profile(issue: int | str, policy: dict | None = None):
                 if restore and isinstance(value, str) and value in self._numeric_types:
                     raw_restored = super().values(value, restore=True, code=code)
                     return self._numeric_types[value].restore_value(str(raw_restored))
-            return super().values(value, restore=restore, code=code)
+            return super().values(value, restore=restore, code=code, key=key)
 
         def _mask_prose(self, text, preserve_task_words=True, skill_verbs=frozenset(), model_context_complete=True):
             if issue == 313 and preserve_task_words:

@@ -393,3 +393,23 @@ Evidence ([defaults-2.17.0](evaluations/defaults-2.17.0/README.md)):
 - **(c)** CI privacy comparison, new versus old default: every metric is identical (exit 0, no regression, 0 new/resolved exposures, 57/66 protected, public overmask 3/117).
 
 Remaining ambiguity: a real name directly followed by `말고`/`않` (`사과 말고`) is treated as a predicate. Regression tests: `tests/test_name_context_predicates.py`. Rollback: `"contextual_name_spans": false` or `--features-off`, then restart.
+
+
+## Numbers and dates public by default (2.18.0, #374)
+
+Owner decision (2026-11-13): numbers and dates are public by default in text and code, because hiding them removes the meaning of quantities, amounts, periods, versions and boundaries. Before 2.18.0 every prose number and each date component became a `732846…` alias (2.1.0-2.17.0); code numbers were already preserved (#186).
+
+Change (`secure_gateway/engine/numbers.py`, `MaskingEngine.mask_text`, `GatewaySession._mask_prose_core` and tool-argument `values`):
+
+- With `mask_numbers=False` (default) the engine preserves every chunk inside a public numeric expression: integers/decimals with separators, sign and leading zeros, currency and percent, dates, ISO date-times, times, ranges, versions (`v2.17.0`), numbers with a known unit (`30s`, `5kg`, `3pm`, `2.5GB`) and Korean numbers with a counter/unit and particles (`2026년`, `1,250개`, `12500원으로`). The gateway no longer turns those chunks into identifier aliases. A tool-argument string that is exactly one number/date is forwarded; free-text argument strings remain one literal alias.
+- Protected first, in order: forced rules (#363 whole-span binding, unchanged), existing private mappings, then clear sensitive numeric patterns bound as one whole alias: card numbers, Korean resident/foreigner and business registration numbers, hyphen-grouped account numbers, phone numbers, and values after a sensitive label (the #312 field names plus their head nouns `account`, `card`, `phone`, `token`, `PIN`, `customer`/`device`/`employee` ID, Korean `계좌번호`/`카드번호`/`주민번호`...). Sensitive tool-argument field names keep their literal alias. Alphanumeric identifiers keep #326.
+- `mask_numbers=True` (config, `--mask-numbers`, CLI `mask --mask-numbers`, MCP/Python) masks numbers in text as well as code; its text output is the pre-2.18 behavior. Numeric aliases issued earlier keep restoring; a number with an earlier numeric alias is forwarded unmasked in new requests.
+
+Evidence:
+
+- #312 independently authored public-number controls (`312/plan/protection-cases-corrected.json`, default gateway, no candidate profile): public spans hidden **95/160 → 0/160** (prose quantities 25, durations/dates 25, versions 20, JSON numbers 25 now visible; code 65 unchanged). Exact restore 62/62 → 62/62.
+- #312 sensitive-number set: **0/180 visible** before and after. All 162 numeric sensitive spans in that set are `label=value` (`account`, `customer`, `device`, `phone`, `token`, `pin`) and stay protected by the label rule; the 18 alphabetic values are unaffected. With only the original #312 field names (`phone`, `pin`, `account_number`, `customer_id`, ...), 108 of them (`account=`, `customer=`, `device=`, `token=`) would have become visible; the head nouns were added for that reason. An unlabelled plain number is public under this policy.
+- CI privacy comparison exactly as CI runs it (`evaluate --suite privacy --profile release`, then `evaluate compare --baseline docs/evaluations/issue324-2.7.0/legacy-privacy/report.json`): comparable, no regression, **0 new exposures**, 0 integrity regressions; privacy 57/66 and public overmask 3/117 as in 2.17.0. The frozen corpus has no digit-bearing secret, so no baseline item counts a public number as sensitive and the baseline is unchanged.
+- Regression tests: `tests/test_issue374_public_numbers.py` (English/Korean prose, Markdown, inline/fenced code, JSON text, tool arguments/results, split SSE at 1/3/7 characters, forced numbers next to public numbers, 15 sensitive shapes, `mask_numbers=True`, old numeric aliases after upgrade, alias-range literals, feature flags, library API). The #363 tests are unchanged and pass.
+
+Limits: plain unlabelled numbers that a user considers private (an unlabelled customer number in a sentence) are public; use a forced rule or `mask_numbers=true`. Source-like text is lexed as code, where numbers have been public since #186 without the prose pattern checks. Account detection requires three or more hyphen groups and 10-20 digits; card detection requires 4-4-4-4/4-6-5 grouping or 15-19 Luhn-valid digits. Address components (`101동`, `1203호`) keep the identifier policy.

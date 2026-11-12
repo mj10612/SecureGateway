@@ -70,8 +70,9 @@ def test_force_prior_mappings_domain_patterns_and_numbers_dominate_model():
     session.forced_rules = lambda: ("window",)
     text = "Explain Zorvexa and insulin to John near the window: alice@example.com 37591"
     masked = session.mask(text)
-    assert all(word not in masked for word in ("Zorvexa", "window", "alice@example.com", "37591"))
-    assert "insulin" in masked and "John" in masked
+    assert all(word not in masked for word in ("Zorvexa", "window", "alice@example.com"))
+    # #374: an unlabelled ordinary number is public by default.
+    assert "insulin" in masked and "John" in masked and "37591" in masked
     assert session.restore(masked) == text
 
 

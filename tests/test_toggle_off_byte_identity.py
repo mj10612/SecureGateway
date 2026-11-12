@@ -87,9 +87,11 @@ GOLDEN_PAYLOADS_MAIN = [
 
 def test_default_engine_output_byte_identical_to_base_commit(deterministic_nonce):
     """Verify default engine produces outputs 100% byte-identical to base commit (146babd)."""
+    # #374 (2.18.0) made prose numbers public by default; the explicit
+    # mask_numbers=True opt-in must still reproduce the base prose bytes.
     for text, golden in zip(TEST_PROSE, GOLDEN_PROSE_MAIN):
         deterministic_nonce.reset()
-        s = gateway.GatewaySession(natural_language="auto")
+        s = gateway.GatewaySession(natural_language="auto", mask_numbers=True)
         res = s.mask(text)
         assert res == golden, f"Prose masking differed from base golden output on {text!r}"
         assert s.restore(res) == text
@@ -103,9 +105,21 @@ def test_default_engine_output_byte_identical_to_base_commit(deterministic_nonce
 
     for payload, golden in zip(TEST_PAYLOADS, GOLDEN_PAYLOADS_MAIN):
         deterministic_nonce.reset()
-        s = gateway.GatewaySession()
+        s = gateway.GatewaySession(mask_numbers=True)
         req = json.dumps(s.request(payload), sort_keys=True)
         assert req == golden, "Request transform differed from base golden output"
+
+
+def test_default_prose_numbers_are_public_since_2_18(deterministic_nonce):
+    """#374: the default forwards ordinary numbers; sensitive labelled numbers stay private."""
+    s = gateway.GatewaySession(natural_language="auto")
+    assert s.mask(TEST_PROSE[2]) == TEST_PROSE[2]
+    masked = s.mask(TEST_PROSE[4])
+    assert "71203489" not in masked and "재시도횟수: 2\n" in masked
+    assert s.restore(masked) == TEST_PROSE[4]
+    s = gateway.GatewaySession()
+    content = s.request(TEST_PAYLOADS[0])["messages"][0]["content"]
+    assert "000812405" not in content and s.restore(content) == TEST_PAYLOADS[0]["messages"][0]["content"]
 
 
 def test_default_engine_output_byte_identity_across_runs(deterministic_nonce):

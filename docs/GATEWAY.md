@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.17.3 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.18.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -435,7 +435,7 @@ Recognized public JSON Schema dialect URIs in `$schema` stay unchanged; other
 remain masked, including URI literals in source. `enum`/`const`/`default`/`examples` values
 are treated as data: protocol-named keys such as `id`, `type` or `cache_control` inside
 them are still masked. Operational schema fields and JSON scalar numeric parameters retain
-their types; numbers in source text are preserved unless numeric masking is enabled. Registered numeric aliases returned as JSON
+their types; numbers in prose and source text are preserved unless numeric masking is enabled. Registered numeric aliases returned as JSON
 integers are restored only when their original is a valid JSON numeric literal. Precision-lost
 float aliases and non-JSON originals are rejected. Character literals become opaque identifier
 expressions in the review representation and restore with their original quotes and escapes.
@@ -813,15 +813,59 @@ POST query metadata is forwarded without alteration after validation: `beta=true
 `api-version` are supported.
 Unknown, duplicate, or private query parameters are rejected before contacting the provider.
 
-### Numeric constants in source code
+### Numbers and dates: prose and source code (2.18.0, #374)
 
-Source fragments preserve numbers by default so indexes, loop bounds and boundary checks
-retain their values. To mask sensitive numeric literals, set `"mask_numbers": true` in the
-subscription/API gateway JSON configuration or use `gateway run --mask-numbers` /
-`gateway api-run --mask-numbers`. The `--preserve-numbers` flag overrides configuration.
-This setting affects source-code masking only: prose numbers and JSON protocol/control
-fields retain their existing policies. Existing numeric aliases still restore; an actual
-source number colliding with a saved numeric alias requires a new session/conversation.
+Numbers and dates are public by default in prose **and** source code. Prose, Markdown,
+inline code, fenced code, JSON text, tool results and numeric/date tool-argument values
+forward quantities, amounts, dates, times, durations, versions, percentages and numbers
+with units with their exact spelling (digits, separators, sign, decimals, leading zeros).
+Before 2.18.0 the gateway replaced every prose number (and each date component) with a
+`732846…` numeric alias; source numbers were already preserved (#186, 0.7.0).
+
+Precedence, highest first:
+
+1. Forced rules: a digit-bearing rule is replaced as one whole alias before prose
+   tokenization ([forced numeric and date rules](#forced-numeric-and-date-rules), #363).
+2. Existing private mappings in the session (registered names, literals, identifiers).
+3. Clear sensitive numeric patterns, each bound as one whole alias (`secure_gateway.engine.numbers`):
+   card numbers (4-4-4-4 / 4-6-5 groups, or 15-19 Luhn-valid digits), Korean
+   resident/foreigner registration numbers (`YYMMDD-Gnnnnnn`, or 13 digits with a valid
+   checksum), business registration numbers (`nnn-nn-nnnnn`), hyphen-grouped account
+   numbers (three or more groups and 10-20 digits), phone numbers (the existing phone
+   pattern, `010…` without separators, `+` E.164), credentials/tokens, and a number after a
+   sensitive label (`account`, `card`, `phone`, `token`, `PIN`, `password`,
+   `customer`/`device`/`employee` ID, serial, IMEI, `계좌번호`, `카드번호`, `주민번호`,
+   `전화번호`, `사업자번호` …) joined by `:`/`=`/`#`/`is`, or by a space for values of four
+   or more digits. Tool-argument fields named like these labels keep their literal alias.
+4. The public-number policy above.
+
+Alphanumeric identifiers (`ABC-123`, `7730abc`, a lone `v2`) keep the identifier policy
+(#326); `v2.17.0` is a version and is public. Korean numbers followed by a counter or unit
+(`2026년`, `3시간`, `1,250개`, `12500원으로`) are public; address components (`동`, `호`,
+`번지`) keep the identifier policy. A free-text tool-argument string remains one literal
+alias as before; only an argument value that is exactly one number/date is forwarded.
+JSON numbers stay JSON numbers and are masked only by forced rules (#363). Source-like
+text is lexed as code: its numbers are public without the prose pattern checks.
+
+`"mask_numbers": true` in the subscription/API gateway configuration, or
+`gateway run --mask-numbers` / `gateway api-run --mask-numbers`, is the explicit opt-in to
+mask every number in prose and source code (the pre-2.18 prose behavior). The
+`--preserve-numbers` flag overrides configuration. Provider protocol/control fields are
+never masked.
+
+#### Upgrading to 2.18.0
+
+- Default change: new requests forward public numbers and dates. Nothing to migrate.
+- Numeric aliases issued before the upgrade (saved encrypted sessions, earlier turns of a
+  conversation) still restore exactly, including in split SSE responses and tool
+  arguments. The same numbers are simply not re-aliased in later requests.
+- To keep the old behavior, set `"mask_numbers": true` (or `--mask-numbers`) and restart.
+- A source number colliding with a saved numeric alias still requires a new
+  session/conversation.
+- Measured effect: on the independently authored #312 public-number controls the default
+  now hides 0 of 160 public spans (95 before); none of the 180 #312 sensitive spans became
+  visible (all are labelled values). CI privacy comparison: no new exposure. See
+  [ISSUE_RESOLUTION.md](ISSUE_RESOLUTION.md#numbers-and-dates-public-by-default-2180-374).
 
 ## Operational limits and retention (1.1.0)
 
@@ -997,8 +1041,9 @@ It asks the model to use visible actions, relations, order, conditions and outpu
 structure, completing supported work even when it cannot identify a hidden name.
 It prohibits guessing originals, inventing aliases or calculating with the displayed
 digits of numeric aliases. Tool permissions and approval requirements still apply.
-Repeated numeric references retain their aliases, and source numbers with separators
-remain locally restorable when mentioned in prose.
+Numbers are public by default (2.18.0, #374); with `mask_numbers` enabled, repeated numeric
+references retain their aliases, and source numbers with separators remain locally
+restorable when mentioned in prose.
 
 For a reproducible blind evaluation with synthetic data, run:
 

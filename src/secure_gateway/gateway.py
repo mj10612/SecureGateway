@@ -37,6 +37,7 @@ import urllib.request
 import urllib.parse
 
 from secure_gateway.engine.masking_engine import MaskingEngine, NumericLiteralConflict
+from secure_gateway.engine import numbers as _numbers
 from secure_gateway.engine.strategies import StrategyGenerator, mapping_key
 from secure_gateway.engine.natural_languages import canonical_language, detect_natural_language
 from secure_gateway.engine.code_parser import LANGUAGE_KEYWORDS, ALIASES
@@ -1048,6 +1049,9 @@ class GatewaySession:
                 terms.discard(term)
         private_roots = {unicodedata.normalize('NFC', term).casefold() for term in terms}
         private_cache: dict[str, bool] = {}
+        # Issue #374: public numeric expressions (dates, times, versions,
+        # quantities with units) are not identifiers; the engine preserves them.
+        public_numbers = [] if self.mask_numbers else _numbers.public_number_spans(text)
 
         def private_root(root):
             if root not in private_cache:
@@ -1074,6 +1078,8 @@ class GatewaySession:
         for chunk in chunks:
             start = offset
             offset += len(chunk.text)
+            if public_numbers and chunk.is_word and _numbers.within(public_numbers, start, offset):
+                continue
             key = unicodedata.normalize("NFC", chunk.text).casefold()
             if (vocabulary is not None and chunk.is_word and (s.forward_store or private_roots)
                     and is_ordinary_form(chunk.text, selected, private_root, lambda _: False)):
@@ -1165,6 +1171,7 @@ class GatewaySession:
                 preserve_spans=public_spans,
                 private_context=not preserve_task_words,
                 language=selected,
+                mask_numbers=self.mask_numbers,
             ).masked_text
         finally:
             _public_domain_span.reset(span_token)
@@ -1481,24 +1488,51 @@ class GatewaySession:
         original = json.loads(mapping.original)
         return -original if value < 0 else original
 
-    def values(self, value, restore=False, code=False):
+    def _public_number_value(self, value, key=None):
+        """A tool-argument string that is exactly one public number/date (#374).
+
+        Sensitive patterns, a sensitive field name, forced rules and existing
+        private mappings keep the whole-value literal alias.
+        """
+        if self.mask_numbers or not _numbers.is_public_number_value(value):
+            return False
+        if isinstance(key, str) and _numbers.sensitive_number_spans(key + ": " + value):
+            return False
+        from secure_gateway.numeric_context import is_sensitive_numeric_field
+        if isinstance(key, str) and is_sensitive_numeric_field(key):
+            return False
+        pattern = _configured_rule_pattern(tuple(self.forced_rules()))
+        if pattern is not None and pattern.search(value):
+            return False
+        # Earlier numeric aliases (old default) do not make a number private;
+        # any other existing mapping inside the value does.
+        store = self.session.forward_store
+        return all(store.get(mapping_key(original, TokenType.NUMBER, code=True)) is not None
+                   for original in store.originals_in(value))
+
+    def values(self, value, restore=False, code=False, key=None):
         """Handle values."""
         operation = self.restore if restore else lambda text: self.mask(text, code=code)
         if isinstance(value, str):
             if not restore and not code and value:
                 self.engine._check_input(value)
                 s = self.session
+                if self._public_number_value(value, key):
+                    self.engine._preserve_number(value, s.generator, s.forward_store, s.reverse_store)
+                    return value
                 return self.engine._get_or_create_surrogate(value, TokenType.LITERAL,
                     s.generator, s.forward_store, s.reverse_store)
             return operation(value)
         if isinstance(value, list):
-            return [self.values(item, restore, code) for item in value]
+            return [self.values(item, restore, code, key) for item in value]
         if isinstance(value, dict):
             return {
-                self.schema_name(key, restore): self.values(
-                    item, restore, code and key in {"cmd", "command", "content", "text", "old_string", "new_string", "chars", "input", "patch"}
+                self.schema_name(name, restore): self.values(
+                    item, restore,
+                    code and name in {"cmd", "command", "content", "text", "old_string", "new_string", "chars", "input", "patch"},
+                    name,
                 )
-                for key, item in value.items()
+                for name, item in value.items()
             }
         if not restore:
             return self._mask_forced_number(value)

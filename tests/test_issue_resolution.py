@@ -408,7 +408,8 @@ def test_hash_nonces_are_independent_of_original_and_public_salt():
     engine = MaskingEngine()
     tokens = [
         engine.mask_text(
-            "85000", s.session_id, s.generator, s.forward_store, s.reverse_store
+            "85000", s.session_id, s.generator, s.forward_store, s.reverse_store,
+            mask_numbers=True,
         ).masked_text
         for s in sessions
     ]
@@ -594,7 +595,8 @@ def test_trusted_client_only_sends_masked_data_and_clears_on_provider_failure():
             return payload
 
         restored = client.request(
-            "Patient John Doe received 50mg.", provider, sensitive_terms={"John Doe"}
+            "Patient John Doe received 50mg.", provider, sensitive_terms={"John Doe"},
+            mask_numbers=True,
         )
         assert "John" not in received[0] and "50mg" not in received[0]
         assert restored.unmasked_text == "Patient John Doe received 50mg."
