@@ -1,0 +1,46 @@
+{
+  "title": "Joint real-LLM evaluation of the adopted candidates #310, #316 (condition B) and #318",
+  "status": "Authored before any model call. It becomes frozen when the coordinator runs run_joint.py --freeze, which records its SHA-256 in run/freeze.json together with the captures, pre-check, offline results, attack jobs, budget and the runner. --run and --report refuse to proceed if any of these changed.",
+  "question": "Can contextual_name_spans (#310), scoped_corrections protect-only (#316 B) and attribute_bundle (#318) be enabled together by default?",
+  "code": "secure-gateway 2.16.0 (per-session GatewayFeatures, PR #366). Captures use GatewaySession(natural_language='auto', features=GatewayFeatures(...)); offline protection and the CI report use PrivacyGateway(features=...). No process-global experiment profile is used.",
+  "cases": {
+    "definition": "Union of the frozen comprehension cases of #310, #316 and #318 (comprehension-2.11.1/<issue>/plan/cases.json, verified against each comprehension/manifest.json source_cases_sha256). case_id = '<source>:<original id>'. Each case keeps its own trusted_local_policy (#316: project-scoped correction records; #318: document-hash-bound bundle policy; #310: none). Rubric criterion definitions are identical across the three manifests and are merged unchanged.",
+    "counts": "48 per source, 144 total, 8 negative controls per source (24 total).",
+    "file": "plan/cases.json"
+  },
+  "arms": {
+    "A": "Original synthetic text with the baseline privacy instructions (task-validity control).",
+    "C": "GatewayFeatures() - all features off.",
+    "J": "GatewayFeatures(contextual_name_spans=True) plus scoped_corrections=<case policy> for #316 cases and attribute_bundle=<case policy> for #318 cases. A policy-bound feature cannot be applied to a case without its trusted policy, so the per-case joint combination is #310 + the case's own policy-bound feature (#310 cases: #310 only). All three features run together on the legacy CI privacy corpus (part a)."
+  },
+  "transport": {
+    "adapter": "secure_gateway.evaluation_batch.run_lean_worker (#364 lean session)",
+    "model": "gpt-6-luna (evaluation_batch.DEFAULT_EVAL_MODEL)",
+    "reasoning_effort": "low",
+    "interpretation": "One fresh call per (case, arm); 432 calls; job order shuffled with seed 20261216.",
+    "grading": "Blind labels R1-R3 shuffled per case; grade requests batched by 2 cases (eval_batch.build_grade_batch); every verdict's evidence must be an exact substring of that case's own response; a case failing quote verification (or missing from the batch result) is re-graded once on its own; if it still fails it is ungraded."
+  },
+  "pre_checks_before_freeze": {
+    "file": "plan/precheck.json",
+    "content": "Share of non-control cases whose J input differs from C (alias-canonicalized), per source and pooled; cases where the original frozen D differed from C but J does not (mismatches, reported, not hidden); cases where J differs although D did not; C drift from the frozen C. These are descriptive and do not change the decision rule."
+  },
+  "decision_rule": {
+    "ADOPT-JOINT": "iff (a), (b) and (c) all hold. Otherwise REJECT-JOINT, naming every failing part.",
+    "a_offline": "On each of the three protection sets used by the ADOPT decisions (#310 introducer-cases.json, #316 protection-correction-sensitive.json, #318 protection-bundle-table.json), with each case's own policy: joint has zero newly exposed sensitive spans versus baseline; joint newly-protected >= the single candidate's newly-protected on that set (no interaction loss, margin 0); joint public overmask minus baseline <= 2; joint exact restore >= baseline and >= single. And `secure-gateway evaluate compare --baseline docs/evaluations/issue324-2.7.0/legacy-privacy/report.json` passes (exit 0, comparable, no regression) on a privacy report generated in-process with all three features enabled (#316/#318 policies: cases[0] of their replacement sets, the convention of the single-candidate CI runs). Part (a) is deterministic and is computed by --prepare before the freeze; offline/summary.json gate.passed is frozen.",
+    "b_comprehension_noninferiority": "Analysis set: cases whose A answer passes every applicable criterion (A-eligible). Whole-task pass per arm = all applicable criteria pass. For each source subset (310, 316, 318): net paired loss = (#cases C passes and J fails) - (#cases J passes and C fails) <= 2. Pooled over all 144 cases: net paired loss <= 3. No significance test is required (non-inferiority).",
+    "c_negative_controls": "Among A-eligible negative controls (pooled), (C-only) - (J-only) <= 0.",
+    "ungraded_bound_rule": "A case still ungraded after its single re-grade is evaluated under every assignment: J wins, C wins, both fail, both pass (each with A passing) and excluded (A failing). If the decision is identical under all five, it stands; otherwise the result is UNDECIDED_RERUN_UNGRADED and only the ungraded cases are re-graded in a new, separately frozen step.",
+    "incomplete": "Missing interpretations or transport-failed grades (not quote failures) are INCOMPLETE and resumed with --run; no decision is drawn from an incomplete run. A usage limit stops the run cleanly (exit 3) and the same command resumes from the saved, validated rows."
+  },
+  "secondary": {
+    "inference_attack": "The #318 synthetic catalogue attack (prior / C / J, 144 calls) is prepared in attack/manifest.json with the same per-case row permutation as 318/inference-attack. It is optional, descriptive, and not part of the ADOPT-JOINT rule.",
+    "per_criterion": "Per-criterion A/C/J counts are reported descriptively."
+  },
+  "comparability": "Results from this run (gpt-6-luna, lean transport) are not compared numerically with the earlier native-transport gpt-6.1-sol runs of #310/#316/#318 or with any other run; only the paired C vs J comparison inside this run is used.",
+  "limitations": [
+    "Interpreter and grader are the same model family.",
+    "The cases were enriched for the individual candidates' observable differences; they do not estimate real-world rates.",
+    "Policy-bound features are bound to their own case's project or document, so #316 and #318 are never both active on the same comprehension case; their co-activation is measured only on the CI privacy corpus.",
+    "The #318 offline holdout was previously baseline-screened (see 318/plan/holdout-format-provenance.md)."
+  ]
+}
