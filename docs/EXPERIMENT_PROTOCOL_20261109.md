@@ -338,3 +338,31 @@ Ambiguous type/unit/currency is a fixed local error/clarification, never guessed
 The line numbers above identify the inspected working tree and can shift. Each
 report must name the tested commit and source fingerprint. This protocol itself
 does not fulfill issue completion or justify default changes.
+
+## Addendum 2026-11-12 — lean and batched execution (#364)
+
+From 2.15.0 a run may use `secure_gateway.evaluation_batch` instead of one
+native call per item. This changes the transport, not the protocol:
+
+- The run's freeze records the adapter (`lean-batch`, its source hash), batch
+  sizes, grouping (interpretation batches contain one condition only), the
+  shuffle seed, the disabled CLI features and the base-instruction hash. These
+  are fixed before the first call like the model and reasoning setting.
+- Interpretation: tasks in one batch belong to the same condition, appear in
+  seeded random order under opaque labels, and are answered as a JSON list split
+  locally. A batch that cannot be split is retried once, then the run is
+  incomplete. Tasks of the same condition can see each other; this is disclosed.
+- Grading: unchanged per-case grade requests are combined; quote verification,
+  one single-case re-grade and the ungraded/bound rule apply per case.
+- A run never mixes the native and batched transport, or two models, inside one
+  comparison. Resuming verifies the stored adapter hash like the other frozen
+  inputs.
+- A usage or credit limit stops the run cleanly (`UsageLimitReached`) and the
+  same command resumes it; this is neither a failure nor a decision.
+- Validation against the individual #313 run with thresholds fixed in advance
+  (`docs/evaluations/eval-cost-364/`): the lean session with grading batch 2 is
+  accepted; grading batch 4 and interpretation batching are not (yet), so a
+  decision run uses one lean call per interpretation until a preregistered
+  check accepts interpretation batching. A new task family that differs
+  strongly from #313 checks agreement on a small sample before its first lean
+  run. See `docs/EVALUATION_COST.md`.
