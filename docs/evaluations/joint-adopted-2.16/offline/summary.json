@@ -1,0 +1,200 @@
+{
+  "sets": {
+    "310": {
+      "source": 310,
+      "dataset": "docs/evaluations/comprehension-2.11.1/310/plan/introducer-cases.json",
+      "dataset_sha256": "5263d76d9212eab78cf0238689a07122cc37fc8f787a132fa4359f86ea24c907",
+      "cases": 22,
+      "sensitive_spans": 132,
+      "public_spans": 132,
+      "arms": {
+        "baseline": {
+          "exposed": 132,
+          "overmasked": 0,
+          "exact_restore": 22
+        },
+        "single": {
+          "exposed": 44,
+          "overmasked": 0,
+          "exact_restore": 22
+        },
+        "joint": {
+          "exposed": 44,
+          "overmasked": 0,
+          "exact_restore": 22
+        }
+      },
+      "single_vs_baseline": {
+        "newly_exposed": 0,
+        "newly_protected": 88,
+        "overmask_increase": 0
+      },
+      "joint_vs_baseline": {
+        "newly_exposed": 0,
+        "newly_protected": 88,
+        "overmask_increase": 0
+      },
+      "joint_vs_single": {
+        "newly_exposed": 0,
+        "newly_protected": 0
+      },
+      "joint_payload_differs_from_single": 0,
+      "adopt_decision_reference": {
+        "file": "docs/evaluations/comprehension-2.11.1/310/offline/310/summary.json",
+        "newly_protected": 88,
+        "newly_exposed": 0,
+        "baseline_overmasked": 0,
+        "candidate_overmasked": 0,
+        "baseline_exact_restore": 22,
+        "candidate_exact_restore": 22
+      },
+      "single_reproduces_adopt_numbers": true,
+      "gate": {
+        "zero_newly_exposed_vs_baseline": true,
+        "no_interaction_loss": true,
+        "overmask_increase_le_2": true,
+        "exact_restore_not_lower": true
+      },
+      "gate_passed": true
+    },
+    "316": {
+      "source": 316,
+      "dataset": "docs/evaluations/comprehension-2.11.1/316/plan/protection-correction-sensitive.json",
+      "dataset_sha256": "87f1b0559174c5b159128bda2110ac9aa21bd05359b07eba1e85f2679e7bcf6d",
+      "cases": 208,
+      "sensitive_spans": 104,
+      "public_spans": 104,
+      "arms": {
+        "baseline": {
+          "exposed": 104,
+          "overmasked": 0,
+          "exact_restore": 208
+        },
+        "single": {
+          "exposed": 0,
+          "overmasked": 0,
+          "exact_restore": 208
+        },
+        "joint": {
+          "exposed": 0,
+          "overmasked": 0,
+          "exact_restore": 208
+        }
+      },
+      "single_vs_baseline": {
+        "newly_exposed": 0,
+        "newly_protected": 104,
+        "overmask_increase": 0
+      },
+      "joint_vs_baseline": {
+        "newly_exposed": 0,
+        "newly_protected": 104,
+        "overmask_increase": 0
+      },
+      "joint_vs_single": {
+        "newly_exposed": 0,
+        "newly_protected": 0
+      },
+      "joint_payload_differs_from_single": 0,
+      "adopt_decision_reference": {
+        "file": "docs/evaluations/comprehension-2.11.1/316/offline/316-correction-sensitive/summary.json",
+        "newly_protected": 104,
+        "newly_exposed": 0,
+        "baseline_overmasked": 0,
+        "candidate_overmasked": 0,
+        "baseline_exact_restore": 208,
+        "candidate_exact_restore": 208
+      },
+      "single_reproduces_adopt_numbers": true,
+      "gate": {
+        "zero_newly_exposed_vs_baseline": true,
+        "no_interaction_loss": true,
+        "overmask_increase_le_2": true,
+        "exact_restore_not_lower": true
+      },
+      "gate_passed": true
+    },
+    "318": {
+      "source": 318,
+      "dataset": "docs/evaluations/comprehension-2.11.1/318/plan/protection-bundle-table.json",
+      "dataset_sha256": "5c50910e0f995bf122c1ae0dd1b26921e38d7003fda1f9a42c6079e4bcde3d4a",
+      "cases": 27,
+      "sensitive_spans": 108,
+      "public_spans": 108,
+      "arms": {
+        "baseline": {
+          "exposed": 108,
+          "overmasked": 0,
+          "exact_restore": 27
+        },
+        "single": {
+          "exposed": 0,
+          "overmasked": 0,
+          "exact_restore": 27
+        },
+        "joint": {
+          "exposed": 0,
+          "overmasked": 0,
+          "exact_restore": 27
+        }
+      },
+      "single_vs_baseline": {
+        "newly_exposed": 0,
+        "newly_protected": 108,
+        "overmask_increase": 0
+      },
+      "joint_vs_baseline": {
+        "newly_exposed": 0,
+        "newly_protected": 108,
+        "overmask_increase": 0
+      },
+      "joint_vs_single": {
+        "newly_exposed": 0,
+        "newly_protected": 0
+      },
+      "joint_payload_differs_from_single": 0,
+      "adopt_decision_reference": {
+        "file": "docs/evaluations/comprehension-2.11.1/318/offline/318-bundle-table/summary.json",
+        "newly_protected": 108,
+        "newly_exposed": 0,
+        "baseline_overmasked": 0,
+        "candidate_overmasked": 0,
+        "baseline_exact_restore": 27,
+        "candidate_exact_restore": 27
+      },
+      "single_reproduces_adopt_numbers": true,
+      "gate": {
+        "zero_newly_exposed_vs_baseline": true,
+        "no_interaction_loss": true,
+        "overmask_increase_le_2": true,
+        "exact_restore_not_lower": true
+      },
+      "gate_passed": true
+    }
+  },
+  "ci": {
+    "features": {
+      "enabled": [
+        "contextual_name_spans",
+        "scoped_corrections",
+        "attribute_bundle"
+      ]
+    },
+    "policies": "cases[0] trusted_local_policy of the #316 and #318 replacement protection sets (same convention as the single-candidate CI runs)",
+    "report_status": "completed",
+    "status": "passed",
+    "exit_code": 0,
+    "new_exposure_count": 0,
+    "integrity_regression_count": 0,
+    "command": "secure-gateway evaluate compare --baseline docs/evaluations/issue324-2.7.0/legacy-privacy/report.json --candidate docs/evaluations/joint-adopted-2.16/offline/ci-joint/ci-candidate/report.json"
+  },
+  "gate": {
+    "per_set": {
+      "310": true,
+      "316": true,
+      "318": true
+    },
+    "ci_passed": true,
+    "passed": true
+  }
+}
