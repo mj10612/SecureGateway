@@ -1,6 +1,6 @@
 # #319 local arithmetic: preregistered replication plan (prepared, NOT frozen)
 
-Status: **prepared with secure-gateway 2.16.1, not frozen, no model call made.**
+Status: **prepared with secure-gateway 2.16.4 (#371 fix), not frozen, no model call made.**
 `--freeze` currently refuses because only **30** binding tool-solvable cases are available
 (40 required). See "Blocker" below.
 
@@ -33,7 +33,7 @@ uv run --locked python docs/evaluations/comprehension-2.11.1/plan/validate_319_r
 
 ## Binding pre-check (`precheck.json`)
 
-Rule from `plan/check_319_binding.py`, applied to every case: each declared confidential operand is
+Re-run on 2.16.4 (branch rebased onto the #371 fix). Rule from `plan/check_319_binding.py`, applied to every case: each declared confidential operand is
 a forced rule (as `normalize_319_forced.py`) and binds to exactly one gateway alias, and no operand
 stays visible in the masked task. The capture uses the per-session feature flag
 `GatewayFeatures(local_arithmetic=True)`. Additional requirements for `tool_solvable`: the operation
@@ -47,10 +47,10 @@ alias that restores to the gold.
 | `replication-batch2-authored.json` | 40 | 40 |
 
 - Binding: **80/80** (2.11.1 code bound 26 to 28; #363 fix confirmed). Capture deterministic 80/80.
-- Feature flag on vs off: masked task and instructions identical 80/80. The only difference is
-  four extra aliases for `add`, `subtract`, `multiply`, `date_difference`: with the feature on,
-  the gateway masks the `operation` enum of its own injected tool schema (a product finding; the
-  tool schema in the provider request then lists aliases instead of operation names).
+- Feature flag on vs off: masked task, instructions and aliases identical 80/80. With 2.16.1 the
+  feature added four aliases because the gateway masked the `operation` enum of its own injected
+  tool schema (#371). With 2.16.4 the injected schema is forwarded unmasked: byte-identical to the
+  defined spec in 70/70 selected cases, and no extra aliases.
 - Excluded, not counted: **10** cases labelled `tool_solvable` that ask for **division**, which the
   local tool does not offer (`b1:ts16`-`ts20`, `b2:holdout_16`-`holdout_20`). The batch author
   specification allowed "divide" for solvable cases.
@@ -134,10 +134,10 @@ stdio MCP fixture. Findings:
 | A and C interpretations | 140 | 1,061,814 |
 | D, tool-solvable (2 model requests per turn) | 30 | 473,576 |
 | D, controls | 40 | 316,225 |
-| Grading, batch 2, plus 5% single re-grades | 35 + 4 | 518,820 |
-| **Total** | **249** | **2,370,435** (33,864 per case) |
+| Grading, batch 2, plus 5% single re-grades | 35 + 4 | 514,010 |
+| **Total** | **249** | **2,365,625** (33,795 per case) |
 
-Upper bound with 3 model requests per solvable D turn: 2,606,623. Maximum calls with one re-grade
+Upper bound with 3 model requests per solvable D turn: 2,601,813. Maximum calls with one re-grade
 per case: 315. With the 10 supplement cases (80 cases, 240 interpretations) expect about 280 calls
 and 2.7 M raw tokens.
 
