@@ -1,0 +1,1283 @@
+{
+  "issue": 319,
+  "feature": "local_arithmetic",
+  "model": "gpt-6-luna",
+  "arms": [
+    "A",
+    "C",
+    "D"
+  ],
+  "freeze_sha256": "78da2ebbc3462c3fc130b0e5019813c3697a7b0e850e7ef77e2d980d3ee26fd8",
+  "usage": {
+    "calls": 298,
+    "raw_tokens": 2720311,
+    "input_tokens": 2659384,
+    "cached_input_tokens": 1826048,
+    "output_tokens": 60927
+  },
+  "raw_tokens_per_case": 34004,
+  "failed_calls_retried": 1,
+  "ungraded": [
+    "b1:ts02",
+    "b1:ts04",
+    "b2:holdout_13"
+  ],
+  "protection": {
+    "issue": "319/plan-replication",
+    "variant": "local_arithmetic",
+    "status": "completed",
+    "dataset": "#310/protection-cases.json",
+    "cases": 29,
+    "sensitive_spans": 174,
+    "public_spans": 174,
+    "baseline_exposed": 156,
+    "candidate_exposed": 156,
+    "newly_exposed": 0,
+    "newly_protected": 0,
+    "baseline_overmasked": 1,
+    "candidate_overmasked": 1,
+    "net_overmask_increase": 0,
+    "baseline_exact_restore": 29,
+    "candidate_exact_restore": 29,
+    "ci": {
+      "status": "passed",
+      "exit_code": 0,
+      "new_exposure_count": 0,
+      "integrity_regression_count": 0
+    },
+    "private_role_guard": null,
+    "protection_gate_passed": true,
+    "limitations": [
+      "Loopback synthetic HTTP only, not real provider certification.",
+      "Case-specific trusted policies are local fixtures.",
+      "The legacy CI corpus uses one frozen policy for process-local scoped candidates, while the new protection corpus exercises case-specific policies."
+    ]
+  },
+  "status": "completed",
+  "bounds": {
+    "ungraded_excluded": {
+      "decision": "REJECT",
+      "eligible": 42,
+      "A_C_D_passes": {
+        "A": 42,
+        "C": 39,
+        "D": 39
+      },
+      "solvable_eligible": 3,
+      "correct_restored": 0,
+      "correct_restored_rate": 0.0,
+      "D_only": 0,
+      "C_only": 0,
+      "p_one_sided": 1.0,
+      "control_cases": 39,
+      "unnecessary_or_forbidden_tool_cases": 0,
+      "all_control_cases_with_D_tool_call": 0,
+      "provider_value_leak_trajectories": 0,
+      "duplicate_inferences": 0,
+      "criteria": {
+        "intent": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "action": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 39,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 42
+          }
+        },
+        "conditions": {
+          "A": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "C": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "D": {
+            "pass": 5,
+            "applicable": 5
+          }
+        },
+        "prohibition": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "order": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "clarification": {
+          "A": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "C": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "D": {
+            "pass": 26,
+            "applicable": 26
+          }
+        },
+        "scope": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "operation_aliases": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 3
+          }
+        },
+        "restored_result": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 0,
+            "applicable": 3
+          }
+        },
+        "unit": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 3,
+            "applicable": 3
+          }
+        },
+        "necessary_tool": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 39
+          }
+        },
+        "no_comparison": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "unsupported_unit_handling": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 0,
+            "applicable": 0
+          }
+        }
+      }
+    },
+    "ungraded_D_wins": {
+      "decision": "REJECT",
+      "eligible": 45,
+      "A_C_D_passes": {
+        "A": 45,
+        "C": 39,
+        "D": 42
+      },
+      "solvable_eligible": 6,
+      "correct_restored": 0,
+      "correct_restored_rate": 0.0,
+      "D_only": 0,
+      "C_only": 0,
+      "p_one_sided": 1.0,
+      "control_cases": 39,
+      "unnecessary_or_forbidden_tool_cases": 0,
+      "all_control_cases_with_D_tool_call": 0,
+      "provider_value_leak_trajectories": 0,
+      "duplicate_inferences": 0,
+      "criteria": {
+        "intent": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "action": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 39,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 42
+          }
+        },
+        "conditions": {
+          "A": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "C": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "D": {
+            "pass": 5,
+            "applicable": 5
+          }
+        },
+        "prohibition": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "order": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "clarification": {
+          "A": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "C": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "D": {
+            "pass": 26,
+            "applicable": 26
+          }
+        },
+        "scope": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "operation_aliases": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 4,
+            "applicable": 6
+          }
+        },
+        "restored_result": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 3,
+            "applicable": 6
+          }
+        },
+        "unit": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 6,
+            "applicable": 6
+          }
+        },
+        "necessary_tool": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 39
+          }
+        },
+        "no_comparison": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "unsupported_unit_handling": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 0,
+            "applicable": 0
+          }
+        }
+      }
+    },
+    "ungraded_C_wins": {
+      "decision": "REJECT",
+      "eligible": 45,
+      "A_C_D_passes": {
+        "A": 45,
+        "C": 42,
+        "D": 39
+      },
+      "solvable_eligible": 6,
+      "correct_restored": 0,
+      "correct_restored_rate": 0.0,
+      "D_only": 0,
+      "C_only": 3,
+      "p_one_sided": 1.0,
+      "control_cases": 39,
+      "unnecessary_or_forbidden_tool_cases": 0,
+      "all_control_cases_with_D_tool_call": 0,
+      "provider_value_leak_trajectories": 0,
+      "duplicate_inferences": 0,
+      "criteria": {
+        "intent": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "action": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 39,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 42
+          }
+        },
+        "conditions": {
+          "A": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "C": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "D": {
+            "pass": 5,
+            "applicable": 5
+          }
+        },
+        "prohibition": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "order": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "clarification": {
+          "A": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "C": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "D": {
+            "pass": 26,
+            "applicable": 26
+          }
+        },
+        "scope": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "operation_aliases": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 6
+          }
+        },
+        "restored_result": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 0,
+            "applicable": 6
+          }
+        },
+        "unit": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 3,
+            "applicable": 6
+          }
+        },
+        "necessary_tool": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 39
+          }
+        },
+        "no_comparison": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "unsupported_unit_handling": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 0,
+            "applicable": 0
+          }
+        }
+      }
+    },
+    "ungraded_both_fail": {
+      "decision": "REJECT",
+      "eligible": 45,
+      "A_C_D_passes": {
+        "A": 45,
+        "C": 39,
+        "D": 39
+      },
+      "solvable_eligible": 6,
+      "correct_restored": 0,
+      "correct_restored_rate": 0.0,
+      "D_only": 0,
+      "C_only": 0,
+      "p_one_sided": 1.0,
+      "control_cases": 39,
+      "unnecessary_or_forbidden_tool_cases": 0,
+      "all_control_cases_with_D_tool_call": 0,
+      "provider_value_leak_trajectories": 0,
+      "duplicate_inferences": 0,
+      "criteria": {
+        "intent": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "action": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 39,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 42
+          }
+        },
+        "conditions": {
+          "A": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "C": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "D": {
+            "pass": 5,
+            "applicable": 5
+          }
+        },
+        "prohibition": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "order": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "clarification": {
+          "A": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "C": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "D": {
+            "pass": 26,
+            "applicable": 26
+          }
+        },
+        "scope": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "operation_aliases": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 6
+          }
+        },
+        "restored_result": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 0,
+            "applicable": 6
+          }
+        },
+        "unit": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 3,
+            "applicable": 6
+          }
+        },
+        "necessary_tool": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 39
+          }
+        },
+        "no_comparison": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "unsupported_unit_handling": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 0,
+            "applicable": 0
+          }
+        }
+      }
+    },
+    "ungraded_both_pass": {
+      "decision": "REJECT",
+      "eligible": 45,
+      "A_C_D_passes": {
+        "A": 45,
+        "C": 42,
+        "D": 42
+      },
+      "solvable_eligible": 6,
+      "correct_restored": 0,
+      "correct_restored_rate": 0.0,
+      "D_only": 0,
+      "C_only": 3,
+      "p_one_sided": 1.0,
+      "control_cases": 39,
+      "unnecessary_or_forbidden_tool_cases": 0,
+      "all_control_cases_with_D_tool_call": 0,
+      "provider_value_leak_trajectories": 0,
+      "duplicate_inferences": 0,
+      "criteria": {
+        "intent": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "action": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 39,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 42
+          }
+        },
+        "conditions": {
+          "A": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "C": {
+            "pass": 5,
+            "applicable": 5
+          },
+          "D": {
+            "pass": 5,
+            "applicable": 5
+          }
+        },
+        "prohibition": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "order": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "clarification": {
+          "A": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "C": {
+            "pass": 26,
+            "applicable": 26
+          },
+          "D": {
+            "pass": 26,
+            "applicable": 26
+          }
+        },
+        "scope": {
+          "A": {
+            "pass": 42,
+            "applicable": 42
+          },
+          "C": {
+            "pass": 41,
+            "applicable": 42
+          },
+          "D": {
+            "pass": 42,
+            "applicable": 42
+          }
+        },
+        "operation_aliases": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 4,
+            "applicable": 6
+          }
+        },
+        "restored_result": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 3,
+            "applicable": 6
+          }
+        },
+        "unit": {
+          "A": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "C": {
+            "pass": 3,
+            "applicable": 3
+          },
+          "D": {
+            "pass": 6,
+            "applicable": 6
+          }
+        },
+        "necessary_tool": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 39,
+            "applicable": 39
+          }
+        },
+        "no_comparison": {
+          "A": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "C": {
+            "pass": 1,
+            "applicable": 1
+          },
+          "D": {
+            "pass": 1,
+            "applicable": 1
+          }
+        },
+        "unsupported_unit_handling": {
+          "A": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "C": {
+            "pass": 0,
+            "applicable": 0
+          },
+          "D": {
+            "pass": 0,
+            "applicable": 0
+          }
+        }
+      }
+    }
+  },
+  "result": {
+    "decision": "REJECT",
+    "eligible": 42,
+    "A_C_D_passes": {
+      "A": 42,
+      "C": 39,
+      "D": 39
+    },
+    "solvable_eligible": 3,
+    "correct_restored": 0,
+    "correct_restored_rate": 0.0,
+    "D_only": 0,
+    "C_only": 0,
+    "p_one_sided": 1.0,
+    "control_cases": 39,
+    "unnecessary_or_forbidden_tool_cases": 0,
+    "all_control_cases_with_D_tool_call": 0,
+    "provider_value_leak_trajectories": 0,
+    "duplicate_inferences": 0,
+    "criteria": {
+      "intent": {
+        "A": {
+          "pass": 42,
+          "applicable": 42
+        },
+        "C": {
+          "pass": 41,
+          "applicable": 42
+        },
+        "D": {
+          "pass": 42,
+          "applicable": 42
+        }
+      },
+      "action": {
+        "A": {
+          "pass": 42,
+          "applicable": 42
+        },
+        "C": {
+          "pass": 39,
+          "applicable": 42
+        },
+        "D": {
+          "pass": 39,
+          "applicable": 42
+        }
+      },
+      "conditions": {
+        "A": {
+          "pass": 5,
+          "applicable": 5
+        },
+        "C": {
+          "pass": 5,
+          "applicable": 5
+        },
+        "D": {
+          "pass": 5,
+          "applicable": 5
+        }
+      },
+      "prohibition": {
+        "A": {
+          "pass": 42,
+          "applicable": 42
+        },
+        "C": {
+          "pass": 42,
+          "applicable": 42
+        },
+        "D": {
+          "pass": 42,
+          "applicable": 42
+        }
+      },
+      "order": {
+        "A": {
+          "pass": 1,
+          "applicable": 1
+        },
+        "C": {
+          "pass": 1,
+          "applicable": 1
+        },
+        "D": {
+          "pass": 1,
+          "applicable": 1
+        }
+      },
+      "clarification": {
+        "A": {
+          "pass": 26,
+          "applicable": 26
+        },
+        "C": {
+          "pass": 26,
+          "applicable": 26
+        },
+        "D": {
+          "pass": 26,
+          "applicable": 26
+        }
+      },
+      "scope": {
+        "A": {
+          "pass": 42,
+          "applicable": 42
+        },
+        "C": {
+          "pass": 41,
+          "applicable": 42
+        },
+        "D": {
+          "pass": 42,
+          "applicable": 42
+        }
+      },
+      "operation_aliases": {
+        "A": {
+          "pass": 0,
+          "applicable": 0
+        },
+        "C": {
+          "pass": 0,
+          "applicable": 0
+        },
+        "D": {
+          "pass": 1,
+          "applicable": 3
+        }
+      },
+      "restored_result": {
+        "A": {
+          "pass": 3,
+          "applicable": 3
+        },
+        "C": {
+          "pass": 0,
+          "applicable": 3
+        },
+        "D": {
+          "pass": 0,
+          "applicable": 3
+        }
+      },
+      "unit": {
+        "A": {
+          "pass": 3,
+          "applicable": 3
+        },
+        "C": {
+          "pass": 3,
+          "applicable": 3
+        },
+        "D": {
+          "pass": 3,
+          "applicable": 3
+        }
+      },
+      "necessary_tool": {
+        "A": {
+          "pass": 0,
+          "applicable": 0
+        },
+        "C": {
+          "pass": 0,
+          "applicable": 0
+        },
+        "D": {
+          "pass": 39,
+          "applicable": 39
+        }
+      },
+      "no_comparison": {
+        "A": {
+          "pass": 1,
+          "applicable": 1
+        },
+        "C": {
+          "pass": 1,
+          "applicable": 1
+        },
+        "D": {
+          "pass": 1,
+          "applicable": 1
+        }
+      },
+      "unsupported_unit_handling": {
+        "A": {
+          "pass": 0,
+          "applicable": 0
+        },
+        "C": {
+          "pass": 0,
+          "applicable": 0
+        },
+        "D": {
+          "pass": 0,
+          "applicable": 0
+        }
+      }
+    }
+  }
+}
