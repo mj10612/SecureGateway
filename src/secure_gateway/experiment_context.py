@@ -12,6 +12,7 @@ from hashlib import sha256
 import re
 import unicodedata
 
+from secure_gateway.engine.grammar_ko import KOREAN_CONJUGATION_ENDINGS, KoreanGrammarEngine
 from secure_gateway.engine.tokenizer import MultilingualTokenizer
 from secure_gateway.gateway_source import looks_like_source, markdown_code_spans
 
@@ -32,6 +33,22 @@ _RELEASE = re.compile(r"(?<!\w)(?:release|launch)[ \t]+of[ \t]+", re.IGNORECASE)
 _KO_SUFFIX = re.compile(r"(?<!\w)([가-힣\u1100-\u11ffA-Za-z][\w\u1100-\u11ff-]{0,63}?)(?:의[ \t]*(?:출시|배포)|[ \t]*프로젝트(?=[은는이가을를와과의\s.,!?]|$))")
 _NAME_TOKEN = re.compile(r"[\w\u1100-\u11ff]+(?:[-'][\w\u1100-\u11ff]+)*")
 _NON_NAMES = frozenset({"information", "the", "a", "an", "it", "this", "that", "비공개", "공개", "이", "그", "새"})
+# Predicate guard (2.17.0): a verb/adjective form after an introducer ("파일 이름은
+# 바꾸지 말며", "제품 이름은 덧붙이지 마세요") is an instruction, never the name.
+# Endings come from the ko_grammar conjugation table; the bare 지/기/면 and
+# adnominal endings are ambiguous with names (현지, 라면) and need context.
+_KO_PREDICATE_ENDINGS = frozenset(
+    ending for ending in KOREAN_CONJUGATION_ENDINGS
+    if " " not in ending and ending not in {"면", "으면", "기", "지", "된", "한", "는", "은", "ㄴ"})
+_KO_COPULA = ("입니다", "이에요", "예요", "이다", "이야")
+_KO_FINAL = ("습니다", "니다", "십시오", "세요", "했다", "었다", "았다", "였다", "해요", "어요", "아요", "도록", "한다")
+_KO_CONNECTIVE = ("지", "고", "게", "도록", "기", "어", "아", "여", "해", "워", "와", "줘")
+_KO_AUXILIARY = ("말", "마", "맙", "않", "못", "없", "있", "주", "줘", "줄", "줍", "보", "봐", "하", "해", "되", "돼",
+                 "싶", "버리", "놓", "두")
+_KO_BOUND = frozenset({"수", "것", "거", "때", "줄", "뿐"})
+_EN_PREDICATE = frozenset({"must", "should", "shall", "will", "would", "can", "could", "may", "might", "cannot",
+                           "not", "never", "is", "are", "was", "were", "be", "been", "to", "later", "it"})
+_NEXT_WORD = re.compile(r"[ \t]+([\wᄀ-ᇿ]+)")
 
 
 def _label(value: str) -> str:
@@ -141,17 +158,59 @@ def _name_at(text: str, position: int, *, explicit: bool = False) -> tuple[int, 
     return match.span()
 
 
+def _ko_predicate_word(word: str) -> bool:
+    """Return whether one Hangul word is unambiguously a verb/adjective form by its ending."""
+    if not re.fullmatch(r"[가-힣]+", word) or word.endswith(_KO_COPULA):
+        return False
+    if word.endswith(_KO_FINAL) and len(word) > 2:
+        return True
+    decomposed = KoreanGrammarEngine.decompose_conjugation(word)
+    return decomposed is not None and decomposed[1] in _KO_PREDICATE_ENDINGS
+
+
+def _predicate_value(text: str, start: int, end: int) -> bool:
+    """Return whether an unquoted introducer value is a predicate rather than a name."""
+    word = text[start:end]
+    following = _NEXT_WORD.match(text, end)
+    nxt = following[1] if following else ""
+    if word.isascii():
+        return word in _EN_PREDICATE
+    if _ko_predicate_word(word):
+        return True
+    if not re.fullmatch(r"[가-힣]+", word) or not nxt:
+        return False
+    # Connective + auxiliary/negation: 바꾸지 말며, 덧붙이지 마세요, 쓰고 있다, 바꿔 주세요.
+    if word.endswith(_KO_CONNECTIVE) and nxt.startswith(_KO_AUXILIARY):
+        return True
+    # Adnominal -ㄹ/-을 + bound noun: 바꿀 수 없다.
+    return nxt in _KO_BOUND and ((ord(word[-1]) - 0xAC00) % 28 == 8 or word.endswith("을"))
+
+
+def _project_premodifier(text: str, match: re.Match) -> bool:
+    """``가상 프로젝트 흐름의 …``: in ``X 프로젝트 Y의`` the name is Y, so the spaced X is a modifier."""
+    tail = text[match.end(1):match.end()]
+    if "프로젝트" not in tail or not any(ch in " \t" for ch in tail):
+        return False
+    following = _NEXT_WORD.match(text, match.end())
+    return bool(following) and len(following[1]) > 1 and following[1].endswith("의")
+
+
 def name_spans(text: str) -> list[tuple[int, int]]:
-    """Protect explicit introductions/releases; unquoted names are one token."""
+    """Protect explicit introductions/releases; unquoted names are one token.
+
+    A predicate after an introducer (Korean conjugated/negated verb forms,
+    English modals) and a spaced modifier in ``<modifier> 프로젝트 <name>`` are
+    not names. Callers' forced rules and private registrations still apply.
+    """
     excluded = _check(text)
     spans = []
     for pattern in (_INTRO, _RELEASE):
         for match in pattern.finditer(text):
             span = _name_at(text, match.end(), explicit=pattern is _INTRO)
-            if span:
+            if span and not (text[span[0] - 1:span[0]] not in _QUOTES and _predicate_value(text, *span)):
                 spans.append(span)
     for match in _KO_SUFFIX.finditer(text):
-        if unicodedata.normalize("NFC", match[1]) not in _NON_NAMES:
+        if unicodedata.normalize("NFC", match[1]) not in _NON_NAMES and not _project_premodifier(text, match):
             spans.append(match.span(1))
     return _finish(spans, excluded)
 
