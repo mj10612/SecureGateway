@@ -17,9 +17,9 @@ def test_real_lock_during_admission_leaves_no_orphan_and_retry_is_unique(tmp_pat
     armed = True
     with closing(sqlite3.connect(store.path, timeout=0)) as blocker:
         @contextmanager
-        def controlled_connect():
+        def controlled_connect(**kwargs):
             nonlocal armed
-            with connect() as db:
+            with connect(**kwargs) as db:
                 db.execute("PRAGMA busy_timeout=25")
                 if armed:
                     armed = False

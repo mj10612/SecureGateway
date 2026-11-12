@@ -1103,6 +1103,14 @@ counter; it does not leave an unreachable request marked in progress.
 Retrying admission after the storage failure clears creates one new request.
 Existing live requests remain protected from retention and crash recovery.
 
+Since 2.17.1, admission, completion and completion retries of one gateway enter
+the SQLite writer lock in arrival order. SQLite's busy wait polls with growing
+sleeps and no ordering, so on a slow disk an early request could lose every race
+to later writers for seconds before it was forwarded. The ordered queue keeps
+the same time limits (5 seconds for admission, 50 ms for completion, which is
+retried in the background when the limit passes); writers in other processes
+still wait through SQLite's busy timeout.
+
 
 ### Audit completion retries (2.1.0)
 
