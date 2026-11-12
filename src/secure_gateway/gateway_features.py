@@ -1,4 +1,9 @@
-"""Per-session opt-in masking features (issue #354); every feature is OFF by default.
+"""Per-session masking features (issue #354).
+
+``GatewayFeatures()`` (the library default) enables nothing. Gateway settings
+(``resolve_settings``) enable the jointly adopted features by default from
+2.17.0: #310 on, #316 B and #318 on but active only with a trusted policy; see
+``SETTING_DEFAULTS``.
 
 The candidate features were first evaluated as process-global experiment
 profiles (``experiment_profiles.candidate_profile``). This module carries the
@@ -38,6 +43,18 @@ FEATURES: dict[str, tuple[int, str]] = {
     "scoped_corrections": (316, "records-file"),
     "attribute_bundle": (318, "session-only"),
     "local_arithmetic": (319, "boolean"),
+}
+# Gateway-settings defaults (2.17.0, after the joint ADOPT of #310/#316 B/#318):
+# "on" = enabled unless explicitly turned off; "policy" = enabled, but active only
+# when a trusted local policy is configured (without one it is a no-op and never
+# blocks gateway start); "off" = opt-in. Library constructors
+# (GatewaySession/PrivacyGateway without ``features``) keep DEFAULT_FEATURES (all off).
+SETTING_DEFAULTS: dict[str, str] = {
+    "ko_conjugation_split": "off",
+    "contextual_name_spans": "on",
+    "scoped_corrections": "policy",
+    "attribute_bundle": "policy",
+    "local_arithmetic": "off",
 }
 CORRECTIONS_PASSWORD_ENV = "SECURE_GATEWAY_CORRECTIONS_PASSWORD"
 _POLICY_FIELDS = {
@@ -362,8 +379,11 @@ def resolve_settings(config: Mapping[str, Any] | None = None, *, environ: Mappin
     """Resolve gateway-wide features with precedence CLI > environment > config > default.
 
     Returns ``(GatewayFeatures, report)``. The report lists, per feature, its
-    default, effective state and source; it never contains policy contents.
-    ``all_off`` (``--features-off``) disables every feature regardless of source.
+    default (``SETTING_DEFAULTS``), requested and active state and source; it
+    never contains policy contents. ``all_off`` (``--features-off``) disables
+    every feature regardless of source. A policy feature that is on only by
+    default and has no configured policy is inactive (a no-op); an explicit
+    request without a usable policy still stops the gateway.
     """
     environ = os.environ if environ is None else environ
     section = (config or {}).get("features", {})
@@ -375,7 +395,8 @@ def resolve_settings(config: Mapping[str, Any] | None = None, *, environ: Mappin
     report: dict[str, dict[str, Any]] = {}
     kwargs: dict[str, Any] = {}
     for name, (issue, support) in FEATURES.items():
-        enabled, source, options = False, "default", {}
+        mode = SETTING_DEFAULTS[name]
+        enabled, source, options = mode != "off", "default", {}
         if name in section:
             enabled, options = _config_value(name, section[name])
             source = "config"
@@ -386,23 +407,37 @@ def resolve_settings(config: Mapping[str, Any] | None = None, *, environ: Mappin
             enabled, source = cli[name], "cli"
         if all_off:
             enabled, source = False, "cli-off"
+        active, reason = enabled, None
         if enabled:
             if support == "session-only":
-                raise ValueError(name + " requires a per-document trusted policy; enable it per session, not gateway-wide.")
-            if name == "scoped_corrections":
-                kwargs[name] = _load_corrections(options, environ)
+                if source != "default":
+                    raise ValueError(name + " requires a per-document trusted policy; enable it per session, not gateway-wide.")
+                # Default-on, policy-gated: gateway settings have no per-document policy source.
+                active, reason = False, "per-session-policy-only"
+            elif name == "scoped_corrections":
+                if source == "default" and not options:
+                    active, reason = False, "no-policy-configured"
+                else:
+                    kwargs[name] = _load_corrections(options, environ)
             elif name == "local_arithmetic":
                 kwargs[name] = {}
             else:
                 kwargs[name] = True
-        report[name] = {"issue": issue, "default": False, "enabled": enabled, "source": source,
-                        "gateway_setting": support}
+        report[name] = {"issue": issue, "default": mode != "off", "default_mode": mode, "enabled": enabled,
+                        "active": active, "source": source, "gateway_setting": support}
+        if reason:
+            report[name]["inactive_reason"] = reason
     return GatewayFeatures(**kwargs), report
 
 
 def report_for(features: GatewayFeatures):
-    """Report features passed directly to a gateway constructor (library use)."""
+    """Report features passed directly to a gateway constructor (library use).
+
+    Gateway-settings defaults do not apply to direct construction: the library
+    default is ``DEFAULT_FEATURES`` (all off), reported as ``default: False``.
+    """
     enabled = set(features.enabled_names())
-    return {name: {"issue": issue, "default": False, "enabled": name in enabled,
-                   "source": "constructor" if name in enabled else "default", "gateway_setting": support}
+    return {name: {"issue": issue, "default": False, "default_mode": "off", "enabled": name in enabled,
+                   "active": name in enabled, "source": "constructor" if name in enabled else "default",
+                   "gateway_setting": support}
             for name, (issue, support) in FEATURES.items()}
