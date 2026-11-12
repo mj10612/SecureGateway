@@ -12,6 +12,7 @@ from queue import Empty, Full, Queue
 from collections import OrderedDict, deque
 from copy import deepcopy
 from decimal import Decimal, InvalidOperation
+from functools import lru_cache
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -674,6 +675,16 @@ def forced_rule_pattern(rules: tuple[str, ...] | list[str]) -> re.Pattern[str] |
     return re.compile("|".join(bounded(word) for word in sorted(forms, key=len, reverse=True)))
 
 
+@lru_cache(maxsize=16)
+def _configured_rule_pattern(rules: tuple[str, ...]) -> re.Pattern[str] | None:
+    """Reuse ``forced_rule_pattern`` for configured rule tuples (issue #356).
+
+    Only configured rules (or a subset of them) are cached; per-call schema
+    terms are compiled uncached so they are never kept process-wide.
+    """
+    return forced_rule_pattern(rules)
+
+
 _private_prose: ContextVar[bool] = ContextVar("private_gateway_prose", default=False)
 # Issue #323: while masking a prose fragment, a single-word generic domain span
 # that is an ordinary public word is not re-masked (see GatewaySession._mask_prose).
@@ -1205,8 +1216,9 @@ class GatewaySession:
         # unrelated allocations must not invalidate the complete conversation.
         # Include embedded originals too: protected possessive suffixes and
         # fragments can affect masking without a whole-input word boundary.
+        # The store memoizes this exact embedded scan per text (issue #356).
         dependencies = sha256()
-        for original in sorted(self.session.forward_store.originals_in(text, embedded=True)):
+        for original in sorted(self.session.forward_store.embedded_originals(text)):
             encoded = original.encode("utf-8")
             dependencies.update(len(encoded).to_bytes(8, "big"))
             dependencies.update(encoded)
@@ -1257,7 +1269,7 @@ class GatewaySession:
         rules: tuple[str, ...] = self.forced_rules() + extra_rules
         # Never rewrite an existing alias: changing its spelling destroys the
         # only reference that permits restoration.
-        pattern = forced_rule_pattern(rules)
+        pattern = forced_rule_pattern(rules) if extra_rules else _configured_rule_pattern(tuple(rules))
         s = self.session
         encode = self._forced_alias
         def substitute(match):
@@ -1309,7 +1321,7 @@ class GatewaySession:
         """
         rules: tuple[str, ...] = tuple(self.forced_rules())
         digit_rules = tuple(rule for rule in rules if _FORCED_DIGIT.search(rule))
-        pattern = forced_rule_pattern(digit_rules)
+        pattern = _configured_rule_pattern(digit_rules)
         matches: list[re.Match[str]] = []
         code_spans = code_spans or []
         if pattern is not None:
@@ -2237,7 +2249,7 @@ class GatewaySession:
         whole-token match in a forwarded identifier, or in any other string,
         cannot be rewritten or attributed safely, so the request is refused.
         """
-        pattern = forced_rule_pattern(self.forced_rules())
+        pattern = _configured_rule_pattern(tuple(self.forced_rules()))
         if pattern is None:
             return
         aliases = StrategyGenerator.get_pattern(self.session.strategy)
