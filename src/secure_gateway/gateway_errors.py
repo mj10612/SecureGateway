@@ -7,8 +7,10 @@ from secure_gateway.exceptions import ConfigurationError
 class GatewayRequestError(ConfigurationError):
     """A gateway request error with a stable public diagnostic code."""
 
-    def __init__(self, code: str) -> None:
+    def __init__(self, code: str, *, diagnostic: str | None = None) -> None:
         self.code = code
+        # Optional fixed reason category for operational counters; never content.
+        self.diagnostic = diagnostic
         super().__init__(GUIDANCE[code])
 
 
@@ -18,7 +20,8 @@ GUIDANCE = {
     "unsupported_request_fields": "The client sent unsupported request fields; update the gateway or use a supported client version.",
     "unsupported_claude_attribution": "The Claude client attribution format is unsupported; use a supported client version.",
     "invalid_request": "The request failed privacy validation; inspect supported request formats without sharing private payloads.",
-    "conversation_capacity": "All conversation slots are busy, or persistent session storage is unavailable; retry after active requests finish or reset idle sessions.",
+    "forced_rule_protocol_conflict": "A forced masking rule matches a protocol field that cannot be masked, such as a call identifier; request blocked. Narrow the rule or start a new conversation.",
+    "conversation_capacity":"All conversation slots are busy, or persistent session storage is unavailable; retry after active requests finish or reset idle sessions.",
 }
 
 _REASONS = {

@@ -11,6 +11,7 @@ from contextvars import ContextVar
 from queue import Empty, Full, Queue
 from collections import OrderedDict, deque
 from copy import deepcopy
+from decimal import Decimal, InvalidOperation
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -35,7 +36,7 @@ import urllib.request
 import urllib.parse
 
 from secure_gateway.engine.masking_engine import MaskingEngine, NumericLiteralConflict
-from secure_gateway.engine.strategies import mapping_key
+from secure_gateway.engine.strategies import StrategyGenerator, mapping_key
 from secure_gateway.engine.natural_languages import canonical_language, detect_natural_language
 from secure_gateway.engine.code_parser import LANGUAGE_KEYWORDS, ALIASES
 from secure_gateway.encrypted_session import (
@@ -90,6 +91,7 @@ _DIAGNOSTIC_CATEGORIES = (
     "upstream_error_body", "upstream_error_format", "upstream_error_close",
     "upstream_error_stream_close",
     "log_delivery_failed", "catalog_preload_failed",
+    "forced_rule_protocol_identifier", "forced_rule_unmasked_content",
 )
 
 
@@ -632,6 +634,44 @@ def validate_api_options(payload, dialect):
         "response_format",
     }:
         raise ValueError("Chat controls are unsupported in Responses.")
+
+
+# Issue #363: aliases a forced-rule pass must never rewrite. Numeric source/prose
+# aliases are digit runs, so a short numeric rule ("4") would otherwise match
+# inside them and corrupt their only restoration reference.
+_FORCED_SKIP = re.compile(r"private_symbol_\d+|(?<![A-Za-z0-9_])(?:732846\d{12})+(?![A-Za-z0-9_])|[⟦⟧]")
+_FORCED_DIGIT = re.compile(r"\d")
+_FORCED_JSON_NUMBER = re.compile(r"-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?")
+# Forwarded identifiers cannot be rewritten; a forced value inside one is ambiguous.
+_FORCED_IDENTIFIER_KEYS = frozenset({"id", "call_id", "tool_use_id", "tool_call_id"})
+# Walked keys whose string values stay public protocol vocabulary (tags, enums,
+# pinned tool names/grammars). A forced value there is a coincidence, not content.
+_FORCED_PUBLIC_KEYS = frozenset({
+    "type", "role", "status", "phase", "effort", "verbosity", "syntax", "object", "stop_reason",
+    "name", "tool_name", "format", "$schema", "ttl", "definition", "permission_mode", "platform", "source",
+})
+# Provider-signed reasoning is replayed byte-for-byte and never carries new user text.
+_FORCED_OPAQUE_TYPES = frozenset({"thinking", "redacted_thinking", "reasoning"})
+
+
+def forced_rule_pattern(rules: tuple[str, ...] | list[str]) -> re.Pattern[str] | None:
+    """Compile forced rules; a digit edge only matches a whole number span.
+
+    ``4`` must not bind the 4 in ``12.40`` or ``1,234``: that would split one
+    value into a partial alias and leave its remaining digits visible.
+    """
+    forms = {unicodedata.normalize(form, word) for word in rules for form in ("NFC", "NFD") if word}
+    if not forms:
+        return None
+
+    def bounded(word: str) -> str:
+        body = re.escape(word)
+        if word[0].isdecimal():
+            body = r"(?<!\d)(?<!\d[.,])" + body
+        if word[-1].isdecimal():
+            body += r"(?!\d)(?![.,]\d)"
+        return body
+    return re.compile("|".join(bounded(word) for word in sorted(forms, key=len, reverse=True)))
 
 
 _private_prose: ContextVar[bool] = ContextVar("private_gateway_prose", default=False)
@@ -1189,7 +1229,18 @@ class GatewaySession:
         if cached is not None:
             self._mask_cache.move_to_end(key)
             return cached
-        result = self._force_mask(self._mask_unforced(text, code, language))
+        if code or looks_like_source(text):
+            # Source lexing keeps numeric/date literals whole; the forced pass
+            # then binds the complete literal (see _force_mask).
+            result = self._force_mask(self._mask_unforced(text, code, language))
+        else:
+            # The whole text is prose; a fragment between forced spans keeps
+            # that classification (e.g. "Data: " is not a source mapping).
+            spans = markdown_code_spans(text)
+            # Without a forced span the whole text takes the unchanged call.
+            result = self._mask_forced_spans(
+                text, lambda part, complete: self._mask_unforced(part, False, language) if complete
+                else self._mask_unforced(part, False, language, complete=False, detect_source=False), spans)
         key = self._mask_cache_key(text, code, language)
         size = self._mask_cache_entry_bytes(key, result)
         if size <= 1024 * 1024:
@@ -1206,16 +1257,9 @@ class GatewaySession:
         rules: tuple[str, ...] = self.forced_rules() + extra_rules
         # Never rewrite an existing alias: changing its spelling destroys the
         # only reference that permits restoration.
-        forms: set[str] = {unicodedata.normalize(form, word) for word in rules for form in ("NFC", "NFD")}
-        pattern = re.compile("|".join(re.escape(word) for word in sorted(forms, key=len, reverse=True))) if forms else None
+        pattern = forced_rule_pattern(rules)
         s = self.session
-        def encode(word):
-            alias = self.engine._get_or_create_surrogate(
-                word, TokenType.ENTITY, s.generator, s.forward_store, s.reverse_store, code=True
-            )
-            # Delimit partial-word aliases so they can be restored even next to
-            # ASCII letters. The delimiters are consumed during restoration.
-            return "⟦" + alias + "⟧"
+        encode = self._forced_alias
         def substitute(match):
             return encode(match.group())
         with s.generator.operation():
@@ -1236,7 +1280,7 @@ class GatewaySession:
                         cursor = match.end()
                 append(text[cursor:end])
             cursor = 0
-            for match in re.finditer(r"private_symbol_\d+|[⟦⟧]", text):
+            for match in _FORCED_SKIP.finditer(text):
                 ordinary(cursor, match.start())
                 value = match.group()
                 append(encode(value) if value in {"⟦", "⟧"} else value)
@@ -1244,12 +1288,61 @@ class GatewaySession:
             ordinary(cursor, len(text))
             return "".join(parts)
 
-    def _mask_unforced(self, text: str, code: bool = False, language: str = "auto") -> str:
+    def _forced_alias(self, word: str) -> str:
+        s = self.session
+        alias = self.engine._get_or_create_surrogate(
+            word, TokenType.ENTITY, s.generator, s.forward_store, s.reverse_store, code=True
+        )
+        # Delimit partial-word aliases so they can be restored even next to
+        # ASCII letters. The delimiters are consumed during restoration.
+        return "⟦" + alias + "⟧"
+
+    def _mask_forced_spans(self, text: str, masker: Callable[[str, bool], str],
+                           code_spans: list[tuple[int, int]] | None = None) -> str:
+        """Bind digit-bearing forced values before prose tokenization (#363).
+
+        Prose masking splits ``2032-02-28``/``-3.25`` into separate number
+        aliases, after which the forced literal no longer exists to bind. Such
+        a rule is therefore replaced as one whole span first; the remaining
+        fragments are masked as before. Inline/fenced code keeps its lexer, which
+        already preserves whole literals for the later forced pass.
+        """
+        rules: tuple[str, ...] = tuple(self.forced_rules())
+        digit_rules = tuple(rule for rule in rules if _FORCED_DIGIT.search(rule))
+        pattern = forced_rule_pattern(digit_rules)
+        matches: list[re.Match[str]] = []
+        code_spans = code_spans or []
+        if pattern is not None:
+            code_index = 0
+            for match in pattern.finditer(text):
+                while code_index < len(code_spans) and code_spans[code_index][1] <= match.start():
+                    code_index += 1
+                if code_index < len(code_spans) and code_spans[code_index][0] < match.end():
+                    continue  # Inside a code span: lexed whole, then forced.
+                matches.append(match)
+        if not matches:
+            return self._force_mask(masker(text, True))
+        parts: list[str] = []
+        cursor = 0
+        for match in matches:
+            if match.start() > cursor:
+                parts.append(self._force_mask(masker(text[cursor:match.start()], False)))
+            parts.append(self._forced_alias(match.group()))
+            cursor = match.end()
+        if cursor < len(text):
+            parts.append(self._force_mask(masker(text[cursor:], False)))
+        result = "".join(parts)
+        if len(result.encode("utf-8")) > self.engine.max_input_bytes:
+            raise ValueError("Masked text size limit reached.")
+        return result
+
+    def _mask_unforced(self, text: str, code: bool = False, language: str = "auto",
+                       *, complete: bool = True, detect_source: bool = True) -> str:
         if self.features.contextual_name_spans or self.features.attribute_bundle is not None:
             _features.before_mask_unforced(self, text, code)
         if code:
             return self._mask_source(text, language)
-        if looks_like_source(text):
+        if detect_source and looks_like_source(text):
             return self._mask_source(text, language)
         code_spans = markdown_code_spans(text)
         known_terms = self.session.forward_store.originals_in(text)
@@ -1259,7 +1352,7 @@ class GatewaySession:
                                   for term in known_terms):
             # Do not split a previously protected source literal into separate
             # public words at sentence/skill/code boundaries.
-            return self._mask_prose(text)
+            return self._mask_prose(text, model_context_complete=complete)
         # Fenced/inline source is lexed, rather than replaced as an opaque block.
         protected = {"EMAIL", "URL", "SECRET", "UUID", "IP", "PHONE", "CODE_BLOCK"}
         protected_skill = any("SKILL.md" in chunk.text and chunk.kind in protected
@@ -1289,7 +1382,7 @@ class GatewaySession:
         output = []
         # A fragment following code or a public skill name can start mid-sentence.
         # Abstain instead of mistaking that local boundary for an instruction.
-        complete = len(parts) == 1
+        complete = complete and len(parts) == 1
         skill_context = self.prose_mode != MaskMode.AGGRESSIVE and ("SKILL.md" in parts or "`SKILL.md`" in parts)
         for index, part in enumerate(parts):
             if index in protected_parts:
@@ -1343,6 +1436,39 @@ class GatewaySession:
             text, s.session_id, s.reverse_store, s.strategy, strict=strict
         ).unmasked_text
 
+    def _mask_forced_number(self, value):
+        """Replace a JSON number equal to a forced numeric rule by one numeric alias (#363).
+
+        JSON data keeps numbers as numbers, so the alias is the integer form of
+        a code number alias; restoration returns the original JSON number.
+        """
+        if type(value) not in {int, float} or (type(value) is float and not math.isfinite(value)):
+            return value
+        spelling = json.dumps(value)
+        rules: tuple[str, ...] = tuple(self.forced_rules())
+        try:
+            magnitude = Decimal(spelling).copy_abs()
+            # Sign-insensitive on purpose: either sign exposes the declared magnitude.
+            if not any(_FORCED_JSON_NUMBER.fullmatch(rule) and Decimal(rule).copy_abs() == magnitude
+                       for rule in rules):
+                return value
+        except (InvalidOperation, ValueError):
+            return value
+        s = self.session
+        alias = self.engine._get_or_create_surrogate(
+            spelling.lstrip("-"), TokenType.NUMBER, s.generator, s.forward_store, s.reverse_store, code=True)
+        return -int(alias) if value < 0 else int(alias)
+
+    def _restore_forced_number(self, value):
+        """Restore a numeric alias issued by _mask_forced_number in JSON data."""
+        if type(value) is not int:
+            return value
+        mapping = self.session.reverse_store.get(str(abs(value)))
+        if mapping is None or mapping.token_type != TokenType.NUMBER or not _FORCED_JSON_NUMBER.fullmatch(mapping.original):
+            return value
+        original = json.loads(mapping.original)
+        return -original if value < 0 else original
+
     def values(self, value, restore=False, code=False):
         """Handle values."""
         operation = self.restore if restore else lambda text: self.mask(text, code=code)
@@ -1362,7 +1488,9 @@ class GatewaySession:
                 )
                 for key, item in value.items()
             }
-        if restore and type(value) in {int, float}:
+        if not restore:
+            return self._mask_forced_number(value)
+        if type(value) in {int, float}:
             # Source aliases are integers, even when the source literal was a
             # decimal. Never recover an alias after floating-point rounding.
             candidate = str(abs(value))
@@ -1818,11 +1946,15 @@ class GatewaySession:
         if isinstance(value, str):
             if restore:
                 return self.restore(value)
-            return self.mask(value) if prose else self._force_mask(self._mask_prose(value, preserve_task_words=False))
+            if prose:
+                return self.mask(value)
+            return self._mask_forced_spans(
+                value, lambda part, complete: self._mask_prose(
+                    part, preserve_task_words=False, model_context_complete=complete))
         if isinstance(value, list):
             return [self.walk_data(item, restore, prose=prose) for item in value]
         if not isinstance(value, dict):
-            return value
+            return self._restore_forced_number(value) if restore else self._mask_forced_number(value)
         return {
             self.schema_name(key, restore): self.walk_data(item, restore, prose=prose)
             for key, item in value.items()
@@ -2027,6 +2159,7 @@ class GatewaySession:
 
         seed(payload.get("messages", payload.get("input", [])))
         result = {}
+        protocol_keys: set[str] = set()
         for key, value in payload.items():
             if key == "system" and "messages" in payload:
                 result[key] = self.claude_system(value)
@@ -2065,8 +2198,13 @@ class GatewaySession:
                 result[key] = self.walk(value)
             elif key in {"prompt_cache_key", "safety_identifier"}:
                 result[key] = sha256(str(value).encode()).hexdigest()
+                protocol_keys.add(key)
             else:
                 result[key] = deepcopy(value)
+                protocol_keys.add(key)
+        # Inspect only forwarded content; gateway-added instructions and the
+        # untouched protocol settings above are not user content.
+        self._check_forced_leaks({key: item for key, item in result.items() if key not in protocol_keys})
         if "input" in result:
             result["store"] = False
             result["instructions"] = PRIVACY_INSTRUCTION + result.get(
@@ -2088,22 +2226,54 @@ class GatewaySession:
         for tool in result.get("tools", []):
             if tool.get("name") in TOOL_DESCRIPTIONS:
                 tool["description"] = TOOL_DESCRIPTIONS[tool["name"]]
-        rules = self.forced_rules()
-        if rules:
-            def check(value):
-                if isinstance(value, str):
-                    normalized = unicodedata.normalize("NFC", value)
-                    return any(unicodedata.normalize("NFC", rule) in normalized for rule in rules)
-                if isinstance(value, list):
-                    return any(check(item) for item in value)
-                if isinstance(value, dict):
-                    return any(check(key) or check(item) for key, item in value.items())
-                if isinstance(value, (int, float)) and not isinstance(value, bool):
-                    return any(rule in str(value) for rule in rules)
-                return False
-            if check(result):
-                raise ValueError("A forced masking rule matches a protocol field; request blocked.")
         return result
+
+    def _check_forced_leaks(self, content) -> None:
+        """Refuse only a forced value that masking cannot separate from protocol data (#363).
+
+        Masked text contains a forced value only inside aliases. A visible match
+        in a public protocol tag (type, role, a pinned tool name...) or a JSON
+        number is a coincidence the protocol requires, so it is forwarded. A
+        whole-token match in a forwarded identifier, or in any other string,
+        cannot be rewritten or attributed safely, so the request is refused.
+        """
+        pattern = forced_rule_pattern(self.forced_rules())
+        if pattern is None:
+            return
+        aliases = StrategyGenerator.get_pattern(self.session.strategy)
+
+        def visible(text: str, whole_token: bool) -> bool:
+            stripped = aliases.sub("\0", unicodedata.normalize("NFC", text)).replace("⟦", "\0").replace("⟧", "\0")
+            for match in pattern.finditer(stripped):
+                if not whole_token:
+                    return True
+                before = stripped[match.start() - 1:match.start()]
+                after = stripped[match.end():match.end() + 1]
+                if not (before.isalnum() or after.isalnum()):
+                    return True
+            return False
+
+        def reason(value, key=None) -> str | None:
+            if isinstance(value, str):
+                if key in _FORCED_IDENTIFIER_KEYS:
+                    return "forced_rule_protocol_identifier" if visible(value, True) else None
+                if key in _FORCED_PUBLIC_KEYS:
+                    return None
+                return "forced_rule_unmasked_content" if visible(value, False) else None
+            if isinstance(value, list):
+                return next((found for item in value if (found := reason(item, key)) is not None), None)
+            if isinstance(value, dict):
+                if value.get("type") in _FORCED_OPAQUE_TYPES:
+                    return None
+                # Keys are structural here; private keys were aliased by the walk.
+                return next((found for name, item in value.items()
+                             if (found := reason(item, name)) is not None), None)
+            # Data numbers equal to a rule are aliased; the rest are protocol numbers.
+            return None
+
+        found = reason(content)
+        if found is not None:
+            raise GatewayRequestError("forced_rule_protocol_conflict", diagnostic=found)
 
     def claude_system(self, value):
         """Handle claude system."""
@@ -3575,6 +3745,9 @@ class GatewayHandler(BaseHTTPRequestHandler):
             RecursionError,
             http.client.HTTPException,
         ) as exc:
+            diagnostic = getattr(exc, "diagnostic", None) if isinstance(exc, GatewayRequestError) else None
+            if diagnostic is not None:
+                self.server.record_diagnostic(diagnostic)
             self.send_body(
                 400,
                 strict_json_dumps(public_request_error(exc)).encode(),
