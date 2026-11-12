@@ -255,3 +255,92 @@ Maximum measured candidate process peak-working-set increases were 24.66, 25.13,
 The frozen #316 public-exception development controls show a correct public exception reduced overmasking 1/1 -> 0/1, a forced protected term stayed protected 0/1 -> 0/1 exposure, and a wrong correction introduced exposure 0/1 -> 1/1. All three restored 1/1 exactly. The exception arm is therefore rejected for adoption under the no-new-exposure rule, remains evaluation-only and default off, and has no independent holdout or comprehension measurement. The protect-only B arm remains on hold. Raw captures: `evaluations/issue316-2.11.0/public-development-run/`.
 
 The frozen new cases were replayed again after the bounded #311 scan; this is a regression retest, not a second holdout. The full-exposure counts were unchanged for all four issues, and all captures completed; raw results are in each `evaluations/issue<N>-2.11.0/final-regression-run/` directory.
+## Real-LLM comprehension evaluation (results recorded in 2.15.1)
+
+The earlier screening is retained only as [pilot evidence](evaluations/comprehension-2.11.1/pilot/). Its rubric, quote verification and sample size did not meet the requirements for adoption decisions. The replacement evaluation froze a rubric, decision rule, cases and budget per candidate before any interpretation call; a fresh, read-only `codex exec` session (ChatGPT subscription, no API key) answered each condition and a separate blind grader scored every case with mechanically verified quotes. Plan and status: `evaluations/comprehension-2.11.1/plan/SUMMARY.md`, `HANDOVER_STATUS.md`.
+
+| Candidate | Decision | Key numbers |
+|---|---|---|
+| #310 name context | ADOPT | 88/132 newly protected, 0 new exposure; A/C/D 30/27/27 |
+| #316 scoped correction (B) | ADOPT | 104/104 newly protected; A/C/D 35/31/29 (within bound) |
+| #318 attribute bundles | ADOPT | 108/108 newly protected; attack top-1 39→8; A/C/D 36/29/29 |
+| #309 Korean conjugation | REJECT | A/C/D 76/34/30, D-only/C-only 6/10 |
+| #311 role hints | REJECT | A/C/D 79/73/70, 0/3 |
+| #312 numeric context | REJECT | 0 newly protected; A/C/D 37/33/33 |
+| #313 segment language | REJECT | A/C/D 83/59/68, 10/1 (p=0.006) but prohibition net loss 2 |
+| #314 vocabulary calibration | REJECT (activation preflight) | 6/309 inputs changed |
+| #315 instruction wording | REJECT | both variants worse than baseline |
+| #317 tables/forms | REJECT | doc_structure: 4/165 changed; doc_structure_policy A/C/D 46/46/44 |
+| #319 local arithmetic | REJECT, underpowered | 4 solvable eligible cases; replication blocked by #363 |
+| #291 multilingual baseline | descriptive | no candidate |
+
+Adopted toggles stay off until a joint evaluation of all adopted candidates enabled together (requires the per-instance feature flags of #354).
+
+
+### Coordinator-directed preflight decisions (not LLM results)
+
+- #314 `vocab_calibrated`: **REJECT** by the coordinator's later activation preflight rule: 6 of 309 independently authored non-control inputs changed. The original predeclared paired-sign-test comprehension evaluation was not run; it remains **미측정**. See `evaluations/comprehension-2.11.1/314/preflight-decision/vocab_calibrated.md`.
+- #317 `doc_structure` only: **REJECT** by the coordinator's later activation preflight rule: 4 of 165 independently authored non-control inputs changed. The original paired-sign-test comprehension evaluation was not run; it remains **미측정**. See `evaluations/comprehension-2.11.1/317/preflight-decision/doc_structure.md`. The separate `doc_structure_policy` candidate remains under evaluation.
+
+These are post-protocol operational decisions about the sampled mechanism's activation, not results from the originally frozen real-LLM decision rule; they do not imply a real-world activation rate.
+
+
+### #315 real-LLM instruction comparison
+
+Both `instruction_concise` and `instruction_examples` are **REJECT** under the frozen paired rule. Among 74 original-control-valid synthetic cases, baseline passed 60, concise passed 56, and examples passed 58; D-only/C-only discordances were 1/5 (p=0.984375) and 1/3 (p=0.9375). Both candidate protection gates passed. All 320 fresh, read-only interpretations used zero tools, and 80 blinded case grades had verified response quotes. These results use the same model family for interpretation and grading and do not establish real-world rates. Details: `evaluations/comprehension-2.11.1/315/comprehension/summary.md`.
+
+
+### #311 real-LLM role alias comparison
+
+**REJECT** on the merged candidate: among 79 A-eligible cases, A/C/D passed 79/73/70; D-only/C-only were 0/3 (one-sided p=1.0). Negative controls showed no net loss and the protection gate passed. All 240 fresh interpretations and 80 blinded, quote-verified grades completed. The interpreter and grader used the same model family; cases were enriched for observable candidate differences. See [evidence](evaluations/comprehension-2.11.1/311/comprehension/summary.md). The earlier pre-#345 result is withdrawn and retained separately.
+
+
+### #312 real-LLM numeric context comparison
+
+**REJECT** under the frozen rule: corrected offline protection found zero newly protected and zero newly exposed among 180 sensitive spans; C/D overmasked 95/95 of 160 public spans, exact restoration and CI comparison passed. On 37 A-eligible cases A/C/D passed 37/33/33, D-only/C-only 1/1 (p=0.75). The earlier protection result and decision were withdrawn because its public controls were all key-value assignments; independently authored ordinary-number controls replaced them. All 144 fresh interpretations and 48 blinded quote-verified grades were retained, with the same model family used for both. See [evidence](evaluations/comprehension-2.11.1/312/comprehension/summary.md).
+
+
+### #310 real-LLM name-context comparison
+
+**ADOPT** under the frozen protection-target rule: 88 of 132 sensitive spans became protected, none became exposed, public overmasking stayed 0/132, exact restoration was 22/22 in both arms, and CI passed. Among 30 original-control-eligible cases A/C/D passed 30/27/27, with 0/0 discordances. All 96 C/D payloads matched current main modulo alias renaming and original bindings. The original run identity could not be re-derived after rebasing; saved responses, rubric digest and adapter were verified, and the decision file matches the pre-rebase backup and approved summary, but its bytes at run creation cannot be proven. The same model family interpreted and graded; see [evidence](evaluations/comprehension-2.11.1/310/comprehension/summary.md). The toggle remains off pending the separate activation PR.
+
+
+### #316 real-LLM scoped-correction comparison
+
+**ADOPT** under the frozen protection-target rule: an independently authored correction-sensitive replacement protected 104/104 previously exposed spans with zero new exposures, 0/104 public overmasks in both arms, 208/208 exact restoration in both, and a passing CI comparison. The earlier REJECT was withdrawn because its protection set had no baseline exposures. Existing comprehension results were reused: 35 A-eligible cases, A/C/D 35/31/29 and D-only/C-only 0/2, within the two-case non-inferiority bound. Interpreter and grader share a model family. See [evidence](evaluations/comprehension-2.11.1/316/comprehension/summary.md); the toggle remains off.
+
+
+### #318 real-LLM bundle comparison
+
+**ADOPT** under the frozen protection-target and attack rules. The replacement offline set newly protected 108/108 baseline-exposed targets, introduced zero exposures and zero public overmasks among 108 controls, restored 27/27 in both arms, and passed CI. Of 36 original-control-eligible comprehension cases A/C/D passed 36/29/29 with 0/0 discordances. In the independent 48-case synthetic catalogue attack, top-1 baseline/candidate/prior was 39/8/0; top-3 was also 39/8/0. Field groups were previously baseline-screened in a failed form format, limiting offline holdout independence; interpreter, grader and attacker share a model family. See [evidence](evaluations/comprehension-2.11.1/318/comprehension/summary.md). The toggle remains off.
+
+
+### #317 real-LLM document-structure policy comparison
+
+`doc_structure_policy`: **REJECT**. Among 46 A-eligible cases (39 discriminating) A/C/D passed 46/46/44; D-only/C-only 0/2 (p=1.0), the losses in the prohibition criterion (29/27). 141 interpretations and 47 quote-verified grades completed. See [evidence](evaluations/comprehension-2.11.1/317/comprehension-policy/report.json).
+
+
+### #313 real-LLM segment-language comparison
+
+**REJECT** under the frozen rule. Among 83 A-eligible cases (77 discriminating) A/C/D passed 83/59/68; D-only/C-only 10/1 (one-sided p=0.0059), so the primary comparison favoured the candidate, but the prohibition criterion lost 2 paired cases and won none (net loss 2 meets the rejection threshold); in both, the answer repeated a masked placeholder. Protection gate passed with no newly protected spans; 0 ungraded. A variant that avoids repeating placeholders after a prohibition would need a new issue and new cases. See [evidence](evaluations/comprehension-2.11.1/313/comprehension/report.json).
+
+
+### #309 real-LLM Korean conjugation comparison
+
+**REJECT**. Run on `gpt-6-luna` with the #364 lean transport (one call per interpretation, grading batched by 2), re-using the frozen replication inputs (93 cases: 85 discriminating, 8 controls; arms A/C/D; condition B dropped to save subscription usage, so #306's B comparison is not measured). Among 76 A-eligible cases A/C/D passed 76/34/30; D-only/C-only 6/10 (p=0.89); conditions criterion 23/20. Four cases stayed ungraded after one re-grade; the decision is the same under every bound. 339 calls, 30,173 raw tokens per case. The earlier `gpt-6.1-sol` pilot (27/17/17) pointed the same way. Results from this transport/model are not compared numerically with the other candidates. See `evaluations/comprehension-2.11.1/309/plan-luna/` and `309/comprehension-luna/report.json`.
+
+
+### #319 real-LLM local arithmetic comparison
+
+**REJECT under the frozen rule but underpowered**: only 4 tool-solvable A-eligible cases (3 correct restored results, upper bound 75% < 80% gate); A/C/D 13/8/11 on the verified set; 3 ungraded. A replication needs at least 40 tool-solvable cases whose operands bind to single aliases; authoring found partial alias binding and protocol-field collisions for forced numeric/date values, now tracked in #363. See [evidence](evaluations/comprehension-2.11.1/319/comprehension/report.json) and `319/plan/alias-binding-findings.json`.
+
+
+### #291 multilingual baseline (descriptive)
+
+Default engine only, 17 languages × 2 everyday requests plus known requests: 72 interpretations and 36 graded cases; the original text passed 27 of 36 cases and the default engine passed 24 of those 27 (25 of 36 overall). Two cases per language are not a population estimate. See [evidence](evaluations/comprehension-2.11.1/291/comprehension/report.json).
+
+
+### Evaluation cost (#364)
+
+From 2.15.0 evaluations use the lean transport validated in `evaluations/eval-cost-364/` (about −53% raw tokens per case versus the native one-call-per-item method, with the lean grader somewhat stricter). Runs never mix transports or models inside one comparison.
+

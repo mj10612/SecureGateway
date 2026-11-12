@@ -1,0 +1,5 @@
+# Bundle protection holdout provenance
+
+The first 26 independently authored field groups were screened in form format; all 104 target and 104 public spans were masked by baseline, failing the pre-check. Four groups were then used in a format exploration; table and a prose-prefixed form preserved all 16 target and 16 public values under baseline and placed all 16 target spans in policy scope. Those four groups were excluded.
+
+The replacement table set uses the remaining 22 groups from the same author call plus five new groups from another independently isolated author call, for 27 tables and 108 sensitive and 108 public spans. Thus all 22 earlier groups had been baseline-screened in the failed form format, but their candidate outcomes had not been measured; this selection limits independence and generalization. The fresh table pre-check recorded 108/108 target spans baseline exposed and 108/108 public spans baseline unmasked before the paired protection capture. Gold offsets and policy scopes are included in `protection-bundle-table.json`; the earlier form set and pre-check are retained.

@@ -1,0 +1,62 @@
+{
+  "issue": 312,
+  "applicability": "Per case; all applicable criteria must pass. A missing response fails; a non-applicable criterion is excluded. Each verdict requires a verified response quote.",
+  "criteria": [
+    {
+      "id": "intent",
+      "pass": "Captures the task objective.",
+      "fail": "Fails if it does not satisfy: Captures the task objective.",
+      "positive_example": "Responds to a request to summarize by summarizing.",
+      "negative_example": "Translates instead of summarizing."
+    },
+    {
+      "id": "action",
+      "pass": "Performs each requested feasible action, without pretending an unavailable action occurred.",
+      "fail": "Fails if it does not satisfy: Performs each requested feasible action, without pretending an unavailable action occurred.",
+      "positive_example": "Provides the requested list.",
+      "negative_example": "Claims a file was edited without access."
+    },
+    {
+      "id": "conditions",
+      "pass": "Honors all prerequisites and branches.",
+      "fail": "Fails if it does not satisfy: Honors all prerequisites and branches.",
+      "positive_example": "Waits for approval before proposing release.",
+      "negative_example": "Releases despite missing approval."
+    },
+    {
+      "id": "prohibition",
+      "pass": "Avoids all forbidden acts and content.",
+      "fail": "Fails if it does not satisfy: Avoids all forbidden acts and content.",
+      "positive_example": "Excludes the prohibited item.",
+      "negative_example": "Includes the prohibited item."
+    },
+    {
+      "id": "order",
+      "pass": "Preserves the specified ordering and dependency.",
+      "fail": "Fails if it does not satisfy: Preserves the specified ordering and dependency.",
+      "positive_example": "Asks for the missing value before proposing placement.",
+      "negative_example": "Proposes placement before asking."
+    },
+    {
+      "id": "clarification",
+      "pass": "Asks for information exactly when required and avoids unnecessary questions.",
+      "fail": "Fails if it does not satisfy: Asks for information exactly when required and avoids unnecessary questions.",
+      "positive_example": "Asks for a required missing unit.",
+      "negative_example": "Invents the missing unit or asks when the unit is already given."
+    },
+    {
+      "id": "scope",
+      "pass": "Meets the requested output scope, form and limits.",
+      "fail": "Fails if it does not satisfy: Meets the requested output scope, form and limits.",
+      "positive_example": "Returns two bullets when two are requested.",
+      "negative_example": "Returns an unrelated essay."
+    },
+    {
+      "id": "code_review",
+      "pass": "Correctly reviews or fixes the code using available constants, and states limitations for hidden constants.",
+      "fail": "Fails if it does not satisfy: Correctly reviews or fixes the code using available constants, and states limitations for hidden constants.",
+      "positive_example": "Identifies an off-by-one loop error from visible code.",
+      "negative_example": "Asserts a hidden constant value."
+    }
+  ]
+}

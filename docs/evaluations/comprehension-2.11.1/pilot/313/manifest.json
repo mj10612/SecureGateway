@@ -1,0 +1,1141 @@
+{
+  "schema_version": 1,
+  "jobs": [
+    {
+      "job_id": "4b00deb1b13f49c69291970a0f6a2607",
+      "case_id": "holdout-313-ko-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "4b00deb1b13f49c69291970a0f6a2607",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 [PRIVATE_1]입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "8d342c5ed927e3dac55b97137a8d9dfe45737d0dceb8183704cad751713252af",
+      "original": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "e58e05c3292f46899701b6f2adb75e7c",
+      "case_id": "holdout-313-en-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "e58e05c3292f46899701b6f2adb75e7c",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "4a25165c8fa9351cc48a128855d7fa8b15cc8bd1784725e9cba70e2c1be24c00",
+      "original": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "c7763aede273416a9cfcfdabcefe467a",
+      "case_id": "holdout-313-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "c7763aede273416a9cfcfdabcefe467a",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "deb79b5dbc2df14d97eb268c3b56a4450e665f114a9c6b8a260e5627e59aec4b",
+      "original": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {}
+      }
+    },
+    {
+      "job_id": "6eba71d3390c44f19e7132c5540eb7fe",
+      "case_id": "holdout-313-ko-1",
+      "variant": "original",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "6eba71d3390c44f19e7132c5540eb7fe",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "905da8ee641d28ef801fc825d11d2bab97080d6ec213f88ebc44f2a4e22d4e53",
+      "original": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "ec51539a287b4202a36339f8352c2aa7",
+      "case_id": "holdout-313-en-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "ec51539a287b4202a36339f8352c2aa7",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "6266d3303db4cc2b688eadbf7c039bece82a1b8139cc186b73c5cadad68fd8a2",
+      "original": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "b42646994d7844a2b36db8f514f7b888",
+      "case_id": "holdout-313-ko-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "b42646994d7844a2b36db8f514f7b888",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "6988300f69e770dc0a235831469e8916e885c542afc838bef185f491c6c5e998",
+      "original": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {}
+      }
+    },
+    {
+      "job_id": "6ad2dda0a8d7455dbdb74c5f431387d2",
+      "case_id": "holdout-313-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "6ad2dda0a8d7455dbdb74c5f431387d2",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named private_symbol_1. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "980c2853819f55a1c5c86a0b6743a257bd977a351afd9bee26efe93c1597a128",
+      "original": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "private_symbol_1": "Larkbasket"
+        }
+      }
+    },
+    {
+      "job_id": "2311599f5eaa45b193be24f2f832667d",
+      "case_id": "holdout-313-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "2311599f5eaa45b193be24f2f832667d",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "fa52ed972c7cfa740535741d2add3b0d4be3c9d714d1d07f128f4ef68a537a7a",
+      "original": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {}
+      }
+    },
+    {
+      "job_id": "bf4ba3c3c586447294672171000c136e",
+      "case_id": "holdout-313-en-1",
+      "variant": "human",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "bf4ba3c3c586447294672171000c136e",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named [PRIVATE_1]. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "914509d649af4a490b95d673e1fa42b32e8e38869e21cae9904fa04923590571",
+      "original": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "cf3de2e496174fcd96e67be511745c5e",
+      "case_id": "holdout-313-en-1",
+      "variant": "candidate",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "cf3de2e496174fcd96e67be511745c5e",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named private_symbol_1. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "851007ddc4de82f614a6a757e7384ac1bdffe8a61b353bb63af40748f7eb3c7e",
+      "original": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "private_symbol_1": "Larkbasket"
+        }
+      }
+    },
+    {
+      "job_id": "975cdf9c8fab4fea865023a7b38db5cc",
+      "case_id": "holdout-313-ko-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "975cdf9c8fab4fea865023a7b38db5cc",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 [PRIVATE_1]입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "052ef510b40f2af1e0cb7a8210dd0bdebcd2920887967cf57f48fbb7c5ee9b4a",
+      "original": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "cbb158adf8364710abdc0b377054d521",
+      "case_id": "holdout-313-en-1",
+      "variant": "human",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "cbb158adf8364710abdc0b377054d521",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named [PRIVATE_1]. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "cbbf1652f0c9effa971a246d8cafd9074ae5ffd93fcc0602caf050a360b3e42e",
+      "original": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "0ff9a4907e67465ca8acc844b1edf56e",
+      "case_id": "holdout-313-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "0ff9a4907e67465ca8acc844b1edf56e",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named private_symbol_1. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "3033f94b4d66fd0f90b71bf6dd79f7f56781503f5613afb0abe50e8971fb3ecb",
+      "original": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "private_symbol_1": "Larkbasket"
+        }
+      }
+    },
+    {
+      "job_id": "265633e4928747c7a1642f997dae82f9",
+      "case_id": "holdout-313-ko-1",
+      "variant": "original",
+      "repeat": 0,
+      "request": {
+        "role": "interpret",
+        "job_id": "265633e4928747c7a1642f997dae82f9",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": ""
+          },
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "756b608ec8c20fc8c14f52b60eb8dbf62e644964c1550be8e435dd530fc35592",
+      "original": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "grading_policy_version": 2,
+      "grading_context": {}
+    },
+    {
+      "job_id": "b87a59a302e4400e82d8f62a641bf51c",
+      "case_id": "holdout-313-ko-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "b87a59a302e4400e82d8f62a641bf51c",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "bba3387298ba76ae6f424720b2b5b51b635e797ae5f6a5308dfa4ba675a85a87",
+      "original": "비공개 수거 일정의 이름은 수은뜰입니다. 다음 영문 지시는 그대로 적용해 주세요: \"Compare the two listed pickup windows. Ask for the missing cutoff before ranking them. Do not book a collection.\" 답변은 이번 주 수거 시간대 두 개의 비교로 한정하고 한국어로 써 주세요.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "영문 지시에 따라 두 수거 시간대를 비교한다."
+        },
+        {
+          "id": "conditions",
+          "description": "마감 시각이 없으면 순위를 정하기 전에 질문한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "수거 예약을 하지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 주 두 시간대만 다루고 한국어로 답한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "ko",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-sort",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {}
+      }
+    },
+    {
+      "job_id": "379f2f10db654315897726ffb5f285b1",
+      "case_id": "holdout-313-en-1",
+      "variant": "candidate",
+      "repeat": 1,
+      "request": {
+        "role": "interpret",
+        "job_id": "379f2f10db654315897726ffb5f285b1",
+        "model": "gpt-6.1-sol",
+        "max_output_tokens": 512,
+        "messages": [
+          {
+            "role": "system",
+            "content": "This context was masked locally. Names beginning private_symbol_ and numeric aliases are opaque references. Their presence alone does not make the surrounding request unreadable. Treat each supplied alias as a stable symbolic label: repeated labels refer to the same thing. Understand and carry out the visible request using its actions, relationships, order, negation, conditions and requested output format. You can summarize, compare or plan around opaque references without knowing their originals. Do not refuse or ask for originals merely because references are masked. Keep supplied aliases exactly unchanged in answers and tool arguments; the local host restores them. Never invent aliases, guess originals or assume a hidden label's type or meaning. Numeric aliases are labels, not the original magnitudes: do not calculate using their displayed digits. Use public names for new identifiers. If a particular answer truly requires a hidden fact, identify only that limitation and still complete the parts supported by visible context. Normal tool permissions and approval requirements still apply.\n"
+          },
+          {
+            "role": "user",
+            "content": "The confidential inspection route is named private_symbol_1. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route."
+          }
+        ],
+        "reasoning_effort": "low"
+      },
+      "input_hash": "39a12d354e4e5deeaee7e367bf509b46262369bf6fd26b84d81862173c405c4e",
+      "original": "The confidential inspection route is named Larkbasket. Follow this quoted instruction: \"List the checks for the two supplied stations. If a station address is absent, ask before sequencing the visit. Do not dispatch anyone.\" Answer in English and cover only tomorrow morning’s draft route.",
+      "criteria": [
+        {
+          "id": "intent",
+          "description": "List checks for the two supplied inspection stations."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for a missing station address before sequencing the visit."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not dispatch personnel."
+        },
+        {
+          "id": "scope",
+          "description": "Answer in English and cover tomorrow morning’s draft route only."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the supported action requested by the original?"
+        },
+        {
+          "id": "condition",
+          "description": "Does the response preserve the original conditions and not invent missing facts?"
+        },
+        {
+          "id": "order",
+          "description": "Does the response preserve any explicitly requested order? If no order is requested, avoid inventing an order constraint."
+        },
+        {
+          "id": "clarification",
+          "description": "Does the response ask for clarification when the original requires it or essential facts are missing, without an unnecessary question?"
+        }
+      ],
+      "language": "en",
+      "domain": "general",
+      "split": "holdout",
+      "template_group": "h313-quoted-english-inspection",
+      "grading_policy_version": 2,
+      "grading_context": {
+        "alias_bindings": {
+          "private_symbol_1": "Larkbasket"
+        }
+      }
+    }
+  ],
+  "responses": {},
+  "grades": {},
+  "errors": [],
+  "attempts": 0,
+  "metadata": {
+    "package_version": "2.10.0",
+    "code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "source_hash": "5225ae98014f16138768bdd3ab49cf317f64327f2352448660a58e4af2dc78f3",
+    "scoring_version": 2,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "809e3e9c62663cd9e019fad2aa69d64a9faffb3785f0f1315384d056913493f1",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-313-ko-1": [],
+        "holdout-313-en-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "3cb31311d4ebdf27cb270afd1c212781795d5bbcf8becfc9e5e9e11020e654e5",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "en",
+      "ko"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "candidate_code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "same_engine_capture": false,
+    "max_output_tokens": 512,
+    "variants": [
+      "original",
+      "human",
+      "baseline",
+      "candidate"
+    ],
+    "grading_policy_version": 2,
+    "reasoning_effort": "low",
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  }
+}

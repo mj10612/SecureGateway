@@ -1,0 +1,365 @@
+{
+  "provenance": "Fresh isolated author received issue title/body and case-format specification only.",
+  "format_specification": "Author exactly ten original synthetic, self-contained holdout cases: 5 tool_solvable, 2 no_calculation, and 3 impossible. Return a JSON object with cases array and no markdown. Use fictional scenarios and confidential numeric operands. Tool-solvable examples should ask addition in USD; no-calculation cases should request no arithmetic, and impossible cases should lack required information or prohibit the operation. Include id, original, human_masked (replace the confidential operands with neutral [PRIVATE_1] and [PRIVATE_2]), negative_control=true for no_calculation, otherwise false, applicable array chosen from intent, action, conditions, prohibition, order, clarification, scope; expected specific correct task behavior, label chosen from tool_solvable, no_calculation, impossible; operation and unit appropriate to the case; gold as a string stating the correct expected result or limitation; sensitive_spans and public_spans arrays of {start,end,text}, zero-based Unicode character offsets, end exclusive. Public spans must be ordinary task words, not numeric values or private identifiers. Each span text must occur exactly once in original, spans must not overlap. No real personal information, no prior context, no tools, no implementation code.",
+  "reported_usage": {
+    "input_tokens": 16896,
+    "cached_input_tokens": 13312,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 3326,
+    "reasoning_output_tokens": 516
+  },
+  "tool_events": 0,
+  "cases": [
+    {
+      "id": "holdout_01",
+      "original": "Add 125.40 USD and 274.60 USD for the fictional lantern workshop's confidential material budget. Return only the combined amount in USD.",
+      "human_masked": "Add [PRIVATE_1] USD and [PRIVATE_2] USD for the fictional lantern workshop's confidential material budget. Return only the combined amount in USD.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Use the permitted local addition tool with the two supplied aliases. Return only its result alias for local restoration, without exposing either operand or the result to the model.",
+      "label": "tool_solvable",
+      "operation": "addition",
+      "unit": "USD",
+      "gold": "400.00 USD",
+      "sensitive_spans": [
+        {
+          "start": 4,
+          "end": 10,
+          "text": "125.40"
+        },
+        {
+          "start": 19,
+          "end": 25,
+          "text": "274.60"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 3,
+          "text": "Add"
+        }
+      ]
+    },
+    {
+      "id": "holdout_02",
+      "original": "Add 308.25 USD and 191.75 USD for the fictional cloud theater's confidential costume budget. State the total, then say that approval is pending. Do not claim approval.",
+      "human_masked": "Add [PRIVATE_1] USD and [PRIVATE_2] USD for the fictional cloud theater's confidential costume budget. State the total, then say that approval is pending. Do not claim approval.",
+      "negative_control": false,
+      "applicable": [
+        "action",
+        "order",
+        "prohibition"
+      ],
+      "expected": "Obtain a result alias through permitted local addition. Present that alias first, followed by a statement that approval is pending; do not claim approval or reveal numeric values externally.",
+      "label": "tool_solvable",
+      "operation": "addition",
+      "unit": "USD",
+      "gold": "500.00 USD, followed by a statement that approval is pending.",
+      "sensitive_spans": [
+        {
+          "start": 4,
+          "end": 10,
+          "text": "308.25"
+        },
+        {
+          "start": 19,
+          "end": 25,
+          "text": "191.75"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 3,
+          "text": "Add"
+        }
+      ]
+    },
+    {
+      "id": "holdout_03",
+      "original": "Add 642.80 USD and 157.35 USD for the fictional glass garden's confidential repair allocation. Both amounts are approved expenses in USD. Report their sum without requesting confirmation.",
+      "human_masked": "Add [PRIVATE_1] USD and [PRIVATE_2] USD for the fictional glass garden's confidential repair allocation. Both amounts are approved expenses in USD. Report their sum without requesting confirmation.",
+      "negative_control": false,
+      "applicable": [
+        "action",
+        "conditions",
+        "clarification"
+      ],
+      "expected": "Call permitted local addition on the supplied aliases and report its result alias. Do not ask for unnecessary confirmation or infer operand values.",
+      "label": "tool_solvable",
+      "operation": "addition",
+      "unit": "USD",
+      "gold": "800.15 USD",
+      "sensitive_spans": [
+        {
+          "start": 4,
+          "end": 10,
+          "text": "642.80"
+        },
+        {
+          "start": 19,
+          "end": 25,
+          "text": "157.35"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 3,
+          "text": "Add"
+        }
+      ]
+    },
+    {
+      "id": "holdout_04",
+      "original": "Add 219.95 USD and 480.10 USD for the fictional paper observatory's confidential supply fund. Report only the sum; do not compare the contributions or recommend purchases.",
+      "human_masked": "Add [PRIVATE_1] USD and [PRIVATE_2] USD for the fictional paper observatory's confidential supply fund. Report only the sum; do not compare the contributions or recommend purchases.",
+      "negative_control": false,
+      "applicable": [
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Use permitted local addition and return only its result alias. Perform no comparison and provide no purchasing recommendation.",
+      "label": "tool_solvable",
+      "operation": "addition",
+      "unit": "USD",
+      "gold": "700.05 USD",
+      "sensitive_spans": [
+        {
+          "start": 4,
+          "end": 10,
+          "text": "219.95"
+        },
+        {
+          "start": 19,
+          "end": 25,
+          "text": "480.10"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 3,
+          "text": "Add"
+        }
+      ]
+    },
+    {
+      "id": "holdout_05",
+      "original": "Add 875.55 USD and 124.45 USD for the fictional velvet ferry's confidential maintenance reserve. These are the complete inputs, with no taxes or fees to include. Label the result as the maintenance total.",
+      "human_masked": "Add [PRIVATE_1] USD and [PRIVATE_2] USD for the fictional velvet ferry's confidential maintenance reserve. These are the complete inputs, with no taxes or fees to include. Label the result as the maintenance total.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "conditions",
+        "scope"
+      ],
+      "expected": "Use permitted local addition on the two aliases and label its result alias as the maintenance total. Add no taxes, fees, or other amounts.",
+      "label": "tool_solvable",
+      "operation": "addition",
+      "unit": "USD",
+      "gold": "Maintenance total: 1000.00 USD.",
+      "sensitive_spans": [
+        {
+          "start": 4,
+          "end": 10,
+          "text": "875.55"
+        },
+        {
+          "start": 19,
+          "end": 25,
+          "text": "124.45"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 3,
+          "text": "Add"
+        }
+      ]
+    },
+    {
+      "id": "holdout_06",
+      "original": "Record 135.20 USD and 864.80 USD as confidential background for the fictional moon bakery. No arithmetic is requested. Reply exactly: Budget note received.",
+      "human_masked": "Record [PRIVATE_1] USD and [PRIVATE_2] USD as confidential background for the fictional moon bakery. No arithmetic is requested. Reply exactly: Budget note received.",
+      "negative_control": true,
+      "applicable": [
+        "intent",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Reply exactly with the requested acknowledgment. Make no tool calls, perform no arithmetic, and do not repeat the amounts.",
+      "label": "no_calculation",
+      "operation": "none",
+      "unit": "USD",
+      "gold": "Budget note received.",
+      "sensitive_spans": [
+        {
+          "start": 7,
+          "end": 13,
+          "text": "135.20"
+        },
+        {
+          "start": 22,
+          "end": 28,
+          "text": "864.80"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 6,
+          "text": "Record"
+        }
+      ]
+    },
+    {
+      "id": "holdout_07",
+      "original": "Repeat 246.30 USD and 753.70 USD as separate confidential entries for the fictional ribbon museum, preserving their order. Use the labels Materials and Transport respectively. Do not calculate anything.",
+      "human_masked": "Repeat [PRIVATE_1] USD and [PRIVATE_2] USD as separate confidential entries for the fictional ribbon museum, preserving their order. Use the labels Materials and Transport respectively. Do not calculate anything.",
+      "negative_control": true,
+      "applicable": [
+        "action",
+        "order",
+        "prohibition"
+      ],
+      "expected": "Return Materials with the first alias and Transport with the second alias, in that order, for local restoration. Make no arithmetic tool calls.",
+      "label": "no_calculation",
+      "operation": "none",
+      "unit": "USD",
+      "gold": "Materials: 246.30 USD; Transport: 753.70 USD, in that order, without arithmetic.",
+      "sensitive_spans": [
+        {
+          "start": 7,
+          "end": 13,
+          "text": "246.30"
+        },
+        {
+          "start": 22,
+          "end": 28,
+          "text": "753.70"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 6,
+          "text": "Repeat"
+        }
+      ]
+    },
+    {
+      "id": "holdout_08",
+      "original": "Add 110.25 USD and 289.75 USD plus the unprovided delivery charge for the fictional copper orchard. Give the complete delivered total. The delivery charge is confidential and has not been supplied.",
+      "human_masked": "Add [PRIVATE_1] USD and [PRIVATE_2] USD plus the unprovided delivery charge for the fictional copper orchard. Give the complete delivered total. The delivery charge is confidential and has not been supplied.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "conditions",
+        "clarification",
+        "scope"
+      ],
+      "expected": "Explain that the complete delivered total requires the missing delivery charge and request it through the protected input path. Do not invent a charge or present a partial sum as the complete total.",
+      "label": "impossible",
+      "operation": "addition",
+      "unit": "USD",
+      "gold": "The complete delivered total cannot be determined because the delivery charge is missing.",
+      "sensitive_spans": [
+        {
+          "start": 4,
+          "end": 10,
+          "text": "110.25"
+        },
+        {
+          "start": 19,
+          "end": 25,
+          "text": "289.75"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 3,
+          "text": "Add"
+        }
+      ]
+    },
+    {
+      "id": "holdout_09",
+      "original": "Add 320.50 USD and 179.50 EUR into a USD total for the fictional porcelain harbor. No exchange rate or conversion date is supplied. Do not assume a rate.",
+      "human_masked": "Add [PRIVATE_1] USD and [PRIVATE_2] EUR into a USD total for the fictional porcelain harbor. No exchange rate or conversion date is supplied. Do not assume a rate.",
+      "negative_control": false,
+      "applicable": [
+        "conditions",
+        "prohibition",
+        "clarification"
+      ],
+      "expected": "Request an authorized EUR-to-USD exchange rate and its applicable date. Do not add unlike currencies, assume parity, or attempt unsupported conversion.",
+      "label": "impossible",
+      "operation": "currency_conversion_then_addition",
+      "unit": "USD and EUR; requested output USD",
+      "gold": "A USD total cannot be determined without an authorized EUR-to-USD exchange rate and applicable date.",
+      "sensitive_spans": [
+        {
+          "start": 4,
+          "end": 10,
+          "text": "320.50"
+        },
+        {
+          "start": 19,
+          "end": 25,
+          "text": "179.50"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 3,
+          "text": "Add"
+        }
+      ]
+    },
+    {
+      "id": "holdout_10",
+      "original": "Review 145.60 USD and 254.40 USD for the fictional amber archive. The requested deliverable is their combined total, but this session explicitly prohibits all arithmetic, including local tool calls. State the limitation.",
+      "human_masked": "Review [PRIVATE_1] USD and [PRIVATE_2] USD for the fictional amber archive. The requested deliverable is their combined total, but this session explicitly prohibits all arithmetic, including local tool calls. State the limitation.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "State that the total cannot be produced under the session's arithmetic prohibition. Perform no calculation and make no local arithmetic tool call.",
+      "label": "impossible",
+      "operation": "addition_prohibited",
+      "unit": "USD",
+      "gold": "The combined total cannot be provided because this session prohibits all arithmetic, including local tool calls.",
+      "sensitive_spans": [
+        {
+          "start": 7,
+          "end": 13,
+          "text": "145.60"
+        },
+        {
+          "start": 22,
+          "end": 28,
+          "text": "254.40"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 6,
+          "text": "Review"
+        }
+      ]
+    }
+  ]
+}

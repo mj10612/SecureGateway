@@ -1,0 +1,143 @@
+{
+  "issue": 312,
+  "status": "completed",
+  "interpretations": 144,
+  "grades": 48,
+  "raw_tokens": 3049715,
+  "content_tokens": 166067,
+  "resume_events": [],
+  "results": {
+    "numeric_context": {
+      "decision": "REJECT",
+      "analysis_cases": 37,
+      "analysis_discriminating_cases": 31,
+      "analysis_discrimination_missing": 0,
+      "whole_task_passes": {
+        "A": 37,
+        "C": 33,
+        "D1": 33
+      },
+      "D_only": 1,
+      "C_only": 1,
+      "p_one_sided": 0.75,
+      "per_criterion": {
+        "intent": {
+          "A": 37,
+          "C": 35,
+          "D": 35,
+          "cases": 37
+        },
+        "action": {
+          "A": 37,
+          "C": 35,
+          "D": 34,
+          "cases": 37
+        },
+        "conditions": {
+          "A": 18,
+          "C": 18,
+          "D": 17,
+          "cases": 18
+        },
+        "prohibition": {
+          "A": 27,
+          "C": 27,
+          "D": 27,
+          "cases": 27
+        },
+        "order": {
+          "A": 5,
+          "C": 5,
+          "D": 5,
+          "cases": 5
+        },
+        "clarification": {
+          "A": 4,
+          "C": 4,
+          "D": 4,
+          "cases": 4
+        },
+        "scope": {
+          "A": 37,
+          "C": 35,
+          "D": 35,
+          "cases": 37
+        },
+        "code_review": {
+          "A": 33,
+          "C": 31,
+          "D": 32,
+          "cases": 33
+        }
+      },
+      "negative_control_count": 6,
+      "negative_control_net_loss": 0,
+      "protection": {
+        "issue": 312,
+        "variant": "numeric_context",
+        "status": "completed",
+        "dataset": "#312/protection-cases-corrected.json",
+        "cases": 62,
+        "sensitive_spans": 180,
+        "public_spans": 160,
+        "baseline_exposed": 0,
+        "candidate_exposed": 0,
+        "newly_exposed": 0,
+        "newly_protected": 0,
+        "baseline_overmasked": 95,
+        "candidate_overmasked": 95,
+        "net_overmask_increase": 0,
+        "baseline_exact_restore": 62,
+        "candidate_exact_restore": 62,
+        "ci": {
+          "status": "passed",
+          "exit_code": 0,
+          "new_exposure_count": 0,
+          "integrity_regression_count": 0
+        },
+        "private_role_guard": null,
+        "protection_gate_passed": true,
+        "limitations": [
+          "Loopback synthetic HTTP only, not real provider certification.",
+          "Case-specific trusted policies are local fixtures.",
+          "The legacy CI corpus uses one frozen policy for process-local scoped candidates, while the new protection corpus exercises case-specific policies."
+        ],
+        "public_overmask_by_context": {
+          "prose_quantity": {
+            "spans": 25,
+            "C_overmasked": 25,
+            "D_overmasked": 25
+          },
+          "prose_duration_date": {
+            "spans": 25,
+            "C_overmasked": 25,
+            "D_overmasked": 25
+          },
+          "version": {
+            "spans": 20,
+            "C_overmasked": 20,
+            "D_overmasked": 20
+          },
+          "code_loop_constant": {
+            "spans": 25,
+            "C_overmasked": 0,
+            "D_overmasked": 0
+          },
+          "json_numbers": {
+            "spans": 25,
+            "C_overmasked": 25,
+            "D_overmasked": 25
+          },
+          "code_loop_index": {
+            "spans": 40,
+            "C_overmasked": 0,
+            "D_overmasked": 0
+          }
+        }
+      },
+      "additional_missing": null
+    }
+  },
+  "limitation": "Interpreter and grader are the same model family; sample is enriched for observable input differences.",
+  "withdrawn_first_protection_result": "report-superseded-invalid-protection.json; old public gold had only key=value assignments and did not represent ordinary prose. Replaced with independently authored public numbers; first partial offline rerun ended in PermissionError and is preserved."
+}

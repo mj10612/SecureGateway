@@ -1,0 +1,22 @@
+{
+  "issue": 306,
+  "planned_cases": 46,
+  "interpretation_conditions": 4,
+  "interpretation_calls": 0,
+  "fresh_grading_calls": 0,
+  "optional_regrades_max": 0,
+  "inference_attack_calls": 0,
+  "expected_initial_calls": 0,
+  "maximum_calls_including_one_regrade_per_case": 0,
+  "interpretation_output_cap": 512,
+  "grading_output_cap": 2048,
+  "grading_cap_rationale": "A single grade covers multiple responses and seven or more verdicts per response; JSON verdicts and verified quotes cannot reliably fit 768 tokens.",
+  "inference_attack_output_cap": null,
+  "estimated_initial_raw_tokens": 0,
+  "estimated_initial_content_tokens": 0,
+  "estimate_basis": "Pilot #309 means: 15424 raw / 331 content per interpretation, 16145 raw / 1052 content per one-response grade; add 500 tokens for each additional response graded. Estimates only, actual usage recorded per call; separately budget authoring, quote regrades, failures and #318 attack calls.",
+  "accounting": "Per-call content = reported input minus same-session minimal-prompt overhead plus reported output; record raw and content, latency and retries. Unknown failed-call usage stops the candidate.",
+  "regrades_raw_upper_estimate": 0,
+  "authoring": "Independent fresh case author calls are additional and reported separately, including excluded contaminated author runs.",
+  "shared_with": "#309: A/B/C/D and grader shared, no duplicate calls."
+}

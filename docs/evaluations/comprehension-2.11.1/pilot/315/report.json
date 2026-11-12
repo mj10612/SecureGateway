@@ -1,0 +1,1290 @@
+{
+  "schema_version": 1,
+  "suite": "comprehension",
+  "status": "completed",
+  "metadata": {
+    "package_version": "2.10.0",
+    "code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "source_hash": "5225ae98014f16138768bdd3ab49cf317f64327f2352448660a58e4af2dc78f3",
+    "scoring_version": 2,
+    "corpus_version": "accuracy-holdout-20261109-v1",
+    "corpus_hash": "7db11d9ef21e9cc9a2809f98e41d5275ae8d81afdbdb68a5542de936e25461b8",
+    "settings": {
+      "natural_language": "auto",
+      "prose_mode": "content_words",
+      "mask_numbers": false,
+      "forced_terms": {
+        "holdout-315-en-1": [],
+        "holdout-315-ko-1": []
+      },
+      "domain_dictionary_toggles": {
+        "defense": true,
+        "automotive": false,
+        "semiconductor": false
+      },
+      "domain_dictionary_manifest": "acdace798275fc625d7947273d99363e21f7682f2f09d20b7123e3f9a2bf8d63"
+    },
+    "settings_hash": "79ae733d5afdca50c4fbf5e08fb77fde79fb9da8d35b764b3de699fd1a477e30",
+    "profile": "release",
+    "python": "3.14.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "languages_measured": [
+      "en",
+      "ko"
+    ],
+    "languages_not_measured": [
+      "ar",
+      "bn",
+      "de",
+      "es",
+      "fr",
+      "hi",
+      "id",
+      "ja",
+      "mr",
+      "pt",
+      "ru",
+      "te",
+      "tr",
+      "ur",
+      "zh"
+    ],
+    "other_languages": "not_measured",
+    "scope": "synthetic loopback HTTP; not native client/provider certification",
+    "model": "gpt-6.1-sol",
+    "repeats": 2,
+    "worker_protocol": 1,
+    "baseline_code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "candidate_code_sha": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+    "same_engine_capture": true,
+    "max_output_tokens": 512,
+    "variants": [
+      "baseline",
+      "concise",
+      "examples"
+    ],
+    "grading_policy_version": 2,
+    "reasoning_effort": "low",
+    "token_limit": "Output byte guard and reported usage; provider hard cap unavailable for Codex CLI.",
+    "import_provenance": "External records are caller-attested, not cryptographically verified.",
+    "isolation": "Fresh context/cwd; same OS user, no hard filesystem jail."
+  },
+  "cases": [
+    {
+      "id": "holdout-315-en-1:baseline:0",
+      "job_id": "4291d6a496ba4838a42bef391b114f16",
+      "case_id": "holdout-315-en-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "4be237fef65f958da27e2124b6b8c465d4bc8ffed177d5e425f93eb168299acd",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-budget-reasoning",
+      "response": "What are the costs of both proposed plans? Both costs are missing, so I can’t determine which fits the workshop’s approved budget and reserve. Please supply the costs as aliases with the relevant affordability relationships, since opaque numeric labels cannot be used for arithmetic. No credits will be spent.",
+      "response_hash": "e37f0b38f674d77ea610502ff6d00613dfcc44ea7e6e3e84044915ef48157fa1",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response ties the missing costs to affordability: \"Both costs are missing, so I can’t determine which fits the workshop’s approved budget and reserve.\" It appropriately defers comparison and requests \"costs as aliases with the relevant affordability relationships.\""
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks for both missing costs before choosing: \"What are the costs of both proposed plans?\" No plan is selected."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "It repeats no private names or numeric values, requests \"costs as aliases,\" and states: \"No credits will be spent.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The question \"What are the costs of both proposed plans?\" and reference to \"the workshop’s approved budget and reserve\" keep the response within the two workshop plans."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "The supported action is the required clarification: \"What are the costs of both proposed plans?\" It explains why choosing must wait without inventing costs or refusing the task outright."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "The response preserves the missing-cost prerequisite: \"Both costs are missing, so I can’t determine which fits the workshop’s approved budget and reserve.\" It requests both costs and makes no premature choice."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-en-1:baseline:1",
+      "job_id": "7da5107d45524aac99d5bf4f8324c32d",
+      "case_id": "holdout-315-en-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "fea7d764a705aa03ed617906a99f38efed03c00f025c09de85be52d779d7a324",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-budget-reasoning",
+      "response": "What are the costs of both proposed plans for this workshop? Both costs are missing, so I cannot choose a plan. The budget and reserve aliases are opaque labels and do not reveal amounts usable for comparison. No credits have been spent.",
+      "response_hash": "6081ea68e25a4cecb77d4807fa667b77f8615057465864f4e8be792172af0030",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": false,
+          "evidence": "The response says, \"The budget and reserve aliases are opaque labels and do not reveal amounts usable for comparison.\" It provides no supported reasoning about preserving the reserve within the budget or conditionally comparing the two plans using aliases."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"What are the costs of both proposed plans for this workshop? Both costs are missing, so I cannot choose a plan.\" This asks for both missing costs before choosing."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"No credits have been spent.\" The response neither repeats nor reconstructs the private name or numerical values."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"What are the costs of both proposed plans for this workshop?\" The response stays within the two workshop plans."
+        },
+        {
+          "id": "action",
+          "passed": false,
+          "evidence": "\"Both costs are missing, so I cannot choose a plan. The budget and reserve aliases are opaque labels and do not reveal amounts usable for comparison.\" The clarification is appropriate, but the response omits the supported conditional explanation of how budget and reserve determine affordability."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"What are the costs of both proposed plans for this workshop? Both costs are missing, so I cannot choose a plan.\" It preserves the requirement to obtain both costs before selecting a plan."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-en-1:concise:0",
+      "job_id": "bd2204849fc0405a913aafa49babac89",
+      "case_id": "holdout-315-en-1",
+      "variant": "concise",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "de415989234cf205b5b45633c5b0b1ee5e60e5be9714c1371a34ea30ff187847",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-budget-reasoning",
+      "response": "What are the costs of both proposed plans for this workshop? Please use aliases for private names and values.\n\nBoth costs are missing, so I can’t determine which plan fits the approved budget and reserve. No funds have been spent.",
+      "response_hash": "3128990f2b0f4678d4fed278691c26b51d565a4d5a32211ae12c41b6d6e0b815",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response explains the decision cannot yet be made: \"Both costs are missing, so I can’t determine which plan fits the approved budget and reserve.\" It appropriately defers comparison and requests aliases rather than inventing missing costs."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks for both missing costs before choosing: \"What are the costs of both proposed plans for this workshop?\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "It repeats no private literals, requests \"Please use aliases for private names and values,\" and states \"No funds have been spent.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The request is limited to \"both proposed plans for this workshop,\" with no unrelated plans or workshops introduced."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "It performs the supported action by asking \"What are the costs of both proposed plans for this workshop?\" Missing costs prevent a concrete choice, so targeted clarification is appropriate."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "It preserves the prerequisite to choosing: \"Both costs are missing, so I can’t determine which plan fits the approved budget and reserve.\" It requests both costs and makes no premature selection."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-en-1:concise:1",
+      "job_id": "f2bf846017a14f1faeff6562ce67ba91",
+      "case_id": "holdout-315-en-1",
+      "variant": "concise",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "ab395b10e4a028431d3904e0e34827bb3a39cb9d3e7f62ea2fda6b21f4fe262a",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-budget-reasoning",
+      "response": "For private_symbol_1, what are the costs of both proposed plans? Both costs are missing, so I cannot choose a plan against the approved budget (private_symbol_2) and reserve (private_symbol_3).\n\nPlease use opaque aliases and supply the relevant affordability comparisons without revealing private values. No credits have been spent.",
+      "response_hash": "3bd5fda02960cab86c1aaba3fae23d24fd99a4f8ddeb74fcbfc0c73fdb72633d",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response ties the missing comparison to aliased budget and reserve: \"I cannot choose a plan against the approved budget (private_symbol_2) and reserve (private_symbol_3).\" Since both costs are absent, targeted clarification appropriately defers the decision."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It explicitly asks for both costs before choosing: \"For private_symbol_1, what are the costs of both proposed plans? Both costs are missing, so I cannot choose a plan\"."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "The response uses opaque aliases without repeating or reconstructing private literals and states: \"No credits have been spent.\""
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The question \"For private_symbol_1, what are the costs of both proposed plans?\" confines the response to the two plans for the aliased workshop."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "The supported action is clarification because the costs are unavailable. The response performs it: \"what are the costs of both proposed plans?\" It appropriately withholds a choice."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "The response preserves the prerequisite: \"Both costs are missing, so I cannot choose a plan\" and requests private-safe information: \"Please use opaque aliases and supply the relevant affordability comparisons without revealing private values.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-en-1:examples:0",
+      "job_id": "44316948b48b4ad298093f041f170fa3",
+      "case_id": "holdout-315-en-1",
+      "variant": "examples",
+      "repeat": 0,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "2456f3e1f6cca8c6f72f8cb4abc32b8b51cb22459e85b6ca647d40914ec0dbb9",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-budget-reasoning",
+      "response": "What are the costs of both proposed plans? Both costs are missing, so I can’t determine which plan fits the approved budget or whether either would require reserve funds. No credits have been spent.",
+      "response_hash": "41499979050abbd2fbfb072238f72b1895762fb4f2c35ac358272fcc67199aac",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"Both costs are missing, so I can’t determine which plan fits the approved budget or whether either would require reserve funds.\" This relates the comparison to budget and reserve without exposing private literals, appropriately deferring a choice until costs are supplied."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"What are the costs of both proposed plans?\" asks for both missing costs before choosing."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"No credits have been spent.\" The response also uses \"the approved budget\" and \"reserve funds\" without repeating or reconstructing private names or values."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"What are the costs of both proposed plans?\" confines the request and subsequent reasoning to the two proposed workshop plans."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"What are the costs of both proposed plans?\" performs the required clarification, while \"Both costs are missing\" explains why a concrete selection cannot yet be made."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"Both costs are missing, so I can’t determine which plan fits\" preserves the requirement to obtain both costs before choosing and invents no costs."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-en-1:examples:1",
+      "job_id": "f3ecbdd81b4540248d93a6b1ec7f30ec",
+      "case_id": "holdout-315-en-1",
+      "variant": "examples",
+      "repeat": 1,
+      "language": "en",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "bfa33ce7dc007e2f4a19043ed1b98105d3f06f28c45aeb0453a05e6be7ba5e9d",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-budget-reasoning",
+      "response": "What are the costs of both proposed plans? Please supply both costs using private aliases, along with their relationships to the approved budget and reserve so I can compare them without reconstructing private values. I cannot choose a plan until both costs are available. No credits will be spent.",
+      "response_hash": "fc28069bb705d8f225c3afce7bca16242d2a5ec1ad138887f38b77abde6d3348",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "The response requests costs \"using private aliases, along with their relationships to the approved budget and reserve\" to enable the comparison. With both costs missing, this targeted clarification appropriately defers the decision."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "It asks, \"What are the costs of both proposed plans?\" and states, \"I cannot choose a plan until both costs are available.\""
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "It proposes comparison \"without reconstructing private values\" and states, \"No credits will be spent.\" It repeats none of the private literals."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "The question \"What are the costs of both proposed plans?\" stays within the two supplied workshop plans and introduces no other plans or workshops."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "The response performs the supported next action: \"Please supply both costs using private aliases, along with their relationships to the approved budget and reserve\". Missing costs prevent a concrete choice, so requesting them is appropriate."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "The response preserves the prerequisite explicitly: \"I cannot choose a plan until both costs are available.\" It also preserves confidentiality and the spending prohibition through \"without reconstructing private values\" and \"No credits will be spent.\""
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-ko-1:baseline:0",
+      "job_id": "c8ddcb0df9244d37819311353b650387",
+      "case_id": "holdout-315-ko-1",
+      "variant": "baseline",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "fb300451dc81a48838d8e4e4d00cbacb88dac941fc806306e562c67480a8f12f",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-temperature-reasoning",
+      "response": "판정 전에 두 센서 기록의 측정값과 각각의 단위를 알려 주세요.\n\n두 기록은 각각 섭씨 기준으로 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인합니다. 경계값과 같으면 허용 범위에 포함됩니다. 다른 단위라면 섭씨로 환산한 뒤 비교합니다.\n\n현재는 센서 기록과 단위가 없어 판정할 수 없습니다. 또한 실제 비교를 수행하려면 가려진 경계값과의 비교 결과가 필요하지만, 원문 복원이나 공개는 요청하지 않겠습니다. 비공개 보관함 이름은 재기재하지 않고, 실제 설정도 변경하지 않습니다.",
+      "response_hash": "af0ff809d4c9a1abfeb85d3b9c0a49d786bc7b31992b3893727e65e016b3050d",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"두 기록은 각각 섭씨 기준으로 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인합니다.\"라는 설명으로 대체 표기를 사용한 두 기록의 판정 방법을 제시했습니다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"판정 전에 두 센서 기록의 측정값과 각각의 단위를 알려 주세요.\"라고 먼저 요청하여 누락된 기록과 단위를 확인하는 조건을 지켰습니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"원문 복원이나 공개는 요청하지 않겠습니다\" 및 \"실제 설정도 변경하지 않습니다\"라고 밝혔으며, 가려진 이름이나 경계 수치를 복원하지 않았습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"두 기록은 각각\"의 비교 절차와 \"다른 단위라면 섭씨로 환산한 뒤 비교합니다\"라는 필요한 처리만 설명하여 이번 두 기록의 판정 범위를 유지했습니다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"경계값과 같으면 허용 범위에 포함됩니다. 다른 단위라면 섭씨로 환산한 뒤 비교합니다.\"라고 실행 가능한 조건부 절차를 제공했습니다. \"현재는 센서 기록과 단위가 없어 판정할 수 없습니다\"라는 유보는 필수 정보가 없어 적절합니다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"판정 전에 두 센서 기록의 측정값과 각각의 단위를 알려 주세요.\"라는 선행 요청과 \"하한 private_symbol_1 이상이고 상한 private_symbol_2 이하\"라는 비교로 정보 확인 조건과 대체 표기 유지 조건을 보존했습니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-ko-1:baseline:1",
+      "job_id": "fd0393c7ebf746fb84ba4362ceb885a0",
+      "case_id": "holdout-315-ko-1",
+      "variant": "baseline",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "4040c16207c5a278ed092a812a54862999b1ba746b7b1511b55f19c9ca81d10d",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-temperature-reasoning",
+      "response": "두 센서 기록의 측정값과 각 단위(예: °C 또는 °F)를 알려 주세요. 비공개 수치는 대체 표기로 유지해 주세요.\n\n기록을 받으면 이번 두 기록에 대해 각각 다음 절차로 판정합니다.\n1. 단위를 확인하고, 필요하면 섭씨로 환산합니다.\n2. 측정값이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하이면 허용 범위입니다.\n3. 하한보다 낮거나 상한보다 높으면 허용 범위 밖입니다.\n\n대체 표기만으로 값의 대소 관계를 알 수 없다면 실제 판정에는 해당 비교 결과가 필요합니다. 가려진 원문을 복원하거나 보관함 설정을 변경하지 않습니다.",
+      "response_hash": "086435823f23b904fcc398079dc779845eccd0c407ab2d95923d6c2df87dabf6",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"측정값이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하이면 허용 범위입니다.\"라고 대체 표기를 사용해 범위 판정 방법을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"두 센서 기록의 측정값과 각 단위(예: °C 또는 °F)를 알려 주세요.\"라고 누락된 기록과 단위를 판정 전에 요청한다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"가려진 원문을 복원하거나 보관함 설정을 변경하지 않습니다.\"라고 명시하며, 응답에서 비공개 이름이나 수치를 복원하지 않는다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"기록을 받으면 이번 두 기록에 대해 각각 다음 절차로 판정합니다.\"라고 이번 두 기록으로 절차를 한정한다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"단위를 확인하고, 필요하면 섭씨로 환산합니다.\" 및 \"하한보다 낮거나 상한보다 높으면 허용 범위 밖입니다.\"라는 조건부 절차를 제공해 현재 가능한 요청을 수행한다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"두 센서 기록의 측정값과 각 단위(예: °C 또는 °F)를 알려 주세요.\"라고 먼저 요청하고, \"대체 표기만으로 값의 대소 관계를 알 수 없다면 실제 판정에는 해당 비교 결과가 필요합니다.\"라고 밝혀 누락된 정보를 지어내지 않고 판정 조건을 보존한다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-ko-1:concise:0",
+      "job_id": "2fa37f864f9b401196eea33f19443f6d",
+      "case_id": "holdout-315-ko-1",
+      "variant": "concise",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "c6c861c577e5d7bc01ea3729f2dfeabd882bd6957b0b08c6cb9ea16a8778fa00",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-temperature-reasoning",
+      "response": "두 센서 기록의 값과 각각의 단위를 알려 주세요. 기록과 단위가 없어 현재는 판정할 수 없습니다.\n\n기록을 받으면 필요한 경우 섭씨로 변환한 뒤, 각 기록이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인합니다. 두 조건을 모두 만족하면 허용 범위 안이며, 하나라도 만족하지 않으면 범위 밖입니다. 다만 가려진 한계값과의 비교 결과를 알 수 없다면 최종 판정은 불가능합니다.\n\n비공개 보관함 이름과 한계값은 대체 표기로 유지하며, 원문 복원이나 실제 설정 변경 없이 이번 두 기록만 다루겠습니다.",
+      "response_hash": "d7e52a68cbaac1f5d75950dce00bf4a9f822a3f7668a0aeb0db55b0d118785d6",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"각 기록이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인합니다.\" 대체 표기를 사용해 각 기록의 허용 범위 판정 방법을 설명합니다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"두 센서 기록의 값과 각각의 단위를 알려 주세요.\" 누락된 기록과 단위를 판정 전에 요청합니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"비공개 보관함 이름과 한계값은 대체 표기로 유지하며, 원문 복원이나 실제 설정 변경 없이 이번 두 기록만 다루겠습니다.\" 원문을 복원하거나 설정을 변경하지 않습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"이번 두 기록만 다루겠습니다.\" 설명을 요청된 두 기록의 판정 절차에 한정합니다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"기록을 받으면 필요한 경우 섭씨로 변환한 뒤\" 및 \"두 조건을 모두 만족하면 허용 범위 안이며, 하나라도 만족하지 않으면 범위 밖입니다.\" 필요한 정보를 요청하고 실행 가능한 조건부 판정 절차를 제공합니다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"기록과 단위가 없어 현재는 판정할 수 없습니다.\" 누락된 정보를 임의로 만들지 않고 판정을 보류하며, \"하한 private_symbol_1 이상이고 상한 private_symbol_2 이하\"라는 경계 포함 조건을 유지합니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-ko-1:concise:1",
+      "job_id": "a02e040dff2c4034893e69dffc8f00d2",
+      "case_id": "holdout-315-ko-1",
+      "variant": "concise",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "f1903a3df509a4e3d7ff0f2ba3bcdf90c6f3942398b014b78a3eaf029196ac49",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-temperature-reasoning",
+      "response": "판정하려면 이번 센서 기록 두 개의 측정값과 각각의 단위를 알려 주세요.\n\n기록을 받으면 단위를 섭씨로 맞춘 뒤, 각 기록이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인합니다. 다만 두 경계값이 가려져 있어, 실제 범위 내·외 판정에는 각 기록과 경계값 사이의 비교 결과가 필요합니다. 가려진 수치 자체를 공개할 필요는 없습니다.\n\n비공개 보관함 이름은 대체 표기로 유지하고, 가려진 원문을 복원하거나 실제 설정을 변경하지 않겠습니다.",
+      "response_hash": "d7a868f904b26745b5c15730b6ca157804ee49610b35a86967012b368fd9f843",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"각 기록이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인합니다.\"라고 대체 표기를 사용하여 두 기록에 적용할 허용 범위 판정 방법을 설명했다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"판정하려면 이번 센서 기록 두 개의 측정값과 각각의 단위를 알려 주세요.\"라고 누락된 기록과 단위를 판정 전에 요청했다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"비공개 보관함 이름은 대체 표기로 유지하고, 가려진 원문을 복원하거나 실제 설정을 변경하지 않겠습니다.\"라고 명시했으며 실제 비공개 이름이나 경계 수치를 노출하지 않았다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"이번 센서 기록 두 개의 측정값과 각각의 단위\"를 요청하고 \"기록을 받으면 단위를 섭씨로 맞춘 뒤\" 각 기록을 비교하는 절차만 설명하여 이번 두 기록의 판정 범위를 지켰다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"각 기록이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인합니다.\"라는 실행 가능한 조건부 절차를 제공했다. 기록이 없는 상황에서 \"측정값과 각각의 단위를 알려 주세요.\"라고 요청하여 지원 가능한 작업을 수행했다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"판정하려면 이번 센서 기록 두 개의 측정값과 각각의 단위를 알려 주세요.\"라고 선행 조건을 지켰다. 또한 \"가려진 수치 자체를 공개할 필요는 없습니다.\"라고 하여 대체 표기를 유지하면서 누락된 정보 없이 구체적인 판정을 내리지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-ko-1:examples:0",
+      "job_id": "2a30bd5fb5de476e94a297f8cce14b67",
+      "case_id": "holdout-315-ko-1",
+      "variant": "examples",
+      "repeat": 0,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "d0d19b705c8705b283ebe01987ba0ae934fb1bc0231ed67fa0fe2d1c4d7985f8",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-temperature-reasoning",
+      "response": "두 센서 기록의 값과 단위를 각각 알려 주세요. 현재 기록과 단위가 없어 허용 범위 여부를 판정할 수 없습니다.\n\n기록을 받으면 각 값을 섭씨 기준으로 맞춘 뒤, 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 각각 확인합니다. 다만 두 경계값이 가려져 있으므로 실제 판정에는 각 기록과 경계값의 비교 결과가 필요합니다. 가려진 수치 자체를 공개하실 필요는 없습니다.\n\n비공개 보관함 이름과 경계값은 대체 표기로 유지하고, 원문 복원이나 실제 설정 변경 없이 이번 두 기록만 다루겠습니다.",
+      "response_hash": "c0c995076be77e509c417fac688f4c683f7c4ed5d7dbecf67e8f59969a81b170",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"기록을 받으면 각 값을 섭씨 기준으로 맞춘 뒤, 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 각각 확인합니다.\" 대체 표기로 두 기록의 허용 범위 판정 방법을 설명합니다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"두 센서 기록의 값과 단위를 각각 알려 주세요. 현재 기록과 단위가 없어 허용 범위 여부를 판정할 수 없습니다.\" 누락된 기록과 단위를 판정 전에 요청합니다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"비공개 보관함 이름과 경계값은 대체 표기로 유지하고, 원문 복원이나 실제 설정 변경 없이 이번 두 기록만 다루겠습니다.\" 비공개 원문을 공개하거나 설정을 변경하지 않습니다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"이번 두 기록만 다루겠습니다.\" 설명은 두 센서 기록의 단위 정리와 경계 비교 절차에 한정됩니다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 각각 확인합니다.\" 요청된 비교 절차를 제공하고, \"두 센서 기록의 값과 단위를 각각 알려 주세요.\"라고 누락 정보를 요청합니다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"기록을 받으면 각 값을 섭씨 기준으로 맞춘 뒤\"라고 판정을 정보 수령 이후로 두며, \"가려진 수치 자체를 공개하실 필요는 없습니다.\"라고 대체 표기 유지 조건도 보존합니다."
+        }
+      ]
+    },
+    {
+      "id": "holdout-315-ko-1:examples:1",
+      "job_id": "16c054c9997e46e5b808895f03e81560",
+      "case_id": "holdout-315-ko-1",
+      "variant": "examples",
+      "repeat": 1,
+      "language": "ko",
+      "domain": "general",
+      "criteria_count": 6,
+      "input_hash": "1db8e422989f445b1ffbf9241a19885e5504239b97624ae101be5b52d3f921c5",
+      "status": "completed",
+      "split": "holdout",
+      "template_group": "h315-temperature-reasoning",
+      "response": "두 센서 기록의 값과 각각의 단위(예: 섭씨 또는 화씨)를 알려 주세요.\n\n기록을 받으면 단위를 섭씨로 맞춘 뒤, 각 기록이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인하는 절차를 설명하겠습니다. 다만 두 경계값이 가려져 있어, 경계값과의 비교 결과가 제공되지 않으면 실제 범위 충족 여부는 확정할 수 없습니다. 비공개 보관함 이름과 수치는 공개하거나 복원하지 않으며, 실제 설정도 변경하지 않습니다.",
+      "response_hash": "fcf949fea8dbee16901e91186a987719539eafd1d158d247820d037c4f565d1a",
+      "execution": {
+        "kind": "actual_llm_subagent",
+        "fresh_context": true,
+        "runner": "Codex CLI ephemeral",
+        "isolation": "Empty cwd; zero tool events; same user; no hard jail"
+      },
+      "grades": [
+        {
+          "id": "intent",
+          "passed": true,
+          "evidence": "\"각 기록이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인\"이라고 하여 대체 표기를 유지하며 두 기록의 허용 범위 판정 방법을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "passed": true,
+          "evidence": "\"두 센서 기록의 값과 각각의 단위(예: 섭씨 또는 화씨)를 알려 주세요.\"라고 먼저 요청하고 판정을 유보한다."
+        },
+        {
+          "id": "prohibition",
+          "passed": true,
+          "evidence": "\"비공개 보관함 이름과 수치는 공개하거나 복원하지 않으며, 실제 설정도 변경하지 않습니다.\"라고 명시하며 원문이나 실제 수치를 노출하지 않는다."
+        },
+        {
+          "id": "scope",
+          "passed": true,
+          "evidence": "\"두 센서 기록의 값과 각각의 단위\"를 요청하고 \"각 기록이 하한 private_symbol_1 이상이고 상한 private_symbol_2 이하인지 확인\"하는 절차만 다루므로 이번 두 기록의 판정 범위를 지킨다."
+        },
+        {
+          "id": "action",
+          "passed": true,
+          "evidence": "\"두 센서 기록의 값과 각각의 단위(예: 섭씨 또는 화씨)를 알려 주세요.\"라는 필요한 확인 요청과 \"단위를 섭씨로 맞춘 뒤\" 경계값과 비교한다는 조건부 절차를 제공한다. 기록이 없으므로 실제 판정을 유보한 것은 적절하다."
+        },
+        {
+          "id": "condition",
+          "passed": true,
+          "evidence": "\"기록을 받으면 단위를 섭씨로 맞춘 뒤\"라고 하여 값과 단위를 확보한 후 비교한다는 순서를 지키며, \"하한 private_symbol_1 이상이고 상한 private_symbol_2 이하\"라는 양 끝값 포함 조건도 보존한다."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "attempts": 0,
+  "metrics": {
+    "privacy": {
+      "status": "measured_separately_in_HTTP_reports"
+    },
+    "comprehension": {
+      "status": "measured",
+      "scheduled_requests": 12,
+      "responses_received": 12,
+      "graded_requests": 12,
+      "missing_or_failed_requests": 0,
+      "total_criteria": 72,
+      "graded_criteria": 72,
+      "passed_criteria": 70,
+      "accuracy": 0.9722222222222222,
+      "observed_accuracy": 0.9722222222222222,
+      "all_required_passed": 11,
+      "intent_passed": 11
+    },
+    "variants": {
+      "baseline": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 24,
+        "graded_criteria": 24,
+        "passed_criteria": 22,
+        "accuracy": 0.9166666666666666,
+        "observed_accuracy": 0.9166666666666666,
+        "all_required_passed": 3,
+        "intent_passed": 3
+      },
+      "concise": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 24,
+        "graded_criteria": 24,
+        "passed_criteria": 24,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 4,
+        "intent_passed": 4
+      },
+      "examples": {
+        "status": "measured",
+        "scheduled_requests": 4,
+        "responses_received": 4,
+        "graded_requests": 4,
+        "missing_or_failed_requests": 0,
+        "total_criteria": 24,
+        "graded_criteria": 24,
+        "passed_criteria": 24,
+        "accuracy": 1.0,
+        "observed_accuracy": 1.0,
+        "all_required_passed": 4,
+        "intent_passed": 4
+      }
+    }
+  },
+  "paired": {
+    "improved": [],
+    "regressed": [],
+    "unchanged": [],
+    "unmeasured_pairs": 0
+  },
+  "repeated_statistics": {
+    "schema_version": 1,
+    "expected_repeats": 2,
+    "minimum_repeats": 3,
+    "groups": [
+      {
+        "split": "holdout",
+        "variant": "baseline",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 4,
+            "task_success": 0,
+            "complete": true,
+            "accuracy": 0.6666666666666666,
+            "observed_accuracy": 0.6666666666666666
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 10,
+          "mean_observed_accuracy": 0.8333333333333333
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "baseline",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "concise",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "concise",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "examples",
+        "language": "en",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "examples",
+        "language": "ko",
+        "scheduled_tasks": 1,
+        "possible_criteria_per_repeat": 6,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 1,
+            "rows_present": 1,
+            "graded_tasks": 1,
+            "missing_tasks": 0,
+            "possible_criteria": 6,
+            "graded_criteria": 6,
+            "passed_criteria": 6,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 12,
+          "passed_criteria": 12,
+          "mean_observed_accuracy": 1.0
+        }
+      }
+    ],
+    "aggregates": [
+      {
+        "split": "holdout",
+        "variant": "baseline",
+        "languages": [
+          "en",
+          "ko"
+        ],
+        "scheduled_tasks": 2,
+        "possible_criteria_per_repeat": 12,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 10,
+            "task_success": 1,
+            "complete": true,
+            "accuracy": 0.8333333333333334,
+            "observed_accuracy": 0.8333333333333334
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 24,
+          "passed_criteria": 22,
+          "mean_observed_accuracy": 0.9166666666666667
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "concise",
+        "languages": [
+          "en",
+          "ko"
+        ],
+        "scheduled_tasks": 2,
+        "possible_criteria_per_repeat": 12,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 24,
+          "passed_criteria": 24,
+          "mean_observed_accuracy": 1.0
+        }
+      },
+      {
+        "split": "holdout",
+        "variant": "examples",
+        "languages": [
+          "en",
+          "ko"
+        ],
+        "scheduled_tasks": 2,
+        "possible_criteria_per_repeat": 12,
+        "repeats": [
+          {
+            "repeat": 0,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          },
+          {
+            "repeat": 1,
+            "scheduled_tasks": 2,
+            "rows_present": 2,
+            "graded_tasks": 2,
+            "missing_tasks": 0,
+            "possible_criteria": 12,
+            "graded_criteria": 12,
+            "passed_criteria": 12,
+            "task_success": 2,
+            "complete": true,
+            "accuracy": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "complete_repeats": 2,
+        "eligible": false,
+        "ineligible_reasons": [
+          "underpowered_repeats"
+        ],
+        "statistics": null,
+        "observed_partial": {
+          "eligible": false,
+          "repeats_with_grades": 2,
+          "graded_criteria": 24,
+          "passed_criteria": 24,
+          "mean_observed_accuracy": 1.0
+        }
+      }
+    ],
+    "paired": [],
+    "holdout_eligibility": {
+      "split": "holdout",
+      "present": true,
+      "variants": {
+        "baseline": {
+          "eligible": false,
+          "ineligible_reasons": [
+            "underpowered_repeats"
+          ]
+        },
+        "concise": {
+          "eligible": false,
+          "ineligible_reasons": [
+            "underpowered_repeats"
+          ]
+        },
+        "examples": {
+          "eligible": false,
+          "ineligible_reasons": [
+            "underpowered_repeats"
+          ]
+        }
+      },
+      "paired_eligible": false,
+      "decision": null,
+      "note": "Statistical eligibility only; this report adopts and enables nothing."
+    }
+  },
+  "elapsed_seconds": 0.006463299999722949
+}

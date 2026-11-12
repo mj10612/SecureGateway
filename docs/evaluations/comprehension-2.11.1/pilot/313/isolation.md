@@ -1,0 +1,1 @@
+Fresh empty temporary cwd outside repository, read-only sandbox, no project instructions; no original or gold files in temp directory or parents. Same OS user, shared authentication, no hard jail. Zero-tool-event filter applied; tool events excluded and recorded as isolation_violation. See calls.json for discarded count. Graders are fresh processes receiving original and rubric.

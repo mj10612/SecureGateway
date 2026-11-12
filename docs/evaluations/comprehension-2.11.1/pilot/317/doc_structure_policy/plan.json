@@ -1,0 +1,85 @@
+{
+  "issue": 317,
+  "candidate": "doc_structure_policy",
+  "source_commit": "5b6dc6203116b9f6039d9591389db55c90a00e7f",
+  "cases": [
+    "holdout-317-en-1",
+    "holdout-317-ko-1"
+  ],
+  "repeats": 2,
+  "conditions": [
+    "original",
+    "human",
+    "baseline",
+    "candidate"
+  ],
+  "rubric": {
+    "holdout-317-en-1": [
+      {
+        "id": "intent",
+        "description": "Summarize checks for the package represented by a table and a key-value line."
+      },
+      {
+        "id": "conditions",
+        "description": "Ask for the inspection result when absent."
+      },
+      {
+        "id": "prohibition",
+        "description": "Expose no private record values and do not mark release complete."
+      },
+      {
+        "id": "scope",
+        "description": "Cover one package while retaining public field labels only."
+      },
+      {
+        "id": "action",
+        "description": "Does the answer perform the requested supported action?"
+      },
+      {
+        "id": "condition",
+        "description": "Does the answer preserve the conditions in the original task?"
+      }
+    ],
+    "holdout-317-ko-1": [
+      {
+        "id": "intent",
+        "description": "표와 키-값 기록을 바탕으로 보관 전 확인 사항을 정리한다."
+      },
+      {
+        "id": "conditions",
+        "description": "수량 확인 결과가 없으면 먼저 요청한다."
+      },
+      {
+        "id": "prohibition",
+        "description": "비공개 값을 드러내거나 입고 완료로 표시하지 않는다."
+      },
+      {
+        "id": "scope",
+        "description": "해당 접수 한 건만 다루며 항목 이름을 유지한다."
+      },
+      {
+        "id": "action",
+        "description": "Does the answer perform the requested supported action?"
+      },
+      {
+        "id": "condition",
+        "description": "Does the answer preserve the conditions in the original task?"
+      }
+    ]
+  },
+  "decision": "hold unless no protection regression and comprehension improves or comprehension has zero criterion loss and exposure falls; no one-case effect claim",
+  "limits": {
+    "calls": 32,
+    "seconds": 600,
+    "interpret_output": 512,
+    "grade_output": 768,
+    "content_tokens": 32768
+  },
+  "model": "gpt-6.1-sol",
+  "codex_cli": "0.167.0",
+  "reasoning_effort": "low",
+  "measured_fixed_input_tokens": 15093,
+  "deviation": "The reported total usage ceiling 32,768 tokens was written for in-session subagents and is infeasible with the Codex CLI, whose fixed per-call input overhead was measured. For this run the ceiling applies to CONTENT tokens: per call, content = reported input tokens minus the fixed overhead baseline (measure the baseline once per session as the input-token count of a minimal one-word prompt under the same flags, and record it) plus output tokens; ceiling 32,768 content tokens per candidate. Record both the raw reported usage and the content-token figure for every call. The owner authorised running these evaluations through the Codex subscription; this deviation changes a cost limit only and no accuracy criterion.",
+  "limitations": "two published synthetic tasks; same model family interpreter and grader; same user no hard filesystem jail; zero-tool-event filter; requested model identity not independently verified",
+  "policy_source": "case local_policy where present; configured variant only"
+}

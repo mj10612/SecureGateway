@@ -1,0 +1,55 @@
+{
+  "provenance": "Fresh isolated author received issue title/body and case-format specification only.",
+  "format_specification": "Author exactly one original synthetic, self-contained, tool-solvable holdout case. Return a JSON object with cases array and no markdown. Use a fictional scenario with exactly two confidential numeric operands and request addition in USD. Include id, original, human_masked (replace the confidential operands with neutral [PRIVATE_1] and [PRIVATE_2]), negative_control=false, applicable array chosen from intent, action, conditions, prohibition, order, clarification, scope; expected specific correct task behavior, label=tool_solvable, operation=add, unit=USD, gold as a string stating the correct numerical result and unit; sensitive_spans and public_spans arrays of {start,end,text}, zero-based Unicode character offsets, end exclusive. Public spans must be ordinary task words, not numeric values or private identifiers. Each span text must occur exactly once in original, spans must not overlap. No real personal information, no prior context, no tools, no implementation code.",
+  "reported_usage": {
+    "input_tokens": 16848,
+    "cached_input_tokens": 13312,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 461,
+    "reasoning_output_tokens": 210
+  },
+  "tool_events": 0,
+  "cases": [
+    {
+      "id": "fictional_budget_addition",
+      "original": "Add the confidential amounts USD 137.25 and USD 248.60 for a fictional budget. Return only the total in USD.",
+      "human_masked": "Add the confidential amounts USD [PRIVATE_1] and USD [PRIVATE_2] for a fictional budget. Return only the total in USD.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Use the permitted local addition tool with [PRIVATE_1] and [PRIVATE_2] as operands and USD as the unit. Return only the resulting protected alias for local restoration to the correct USD total. Do not expose operand values or the numerical result to the model, ask unnecessary questions, or perform additional operations.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "385.85 USD",
+      "sensitive_spans": [
+        {
+          "start": 33,
+          "end": 39,
+          "text": "137.25"
+        },
+        {
+          "start": 48,
+          "end": 54,
+          "text": "248.60"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 3,
+          "text": "Add"
+        },
+        {
+          "start": 79,
+          "end": 90,
+          "text": "Return only"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "analysis_set": "Cases with A passing every applicable criterion. Any missing, failed, or ungraded required call makes the evaluation INCOMPLETE; repair and rerun without replacing first responses.",
+  "primary_metric": "Per case all applicable criteria pass; paired C vs D on the A-passing set.",
+  "protection_gate": {
+    "new_exposure": "zero newly fully or partially exposed sensitive gold spans compared with baseline",
+    "exact_restore": "candidate exact restore count no lower than baseline on the same cases",
+    "ci": "Generate an actual compatible privacy candidate report while the isolated candidate_profile is active in the same process, then run secure-gateway evaluate compare --baseline docs/evaluations/issue324-2.7.0/legacy-privacy/report.json --candidate <candidate-report>. Exit 0 is required. Because compare requires --candidate and experimental profiles are process-local, the report must not be generated in an unprofiled subprocess."
+  },
+  "grading": "One fresh grader per case sees the original, applicable rubric, and all first responses under randomly shuffled blind labels. Alongside each response provide its model-visible input and the trusted synthetic alias correspondence needed to assess entity, cell or tool arguments, without condition names. Every verdict must quote the corresponding answer or, for an actual tool-use verdict, its sanitized tool-event transcript; verify exact membership mechanically. Re-grade once only after an unverifiable quote; if still unverifiable mark the case ungraded and INCOMPLETE.",
+  "sign_test": "Exact one-sided binomial test, number of D wins among discordant pairs under p=0.5, strictly p < 0.05. Ties excluded; zero discordances cannot satisfy improvement.",
+  "incomplete": "Errors, budget exhaustion or missing applicable evidence are INCOMPLETE and must be rerun, never assigned ADOPT or REJECT.",
+  "issue": 311,
+  "category": "comprehension",
+  "adopt": "Protection gate passes AND D wins the paired sign test AND no single applicable criterion has net loss >=2 cases AND negative controls show no net regression. Otherwise REJECT.",
+  "negative_controls": "D-only failures minus C-only failures must be <= 0 in the negative-control subset."
+}

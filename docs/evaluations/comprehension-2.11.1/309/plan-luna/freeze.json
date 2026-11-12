@@ -1,0 +1,80 @@
+{
+  "issue": 309,
+  "variant": "ko_conjugation_split",
+  "frozen_utc": "2026-11-12T08:44:11Z",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "arms": [
+    "A",
+    "C",
+    "D1"
+  ],
+  "condition_B": "dropped by owner decision (Codex usage); #306 is not derived from this run",
+  "transport": {
+    "adapter": "secure_gateway.evaluation_batch.run_lean_worker",
+    "adapter_source_sha256": "bb142a8dc2f6072e4a22db175b0c2890fa9e78cd56f283b5bda2b76d13492311",
+    "secure_gateway_version": "2.15.0",
+    "interpretation": "one fresh lean call per (case, arm)",
+    "grading": "lean, batch 2 (accepted in #364 validation)",
+    "disabled_features": [
+      "shell_tool",
+      "unified_exec",
+      "apps",
+      "plugins",
+      "image_generation",
+      "view_image",
+      "goals",
+      "skill_search",
+      "tool_suggest",
+      "sleep_tool",
+      "computer_use",
+      "browser_use",
+      "browser_use_external",
+      "in_app_browser",
+      "hooks",
+      "remote_plugin",
+      "plugin_discovery_prefetch",
+      "incremental_tools",
+      "deferred_tool_world_state",
+      "memories",
+      "fast_mode",
+      "ultrafast_mode",
+      "guardian_approval",
+      "mentions_v2",
+      "workspace_dependencies",
+      "in_app_chat",
+      "multi_agent"
+    ]
+  },
+  "inputs": {
+    "source_manifest": "309/comprehension-replication/manifest.json",
+    "source_manifest_sha256": "fcf8d9e4010ee51247f28f79971c13cf52998b1a0d053c39d1f19f5bcbe82271",
+    "source_run_identity": "8d0cbcd9cd1db230b0c900dd68e26fa3fd444597a6844dfd52bd63140c90a0a0",
+    "note": "model-visible inputs reused byte-for-byte; the 13 partial gpt-6.1-sol answers of that run are not used"
+  },
+  "plan_files_sha256": {
+    "cases.json": "9f7d2861c7dbd692d0d1c025fa8c20d4ad9762e63a1963de3fb77a2c05bf5015",
+    "conditions.json": "6e99d0ce6406909f549b4c2551e24f1735bf2e7f616eaf87539d078ece0414b8",
+    "decision.json": "ccb1f492d5720f3895daf61682ad6e66c70c1a6f1467547958798bdf4e76314d",
+    "preflight-ko_conjugation_split.json": "9874bceae7dd81b813ab9a826e3ab6f5f07db627d26bbe52bb51304484a71cbf",
+    "rubric.json": "56ddbca879636acf658a8fd4ab88def781b38f445646e6a33513bb902106bcd3"
+  },
+  "jobs_sha256": "f5a50e3cfe0e35eecdb7597dfd09ca03d1420305dcd225d5b0348b367d53f846",
+  "jobs": 279,
+  "cases": 93,
+  "shuffle_seed": 20261112,
+  "budget_estimate": {
+    "interpret_calls": 279,
+    "grade_calls": 47,
+    "regrade_calls": 5,
+    "total_calls": 331,
+    "raw_tokens": 2647770,
+    "raw_tokens_per_case": 28471
+  },
+  "decision_rule": "frozen decision.json (comprehension target): ADOPT iff protection gate passes AND D wins the one-sided exact sign test p<0.05 AND no criterion net loss >=2 AND negative controls no net regression; otherwise REJECT",
+  "ungraded": "one single-case re-grade after a failed quote check; then bound rule both directions",
+  "limitations": [
+    "Interpreter and grader are the same model family.",
+    "Lean grader is stricter than the native grader used for earlier candidates; results are not comparable across transports or models."
+  ]
+}

@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "corpus_version": "accuracy-holdout-20261109-v1",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "holdout-315-en-1",
+      "issue_number": 315,
+      "template_group": "h315-budget-reasoning",
+      "split": "holdout",
+      "language": "en",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "Confidential fictional workshop: Kestrelfen. Its approved token budget is 730 credits, and its reserve is 190 credits. Explain which supplied plan fits by reasoning from the budget and reserve, using aliases for private names and values. If either plan cost is missing, ask for both costs before choosing. Do not reconstruct or repeat the private literals, and do not spend anything. Compare the two proposed plans for this workshop only."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 33,
+          "end": 43,
+          "label": "workshop_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 74,
+          "end": 85,
+          "label": "budget_value",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 106,
+          "end": 117,
+          "label": "reserve_value",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 119,
+          "end": 237,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 238,
+          "end": 305,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 306,
+          "end": 383,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 384,
+          "end": 438,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "Reason about budget and reserve using aliases to compare the two plans."
+        },
+        {
+          "id": "conditions",
+          "description": "Ask for both plan costs before choosing if either is absent."
+        },
+        {
+          "id": "prohibition",
+          "description": "Do not reconstruct private literals or spend funds."
+        },
+        {
+          "id": "scope",
+          "description": "Compare only the two workshop plans."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the requested supported action?"
+        },
+        {
+          "id": "condition",
+          "description": "Does it preserve the conditions in the original task?"
+        }
+      ],
+      "human_text": "Confidential fictional workshop: [PRIVATE_1]. Its approved token budget is [PRIVATE_2], and its reserve is [PRIVATE_3]. Explain which supplied plan fits by reasoning from the budget and reserve, using aliases for private names and values. If either plan cost is missing, ask for both costs before choosing. Do not reconstruct or repeat the private literals, and do not spend anything. Compare the two proposed plans for this workshop only.",
+      "smoke": true,
+      "local_policy": {}
+    },
+    {
+      "id": "holdout-315-ko-1",
+      "issue_number": 315,
+      "template_group": "h315-temperature-reasoning",
+      "split": "holdout",
+      "language": "ko",
+      "domain": "general",
+      "dialect": "codex",
+      "payload": {
+        "model": "fixture",
+        "input": [
+          {
+            "role": "user",
+            "content": "비공개 모의 보관함 이름은 해솔자루입니다. 하한은 섭씨 7도, 상한은 섭씨 13도입니다. 비공개 이름과 수치는 대체 표기로 유지하면서 주어진 두 센서 기록이 허용 범위에 드는지 판단하는 방법을 설명해 주세요. 센서 기록이나 단위가 없으면 판정 전에 먼저 요청해 주세요. 가려진 원문을 복원하거나 실제 보관함 설정을 바꾸지 마세요. 이번 기록 두 개의 판정 절차만 설명해 주세요."
+          }
+        ]
+      },
+      "echo_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "task_path": [
+        "input",
+        0,
+        "content"
+      ],
+      "secrets": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 15,
+          "end": 19,
+          "label": "cabinet_name",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 28,
+          "end": 33,
+          "label": "lower_limit",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 39,
+          "end": 45,
+          "label": "upper_limit",
+          "fragments": [],
+          "policy": "contextual",
+          "severity": "high"
+        }
+      ],
+      "public": [
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 50,
+          "end": 116,
+          "label": "intent"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 117,
+          "end": 150,
+          "label": "condition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 151,
+          "end": 184,
+          "label": "prohibition"
+        },
+        {
+          "path": [
+            "input",
+            0,
+            "content"
+          ],
+          "start": 185,
+          "end": 211,
+          "label": "scope"
+        }
+      ],
+      "forced_terms": [],
+      "rubric": [
+        {
+          "id": "intent",
+          "description": "대체 표기를 사용해 두 센서 기록의 허용 범위 판정 방법을 설명한다."
+        },
+        {
+          "id": "conditions",
+          "description": "기록이나 단위가 없으면 판정 전에 요청한다."
+        },
+        {
+          "id": "prohibition",
+          "description": "원문을 복원하거나 실제 설정을 바꾸지 않는다."
+        },
+        {
+          "id": "scope",
+          "description": "이번 기록 두 개의 판정 절차에 한정한다."
+        },
+        {
+          "id": "action",
+          "description": "Does the response perform the requested supported action?"
+        },
+        {
+          "id": "condition",
+          "description": "Does it preserve the conditions in the original task?"
+        }
+      ],
+      "human_text": "비공개 모의 보관함 이름은 [PRIVATE_1]입니다. 하한은 [PRIVATE_2], 상한은 [PRIVATE_3]입니다. 비공개 이름과 수치는 대체 표기로 유지하면서 주어진 두 센서 기록이 허용 범위에 드는지 판단하는 방법을 설명해 주세요. 센서 기록이나 단위가 없으면 판정 전에 먼저 요청해 주세요. 가려진 원문을 복원하거나 실제 보관함 설정을 바꾸지 마세요. 이번 기록 두 개의 판정 절차만 설명해 주세요.",
+      "smoke": true,
+      "local_policy": {}
+    }
+  ]
+}
