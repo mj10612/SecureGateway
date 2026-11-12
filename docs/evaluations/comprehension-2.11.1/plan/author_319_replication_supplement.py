@@ -22,7 +22,8 @@ from secure_gateway import evaluation_batch as eb
 
 SOLVABLE = int(os.environ.get("SOLVABLE", 10))
 MODEL = os.environ.get("AUTHOR_MODEL", eb.DEFAULT_EVAL_MODEL)
-DEST = pathlib.Path(__file__).resolve().parents[1] / "319" / "plan-replication" / "supplement-authored.json"
+DEST = (pathlib.Path(__file__).resolve().parents[1] / "319" / "plan-replication"
+        / os.environ.get("SUPPLEMENT_FILE", "supplement-authored.json"))
 if DEST.exists():
     raise SystemExit("supplement already authored; never overwrite authored cases")
 
@@ -70,7 +71,7 @@ with tempfile.TemporaryDirectory(prefix="secure-case-author-319-supplement-") as
 
 DEST.parent.mkdir(parents=True, exist_ok=True)
 DEST.write_text(json.dumps({"provenance": "Fresh isolated author received issue title/body and case-format "
-                                          "specification only.", "batch": "supplement", "model": MODEL,
+                                          "specification only.", "batch": DEST.stem, "model": MODEL,
                             "format_specification": spec, "reported_usage": usage, "tool_events": 0,
                             "cases": data["cases"]}, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
 print("319 supplement authored", len(data["cases"]), "usage", usage)

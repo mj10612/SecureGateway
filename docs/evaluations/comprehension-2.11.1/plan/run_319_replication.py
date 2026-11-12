@@ -57,10 +57,12 @@ OUT = ROOT / "319" / "comprehension-replication"
 FIXTURE = ROOT / "plan" / "arithmetic_mcp_fixture.py"
 SOURCES = (("b1", SRC_PLAN / "replication-batch1-authored.json"),
            ("b2", SRC_PLAN / "replication-batch2-authored.json"),
-           ("s", PLAN / "supplement-authored.json"))  # supplement is optional
+           ("s", PLAN / "supplement-authored.json"),  # supplements are optional
+           ("s2", PLAN / "supplement2-authored.json"))
 MODEL, EFFORT = eb.DEFAULT_EVAL_MODEL, "low"
 ARMS = ("A", "C", "D")
 REQUIRED = {"tool_solvable": 40, "no_calculation": 14, "impossible": 26}
+OFFSET_REPAIRS: list = []  # filled by normalize(); reported in the pre-check
 TOOL_OPERATIONS = {"add", "subtract", "multiply"}
 GRADE_BATCH, WORKERS, SEED = 2, 3, 20261113319
 # Lean CLI overrides (evaluation_batch.LEAN_DISABLED_FEATURES + neutral
@@ -170,6 +172,22 @@ def normalize(prefix, c):
     if label not in REQUIRED or "operation" not in c or "unit" not in c or "gold" not in c:
         return None, "invalid_tool_case_metadata"
     text, spans = c["original"], c.get("sensitive_spans")
+    if isinstance(spans, list):
+        # Offsets are derived data: the authoring spec requires every span text to occur
+        # exactly once in `original`, which determines its offsets uniquely. Recompute
+        # mismatched offsets only in that case (content untouched); record each repair.
+        repaired = []
+        for x in spans:
+            if (isinstance(x, dict) and isinstance(x.get("text"), str) and x["text"]
+                    and (type(x.get("start")) is not int or type(x.get("end")) is not int
+                         or text[x["start"]:x["end"]] != x["text"])
+                    and text.count(x["text"]) == 1):
+                start = text.index(x["text"])
+                repaired.append({"text_len": len(x["text"]), "authored": [x.get("start"), x.get("end")],
+                                 "derived": [start, start + len(x["text"])]})
+                x["start"], x["end"] = start, start + len(x["text"])
+        if repaired:
+            OFFSET_REPAIRS.append({"id": prefix + ":" + c["id"], "spans": repaired})
     if not isinstance(spans, list) or not spans or any(
             not isinstance(x, dict) or type(x.get("start")) is not int or type(x.get("end")) is not int
             or text[x["start"]:x["end"]] != x.get("text") for x in spans):
@@ -433,6 +451,16 @@ def prepare():
                           "C": {"instructions": instructions, "input": masked, "aliases": aliases},
                           "D": {"instructions": instructions, "input": masked, "aliases": aliases}}}
         selected_cases.append(entry)
+    # Cap every label at its required count in source order (b1, b2, s, s2), decided
+    # before any model call, so surplus supplement cases never shift the proportions.
+    kept, seen = [], {k: 0 for k in REQUIRED}
+    for c in selected_cases:
+        if seen[c["label"]] < REQUIRED[c["label"]]:
+            kept.append(c)
+            seen[c["label"]] += 1
+        else:
+            excluded.append({"id": c["case_id"], "label": c["label"], "reason": "surplus_over_required_count"})
+    selected_cases = kept
     counts = {k: sum(c["label"] == k for c in selected_cases) for k in REQUIRED}
     met = all(counts[k] >= v for k, v in REQUIRED.items())
     jobs = build_jobs(selected_cases)
@@ -458,6 +486,7 @@ def prepare():
         "feature_off_aliases_subset": sum(c["feature_off_aliases_subset"] for c in checks),
         "feature_on_extra_alias_originals": sorted({x for c in checks for x in c["feature_on_extra_alias_originals"]}),
         "selected_by_label": counts, "required_by_label": REQUIRED, "requirements_met": met,
+        "offset_repairs": OFFSET_REPAIRS,
         "excluded": excluded,
         "excluded_by_reason": {r: sum(x["reason"] == r for x in excluded) for r in sorted({x["reason"] for x in excluded})},
         "fixture_probe": {"tool_solvable_probed": len(probes),
