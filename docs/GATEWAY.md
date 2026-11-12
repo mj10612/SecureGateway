@@ -554,7 +554,7 @@ until then enabling any feature is an explicit local choice.
   calls locally, returning only a result alias. Gateway settings provide no
   per-alias unit policy, so calls are refused (fail closed) until a policy
   path exists; real-model tool use is unmeasured and the feature remains
-  blocked by #363. Since 2.16.4 (#371) the injected tool definition is
+  blocked by #363. Since 2.16.3 (#371) the injected tool definition is
   trusted gateway data and is forwarded exactly as defined; earlier versions
   masked its `operation` enum, so a model could not name a valid operation.
   Client-supplied tool definitions are masked as before.
