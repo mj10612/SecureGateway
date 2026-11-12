@@ -2111,8 +2111,15 @@ class GatewaySession:
 
     def _request(self, payload: dict[str, Any], *, dialect=None) -> dict[str, Any]:
         request_dialect = dialect or ("claude" if "messages" in payload else "codex")
+        injected_tool = None
         if getattr(self, "tool_dispatcher", None) is not None and hasattr(self.tool_dispatcher, "inject_tool"):
-            payload, _ = self.tool_dispatcher.inject_tool(payload, dialect=request_dialect)
+            # The gateway's own tool definition is trusted constant data, not user
+            # content: validate it with the request (name collisions, structure) but
+            # never mask it, so its schema (including the operation enum) reaches the
+            # provider exactly as defined (#371). It is appended after masking.
+            with_tool, _ = self.tool_dispatcher.inject_tool(payload, dialect=request_dialect)
+            validate_request(with_tool, request_dialect)
+            injected_tool = deepcopy(with_tool["tools"][-1])
         validate_request(payload, request_dialect)
         fields = (
             TOP_FIELDS | {"max_completion_tokens", "stop", "stream_options", "reasoning_effort", "response_format"}
@@ -2217,6 +2224,8 @@ class GatewaySession:
         # Inspect only forwarded content; gateway-added instructions and the
         # untouched protocol settings above are not user content.
         self._check_forced_leaks({key: item for key, item in result.items() if key not in protocol_keys})
+        if injected_tool is not None:
+            result.setdefault("tools", []).append(injected_tool)
         if "input" in result:
             result["store"] = False
             result["instructions"] = PRIVACY_INSTRUCTION + result.get(
