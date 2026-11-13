@@ -71,7 +71,7 @@ secure-gateway evaluate --suite comprehension --real-llm \
   --output-dir /tmp/sg-comprehension
 ```
 
-Choose a model available to the selected runner. The adapter launches a fresh ephemeral CLI session in an empty temporary working directory, ignores project/user instruction files and configuration, disables web search and multi-agent execution, and rejects tool events. It uses the caller's existing authentication with no alternate provider fallback. Record the requested model and runner metadata; a requested CLI model setting does not independently verify the provider's resolved model identity.
+Choose a model available to the selected runner. The adapter launches a fresh ephemeral CLI session in an empty temporary working directory, ignores project/user instruction files and configuration, disables web search and multi-agent execution, and rejects tool events. Tool events do not cover Codex code mode: calls to its `exec` tool emit no event (#372); the lean adapter `evaluation_batch` therefore disables `code_mode_host` and also checks the CLI's stderr tool log (`docs/EVALUATION_COST.md`). It uses the caller's existing authentication with no alternate provider fallback. Record the requested model and runner metadata; a requested CLI model setting does not independently verify the provider's resolved model identity.
 
 For native agent orchestration or a different provider, prepare the work first:
 

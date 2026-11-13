@@ -366,3 +366,21 @@ native call per item. This changes the transport, not the protocol:
   check accepts interpretation batching. A new task family that differs
   strongly from #313 checks agreement on a small sample before its first lean
   run. See `docs/EVALUATION_COST.md`.
+- Isolation correction (#372, 2.17.1). What both transports guaranteed: a fresh
+  ephemeral session, an empty temporary working directory, the read-only
+  sandbox, subscription login only, no user/project configuration, and (lean)
+  the disabled tool features. What they did not: on codex-cli 0.167.x the
+  evaluation models run in code mode, which offers an `exec` tool whose calls
+  (and the nested tools it calls) leave no `--json` event, so "tool events 0;
+  a tool event discards the answer" did not cover code mode. Nested tools
+  reachable from lean `exec` could not read files, run commands or use the
+  network; native `exec` also reached `exec_command` and `view_image` (see
+  `docs/EVALUATION_COST.md`). From 2.17.1 the lean session disables
+  `code_mode_host` so `exec` cannot run, accepts only that setting's fixed
+  warning, and fails closed on the CLI's stderr tool-router log. No saved
+  evidence suggests a tool was used: a tool round trip at least doubles a
+  call's reported input tokens, and every saved call without an MCP tool arm
+  stays below twice the fixed input or, for large batched grade calls, below
+  twice its same-shape peers (numbers in
+  `docs/EVALUATION_COST.md`). Frozen runs keep their recorded adapter hash and are not
+  re-run.
