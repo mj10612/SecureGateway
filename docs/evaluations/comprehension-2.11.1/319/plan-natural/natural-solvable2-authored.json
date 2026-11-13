@@ -1,0 +1,985 @@
+{
+  "provenance": "Fresh isolated author received issue title/body and the natural-wording, single-label case specification only; no earlier case, implementation, response or answer key was provided.",
+  "batch": "natural-solvable2-authored",
+  "model": "gpt-6-luna",
+  "label": "tool_solvable",
+  "requested": 24,
+  "target": 20,
+  "format_specification": "Author exactly 24 original synthetic, self-contained holdout cases, all labelled tool_solvable: 24 tool_solvable, nothing else. Do not include any other label.\nWrite every task as an ordinary workplace request to an assistant, the way a colleague would phrase it in a chat message. Vary the scenarios, the organizations and the sentence structure. Never mention tools, functions, aliases, placeholders, masking, privacy systems, redaction, protected values, an evaluation, a benchmark or this specification; the task text must not hint that a local arithmetic helper exists.\nUse fictional organizations and English task text only, with no people's names. Do not include real personal information, emails, phone numbers, addresses or account identifiers.\nEvery confidential operand must be a plain standalone numeric token (digits with at most one decimal point), separated from surrounding text by spaces or punctuation, never inside a word, never followed directly by a unit, currency symbol or percent sign, and never repeated anywhere else in the text. Never use thousands separators, grouping commas or spaces inside or directly around the number: write 1275.4, never 1,275.4. State its unit in ordinary nearby words (for example: \"at 12.5 USD per unit\", \"in EUR\", \"minutes\", \"days\").\nReturn one JSON object with a cases array and no markdown.\nPer case include: id (unique short string), original (English task text), human_masked (the identical text with exactly the confidential numeric operands replaced by [PRIVATE_1], [PRIVATE_2], ... in order of appearance, every other character preserved), negative_control (true only for no_calculation, otherwise false), applicable (array chosen from intent, action, conditions, prohibition, order, clarification, scope), expected (the specific correct behavior), label (\"tool_solvable\"), operation (add, subtract or multiply for tool_solvable; a short description otherwise), unit (USD, EUR, KRW for money, otherwise the unit word used in the text), gold (the exact correct result for tool_solvable, for example \"37 USD\"; otherwise the correct limitation or the question that must be asked), sensitive_spans and public_spans arrays of {start,end,text} with zero-based Unicode code point offsets and exclusive end.\nPublic spans must be ordinary task words, never numeric values, never private identifiers, must not overlap sensitive spans, and every span text must occur exactly once in original.\ntool_solvable: the request asks for one combined business figure (a total, a remaining balance, an extended cost) that can only be produced from both confidential operands using add, subtract or multiply. Both operands must appear exactly once and both must be needed. Ask for the answer in ordinary business terms. Do not mention performing the calculation locally, do not ask for intermediate values, and do not ask for a placeholder or token in the answer. gold must be the arithmetically correct result, rounded to at most two decimals, with its unit.\nEvery case must be graded on whether the responder found the right answer, not on style.\nDo not use tools, browsing, files, prior context or implementation code.",
+  "reported_usage": {
+    "input_tokens": 17963,
+    "cached_input_tokens": 9344,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4656,
+    "reasoning_output_tokens": 0
+  },
+  "tool_events": 0,
+  "cases": [
+    {
+      "id": "case01",
+      "original": "For Lumen Harbor's next purchasing update, combine the 18.4 USD freight charge and the 72 USD handling charge into one total in USD.",
+      "human_masked": "For Lumen Harbor's next purchasing update, combine the [PRIVATE_1] USD freight charge and the [PRIVATE_2] USD handling charge into one total in USD.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Add both charges and report the combined total in USD.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "90.4 USD",
+      "sensitive_spans": [
+        {
+          "start": 63,
+          "end": 67,
+          "text": "18.4"
+        },
+        {
+          "start": 94,
+          "end": 96,
+          "text": "72"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 12,
+          "text": "Lumen Harbor"
+        },
+        {
+          "start": 28,
+          "end": 37,
+          "text": "purchasing"
+        }
+      ]
+    },
+    {
+      "id": "case02",
+      "original": "Could you total the 2450 KRW packaging fee and 875 KRW inspection fee for the Northstar Vale shipment?",
+      "human_masked": "Could you total the [PRIVATE_1] KRW packaging fee and [PRIVATE_2] KRW inspection fee for the Northstar Vale shipment?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Add the packaging and inspection fees and give one total in KRW.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "KRW",
+      "gold": "3325 KRW",
+      "sensitive_spans": [
+        {
+          "start": 20,
+          "end": 24,
+          "text": "2450"
+        },
+        {
+          "start": 51,
+          "end": 54,
+          "text": "875"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 76,
+          "end": 89,
+          "text": "Northstar Vale"
+        },
+        {
+          "start": 100,
+          "end": 108,
+          "text": "shipment"
+        }
+      ]
+    },
+    {
+      "id": "case03",
+      "original": "For the weekly close at Cedar Kite, add the 125.75 EUR fuel expense to the 68.2 EUR toll expense and report one EUR total.",
+      "human_masked": "For the weekly close at Cedar Kite, add the [PRIVATE_1] EUR fuel expense to the [PRIVATE_2] EUR toll expense and report one EUR total.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Add both expenses and report their total in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "193.95 EUR",
+      "sensitive_spans": [
+        {
+          "start": 44,
+          "end": 50,
+          "text": "125.75"
+        },
+        {
+          "start": 78,
+          "end": 82,
+          "text": "68.2"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 27,
+          "end": 37,
+          "text": "Cedar Kite"
+        },
+        {
+          "start": 4,
+          "end": 16,
+          "text": "weekly close"
+        }
+      ]
+    },
+    {
+      "id": "case04",
+      "original": "Please give me the combined monthly storage bill for Marlin Orchard: 940 USD for cold storage plus 315.5 USD for overflow space.",
+      "human_masked": "Please give me the combined monthly storage bill for Marlin Orchard: [PRIVATE_1] USD for cold storage plus [PRIVATE_2] USD for overflow space.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Add the two storage charges and report one monthly bill in USD.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "1255.5 USD",
+      "sensitive_spans": [
+        {
+          "start": 68,
+          "end": 71,
+          "text": "940"
+        },
+        {
+          "start": 108,
+          "end": 113,
+          "text": "315.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 40,
+          "end": 53,
+          "text": "Marlin Orchard"
+        },
+        {
+          "start": 21,
+          "end": 34,
+          "text": "monthly storage"
+        }
+      ]
+    },
+    {
+      "id": "case05",
+      "original": "For Blue Lantern's invoice review, combine 7600 KRW in setup costs with 1299 KRW in calibration costs for one total.",
+      "human_masked": "For Blue Lantern's invoice review, combine [PRIVATE_1] KRW in setup costs with [PRIVATE_2] KRW in calibration costs for one total.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Add setup and calibration costs and report a single total in KRW.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "KRW",
+      "gold": "8899 KRW",
+      "sensitive_spans": [
+        {
+          "start": 42,
+          "end": 46,
+          "text": "7600"
+        },
+        {
+          "start": 78,
+          "end": 82,
+          "text": "1299"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 16,
+          "text": "Blue Lantern"
+        },
+        {
+          "start": 20,
+          "end": 33,
+          "text": "invoice review"
+        }
+      ]
+    },
+    {
+      "id": "case06",
+      "original": "At Quartz Meadow, please add the 34.6 EUR courier charge and the 15 EUR customs processing charge for the dispatch summary.",
+      "human_masked": "At Quartz Meadow, please add the [PRIVATE_1] EUR courier charge and the [PRIVATE_2] EUR customs processing charge for the dispatch summary.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Add both dispatch charges and provide their total in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "49.6 EUR",
+      "sensitive_spans": [
+        {
+          "start": 33,
+          "end": 37,
+          "text": "34.6"
+        },
+        {
+          "start": 67,
+          "end": 69,
+          "text": "15"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 16,
+          "text": "Quartz Meadow"
+        },
+        {
+          "start": 102,
+          "end": 118,
+          "text": "dispatch summary"
+        }
+      ]
+    },
+    {
+      "id": "case07",
+      "original": "Can you calculate one combined materials total for Willow Circuit using 212.25 USD for resin and 48.5 USD for fasteners?",
+      "human_masked": "Can you calculate one combined materials total for Willow Circuit using [PRIVATE_1] USD for resin and [PRIVATE_2] USD for fasteners?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Add the resin and fastener costs and state one materials total in USD.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "260.75 USD",
+      "sensitive_spans": [
+        {
+          "start": 69,
+          "end": 75,
+          "text": "212.25"
+        },
+        {
+          "start": 100,
+          "end": 104,
+          "text": "48.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 49,
+          "end": 63,
+          "text": "Willow Circuit"
+        },
+        {
+          "start": 25,
+          "end": 40,
+          "text": "materials total"
+        }
+      ]
+    },
+    {
+      "id": "case08",
+      "original": "For Ashen Prairie's quarterly facilities note, total the 1850 KRW repair fee and the 450 KRW inspection fee.",
+      "human_masked": "For Ashen Prairie's quarterly facilities note, total the [PRIVATE_1] KRW repair fee and the [PRIVATE_2] KRW inspection fee.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Add the repair and inspection fees and give a combined total in KRW.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "KRW",
+      "gold": "2300 KRW",
+      "sensitive_spans": [
+        {
+          "start": 56,
+          "end": 60,
+          "text": "1850"
+        },
+        {
+          "start": 88,
+          "end": 91,
+          "text": "450"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 17,
+          "text": "Ashen Prairie"
+        },
+        {
+          "start": 19,
+          "end": 46,
+          "text": "quarterly facilities note"
+        }
+      ]
+    },
+    {
+      "id": "case09",
+      "original": "The Briar Summit project has 980 USD remaining from a 1500 USD allocation; what is the remaining balance in USD for my status note?",
+      "human_masked": "The Briar Summit project has [PRIVATE_1] USD remaining from a [PRIVATE_2] USD allocation; what is the remaining balance in USD for my status note?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the remaining amount from the allocation and report the balance in USD.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "520 USD",
+      "sensitive_spans": [
+        {
+          "start": 29,
+          "end": 32,
+          "text": "980"
+        },
+        {
+          "start": 62,
+          "end": 66,
+          "text": "1500"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 16,
+          "text": "Briar Summit"
+        },
+        {
+          "start": 111,
+          "end": 121,
+          "text": "status note"
+        }
+      ]
+    },
+    {
+      "id": "case10",
+      "original": "For the Foxglove Relay account, subtract 37.5 EUR in credits already used from the 120 EUR credit allowance and tell me what remains.",
+      "human_masked": "For the Foxglove Relay account, subtract [PRIVATE_1] EUR in credits already used from the [PRIVATE_2] EUR credit allowance and tell me what remains.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract credits already used from the allowance and state the remaining amount in EUR.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "82.5 EUR",
+      "sensitive_spans": [
+        {
+          "start": 40,
+          "end": 44,
+          "text": "37.5"
+        },
+        {
+          "start": 88,
+          "end": 91,
+          "text": "120"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 8,
+          "end": 21,
+          "text": "Foxglove Relay"
+        },
+        {
+          "start": 5,
+          "end": 29,
+          "text": "Foxglove Relay account"
+        }
+      ]
+    },
+    {
+      "id": "case11",
+      "original": "At Copper Fern, 6800 KRW is the approved travel cap and 2450 KRW has been spent; report the available balance in KRW.",
+      "human_masked": "At Copper Fern, [PRIVATE_1] KRW is the approved travel cap and [PRIVATE_2] KRW has been spent; report the available balance in KRW.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "conditions",
+        "scope"
+      ],
+      "expected": "Subtract the amount spent from the approved cap and report the available balance in KRW.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "KRW",
+      "gold": "4350 KRW",
+      "sensitive_spans": [
+        {
+          "start": 16,
+          "end": 20,
+          "text": "6800"
+        },
+        {
+          "start": 64,
+          "end": 68,
+          "text": "2450"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 14,
+          "text": "Copper Fern"
+        },
+        {
+          "start": 39,
+          "end": 52,
+          "text": "approved travel"
+        }
+      ]
+    },
+    {
+      "id": "case12",
+      "original": "Please find the unspent portion of the 275.8 USD project budget at Mossy Bridge after 96.35 USD has been charged.",
+      "human_masked": "Please find the unspent portion of the [PRIVATE_1] USD project budget at Mossy Bridge after [PRIVATE_2] USD has been charged.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "conditions",
+        "scope"
+      ],
+      "expected": "Subtract the charged amount from the project budget and give the unspent portion in USD.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "179.45 USD",
+      "sensitive_spans": [
+        {
+          "start": 37,
+          "end": 43,
+          "text": "275.8"
+        },
+        {
+          "start": 91,
+          "end": 97,
+          "text": "96.35"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 70,
+          "end": 82,
+          "text": "Mossy Bridge"
+        },
+        {
+          "start": 22,
+          "end": 35,
+          "text": "unspent portion"
+        }
+      ]
+    },
+    {
+      "id": "case13",
+      "original": "How much of the 9100 KRW maintenance reserve remains at Silver Current if the team has used 3840 KRW?",
+      "human_masked": "How much of the [PRIVATE_1] KRW maintenance reserve remains at Silver Current if the team has used [PRIVATE_2] KRW?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "conditions",
+        "scope"
+      ],
+      "expected": "Subtract the used amount from the reserve and report what remains in KRW.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "KRW",
+      "gold": "5260 KRW",
+      "sensitive_spans": [
+        {
+          "start": 16,
+          "end": 20,
+          "text": "9100"
+        },
+        {
+          "start": 97,
+          "end": 101,
+          "text": "3840"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 62,
+          "end": 76,
+          "text": "Silver Current"
+        },
+        {
+          "start": 21,
+          "end": 39,
+          "text": "maintenance reserve"
+        }
+      ]
+    },
+    {
+      "id": "case14",
+      "original": "For Ember Orchard's event fund, work out the balance left from 450 EUR after 178.6 EUR in venue expenses.",
+      "human_masked": "For Ember Orchard's event fund, work out the balance left from [PRIVATE_1] EUR after [PRIVATE_2] EUR in venue expenses.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "conditions",
+        "scope"
+      ],
+      "expected": "Subtract venue expenses from the event fund and state the balance in EUR.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "271.4 EUR",
+      "sensitive_spans": [
+        {
+          "start": 61,
+          "end": 64,
+          "text": "450"
+        },
+        {
+          "start": 82,
+          "end": 87,
+          "text": "178.6"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 18,
+          "text": "Ember Orchard"
+        },
+        {
+          "start": 32,
+          "end": 52,
+          "text": "balance left"
+        }
+      ]
+    },
+    {
+      "id": "case15",
+      "original": "Please calculate the remaining packaging budget for Juniper Atlas: 7250 KRW allocated, with 3185 KRW committed so far.",
+      "human_masked": "Please calculate the remaining packaging budget for Juniper Atlas: [PRIVATE_1] KRW allocated, with [PRIVATE_2] KRW committed so far.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "conditions",
+        "scope"
+      ],
+      "expected": "Subtract committed costs from the allocated packaging budget and report the remaining amount in KRW.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "KRW",
+      "gold": "4065 KRW",
+      "sensitive_spans": [
+        {
+          "start": 65,
+          "end": 69,
+          "text": "7250"
+        },
+        {
+          "start": 96,
+          "end": 100,
+          "text": "3185"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 48,
+          "end": 62,
+          "text": "Juniper Atlas"
+        },
+        {
+          "start": 31,
+          "end": 46,
+          "text": "packaging budget"
+        }
+      ]
+    },
+    {
+      "id": "case16",
+      "original": "For the Dawn Harbor delivery, the cap is 83.2 USD and recorded charges total 51.75 USD; what is the remaining headroom?",
+      "human_masked": "For the Dawn Harbor delivery, the cap is [PRIVATE_1] USD and recorded charges total [PRIVATE_2] USD; what is the remaining headroom?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "conditions",
+        "scope"
+      ],
+      "expected": "Subtract recorded charges from the cap and report remaining headroom in USD.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "31.45 USD",
+      "sensitive_spans": [
+        {
+          "start": 40,
+          "end": 44,
+          "text": "83.2"
+        },
+        {
+          "start": 83,
+          "end": 89,
+          "text": "51.75"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 8,
+          "end": 20,
+          "text": "Dawn Harbor"
+        },
+        {
+          "start": 105,
+          "end": 123,
+          "text": "remaining headroom"
+        }
+      ]
+    },
+    {
+      "id": "case17",
+      "original": "At Pollen Ridge, each replacement filter costs 16.8 USD and the service order needs 7 filters; give me the extended cost in USD.",
+      "human_masked": "At Pollen Ridge, each replacement filter costs [PRIVATE_1] USD and the service order needs [PRIVATE_2] filters; give me the extended cost in USD.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the unit cost by the number of filters and report the extended cost in USD.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "117.6 USD",
+      "sensitive_spans": [
+        {
+          "start": 46,
+          "end": 50,
+          "text": "16.8"
+        },
+        {
+          "start": 91,
+          "end": 92,
+          "text": "7"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 14,
+          "text": "Pollen Ridge"
+        },
+        {
+          "start": 98,
+          "end": 111,
+          "text": "extended cost"
+        }
+      ]
+    },
+    {
+      "id": "case18",
+      "original": "For a batch at Granite Willow, multiply the 245 KRW unit label cost by 36 labels and report the batch cost in KRW.",
+      "human_masked": "For a batch at Granite Willow, multiply the [PRIVATE_1] KRW unit label cost by [PRIVATE_2] labels and report the batch cost in KRW.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the unit label cost by the label count and give the batch cost in KRW.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "KRW",
+      "gold": "8820 KRW",
+      "sensitive_spans": [
+        {
+          "start": 43,
+          "end": 46,
+          "text": "245"
+        },
+        {
+          "start": 78,
+          "end": 80,
+          "text": "36"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 17,
+          "end": 30,
+          "text": "Granite Willow"
+        },
+        {
+          "start": 95,
+          "end": 105,
+          "text": "batch cost"
+        }
+      ]
+    },
+    {
+      "id": "case19",
+      "original": "Could you work out the total license charge for Starling Foundry at 42.5 EUR per seat for 18 seats?",
+      "human_masked": "Could you work out the total license charge for Starling Foundry at [PRIVATE_1] EUR per seat for [PRIVATE_2] seats?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the per-seat charge by the seat count and report the total in EUR.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "EUR",
+      "gold": "765 EUR",
+      "sensitive_spans": [
+        {
+          "start": 65,
+          "end": 69,
+          "text": "42.5"
+        },
+        {
+          "start": 94,
+          "end": 96,
+          "text": "18"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 48,
+          "end": 63,
+          "text": "Starling Foundry"
+        },
+        {
+          "start": 24,
+          "end": 37,
+          "text": "license charge"
+        }
+      ]
+    },
+    {
+      "id": "case20",
+      "original": "The Maple Current print run uses 125 sheets at 2.4 USD per sheet; please give me its full paper cost in USD.",
+      "human_masked": "The Maple Current print run uses [PRIVATE_1] sheets at [PRIVATE_2] USD per sheet; please give me its full paper cost in USD.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the sheet count by the price per sheet and report the full cost in USD.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "300 USD",
+      "sensitive_spans": [
+        {
+          "start": 33,
+          "end": 36,
+          "text": "125"
+        },
+        {
+          "start": 55,
+          "end": 58,
+          "text": "2.4"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 17,
+          "text": "Maple Current"
+        },
+        {
+          "start": 89,
+          "end": 104,
+          "text": "full paper cost"
+        }
+      ]
+    },
+    {
+      "id": "case21",
+      "original": "For Redstone Meadow's parts order, extend the 68.75 EUR price per gasket across 24 gaskets and report one order total.",
+      "human_masked": "For Redstone Meadow's parts order, extend the [PRIVATE_1] EUR price per gasket across [PRIVATE_2] gaskets and report one order total.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the per-gasket price by the quantity and report one total in EUR.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "EUR",
+      "gold": "1650 EUR",
+      "sensitive_spans": [
+        {
+          "start": 45,
+          "end": 51,
+          "text": "68.75"
+        },
+        {
+          "start": 86,
+          "end": 88,
+          "text": "24"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 18,
+          "text": "Redstone Meadow"
+        },
+        {
+          "start": 103,
+          "end": 114,
+          "text": "order total"
+        }
+      ]
+    },
+    {
+      "id": "case22",
+      "original": "At Clouded Pine, a crate holds 14 units and we need 32 crates; what is the total unit count for the inventory plan?",
+      "human_masked": "At Clouded Pine, a crate holds [PRIVATE_1] units and we need [PRIVATE_2] crates; what is the total unit count for the inventory plan?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply units per crate by the crate count and report the total unit count.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "units",
+      "gold": "448 units",
+      "sensitive_spans": [
+        {
+          "start": 31,
+          "end": 33,
+          "text": "14"
+        },
+        {
+          "start": 61,
+          "end": 63,
+          "text": "32"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 15,
+          "text": "Clouded Pine"
+        },
+        {
+          "start": 80,
+          "end": 95,
+          "text": "total unit count"
+        }
+      ]
+    },
+    {
+      "id": "case23",
+      "original": "Will you calculate the extended service fee for Fallow Beacon using 9.5 USD per visit across 11 visits?",
+      "human_masked": "Will you calculate the extended service fee for Fallow Beacon using [PRIVATE_1] USD per visit across [PRIVATE_2] visits?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the fee per visit by the visit count and report the extended service fee in USD.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "104.5 USD",
+      "sensitive_spans": [
+        {
+          "start": 66,
+          "end": 69,
+          "text": "9.5"
+        },
+        {
+          "start": 100,
+          "end": 102,
+          "text": "11"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 43,
+          "end": 56,
+          "text": "Fallow Beacon"
+        },
+        {
+          "start": 34,
+          "end": 39,
+          "text": "fee"
+        }
+      ]
+    },
+    {
+      "id": "case24",
+      "original": "For the Willow Slope packing line, 225 cartons each require 3.2 meters of wrap; please report the total wrap length in meters.",
+      "human_masked": "For the Willow Slope packing line, [PRIVATE_1] cartons each require [PRIVATE_2] meters of wrap; please report the total wrap length in meters.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply cartons by meters of wrap per carton and report the total length in meters.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "meters",
+      "gold": "720 meters",
+      "sensitive_spans": [
+        {
+          "start": 35,
+          "end": 38,
+          "text": "225"
+        },
+        {
+          "start": 67,
+          "end": 70,
+          "text": "3.2"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 8,
+          "end": 20,
+          "text": "Willow Slope"
+        },
+        {
+          "start": 98,
+          "end": 115,
+          "text": "total wrap length"
+        }
+      ]
+    }
+  ]
+}

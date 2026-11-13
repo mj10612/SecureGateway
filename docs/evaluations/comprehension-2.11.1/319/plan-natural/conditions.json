@@ -1,0 +1,8 @@
+{
+  "issue": 319,
+  "fixed": "Same code, policy, session settings, model, model-facing instructions and original synthetic case; only the named condition varies. Toggle names must be verified against the checked-out implementation before execution.",
+  "A": "Original synthetic input, no tool (task-validity control).",
+  "C": "Masked input (local_arithmetic feature flag capture), no tool.",
+  "D": "Identical masked input with the real allowlisted local arithmetic MCP tool; no other tool allowed.",
+  "transport": "All arms: same Codex exec path (fresh ephemeral session, empty working directory, read-only sandbox, ChatGPT login only, lean CLI overrides). A/C also disable code_mode_host (#372) so a tool cannot run behind the event audit; D alone keeps code_mode_host enabled because the MCP tool is reachable only as a nested tool of exec, and only D adds the MCP server. Any other tool event, any tool-router stderr line in A/C, and any unexpected event fails closed."
+}

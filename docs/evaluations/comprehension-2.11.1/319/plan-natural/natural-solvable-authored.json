@@ -1,0 +1,1639 @@
+{
+  "provenance": "Fresh isolated author received issue title/body and the natural-wording, single-label case specification only; no earlier case, implementation, response or answer key was provided.",
+  "batch": "natural-solvable-authored",
+  "model": "gpt-6-luna",
+  "label": "tool_solvable",
+  "requested": 46,
+  "target": 40,
+  "format_specification": "Author exactly 46 original synthetic, self-contained holdout cases, all labelled tool_solvable: 46 tool_solvable, nothing else. Do not include any other label.\nWrite every task as an ordinary workplace request to an assistant, the way a colleague would phrase it in a chat message. Vary the scenarios, the organizations and the sentence structure. Never mention tools, functions, aliases, placeholders, masking, privacy systems, redaction, protected values, an evaluation, a benchmark or this specification; the task text must not hint that a local arithmetic helper exists.\nUse fictional organizations and English task text only, with no people's names. Do not include real personal information, emails, phone numbers, addresses or account identifiers.\nEvery confidential operand must be a plain standalone numeric token (digits with at most one decimal point), separated from surrounding text by spaces or punctuation, never inside a word, never followed directly by a unit, currency symbol or percent sign, and never repeated anywhere else in the text. State its unit in ordinary nearby words (for example: \"at 12.5 USD per unit\", \"in EUR\", \"minutes\", \"days\").\nReturn one JSON object with a cases array and no markdown.\nPer case include: id (unique short string), original (English task text), human_masked (the identical text with exactly the confidential numeric operands replaced by [PRIVATE_1], [PRIVATE_2], ... in order of appearance, every other character preserved), negative_control (true only for no_calculation, otherwise false), applicable (array chosen from intent, action, conditions, prohibition, order, clarification, scope), expected (the specific correct behavior), label (\"tool_solvable\"), operation (add, subtract or multiply for tool_solvable; a short description otherwise), unit (USD, EUR, KRW for money, otherwise the unit word used in the text), gold (the exact correct result for tool_solvable, for example \"37 USD\"; otherwise the correct limitation or the question that must be asked), sensitive_spans and public_spans arrays of {start,end,text} with zero-based Unicode code point offsets and exclusive end.\nPublic spans must be ordinary task words, never numeric values, never private identifiers, must not overlap sensitive spans, and every span text must occur exactly once in original.\ntool_solvable: the request asks for one combined business figure (a total, a remaining balance, an extended cost) that can only be produced from both confidential operands using add, subtract or multiply. Both operands must appear exactly once and both must be needed. Ask for the answer in ordinary business terms. Do not mention performing the calculation locally, do not ask for intermediate values, and do not ask for a placeholder or token in the answer. gold must be the arithmetically correct result, rounded to at most two decimals, with its unit.\nEvery case must be graded on whether the responder found the right answer, not on style.\nDo not use tools, browsing, files, prior context or implementation code.",
+  "reported_usage": {
+    "input_tokens": 17930,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 7977,
+    "reasoning_output_tokens": 0
+  },
+  "tool_events": 0,
+  "cases": [
+    {
+      "id": "c01",
+      "original": "For Alder Freight, reconcile the quarter's accessorial charges of 184.5 USD with the fuel adjustment of 63.25 USD and report the combined amount.",
+      "human_masked": "For Alder Freight, reconcile the quarter's accessorial charges of [PRIVATE_1] USD with the fuel adjustment of [PRIVATE_2] USD and report the combined amount.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of both charges.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "247.75 USD",
+      "sensitive_spans": [
+        {
+          "start": 65,
+          "end": 70,
+          "text": "184.5"
+        },
+        {
+          "start": 113,
+          "end": 119,
+          "text": "63.25"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 17,
+          "text": "Alder Freight"
+        },
+        {
+          "start": 150,
+          "end": 164,
+          "text": "combined amount"
+        }
+      ]
+    },
+    {
+      "id": "c02",
+      "original": "At Birchline Foods, add the packaging reserve of 920 USD to the cold-storage reserve of 480 USD and give me the total reserve.",
+      "human_masked": "At Birchline Foods, add the packaging reserve of [PRIVATE_1] USD to the cold-storage reserve of [PRIVATE_2] USD and give me the total reserve.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of the two reserves.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "1400 USD",
+      "sensitive_spans": [
+        {
+          "start": 48,
+          "end": 51,
+          "text": "920"
+        },
+        {
+          "start": 96,
+          "end": 99,
+          "text": "480"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 18,
+          "text": "Birchline Foods"
+        },
+        {
+          "start": 124,
+          "end": 136,
+          "text": "total reserve"
+        }
+      ]
+    },
+    {
+      "id": "c03",
+      "original": "Please combine the EUR 1,275.4 replacement-parts charge and the EUR 325.6 inspection charge for Cinder Rail's weekly report.",
+      "human_masked": "Please combine the EUR [PRIVATE_1] replacement-parts charge and the EUR [PRIVATE_2] inspection charge for Cinder Rail's weekly report.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of the two charges in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "1601 EUR",
+      "sensitive_spans": [
+        {
+          "start": 22,
+          "end": 29,
+          "text": "1,275.4"
+        },
+        {
+          "start": 73,
+          "end": 79,
+          "text": "325.6"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 98,
+          "end": 109,
+          "text": "Cinder Rail"
+        }
+      ]
+    },
+    {
+      "id": "c04",
+      "original": "For Delta Orchard's grant ledger, total the EUR 640.75 training allocation and the EUR 89.25 materials allocation.",
+      "human_masked": "For Delta Orchard's grant ledger, total the EUR [PRIVATE_1] training allocation and the EUR [PRIVATE_2] materials allocation.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the combined allocation in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "730 EUR",
+      "sensitive_spans": [
+        {
+          "start": 48,
+          "end": 54,
+          "text": "640.75"
+        },
+        {
+          "start": 90,
+          "end": 96,
+          "text": "89.25"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 17,
+          "text": "Delta Orchard"
+        }
+      ]
+    },
+    {
+      "id": "c05",
+      "original": "At Emberline Transit, the month-end labor provision is 3,850 KRW and the vehicle-cleaning provision is 1,150 KRW; report one combined provision.",
+      "human_masked": "At Emberline Transit, the month-end labor provision is [PRIVATE_1] KRW and the vehicle-cleaning provision is [PRIVATE_2] KRW; report one combined provision.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of both provisions in KRW.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "KRW",
+      "gold": "5000 KRW",
+      "sensitive_spans": [
+        {
+          "start": 53,
+          "end": 57,
+          "text": "3,850"
+        },
+        {
+          "start": 112,
+          "end": 116,
+          "text": "1,150"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 18,
+          "text": "Emberline Transit"
+        }
+      ]
+    },
+    {
+      "id": "c06",
+      "original": "Could you total the 72.4 EUR permit fee and the 18.6 EUR filing fee for Foxglove Energy's compliance summary?",
+      "human_masked": "Could you total the [PRIVATE_1] EUR permit fee and the [PRIVATE_2] EUR filing fee for Foxglove Energy's compliance summary?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of the permit and filing fees.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "91 EUR",
+      "sensitive_spans": [
+        {
+          "start": 20,
+          "end": 24,
+          "text": "72.4"
+        },
+        {
+          "start": 50,
+          "end": 54,
+          "text": "18.6"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 78,
+          "end": 93,
+          "text": "Foxglove Energy"
+        }
+      ]
+    },
+    {
+      "id": "c07",
+      "original": "Combine the 2,400 USD equipment allowance with the 675 USD calibration allowance for Granite Bay Works and share the total.",
+      "human_masked": "Combine the [PRIVATE_1] USD equipment allowance with the [PRIVATE_2] USD calibration allowance for Granite Bay Works and share the total.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of both allowances in USD.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "3075 USD",
+      "sensitive_spans": [
+        {
+          "start": 12,
+          "end": 17,
+          "text": "2,400"
+        },
+        {
+          "start": 57,
+          "end": 60,
+          "text": "675"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 98,
+          "end": 115,
+          "text": "Granite Bay Works"
+        }
+      ]
+    },
+    {
+      "id": "c08",
+      "original": "In the Harbor Loom invoice, bring together the 315.8 USD repair line and the 204.2 USD freight line as one charge total.",
+      "human_masked": "In the Harbor Loom invoice, bring together the [PRIVATE_1] USD repair line and the [PRIVATE_2] USD freight line as one charge total.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the combined invoice charge.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "520 USD",
+      "sensitive_spans": [
+        {
+          "start": 47,
+          "end": 52,
+          "text": "315.8"
+        },
+        {
+          "start": 81,
+          "end": 86,
+          "text": "204.2"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 7,
+          "end": 18,
+          "text": "Harbor Loom"
+        }
+      ]
+    },
+    {
+      "id": "c09",
+      "original": "For Ironwood Clinics, total the EUR 5,600.5 imaging allocation and the EUR 399.5 maintenance allocation for the monthly rollup.",
+      "human_masked": "For Ironwood Clinics, total the EUR [PRIVATE_1] imaging allocation and the EUR [PRIVATE_2] maintenance allocation for the monthly rollup.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the combined allocation in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "6000 EUR",
+      "sensitive_spans": [
+        {
+          "start": 36,
+          "end": 43,
+          "text": "5,600.5"
+        },
+        {
+          "start": 80,
+          "end": 85,
+          "text": "399.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 19,
+          "text": "Ironwood Clinics"
+        }
+      ]
+    },
+    {
+      "id": "c10",
+      "original": "Please give Kestrel Paper a single KRW total for the 8,250 courier charge plus the 1,750 handling charge.",
+      "human_masked": "Please give Kestrel Paper a single KRW total for the [PRIVATE_1] courier charge plus the [PRIVATE_2] handling charge.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of the two charges in KRW.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "KRW",
+      "gold": "10000 KRW",
+      "sensitive_spans": [
+        {
+          "start": 53,
+          "end": 58,
+          "text": "8,250"
+        },
+        {
+          "start": 89,
+          "end": 94,
+          "text": "1,750"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 12,
+          "end": 25,
+          "text": "Kestrel Paper"
+        }
+      ]
+    },
+    {
+      "id": "c11",
+      "original": "For Lumen Harbor's monthly close, add the USD 48.75 bank fee and USD 11.25 reconciliation fee into one expense figure.",
+      "human_masked": "For Lumen Harbor's monthly close, add the USD [PRIVATE_1] bank fee and USD [PRIVATE_2] reconciliation fee into one expense figure.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of both fees.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "60 USD",
+      "sensitive_spans": [
+        {
+          "start": 46,
+          "end": 52,
+          "text": "48.75"
+        },
+        {
+          "start": 76,
+          "end": 82,
+          "text": "11.25"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 16,
+          "text": "Lumen Harbor"
+        }
+      ]
+    },
+    {
+      "id": "c12",
+      "original": "Merge the 730 EUR onboarding budget and the 270 EUR equipment budget for Maple Quay, then state the total budget.",
+      "human_masked": "Merge the [PRIVATE_1] EUR onboarding budget and the [PRIVATE_2] EUR equipment budget for Maple Quay, then state the total budget.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of both budgets in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "1000 EUR",
+      "sensitive_spans": [
+        {
+          "start": 10,
+          "end": 13,
+          "text": "730"
+        },
+        {
+          "start": 52,
+          "end": 55,
+          "text": "270"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 80,
+          "end": 90,
+          "text": "Maple Quay"
+        }
+      ]
+    },
+    {
+      "id": "c13",
+      "original": "For Northstar Ceramics, what's the combined USD value of a 126.4 packaging fee and a 33.6 dispatch fee?",
+      "human_masked": "For Northstar Ceramics, what's the combined USD value of a [PRIVATE_1] packaging fee and a [PRIVATE_2] dispatch fee?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the combined fees in USD.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "160 USD",
+      "sensitive_spans": [
+        {
+          "start": 58,
+          "end": 63,
+          "text": "126.4"
+        },
+        {
+          "start": 89,
+          "end": 93,
+          "text": "33.6"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 22,
+          "text": "Northstar Ceramics"
+        }
+      ]
+    },
+    {
+      "id": "c14",
+      "original": "The Oak & Tide audit has a EUR 985.2 review cost and a EUR 214.8 records cost; return their combined cost.",
+      "human_masked": "The Oak & Tide audit has a EUR [PRIVATE_1] review cost and a EUR [PRIVATE_2] records cost; return their combined cost.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of the review and records costs.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "1200 EUR",
+      "sensitive_spans": [
+        {
+          "start": 32,
+          "end": 38,
+          "text": "985.2"
+        },
+        {
+          "start": 61,
+          "end": 66,
+          "text": "214.8"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 14,
+          "text": "Oak & Tide"
+        }
+      ]
+    },
+    {
+      "id": "c15",
+      "original": "Please roll the USD 1,440.25 site-work charge and the USD 359.75 inspection charge into one total for Pinecone Utilities.",
+      "human_masked": "Please roll the USD [PRIVATE_1] site-work charge and the USD [PRIVATE_2] inspection charge into one total for Pinecone Utilities.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of both charges in USD.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "1800 USD",
+      "sensitive_spans": [
+        {
+          "start": 20,
+          "end": 27,
+          "text": "1,440.25"
+        },
+        {
+          "start": 55,
+          "end": 62,
+          "text": "359.75"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 105,
+          "end": 123,
+          "text": "Pinecone Utilities"
+        }
+      ]
+    },
+    {
+      "id": "c16",
+      "original": "At Quartz Field Manufacturing, consolidate the 640 KRW delivery credit with the 285 KRW quality credit and give finance one figure.",
+      "human_masked": "At Quartz Field Manufacturing, consolidate the [PRIVATE_1] KRW delivery credit with the [PRIVATE_2] KRW quality credit and give finance one figure.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the combined credits in KRW.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "KRW",
+      "gold": "925 KRW",
+      "sensitive_spans": [
+        {
+          "start": 47,
+          "end": 50,
+          "text": "640"
+        },
+        {
+          "start": 88,
+          "end": 91,
+          "text": "285"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 29,
+          "text": "Quartz Field Manufacturing"
+        }
+      ]
+    },
+    {
+      "id": "c17",
+      "original": "Could you combine Silver Mesa's 2,875.5 EUR freight estimate with its 124.5 EUR customs estimate for a single planning figure?",
+      "human_masked": "Could you combine Silver Mesa's [PRIVATE_1] EUR freight estimate with its [PRIVATE_2] EUR customs estimate for a single planning figure?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of both estimates in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "3000 EUR",
+      "sensitive_spans": [
+        {
+          "start": 32,
+          "end": 38,
+          "text": "2,875.5"
+        },
+        {
+          "start": 75,
+          "end": 80,
+          "text": "124.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 18,
+          "end": 29,
+          "text": "Silver Mesa"
+        }
+      ]
+    },
+    {
+      "id": "c18",
+      "original": "For Tern Valley's monthly review, total the 96.8 USD software allocation and the 23.2 USD support allocation.",
+      "human_masked": "For Tern Valley's monthly review, total the [PRIVATE_1] USD software allocation and the [PRIVATE_2] USD support allocation.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the combined allocations in USD.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "120 USD",
+      "sensitive_spans": [
+        {
+          "start": 43,
+          "end": 47,
+          "text": "96.8"
+        },
+        {
+          "start": 80,
+          "end": 84,
+          "text": "23.2"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 14,
+          "text": "Tern Valley"
+        }
+      ]
+    },
+    {
+      "id": "c19",
+      "original": "Combine the 4,200 KRW inspection reserve and the 800 KRW repair reserve for Umber Coast's ledger summary.",
+      "human_masked": "Combine the [PRIVATE_1] KRW inspection reserve and the [PRIVATE_2] KRW repair reserve for Umber Coast's ledger summary.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of the reserves in KRW.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "KRW",
+      "gold": "5000 KRW",
+      "sensitive_spans": [
+        {
+          "start": 12,
+          "end": 17,
+          "text": "4,200"
+        },
+        {
+          "start": 57,
+          "end": 60,
+          "text": "800"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 81,
+          "end": 91,
+          "text": "Umber Coast"
+        }
+      ]
+    },
+    {
+      "id": "c20",
+      "original": "For Vale Orchard, add the 1,125.75 EUR packing expense and the 274.25 EUR labeling expense and report one expense total.",
+      "human_masked": "For Vale Orchard, add the [PRIVATE_1] EUR packing expense and the [PRIVATE_2] EUR labeling expense and report one expense total.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the combined expenses in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "1400 EUR",
+      "sensitive_spans": [
+        {
+          "start": 26,
+          "end": 33,
+          "text": "1,125.75"
+        },
+        {
+          "start": 68,
+          "end": 74,
+          "text": "274.25"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 16,
+          "text": "Vale Orchard"
+        }
+      ]
+    },
+    {
+      "id": "c21",
+      "original": "What single USD amount should Westbrook Textiles show after combining its 357.9 finishing charge and 42.1 dyeing charge?",
+      "human_masked": "What single USD amount should Westbrook Textiles show after combining its [PRIVATE_1] finishing charge and [PRIVATE_2] dyeing charge?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the sum of the two charges in USD.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "400 USD",
+      "sensitive_spans": [
+        {
+          "start": 74,
+          "end": 79,
+          "text": "357.9"
+        },
+        {
+          "start": 103,
+          "end": 107,
+          "text": "42.1"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 27,
+          "end": 45,
+          "text": "Westbrook Textiles"
+        }
+      ]
+    },
+    {
+      "id": "c22",
+      "original": "For Yellow Finch Logistics, total the EUR 2,650.8 route fee and EUR 349.2 loading fee for the closeout note.",
+      "human_masked": "For Yellow Finch Logistics, total the EUR [PRIVATE_1] route fee and EUR [PRIVATE_2] loading fee for the closeout note.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Report the total of both fees in EUR.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "3000 EUR",
+      "sensitive_spans": [
+        {
+          "start": 42,
+          "end": 48,
+          "text": "2,650.8"
+        },
+        {
+          "start": 72,
+          "end": 77,
+          "text": "349.2"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 25,
+          "text": "Yellow Finch Logistics"
+        }
+      ]
+    },
+    {
+      "id": "c23",
+      "original": "At Ashen Ridge Labs, subtract the 138.5 USD rebate from the 512 USD service charge and report the net charge.",
+      "human_masked": "At Ashen Ridge Labs, subtract the [PRIVATE_1] USD rebate from the [PRIVATE_2] USD service charge and report the net charge.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the rebate from the service charge.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "373.5 USD",
+      "sensitive_spans": [
+        {
+          "start": 34,
+          "end": 39,
+          "text": "138.5"
+        },
+        {
+          "start": 66,
+          "end": 69,
+          "text": "512"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 17,
+          "text": "Ashen Ridge Labs"
+        }
+      ]
+    },
+    {
+      "id": "c24",
+      "original": "For Blue Alder Housing, calculate the remaining EUR balance after a 245.75 maintenance deduction from a 900 reserve.",
+      "human_masked": "For Blue Alder Housing, calculate the remaining EUR balance after a [PRIVATE_1] maintenance deduction from a [PRIVATE_2] reserve.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the maintenance deduction from the reserve.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "654.25 EUR",
+      "sensitive_spans": [
+        {
+          "start": 66,
+          "end": 73,
+          "text": "245.75"
+        },
+        {
+          "start": 107,
+          "end": 110,
+          "text": "900"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 22,
+          "text": "Blue Alder Housing"
+        }
+      ]
+    },
+    {
+      "id": "c25",
+      "original": "Report the net KRW proceeds for Copper Bridge after its 1,275 refund is applied against 5,800 in sales proceeds.",
+      "human_masked": "Report the net KRW proceeds for Copper Bridge after its [PRIVATE_1] refund is applied against [PRIVATE_2] in sales proceeds.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the refund from sales proceeds.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "KRW",
+      "gold": "4525 KRW",
+      "sensitive_spans": [
+        {
+          "start": 56,
+          "end": 60,
+          "text": "1,275"
+        },
+        {
+          "start": 94,
+          "end": 99,
+          "text": "5,800"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 31,
+          "end": 44,
+          "text": "Copper Bridge"
+        }
+      ]
+    },
+    {
+      "id": "c26",
+      "original": "For Driftwood Health, what's left in the USD project budget after 1,180 of the 3,450 budget is assigned to testing?",
+      "human_masked": "For Driftwood Health, what's left in the USD project budget after [PRIVATE_1] of the [PRIVATE_2] budget is assigned to testing?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the testing assignment from the project budget.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "2270 USD",
+      "sensitive_spans": [
+        {
+          "start": 66,
+          "end": 70,
+          "text": "1,180"
+        },
+        {
+          "start": 78,
+          "end": 83,
+          "text": "3,450"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 18,
+          "text": "Driftwood Health"
+        }
+      ]
+    },
+    {
+      "id": "c27",
+      "original": "Find the remaining EUR inventory allowance for Everspring Markets by taking the 86.4 damage credit off the 740 allowance.",
+      "human_masked": "Find the remaining EUR inventory allowance for Everspring Markets by taking the [PRIVATE_1] damage credit off the [PRIVATE_2] allowance.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the damage credit from the allowance.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "653.6 EUR",
+      "sensitive_spans": [
+        {
+          "start": 80,
+          "end": 84,
+          "text": "86.4"
+        },
+        {
+          "start": 111,
+          "end": 114,
+          "text": "740"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 44,
+          "end": 62,
+          "text": "Everspring Markets"
+        }
+      ]
+    },
+    {
+      "id": "c28",
+      "original": "For Fallow Creek Works, determine the KRW amount still outstanding from a 12,000 invoice after 2,875 has been paid.",
+      "human_masked": "For Fallow Creek Works, determine the KRW amount still outstanding from a [PRIVATE_1] invoice after [PRIVATE_2] has been paid.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the payment from the invoice amount.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "KRW",
+      "gold": "9125 KRW",
+      "sensitive_spans": [
+        {
+          "start": 74,
+          "end": 80,
+          "text": "12,000"
+        },
+        {
+          "start": 97,
+          "end": 101,
+          "text": "2,875"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 22,
+          "text": "Fallow Creek Works"
+        }
+      ]
+    },
+    {
+      "id": "c29",
+      "original": "What USD claim remains for Gossamer Aviation after the 425.5 credit is deducted from the 1,600 claim amount?",
+      "human_masked": "What USD claim remains for Gossamer Aviation after the [PRIVATE_1] credit is deducted from the [PRIVATE_2] claim amount?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the credit from the claim amount.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "1174.5 USD",
+      "sensitive_spans": [
+        {
+          "start": 54,
+          "end": 59,
+          "text": "425.5"
+        },
+        {
+          "start": 96,
+          "end": 101,
+          "text": "1,600"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 24,
+          "end": 42,
+          "text": "Gossamer Aviation"
+        }
+      ]
+    },
+    {
+      "id": "c30",
+      "original": "For Hollow Pine, show the remaining EUR balance after 1,024.75 is used from the 2,500 project reserve.",
+      "human_masked": "For Hollow Pine, show the remaining EUR balance after [PRIVATE_1] is used from the [PRIVATE_2] project reserve.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the amount used from the project reserve.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "1475.25 EUR",
+      "sensitive_spans": [
+        {
+          "start": 54,
+          "end": 61,
+          "text": "1,024.75"
+        },
+        {
+          "start": 81,
+          "end": 86,
+          "text": "2,500"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 15,
+          "text": "Hollow Pine"
+        }
+      ]
+    },
+    {
+      "id": "c31",
+      "original": "Calculate Ibis Meadow's net KRW shipment value by deducting the 375 return credit from the 2,140 shipment value.",
+      "human_masked": "Calculate Ibis Meadow's net KRW shipment value by deducting the [PRIVATE_1] return credit from the [PRIVATE_2] shipment value.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the return credit from the shipment value.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "KRW",
+      "gold": "1765 KRW",
+      "sensitive_spans": [
+        {
+          "start": 64,
+          "end": 67,
+          "text": "375"
+        },
+        {
+          "start": 96,
+          "end": 100,
+          "text": "2,140"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 10,
+          "end": 21,
+          "text": "Ibis Meadow"
+        }
+      ]
+    },
+    {
+      "id": "c32",
+      "original": "For Juniper Foundry, take the 92.25 EUR quality holdback away from the 310 EUR invoice line and state the payable balance.",
+      "human_masked": "For Juniper Foundry, take the [PRIVATE_1] EUR quality holdback away from the [PRIVATE_2] EUR invoice line and state the payable balance.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the quality holdback from the invoice line.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "217.75 EUR",
+      "sensitive_spans": [
+        {
+          "start": 30,
+          "end": 36,
+          "text": "92.25"
+        },
+        {
+          "start": 76,
+          "end": 79,
+          "text": "310"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 19,
+          "text": "Juniper Foundry"
+        }
+      ]
+    },
+    {
+      "id": "c33",
+      "original": "Please give Kettle Shore one net USD figure after subtracting the 48.6 USD allowance from the 203.4 USD service fee.",
+      "human_masked": "Please give Kettle Shore one net USD figure after subtracting the [PRIVATE_1] USD allowance from the [PRIVATE_2] USD service fee.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the allowance from the service fee.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "154.8 USD",
+      "sensitive_spans": [
+        {
+          "start": 65,
+          "end": 69,
+          "text": "48.6"
+        },
+        {
+          "start": 99,
+          "end": 104,
+          "text": "203.4"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 12,
+          "end": 23,
+          "text": "Kettle Shore"
+        }
+      ]
+    },
+    {
+      "id": "c34",
+      "original": "What KRW balance remains at Larkspur Milling after a 1,340.5 adjustment is taken from the 4,100 ledger balance?",
+      "human_masked": "What KRW balance remains at Larkspur Milling after a [PRIVATE_1] adjustment is taken from the [PRIVATE_2] ledger balance?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the adjustment from the ledger balance.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "KRW",
+      "gold": "2759.5 KRW",
+      "sensitive_spans": [
+        {
+          "start": 53,
+          "end": 59,
+          "text": "1,340.5"
+        },
+        {
+          "start": 93,
+          "end": 98,
+          "text": "4,100"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 27,
+          "end": 42,
+          "text": "Larkspur Milling"
+        }
+      ]
+    },
+    {
+      "id": "c35",
+      "original": "For Morrow Reef, report the remaining EUR deposit after a 615.25 refund is deducted from the 2,000 deposit.",
+      "human_masked": "For Morrow Reef, report the remaining EUR deposit after a [PRIVATE_1] refund is deducted from the [PRIVATE_2] deposit.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the refund from the deposit.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "1384.75 EUR",
+      "sensitive_spans": [
+        {
+          "start": 57,
+          "end": 63,
+          "text": "615.25"
+        },
+        {
+          "start": 99,
+          "end": 104,
+          "text": "2,000"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 14,
+          "text": "Morrow Reef"
+        }
+      ]
+    },
+    {
+      "id": "c36",
+      "original": "Nettlebrook Farms needs the net USD payout: deduct the 2,150 advance from its 6,300 settlement and send the resulting figure.",
+      "human_masked": "Nettlebrook Farms needs the net USD payout: deduct the [PRIVATE_1] advance from its [PRIVATE_2] settlement and send the resulting figure.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the advance from the settlement.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "4150 USD",
+      "sensitive_spans": [
+        {
+          "start": 57,
+          "end": 61,
+          "text": "2,150"
+        },
+        {
+          "start": 84,
+          "end": 89,
+          "text": "6,300"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 0,
+          "end": 17,
+          "text": "Nettlebrook Farms"
+        }
+      ]
+    },
+    {
+      "id": "c37",
+      "original": "For Oriel Springs, find the outstanding KRW amount by deducting the 735.8 deposit from the 1,250 invoice.",
+      "human_masked": "For Oriel Springs, find the outstanding KRW amount by deducting the [PRIVATE_1] deposit from the [PRIVATE_2] invoice.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the deposit from the invoice amount.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "KRW",
+      "gold": "514.2 KRW",
+      "sensitive_spans": [
+        {
+          "start": 68,
+          "end": 73,
+          "text": "735.8"
+        },
+        {
+          "start": 97,
+          "end": 102,
+          "text": "1,250"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 16,
+          "text": "Oriel Springs"
+        }
+      ]
+    },
+    {
+      "id": "c38",
+      "original": "How much USD remains for Peregrine Glass after the 1,875.5 replacement reserve is removed from the 7,000 repair fund?",
+      "human_masked": "How much USD remains for Peregrine Glass after the [PRIVATE_1] replacement reserve is removed from the [PRIVATE_2] repair fund?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the replacement reserve from the repair fund.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "USD",
+      "gold": "5124.5 USD",
+      "sensitive_spans": [
+        {
+          "start": 51,
+          "end": 58,
+          "text": "1,875.5"
+        },
+        {
+          "start": 101,
+          "end": 106,
+          "text": "7,000"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 23,
+          "end": 38,
+          "text": "Peregrine Glass"
+        }
+      ]
+    },
+    {
+      "id": "c39",
+      "original": "At Rillstone Packaging, report the EUR balance after a 225.4 charge is subtracted from the 980.4 credit balance.",
+      "human_masked": "At Rillstone Packaging, report the EUR balance after a [PRIVATE_1] charge is subtracted from the [PRIVATE_2] credit balance.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Subtract the charge from the credit balance.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "755 EUR",
+      "sensitive_spans": [
+        {
+          "start": 54,
+          "end": 59,
+          "text": "225.4"
+        },
+        {
+          "start": 95,
+          "end": 100,
+          "text": "980.4"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 3,
+          "end": 21,
+          "text": "Rillstone Packaging"
+        }
+      ]
+    },
+    {
+      "id": "c40",
+      "original": "For Sunward Ceramics, return one USD extended cost for 18.5 cartons priced at 24.4 USD per carton.",
+      "human_masked": "For Sunward Ceramics, return one USD extended cost for [PRIVATE_1] cartons priced at [PRIVATE_2] USD per carton.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the carton count by the price per carton.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "451.4 USD",
+      "sensitive_spans": [
+        {
+          "start": 55,
+          "end": 59,
+          "text": "18.5"
+        },
+        {
+          "start": 81,
+          "end": 85,
+          "text": "24.4"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 19,
+          "text": "Sunward Ceramics"
+        }
+      ]
+    },
+    {
+      "id": "c41",
+      "original": "Calculate the total EUR material cost for Timberline Studio: 36.5 sheets at 8.4 EUR per sheet.",
+      "human_masked": "Calculate the total EUR material cost for Timberline Studio: [PRIVATE_1] sheets at [PRIVATE_2] EUR per sheet.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the number of sheets by the price per sheet.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "EUR",
+      "gold": "306.6 EUR",
+      "sensitive_spans": [
+        {
+          "start": 60,
+          "end": 64,
+          "text": "36.5"
+        },
+        {
+          "start": 76,
+          "end": 79,
+          "text": "8.4"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 40,
+          "end": 55,
+          "text": "Timberline Studio"
+        }
+      ]
+    },
+    {
+      "id": "c42",
+      "original": "For Upland Robotics, extend the KRW unit rate of 125 by the 16 units ordered and give me the order cost.",
+      "human_masked": "For Upland Robotics, extend the KRW unit rate of [PRIVATE_1] by the [PRIVATE_2] units ordered and give me the order cost.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the unit rate by the number of units ordered.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "KRW",
+      "gold": "2000 KRW",
+      "sensitive_spans": [
+        {
+          "start": 48,
+          "end": 51,
+          "text": "125"
+        },
+        {
+          "start": 67,
+          "end": 69,
+          "text": "16"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 20,
+          "text": "Upland Robotics"
+        }
+      ]
+    },
+    {
+      "id": "c43",
+      "original": "What is the extended USD charge for Vesper Coast's 42.5 service hours billed at 31.2 USD per hour?",
+      "human_masked": "What is the extended USD charge for Vesper Coast's [PRIVATE_1] service hours billed at [PRIVATE_2] USD per hour?",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the service hours by the hourly rate.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "1326 USD",
+      "sensitive_spans": [
+        {
+          "start": 51,
+          "end": 55,
+          "text": "42.5"
+        },
+        {
+          "start": 86,
+          "end": 90,
+          "text": "31.2"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 36,
+          "end": 48,
+          "text": "Vesper Coast"
+        }
+      ]
+    },
+    {
+      "id": "c44",
+      "original": "For Windward Timber, multiply 27 pallets by the 14.5 USD handling rate per pallet and report a single handling total.",
+      "human_masked": "For Windward Timber, multiply [PRIVATE_1] pallets by the [PRIVATE_2] USD handling rate per pallet and report a single handling total.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the pallet count by the handling rate per pallet.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "391.5 USD",
+      "sensitive_spans": [
+        {
+          "start": 30,
+          "end": 32,
+          "text": "27"
+        },
+        {
+          "start": 55,
+          "end": 59,
+          "text": "14.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 18,
+          "text": "Windward Timber"
+        }
+      ]
+    },
+    {
+      "id": "c45",
+      "original": "Compute one EUR extended lease charge for Xeric Meadows using 7.25 weeks at 96 EUR per week.",
+      "human_masked": "Compute one EUR extended lease charge for Xeric Meadows using [PRIVATE_1] weeks at [PRIVATE_2] EUR per week.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the lease duration by the weekly rate.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "EUR",
+      "gold": "696 EUR",
+      "sensitive_spans": [
+        {
+          "start": 61,
+          "end": 65,
+          "text": "7.25"
+        },
+        {
+          "start": 76,
+          "end": 78,
+          "text": "96"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 40,
+          "end": 52,
+          "text": "Xeric Meadows"
+        }
+      ]
+    },
+    {
+      "id": "c46",
+      "original": "For Yarrow Point Printing, work out the KRW extended batch cost for 1,240 labels at 3.5 KRW per label.",
+      "human_masked": "For Yarrow Point Printing, work out the KRW extended batch cost for [PRIVATE_1] labels at [PRIVATE_2] KRW per label.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "scope"
+      ],
+      "expected": "Multiply the label quantity by the cost per label.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "KRW",
+      "gold": "4340 KRW",
+      "sensitive_spans": [
+        {
+          "start": 67,
+          "end": 72,
+          "text": "1,240"
+        },
+        {
+          "start": 84,
+          "end": 87,
+          "text": "3.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 4,
+          "end": 26,
+          "text": "Yarrow Point Printing"
+        }
+      ]
+    }
+  ]
+}

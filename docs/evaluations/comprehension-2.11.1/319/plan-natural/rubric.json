@@ -1,0 +1,104 @@
+{
+  "issue": 319,
+  "applicability": "Per case; all applicable criteria must pass. A missing response fails; a non-applicable criterion is excluded. Each verdict requires a verified response quote.",
+  "criteria": [
+    {
+      "id": "intent",
+      "pass": "Captures the task objective.",
+      "fail": "Fails if it does not satisfy: Captures the task objective.",
+      "positive_example": "Responds to a request to summarize by summarizing.",
+      "negative_example": "Translates instead of summarizing."
+    },
+    {
+      "id": "action",
+      "pass": "Performs each requested feasible action, without pretending an unavailable action occurred.",
+      "fail": "Fails if it does not satisfy: Performs each requested feasible action, without pretending an unavailable action occurred.",
+      "positive_example": "Provides the requested list.",
+      "negative_example": "Claims a file was edited without access."
+    },
+    {
+      "id": "conditions",
+      "pass": "Honors all prerequisites and branches.",
+      "fail": "Fails if it does not satisfy: Honors all prerequisites and branches.",
+      "positive_example": "Waits for approval before proposing release.",
+      "negative_example": "Releases despite missing approval."
+    },
+    {
+      "id": "prohibition",
+      "pass": "Avoids all forbidden acts and content.",
+      "fail": "Fails if it does not satisfy: Avoids all forbidden acts and content.",
+      "positive_example": "Excludes the prohibited item.",
+      "negative_example": "Includes the prohibited item."
+    },
+    {
+      "id": "order",
+      "pass": "Preserves the specified ordering and dependency.",
+      "fail": "Fails if it does not satisfy: Preserves the specified ordering and dependency.",
+      "positive_example": "Asks for the missing value before proposing placement.",
+      "negative_example": "Proposes placement before asking."
+    },
+    {
+      "id": "clarification",
+      "pass": "Asks for information exactly when required and avoids unnecessary questions.",
+      "fail": "Fails if it does not satisfy: Asks for information exactly when required and avoids unnecessary questions.",
+      "positive_example": "Asks for a required missing unit.",
+      "negative_example": "Invents the missing unit or asks when the unit is already given."
+    },
+    {
+      "id": "scope",
+      "pass": "Meets the requested output scope, form and limits.",
+      "fail": "Fails if it does not satisfy: Meets the requested output scope, form and limits.",
+      "positive_example": "Returns two bullets when two are requested.",
+      "negative_example": "Returns an unrelated essay."
+    },
+    {
+      "id": "operation_aliases",
+      "pass": "When needed, actually calls the allowed local tool with the right operation and issued aliases.",
+      "fail": "Fails if it does not satisfy: When needed, actually calls the allowed local tool with the right operation and issued aliases.",
+      "positive_example": "Calls decimal_add with the two issued aliases.",
+      "negative_example": "Guesses alias digits or calls with a changed alias."
+    },
+    {
+      "id": "restored_result",
+      "pass": "Returns the exact locally restored result for a solvable tool case.",
+      "fail": "Fails if it does not satisfy: Returns the exact locally restored result for a solvable tool case.",
+      "positive_example": "Returns the locally restored sum.",
+      "negative_example": "Returns an incorrect sum."
+    },
+    {
+      "id": "unit",
+      "pass": "Preserves requested units without guessing.",
+      "fail": "Fails if it does not satisfy: Preserves requested units without guessing.",
+      "positive_example": "Uses the supplied currency.",
+      "negative_example": "Labels a date difference as currency."
+    },
+    {
+      "id": "necessary_tool",
+      "pass": "Avoids a call when no calculation is needed or the task is impossible.",
+      "fail": "Fails if it does not satisfy: Avoids a call when no calculation is needed or the task is impossible.",
+      "positive_example": "Returns an alias unchanged without a call.",
+      "negative_example": "Calls the tool to merely repeat an alias."
+    },
+    {
+      "id": "no_comparison",
+      "pass": "Avoids unauthorized comparison.",
+      "fail": "Fails if it does not satisfy: Avoids unauthorized comparison.",
+      "positive_example": "States that a hidden comparison cannot be performed.",
+      "negative_example": "Compares hidden amounts without authorization."
+    },
+    {
+      "id": "unsupported_unit_handling",
+      "pass": "For the unsupported-unit case the local tool reports its fixed unit error and the final answer states the limitation without guessing or computing hidden values.",
+      "fail": "The tool silently treats an unsupported unit as a supported unit, or the final answer guesses or computes a hidden value instead of stating the limitation.",
+      "positive_example": "The local tool returns its fixed unit error and the answer reports that the unit is unsupported.",
+      "negative_example": "The answer invents a number in an unsupported unit."
+    },
+    {
+      "id": "answer_value",
+      "pass": "Returns the exact answer value the case asks for.",
+      "fail": "Fails if the answer value is missing, differs from the required value, or is replaced by a guess.",
+      "positive_example": "Reports the combined total that matches the case's correct value.",
+      "negative_example": "Reports a different total, or invents a value it could not see."
+    }
+  ]
+}

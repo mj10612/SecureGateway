@@ -41,8 +41,12 @@ def pick(manifest):
     return {**manifest, "cases": cases, "jobs": r.build_jobs(cases)}
 
 
-def events(answer, calls=(), limit=False, bad=False):
-    out = [{"type": "thread.started", "thread_id": "fake"}, {"type": "turn.started"}]
+def events(answer, calls=(), limit=False, bad=False, code_mode_warning=False):
+    out = [{"type": "thread.started", "thread_id": "fake"}]
+    if code_mode_warning:  # #372: the CLI's fixed warning with code_mode_host disabled
+        out.append({"type": "item.completed", "item": {"id": "w", "type": "error",
+                                                        "message": r.eb.CODE_MODE_HOST_DISABLED_WARNING}})
+    out.append({"type": "turn.started"})
     if limit:
         out.append({"type": "turn.failed", "error": {"message": "You've hit your usage limit. Try again later."}})
         return out
@@ -70,8 +74,10 @@ def fake_codex(cases):
     def run(command, prompt, cwd, env):
         assert command[1] == "exec" and "--ephemeral" in command and command[command.index("--sandbox") + 1] == "read-only"
         assert 'forced_login_method="chatgpt"' in command and not any(Path(cwd).iterdir()), "isolation"
-        assert all(f in command for f in r.eb.LEAN_DISABLED_FEATURES) == r.LEAN
         d = any(a.startswith("mcp_servers.") for a in command)
+        disabled = {command[i + 1] for i, a in enumerate(command[:-1]) if a == "--disable"}
+        assert disabled == (set(r.arm_disabled_features("D" if d else "A")) if r.LEAN else set()), "arm features"
+        assert (r.CODE_MODE_HOST in disabled) != d, "only D keeps code-mode host"
         assert d == ("mcp_servers." + r.SERVER + ".required=true" in command)
         text = prompt.decode("utf-8")
         assert text.startswith(r.PROMPT_D if d else r.PROMPT_NO_TOOL)
@@ -108,7 +114,7 @@ def fake_codex(cases):
                 answer = "ANSWER-D No calculation is needed; I did not call the tool."
         if not limit and not bad:
             output.write_text(answer, encoding="utf-8")
-        stream = "\n".join(json.dumps(e) for e in events(answer, calls, limit, bad)) + "\n"
+        stream = "\n".join(json.dumps(e) for e in events(answer, calls, limit, bad, not d)) + "\n"
         return subprocess.CompletedProcess(command, 1 if limit else 0, stream.encode(), b"")
     return run, forbidden
 

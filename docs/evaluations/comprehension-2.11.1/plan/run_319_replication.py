@@ -64,6 +64,21 @@ ARMS = ("A", "C", "D")
 REQUIRED = {"tool_solvable": 40, "no_calculation": 14, "impossible": 26}
 OFFSET_REPAIRS: list = []  # filled by normalize(); reported in the pre-check
 TOOL_OPERATIONS = {"add", "subtract", "multiply"}
+# codex-cli 0.167.2 reaches an MCP tool only as a nested tool of the code-mode
+# ``exec`` tool. #372 disabled ``code_mode_host`` so a no-tool arm cannot run code
+# behind the event audit; the tool arm therefore keeps code mode enabled and the
+# A/C arms keep the full fail-closed set. The resulting asymmetry is the
+# experiment variable itself (tool availability) and is disclosed in the plan.
+CODE_MODE_HOST = "code_mode_host"
+# A design may grade the answer value of the no-tool arms separately; the
+# alias-return criterion only applies to the tool arm. None keeps run_319's rule.
+NO_TOOL_ANSWER_CRITERION: str | None = None
+RUBRIC_SRC = SRC_PLAN / "rubric.json"
+PROTECTION_KEY = "319/plan-replication"
+# A derived design (a new preregistration that reuses this machinery) supplies its
+# own condition text, limitations and freeze fields without editing the frozen
+# 2.16.3 plan or its published artifacts.
+DESIGN: dict = {}
 GRADE_BATCH, WORKERS, SEED = 2, 3, 20261113319
 # Lean CLI overrides (evaluation_batch.LEAN_DISABLED_FEATURES + neutral
 # model_instructions_file) for every arm. Set from the offline fake-provider probe
@@ -92,6 +107,7 @@ PROMPT_D = ("Complete the supplied task. Use the local_alias_arithmetic tool onl
             "Limit output to 512 tokens.\n")
 PROMPT_NO_TOOL = ("Complete the supplied task. Do not use tools, commands, files, browsing, agents or skills. "
                   "Limit output to 512 tokens.\n")
+PROMPTS = {"A": PROMPT_NO_TOOL, "C": PROMPT_NO_TOOL, "D": PROMPT_D}
 
 
 class UsageLimit(Exception):
@@ -206,6 +222,9 @@ def normalize(prefix, c):
         by["D"] += ["operation_aliases", "restored_result", "unit"]
         by["C"] += ["restored_result", "unit"]
         by["A"] += ["restored_result", "unit"]
+        if NO_TOOL_ANSWER_CRITERION:
+            by["A"].insert(0, NO_TOOL_ANSWER_CRITERION)
+            by["C"].insert(0, NO_TOOL_ANSWER_CRITERION)
     else:
         by["D"].append("necessary_tool")
     if "comparison" in str(c["operation"]).lower() or "greater_than" in str(c["operation"]).lower():
@@ -298,17 +317,34 @@ def write_owner(directory, case, selected, session):
 
 
 def fixture_probe(case, selected, order):
-    """Offline: drive the real stdio MCP fixture with the expected aliases, restore locally."""
-    session, _payload = capture(case)
-    with tempfile.TemporaryDirectory(prefix="sg-319r-probe-") as d:
-        fixture, token = write_owner(Path(d), case, selected, session)
-        names, data = asyncio.run(_mcp_call(fixture, str(case["operation"]).lower(), [selected[i] for i in order]))
-        owner = gateway.GatewaySession(load_session(Path(d) / "session.enc", token, "arithmetic-fixture"))
-        alias = data.get("alias") if isinstance(data, dict) else None
-        restored = owner.restore(alias) if alias else None
+    """Offline: drive the real stdio MCP fixture with both alias forms and restore locally.
+
+    #375: this probe used to send only the bare ``private_symbol_N`` form, so it
+    passed while the product rejected the ``⟦private_symbol_N⟧`` form the model
+    actually sees. Both forms are now exercised with a fresh owner each; a
+    tool_solvable case passes only when both compute and restore to the gold.
+    """
+    forms = {"bare": lambda alias: alias, "displayed": lambda alias: "⟦" + alias + "⟧"}
+    out = {"tools_listed": [], "forms": {}}
     gold = numeric(case["gold"])
-    return {"tools_listed": names, "result_is_alias": bool(alias) and not numeric(re.sub(r"private_symbol_\d+", "", alias)),
-            "restored_equals_gold": bool(restored) and bool(gold) and numeric(restored)[:1] == gold[:1]}
+    for name, render in forms.items():
+        session, _payload = capture(case)
+        with tempfile.TemporaryDirectory(prefix="sg-319r-probe-") as d:
+            fixture, token = write_owner(Path(d), case, selected, session)
+            names, data = asyncio.run(_mcp_call(fixture, str(case["operation"]).lower(),
+                                                [render(selected[i]) for i in order]))
+            owner = gateway.GatewaySession(load_session(Path(d) / "session.enc", token, "arithmetic-fixture"))
+            alias = data.get("alias") if isinstance(data, dict) else None
+            restored = owner.restore(alias) if alias else None
+        out["tools_listed"] = names
+        out["forms"][name] = {
+            "result_is_alias": bool(alias) and not numeric(re.sub(r"private_symbol_\d+", "", alias)),
+            "restored_equals_gold": bool(restored) and bool(gold) and numeric(restored)[:1] == gold[:1],
+            "error": data.get("error") if isinstance(data, dict) else None}
+    out["ok"] = bool(out["forms"]) and all(
+        v["result_is_alias"] and v["restored_equals_gold"] and TOOL in out["tools_listed"]
+        for v in out["forms"].values())
+    return out
 
 
 def source_cases():
@@ -320,7 +356,7 @@ def source_cases():
 
 
 def wrapper(arm):
-    return PROMPT_D if arm == "D" else PROMPT_NO_TOOL
+    return PROMPTS[arm]
 
 
 def build_jobs(cases):
@@ -381,7 +417,7 @@ def prepare():
     if (PLAN / "freeze.json").exists():
         raise SystemExit("plan is frozen; --prepare is closed")
     PLAN.mkdir(parents=True, exist_ok=True)
-    rubric = load(SRC_PLAN / "rubric.json")
+    rubric = load(RUBRIC_SRC)
     criteria = {x["id"]: x for x in rubric["criteria"]}
     selected_cases, excluded, checks, leaks, probes = [], [], [], [], []
     for prefix, path, raw in source_cases():
@@ -421,7 +457,7 @@ def prepare():
             else:
                 probe = fixture_probe(case, selected_alias, order)
                 probes.append({"id": case["id"], **probe})
-                if not (probe["result_is_alias"] and probe["restored_equals_gold"] and TOOL in probe["tools_listed"]):
+                if not probe["ok"]:
                     reason = "fixture_probe_failed"
         check["reason"] = reason
         checks.append(check)
@@ -489,16 +525,27 @@ def prepare():
         "offset_repairs": OFFSET_REPAIRS,
         "excluded": excluded,
         "excluded_by_reason": {r: sum(x["reason"] == r for x in excluded) for r in sorted({x["reason"] for x in excluded})},
-        "fixture_probe": {"tool_solvable_probed": len(probes),
-                          "restored_equals_gold": sum(p["restored_equals_gold"] for p in probes),
-                          "result_is_alias": sum(p["result_is_alias"] for p in probes)},
+        "fixture_probe": {"tool_solvable_probed": len(probes), "both_alias_forms_ok": sum(p["ok"] for p in probes),
+                          "per_form": {f: {"restored_equals_gold": sum(p["forms"].get(f, {}).get("restored_equals_gold")
+                                                                        is True for p in probes),
+                                            "result_is_alias": sum(p["forms"].get(f, {}).get("result_is_alias")
+                                                                   is True for p in probes)}
+                                        for f in ("bare", "displayed")}},
         "checks": checks,
     }
+    selected_ids = {c["case_id"] for c in selected_cases}
     leak_doc = {"issue": ISSUE, "rule": ("No sensitive operand or number of the gold (computed value) appears as a "
                                          "whole token outside private_symbol_N aliases in the full gateway request "
                                          "payload (instructions, input, injected tool schema) or the exact C/D worker "
                                          "prompts. A is the original-text control and is excluded by design."),
-                "cases": len(leaks), "cases_with_leak": sum(x["any"] for x in leaks), "results": leaks}
+                "cases": len(leaks), "cases_with_leak": sum(x["any"] for x in leaks),
+                # Only selected cases reach a model. A case excluded above is never sent, so the
+                # freeze gate applies to this count; a fixed wrapper constant can collide with a
+                # short operand (for example "512 tokens" and the operand 512) and such a case is
+                # excluded, not reworded.
+                "selected_cases_with_leak": sum(x["any"] and x["id"] in selected_ids for x in leaks),
+                "excluded_cases_with_leak": [x["id"] for x in leaks if x["any"] and x["id"] not in selected_ids],
+                "results": leaks}
     manifest = {"schema_version": 1, "issue": ISSUE, "feature": FEATURE, "model": MODEL, "effort": EFFORT,
                 "arms": list(ARMS), "secure_gateway_version": __version__, "cases": selected_cases, "jobs": jobs,
                 "criterion_definitions": criteria, "shuffle_seed": SEED,
@@ -524,7 +571,7 @@ def protection():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     mod.root = ROOT
-    key = "319/plan-replication"  # output: <root>/319/plan-replication/offline/local_arithmetic
+    key = PROTECTION_KEY  # output: <root>/<key>/offline/<feature>
     mod.source[key] = mod.source[ISSUE]
     result = mod.run(key, FEATURE)
     print(json.dumps({k: result.get(k) for k in ("status", "newly_exposed", "baseline_exact_restore",
@@ -537,24 +584,26 @@ def freeze():
     pre = load(PLAN / "precheck.json")
     if not pre["requirements_met"]:
         raise SystemExit("case requirements not met: " + json.dumps(pre["selected_by_label"]))
-    if load(PLAN / "payload-leak-check.json")["cases_with_leak"]:
-        raise SystemExit("provider-visible leak in prepared payloads")
+    leak = load(PLAN / "payload-leak-check.json")
+    if leak.get("selected_cases_with_leak", leak["cases_with_leak"]):
+        raise SystemExit("provider-visible leak in a selected payload")
     summary = PLAN / "offline" / FEATURE / "summary.json"
     if not summary.exists() or load(summary)["status"] != "completed":
         raise SystemExit("offline protection gate missing; run --protection")
     m = load(PLAN / "manifest.json")
     if m["duplicate_job_ids"] or sha(build_jobs(m["cases"])) != sha(m["jobs"]):
         raise SystemExit("job list invalid")
-    for name in ("rubric.json", "decision.json"):
-        (PLAN / name).write_bytes((SRC_PLAN / name).read_bytes())
+    (PLAN / "rubric.json").write_bytes(Path(RUBRIC_SRC).read_bytes())
+    (PLAN / "decision.json").write_bytes((SRC_PLAN / "decision.json").read_bytes())
     dump(PLAN / "conditions.json", {
         "issue": ISSUE, "fixed": load(SRC_PLAN / "conditions.json")["fixed"],
         "A": "Original synthetic input, no tool (task-validity control).",
         "C": "Masked input (local_arithmetic feature flag capture), no tool.",
         "D": "Identical masked input with the real allowlisted local arithmetic MCP tool; no other tool allowed.",
-        "transport": ("All arms: same Codex exec path (fresh ephemeral session, empty working directory, read-only "
-                      "sandbox, ChatGPT login only" + (", lean CLI overrides" if LEAN else "") + "). Only D adds the "
-                      "MCP server and the one-sentence permission to use it; any other tool event fails closed.")})
+        "transport": DESIGN.get("transport", (
+            "All arms: same Codex exec path (fresh ephemeral session, empty working directory, read-only "
+            "sandbox, ChatGPT login only" + (", lean CLI overrides" if LEAN else "") + "). Only D adds the "
+            "MCP server and the one-sentence permission to use it; any other tool event fails closed."))})
     OUT.mkdir(parents=True, exist_ok=True)
     for name in ("rubric.json", "decision.json"):
         (OUT / ("frozen-" + name)).write_bytes((PLAN / name).read_bytes())
@@ -577,10 +626,12 @@ def freeze():
         "ungraded": ("one single-case re-grade after a failed quote check; remaining ungraded cases are bounded: the "
                      "decision stands only if identical when every ungraded case is excluded, D-wins, C-wins, "
                      "both-fail or both-pass; otherwise UNDECIDED_RERUN_UNGRADED"),
-        "limitations": ["Interpreter and grader are the same model family.",
-                        "Same OS user; no hard filesystem jail for the MCP fixture.",
-                        "Results are not comparable to the 2.11.1 gpt-6.1-sol run (model and transport differ)."],
+        "limitations": DESIGN.get("limitations", [
+            "Interpreter and grader are the same model family.",
+            "Same OS user; no hard filesystem jail for the MCP fixture.",
+            "Results are not comparable to the 2.11.1 gpt-6.1-sol run (model and transport differ)."]),
     }
+    doc.update(DESIGN.get("freeze_extra", {}))
     dump(PLAN / "freeze.json", doc)
     print(json.dumps({"jobs": doc["jobs"], "cases": doc["cases"], "budget": doc["budget_estimate"]["raw_tokens"]}))
 
@@ -616,7 +667,12 @@ def lean_worker(request):
     return eb.run_lean_worker(request)
 
 
-def codex_command(codex, output, instructions_file, fixture=None, provider=None):
+def arm_disabled_features(arm):
+    """#372 fail-closed CLI feature set; only the tool arm keeps code-mode host."""
+    return tuple(f for f in eb.LEAN_DISABLED_FEATURES if not (arm == "D" and f == CODE_MODE_HOST))
+
+
+def codex_command(codex, output, instructions_file, fixture=None, provider=None, disabled=None):
     """run_319 argv with optional lean overrides; ``provider`` is only for the offline probe."""
     command = [codex, "exec", "--ephemeral", "--ignore-user-config", "--ignore-rules", "--skip-git-repo-check",
                "--sandbox", "read-only", "--model", MODEL, "--json", "--output-last-message", str(output)]
@@ -626,7 +682,7 @@ def codex_command(codex, output, instructions_file, fixture=None, provider=None)
                 "-c", 'web_search="disabled"', "-c", "model_reasoning_effort=" + json.dumps(EFFORT)]
     if LEAN:
         command += ["-c", "model_instructions_file=" + json.dumps(str(instructions_file))]
-        for feature in eb.LEAN_DISABLED_FEATURES:
+        for feature in (eb.LEAN_DISABLED_FEATURES if disabled is None else disabled):
             command += ["--disable", feature]
     else:
         command += ["-c", "features.multi_agent=false"]
@@ -646,8 +702,14 @@ def codex_command(codex, output, instructions_file, fixture=None, provider=None)
 
 
 def audit_events(raw, allow_tool):
-    """run_319 audit plus evaluation_batch.parse_events usage-limit classification."""
-    calls, usage, completed = [], None, False
+    """run_319 audit plus evaluation_batch.parse_events usage-limit classification.
+
+    #372 disables ``code_mode_host`` in the lean adapter, and codex-cli 0.167.2
+    then emits one fixed warning item before the turn starts. As in
+    ``evaluation_batch.parse_events`` exactly that item, once, before
+    ``turn.started`` is accepted; every other non-message item still fails closed.
+    """
+    calls, usage, completed, started, warned = [], None, False, False, False
     for line in raw.splitlines():
         if not line.strip():
             continue
@@ -662,6 +724,11 @@ def audit_events(raw, allow_tool):
         if isinstance(kind, str) and kind.startswith("item."):
             item = event.get("item", {})
             typ = item.get("type")
+            if (kind == "item.completed" and not started and not warned and isinstance(item, dict)
+                    and set(item) == {"id", "type", "message"} and typ == "error"
+                    and item.get("message") == eb.CODE_MODE_HOST_DISABLED_WARNING):
+                warned = True
+                continue
             if typ == "mcp_tool_call":
                 if not allow_tool or item.get("server") != SERVER or item.get("tool") != TOOL:
                     raise ValueError("UnexpectedTool")
@@ -673,7 +740,9 @@ def audit_events(raw, allow_tool):
             if completed:
                 raise ValueError("DuplicateTurn")
             completed, usage = True, event.get("usage")
-        elif kind not in ("thread.started", "turn.started"):
+        elif kind == "turn.started":
+            started = True
+        elif kind != "thread.started":
             raise ValueError("UnexpectedEvent")
     if not completed or not isinstance(usage, dict) or any(
             type(usage.get(k)) is not int for k in ("input_tokens", "output_tokens")):
@@ -705,12 +774,19 @@ def interpret_call(job, case):
                 raise ValueError("CaptureDrift")
             fixture, token = write_owner(owner, case, selected, session)
         output = root / "last.txt"
-        command = codex_command(codex, output, instructions, fixture)
+        command = codex_command(codex, output, instructions, fixture, disabled=arm_disabled_features(arm))
         prompt = (wrapper(arm) + json.dumps(request["messages"], ensure_ascii=False)).encode("utf-8")
         proc = run_process(command, prompt, workspace, env)
         calls, usage = audit_events(proc.stdout, arm == "D")
         if proc.returncode:
             raise ValueError("WorkerExitNonzero")
+        # #372: the CLI's tool router logs every failed tool call on stderr. The no-tool
+        # arms must stay tool-free, so such a log fails them closed. The tool arm keeps
+        # code mode enabled to reach the MCP tool, and a successful non-MCP nested call
+        # inside exec leaves no event and no stderr line; that blind spot is disclosed.
+        stderr_tool_log = b"codex_core::tools" in (proc.stderr or b"")
+        if arm != "D" and stderr_tool_log:
+            raise ValueError("UnexpectedTool")
         final = output.read_text(encoding="utf-8")
         if not final.strip():
             raise ValueError("EmptyAnswer")
@@ -718,7 +794,9 @@ def interpret_call(job, case):
                   "status": c.get("status"), "error": bool(c.get("error"))} for c in calls]
         result = {"job_id": request["job_id"], "response": final, "tool_trace": trace, "tool_calls": len(calls),
                   "usage": usage, "metadata": {"fresh_session": True, "requested_model": MODEL, "tool_events": len(calls),
-                                               "tool_allowlist_verified": True, "lean_cli_overrides": LEAN}}
+                                               "tool_allowlist_verified": True, "lean_cli_overrides": LEAN,
+                                               "code_mode_host": CODE_MODE_HOST not in arm_disabled_features(arm),
+                                               "stderr_tool_log": stderr_tool_log}}
         if arm == "D":
             owner_session = gateway.GatewaySession(load_session(owner / "session.enc", token, "arithmetic-fixture"))
             result["restored"] = owner_session.restore(final)
@@ -809,7 +887,11 @@ def grade_request(m, case, byjob):
             criteria.append({"id": label + "::" + criterion, "description": "For " + label + ": " + x["pass"]
                              + " Failure: " + x["fail"] + " Positive example: " + x["positive_example"]
                              + " Negative example: " + x["negative_example"]})
-    msg = {"original": case["original"], "expected_case_behavior": case["expected"], "responses": responses}
+    # The grader is a trusted party: it already receives the original text with the
+    # raw operands. Naming the case's correct value keeps answer_value verdicts
+    # mechanical instead of asking the grader to recompute the arithmetic itself.
+    msg = {"original": case["original"], "expected_case_behavior": case["expected"],
+           "correct_answer": case["gold"], "responses": responses}
     request = {"role": "grade", "job_id": sha([ISSUE, "replication", cid, "grade"])[:32], "model": MODEL,
                "max_output_tokens": 2048, "reasoning_effort": EFFORT,
                "messages": [{"role": "system", "content": GRADE_SYSTEM},
@@ -988,6 +1070,8 @@ def report():
 
 
 def main():
+    if MODEL != "gpt-6-luna" and not os.environ.get("SG_ALLOW_OTHER_MODEL"):
+        raise SystemExit("this plan is preregistered on gpt-6-luna; MODEL=" + MODEL)
     parser = argparse.ArgumentParser()
     for flag in ("prepare", "protection", "freeze", "run", "report"):
         parser.add_argument("--" + flag, action="store_true")
