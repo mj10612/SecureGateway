@@ -20,6 +20,8 @@ def test_cli_mask_and_unmask():
             "Alice from Google sent $10,000 to Bob.",
             "--session-id",
             "cli_test_session",
+            # #374: numbers are public by default; this round trip masks the amount.
+            "--mask-numbers",
         ],
     )
     assert mask_result.exit_code == 0

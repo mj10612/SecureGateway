@@ -43,7 +43,9 @@ def test_source_numeric_spellings_remain_private_and_restore_in_prose(number, ma
     session.mask("value = " + number, code=True)
     text = "Use " + number + " again."
     masked = session.mask(text)
-    assert not re.search(r"(?<!\w)" + re.escape(number) + r"(?!\w)", masked)
+    # #374: plain decimal numbers are public by default; other source spellings stay private.
+    public = not mask_numbers and number in {"1e-3", "42"}
+    assert bool(re.search(r"(?<!\w)" + re.escape(number) + r"(?!\w)", masked)) is public
     assert session.restore(masked) == text
     assert session.mask(text) == masked
 

@@ -35,7 +35,7 @@ def issued(s):
 
 
 def plain_tool():
-    s = gateway.GatewaySession()
+    s = gateway.GatewaySession(mask_numbers=True)
     a, b = s.values("24"), s.values("13")
     return s, a, b, PrivateArithmetic(s, allowed={a: "USD", b: "USD"})
 
@@ -88,7 +88,7 @@ def test_malformed_displayed_aliases_rejected(bad):
 
 
 def test_wrapped_numeric_alias_is_not_a_displayed_form():
-    s = gateway.GatewaySession()
+    s = gateway.GatewaySession(mask_numbers=True)
     masked = s.request({"model": "m", "messages": [{"role": "user", "content": "Order 4471 has 12 items."}]})
     n, m = issued(s)["4471"], issued(s)["12"]
     # Numeric aliases are displayed bare, never bracketed.
@@ -102,7 +102,7 @@ def test_wrapped_numeric_alias_is_not_a_displayed_form():
 
 def test_foreign_session_displayed_alias_rejected():
     s1, a, _b, _tool = plain_tool()
-    s2 = gateway.GatewaySession()
+    s2 = gateway.GatewaySession(mask_numbers=True)
     s2.values("filler-1")
     s2.values("filler-2")
     foreign = s2.values("99")

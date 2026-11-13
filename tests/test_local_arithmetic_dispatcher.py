@@ -20,7 +20,7 @@ def test_tool_injected_only_when_toggle_is_on():
     }
 
     # When toggle is off: tools is NOT injected
-    session_off = gateway.GatewaySession()
+    session_off = gateway.GatewaySession(mask_numbers=True)
     req_off = session_off.request(payload)
     assert "tools" not in req_off or not any(
         t.get("function", {}).get("name") == LOCAL_ARITHMETIC_TOOL_NAME for t in req_off.get("tools", [])
@@ -28,7 +28,7 @@ def test_tool_injected_only_when_toggle_is_on():
 
     # When toggle is on: tools is injected
     with candidate_profile("local_arithmetic"):
-        session_on = gateway.GatewaySession()
+        session_on = gateway.GatewaySession(mask_numbers=True)
         req_on = session_on.request(payload)
         assert any(
             (t.get("name") == LOCAL_ARITHMETIC_TOOL_NAME or t.get("function", {}).get("name") == LOCAL_ARITHMETIC_TOOL_NAME)
@@ -51,14 +51,14 @@ def test_user_tool_name_collision_detected():
         ],
     }
     with candidate_profile("local_arithmetic"):
-        session = gateway.GatewaySession()
+        session = gateway.GatewaySession(mask_numbers=True)
         with pytest.raises(ValueError, match="collides"):
             session.request(colliding_payload)
 
 
 def test_local_dispatcher_intercepts_tool_call_and_removes_from_host():
     with candidate_profile("local_arithmetic"):
-        session = gateway.GatewaySession()
+        session = gateway.GatewaySession(mask_numbers=True)
         p1 = session.values("12.75")
         p2 = session.values("4")
         session.tool_dispatcher.tool.allowed[p1] = "USD"
@@ -110,7 +110,7 @@ def test_local_dispatcher_intercepts_tool_call_and_removes_from_host():
 
 
 def test_snapshot_restart_replay_strict_restore_derived_alias(tmp_path):
-    session = gateway.GatewaySession()
+    session = gateway.GatewaySession(mask_numbers=True)
     session.session.session_id = "arithmetic-persist"
     a = session.values("2032-02-27")
     b = session.values("2032-03-02")
@@ -136,8 +136,8 @@ def test_snapshot_restart_replay_strict_restore_derived_alias(tmp_path):
 
 
 def test_unknown_foreign_session_and_mutated_aliases_rejected():
-    session1 = gateway.GatewaySession()
-    session2 = gateway.GatewaySession()
+    session1 = gateway.GatewaySession(mask_numbers=True)
+    session2 = gateway.GatewaySession(mask_numbers=True)
     p1 = session1.values("10")
     session2.values("dummy1")
     session2.values("dummy2")
@@ -154,7 +154,7 @@ def test_unknown_foreign_session_and_mutated_aliases_rejected():
 
 
 def test_ambiguous_unit_and_date_errors():
-    session = gateway.GatewaySession()
+    session = gateway.GatewaySession(mask_numbers=True)
     x = session.values("10")
     y = session.values("20")
     # Unit mismatch: USD vs EUR
