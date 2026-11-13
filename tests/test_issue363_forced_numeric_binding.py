@@ -66,8 +66,9 @@ def test_short_numeric_rule_neither_splits_numbers_nor_rewrites_aliases():
     text = "Data: 12.40; 4. Rows 2 and 6.25 (total 1,234)."
     masked = session.mask(text)
     assert len(bound(session, "4")) == 1 and len(bound(session, "2")) == 1
+    # #374: ordinary numbers are public and stay whole (never split by the rule).
     for other in ("12.40", "6.25", "1,234"):
-        assert not visible(masked, other)
+        assert visible(masked, other)
     assert session.restore(masked) == text
 
 

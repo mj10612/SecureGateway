@@ -8,7 +8,7 @@ Same project, new name. See the [1.0.0 rename and clean-install notes](docs/RENA
 
 *17개 자연어·24개 코드 언어를 로컬에서 마스킹하고, 도구 실행과 사용자 화면에서 원문을 복원하는 개인정보 보호 도구*
 
-[![Version](https://img.shields.io/badge/version-2.16.3-blue.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-2.18.0-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-brightgreen.svg)](pyproject.toml)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](.github/workflows/ci.yml)
 [![CI](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mj10612/SecureGateway/actions/workflows/ci.yml)
@@ -129,7 +129,7 @@ Python 3.14에서 발견된 자원 정리 경고를 해결하며, 기존 평가 
 
 | Component | Supported versions / scope |
 | :--- | :--- |
-| SecureGateway | **2.16.3** |
+| SecureGateway | **2.18.0** |
 | Python | **3.10 · 3.11 · 3.12 · 3.13 · 3.14** in CI; package requires Python ≥ 3.10 |
 | Operating systems | **Windows · macOS · Linux** in CI |
 | Claude Code gateway | **2.1.287 / Sonnet 5.5** native fixtures and live subscription file-read/masking/restoration verified in English and Korean |
@@ -471,19 +471,21 @@ with LocalPrivacyClient() as client:
 | :--- | :--- |
 | 🌐 English & Korean | Per-word multilingual handling, conservative Korean particle separation and explicit sensitive terms |
 | 🧩 Code-aware masking | Language-specific lexer modes for identifiers, literals and comments; numbers preserved by default |
+| 🔢 Public numbers and dates (2.18.0) | Numbers, dates, times, versions and quantities with units are sent unchanged in prose and code by default; forced rules, existing private mappings and sensitive numbers (cards, phone, account, resident/business registration numbers, labelled IDs/PINs/tokens) stay protected. `mask_numbers=true` masks all numbers. See [Numbers and dates](#numbers-and-dates-2180-374) |
 | 🎭 Four surrogate strategies | Bracket, Unicode, delimited pseudoword and random hash representations |
 | 🔁 Subscription gateway | Automatic request masking, shared prompt/code aliases, local tool-argument restoration and automatic answer display; existing OAuth, no API-key fallback |
 | 📊 Local admin dashboard | Token-authenticated log viewer, routing/account metadata, filters and request details; SQLite storage, no prompt/reply/credential logging |
 | 🔌 Local agent hooks | Claude Code and Codex tool-text masking and local execution-argument restoration; Claude Code also supports display-only restoration |
 | 🔐 Session management | Stable per-session mappings, operation locks, idle expiry and opt-in encrypted snapshots |
 | 🛠️ CLI & Python API | Local masking/restoration, hook diagnostics, statistics and a buffered command wrapper |
+| 🧠 Adopted gateway features (2.17.0) | The gateway protects names introduced in direct user prose by default (#310). Saved project corrections (#316) and per-session document bundle policies (#318) apply when a trusted policy is configured; without one they do nothing. `gateway run --features-off` restores the 2.15 masking path. See [GATEWAY.md](docs/GATEWAY.md#masking-features-and-defaults-2170-354) |
 
 ### Masking policies
 
 | Mode | Behavior |
 | --- | --- |
 | `content_words` | Mask content words and detected sensitive spans; keep functional grammar. |
-| `entities_only` | Mask recognized PII, URLs, secrets, code spans, numbers and capitalized names. Korean and other case-free/non-ASCII words are masked conservatively, including ordinary nouns. |
+| `entities_only` | Mask recognized PII, URLs, secrets, code spans, capitalized names and, with `mask_numbers=True`, numbers. Korean and other case-free/non-ASCII words are masked conservatively, including ordinary nouns. |
 | `aggressive` | Keep a small structural subset of articles/prepositions/conjunctions; mask auxiliaries, adverbs, pronouns and other words. |
 | `code_aware` | Mask identifiers, literals and comments using the selected lexer; preserve numbers unless explicitly enabled. |
 
@@ -701,29 +703,56 @@ python -m pytest -W error --cov=secure_gateway --cov-report=term-missing --cov-f
 
 Licensed under **Apache License 2.0**. See [LICENSE](LICENSE) for details.
 
-### Code numeric literals
+### Numbers and dates (2.18.0, #374)
 
-Code masking preserves numeric literals by default, including their original spelling,
-base, exponent, separators and suffixes. This keeps indexes, loop bounds and comparison
-constants useful for code review. Names, strings and comments remain masked. Numeric
-values inside strings/comments follow their existing literal masking policy; ordinary
-natural-language number masking and provider protocol controls are unchanged.
+Since 2.18.0, numbers and dates are **public by default in both prose and code**.
+Quantities, amounts, dates, times, durations, versions, percentages and numbers with
+units (`4 boxes`, `12500 won`, `2026-11-20`, `14:30`, `v2.17.0`, `30s`, `5kg`, `$12.50`,
+`2026년 11월 20일`, `1,250개`) are sent with their exact spelling: digits, separators,
+sign, decimals and leading zeros are unchanged. Hiding them removed the meaning of
+quantities, boundaries and versions without protecting anything private. Inline code,
+code blocks, JSON text, tool results and numeric/date tool-argument values follow the
+same rule; code numeric literals have been preserved since 0.7.0 (#186).
 
-To hide sensitive code numbers explicitly:
+These numbers stay protected, in this order:
 
-- CLI: `secure-gateway mask --mode code_aware --mask-numbers ...`
-- MCP/Python: pass `mask_numbers=True` to `mask_code`, or to `mask_text` with
-  `mode="code_aware"` (Python engine/client use `MaskMode.CODE_AWARE`).
+1. Forced rules (`gateway rules`, `sensitive_terms`): a digit-bearing rule is still one
+   whole alias (#363).
+2. Existing private mappings in the session (registered names, literals and identifiers).
+3. Clear sensitive numeric patterns, each bound as one whole alias: card numbers
+   (4-4-4-4 / 4-6-5 groups or Luhn-valid 15-19 digits), Korean resident/foreigner
+   registration numbers, business registration numbers, hyphen-grouped account numbers
+   (three or more groups, 10-20 digits), phone numbers (including `010…` without
+   separators and `+82…`), credentials/tokens, and values after a sensitive label such as
+   `account=`, `card`, `phone:`, `PIN:`, `token=`, `customer`/`device`/`employee` ID,
+   `계좌번호`, `주민번호` or `카드번호`.
+4. Alphanumeric identifiers (`ABC-123`, `7730abc`, `v2` on its own) keep the existing
+   identifier policy (#326). A free-text tool-argument string is still one opaque literal.
+
+Not covered: a plain unlabelled number is public even when the user considers it private
+(for example an unlabelled 8-digit customer number in a sentence). Add it as a forced rule,
+or opt back in to numeric masking. Source-like text (`account=91000101; count=3`) is lexed
+as code, and code numbers have been public since 0.7.0 without the prose pattern checks
+above.
+
+To mask every number (the pre-2.18 prose behavior, now extended to code):
+
 - Gateway: set `"mask_numbers": true` in the gateway configuration, or start
   `gateway run --mask-numbers` / `gateway api-run --mask-numbers`.
-  `--preserve-numbers` overrides a configured opt-in. Both paths default to preservation.
+  `--preserve-numbers` overrides a configured opt-in.
+- CLI: `secure-gateway mask --mask-numbers ...` (text and `code_aware` modes).
+- MCP/Python: pass `mask_numbers=True` to `mask_text` or `mask_code`, or to
+  `LocalPrivacyClient.request`.
 
-Existing saved numeric aliases still restore. A literal that collides with an existing
-numeric alias is rejected rather than silently restored to another value; start a fresh
-session/conversation in that case. Literal numbers in the reserved alias range receive
-identity mappings so strict restoration and saved sessions remain unambiguous. Switching
-those particular literals to numeric masking also requires a fresh session. Turning on
-numeric masking changes values and does not preserve executable behavior.
+**Upgrading from 2.17 or earlier.** The change applies to new requests after the
+upgrade. Numeric aliases already issued (saved sessions, earlier turns) still restore
+exactly; the same numbers are sent unmasked in later requests. To keep the old prose
+behavior, set `mask_numbers` as above and restart the gateway. A literal that collides
+with an existing numeric alias is rejected rather than silently restored to another value;
+start a fresh session/conversation in that case. Literal numbers in the reserved alias
+range receive identity mappings so strict restoration and saved sessions remain
+unambiguous. Turning on numeric masking in code changes values and does not preserve
+executable behavior.
 
 ### Restoration budgets and audit retention
 

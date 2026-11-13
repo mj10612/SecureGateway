@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.16.3 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.18.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -435,7 +435,7 @@ Recognized public JSON Schema dialect URIs in `$schema` stay unchanged; other
 remain masked, including URI literals in source. `enum`/`const`/`default`/`examples` values
 are treated as data: protocol-named keys such as `id`, `type` or `cache_control` inside
 them are still masked. Operational schema fields and JSON scalar numeric parameters retain
-their types; numbers in source text are preserved unless numeric masking is enabled. Registered numeric aliases returned as JSON
+their types; numbers in prose and source text are preserved unless numeric masking is enabled. Registered numeric aliases returned as JSON
 integers are restored only when their original is a valid JSON numeric literal. Precision-lost
 float aliases and non-JSON originals are rejected. Character literals become opaque identifier
 expressions in the review representation and restore with their original quotes and escapes.
@@ -517,21 +517,65 @@ previous reasoning does not replay against the new alias table. Do not delete ol
 until you no longer need rollback.
 
 
-## Opt-in masking features (2.16.0, #354)
+## Masking features and defaults (2.17.0, #354)
 
 Five evaluated candidates are available as independent per-session features.
-**All of them are OFF by default in 2.16.0**; the default masking path is
-unchanged. Default enablement of the adopted candidates will be decided only
-after a joint real-LLM evaluation with all adopted features enabled together;
-until then enabling any feature is an explicit local choice.
+After the joint evaluation of the adopted candidates
+([decision](evaluations/joint-adopted-2.16/DECISION.md): ADOPT-JOINT),
+**gateway settings enable #310 by default from 2.17.0**. #316 B and #318 are
+also on by default, but they are *policy-gated*: they act only when a trusted
+local policy exists, and without one they are a byte-identical no-op that never
+blocks gateway start. #309 and #319 stay opt-in.
 
-| Feature key | Issue | Real-LLM decision | Gateway-wide setting |
-|---|---|---|---|
-| `ko_conjugation_split` | #309 | under evaluation | boolean |
-| `contextual_name_spans` | #310 | adopt (pending joint evaluation) | boolean |
-| `scoped_corrections` | #316 | adopt, protect-only condition B (pending joint evaluation) | encrypted records file |
-| `attribute_bundle` | #318 | adopt (pending joint evaluation) | not available; per-session only |
-| `local_arithmetic` | #319 | blocked by #363 | boolean |
+| Feature key | Issue | Real-LLM decision | Gateway default (2.17.0) | Gateway-wide setting |
+|---|---|---|---|---|
+| `ko_conjugation_split` | #309 | reject | off | boolean |
+| `contextual_name_spans` | #310 | adopt (joint) | **on** | boolean |
+| `scoped_corrections` | #316 | adopt, protect-only condition B (joint) | on, active only with a configured records file | encrypted records file |
+| `attribute_bundle` | #318 | adopt (joint) | on, active only with a per-session policy; gateway settings have no policy source, so it is inactive at gateway level | not available; per-session only |
+| `local_arithmetic` | #319 | blocked by #363 | off | boolean |
+
+These defaults apply to the gateway (`gateway run`, `gateway api-run`, auto-start).
+The Python library default is unchanged: `GatewaySession()` and
+`PrivacyGateway(...)` without `features` enable nothing.
+
+### Upgrading to 2.17.0
+
+- **Existing installs with no `features` key, or no `contextual_name_spans`
+  key:** after the gateway restarts, a name introduced in direct, unquoted user
+  prose (`Project name: drift`, `프로젝트명은 흐름`) and its later mentions in
+  the same conversation are masked. Nothing else changes. On the frozen #310 sets,
+  88 of 132 previously exposed name spans became protected with no new exposure,
+  no public overmask and unchanged exact restoration. On the legacy CI privacy
+  corpus, every metric equals the old default (57/66 protected, the same 9 known
+  exposures, 0 new, 0 resolved, public overmask 3/117)
+  ([evidence](evaluations/defaults-2.17.0/README.md)).
+- **Predicates are never names (2.17.0 guard).** A verb, adjective or
+  prohibition form after a name noun is not registered as a name and stays
+  visible to the model. This covers Korean conjugated or negated forms
+  (`파일 이름은 바꾸지 말며`, `프로젝트 이름은 수정하지 마세요`, `바꿔 주세요`,
+  `바꿀 수 없어요`) and English modals (`Customer name: must stay hidden`). A
+  spaced modifier in `<modifier> 프로젝트 <name>의` (`가상 프로젝트 흐름의`) is not
+  a name either. Forced rules and names registered earlier in the conversation
+  still win. Remaining ambiguity: a real name ending in an open vowel or in
+  `-지` immediately followed by `말고`/`않` (`사과 말고`) is treated as a
+  predicate and is not protected by this feature.
+- **#316/#318:** nothing changes unless you configure a policy. A configured
+  `scoped_corrections` records file is used as in 2.16 (and a missing password or
+  unreadable file still stops the gateway).
+- **Explicit settings are kept.** `"contextual_name_spans": false` (config),
+  `SECURE_GATEWAY_FEATURE_CONTEXTUAL_NAME_SPANS=off` or
+  `--feature contextual_name_spans=off` keeps 2.16 behaviour. Package upgrades and
+  `gateway install` keep the existing `features` object. No migration writes a value.
+- **Roll back:** set `"contextual_name_spans": false` (or use the environment
+  variable) and restart, or run with `--features-off` to restore the complete
+  2.15/2.16 default masking path. Aliases created while the feature was on stay in
+  the encrypted snapshot and remain restorable.
+- Diagnostics (`gateway features`, `gateway diagnostics`, `/admin/api/features`)
+  show per feature `default` (on by default), `default_mode` (`on`, `policy`,
+  `off`), `enabled` (requested), `active` (applied to sessions), `source`, and for
+  an inactive policy-gated default an `inactive_reason` (`no-policy-configured`,
+  `per-session-policy-only`). The top-level `enabled` list names only active features.
 
 - `ko_conjugation_split` keeps reviewed Korean condition/negation/request
   endings public while the stem is judged by the normal policy. Forced rules,
@@ -548,8 +592,9 @@ until then enabling any feature is an explicit local choice.
   settings.
 - `attribute_bundle` protects co-present form/table fields under a trusted
   policy bound to one document hash and scope. Such a policy cannot be a
-  gateway-wide setting, so enabling it in gateway settings is refused at start;
-  use `GatewaySession(features=GatewayFeatures(attribute_bundle=policy))`.
+  gateway-wide setting, so explicitly enabling it in gateway settings is refused
+  at start (its policy-gated default is simply inactive); use
+  `GatewaySession(features=GatewayFeatures(attribute_bundle=policy))`.
 - `local_arithmetic` injects the `local_alias_arithmetic` tool and executes
   calls locally, returning only a result alias. Gateway settings provide no
   per-alias unit policy, so calls are refused (fail closed) until a policy
@@ -557,14 +602,19 @@ until then enabling any feature is an explicit local choice.
   blocked by #363. Since 2.16.3 (#371) the injected tool definition is
   trusted gateway data and is forwarded exactly as defined; earlier versions
   masked its `operation` enum, so a model could not name a valid operation.
-  Client-supplied tool definitions are masked as before.
+  Client-supplied tool definitions are masked as before. Since 2.17.3 (#375)
+  the tool accepts each operand exactly as the model sees it: an alias shown as
+  `⟦private_symbol_N⟧` may be passed with or without the `⟦`/`⟧` brackets
+  (numeric aliases are shown bare and passed bare). Any other spelling, partial
+  alias, extra text or another session's alias is still refused; the injected
+  schema description states the accepted forms.
 - #311, #312, #313, #314, #315 and #317 were rejected and remain
   evaluation-only `candidate_profile` arms; they are not settings.
 
 ### Enabling, disabling and rollback
 
 Each feature has its own setting. Precedence is CLI > environment > config
-file > default (OFF):
+file > default (see the table above):
 
 ```json
 {"port": 38117, "token": "...",
@@ -578,19 +628,22 @@ file > default (OFF):
   `scoped_corrections` reads its records password from
   `SECURE_GATEWAY_CORRECTIONS_PASSWORD`; a missing password, wrong password,
   unsafe or missing records file stops the gateway with a fixed message rather
-  than silently running without the requested protection.
+  than silently running without the requested protection. Only the
+  policy-gated *default* without any configured records is a silent no-op;
+  explicitly enabling `scoped_corrections` without records settings is refused.
 - CLI: `secure-gateway gateway run --feature contextual_name_spans=on` (repeatable,
   also on `gateway api-run`).
 - Disable everything: `secure-gateway gateway run --features-off` ignores the
-  config file and environment and runs the 2.15 default path.
+  config file, environment and 2.17.0 defaults and runs the 2.15 default path.
 - Rollback: remove the key (or set it to `false`) and restart the gateway.
   Aliases created while a feature was on stay in the encrypted conversation
   snapshot and remain restorable after the feature is turned off.
 
 Package upgrades do not touch `config.json`, and `gateway install` reloads and
 rewrites the existing object with all of its keys, so explicit `features`
-values are preserved. A configuration without a `features` key keeps every
-feature OFF; no migration writes a default into the file. Expiry of correction records is evaluated when the gateway starts.
+values are preserved. A configuration without a `features` key uses the
+2.17.0 defaults (#310 on, #316/#318 policy-gated, others off); no migration
+writes a default into the file. Expiry of correction records is evaluated when the gateway starts.
 
 ### When changes apply
 
@@ -604,8 +657,9 @@ aliases, and no module global is changed.
 ### Diagnostics
 
 `secure-gateway gateway features [--config ...]` prints, without contacting the
-gateway, the default, effective state and source (`default`, `config`, `env`,
-`cli`, `cli-off`) that the next start would use. The running gateway reports
+gateway, the default and default mode, requested and active state, source
+(`default`, `config`, `env`, `cli`, `cli-off`) and any `inactive_reason` that
+the next start would use. The running gateway reports
 the same fields under `features` in `secure-gateway gateway diagnostics` and in
 the authenticated Admin endpoints `/admin/api/features` and
 `/admin/api/sessions`. Diagnostics never include correction terms, document
@@ -759,15 +813,59 @@ POST query metadata is forwarded without alteration after validation: `beta=true
 `api-version` are supported.
 Unknown, duplicate, or private query parameters are rejected before contacting the provider.
 
-### Numeric constants in source code
+### Numbers and dates: prose and source code (2.18.0, #374)
 
-Source fragments preserve numbers by default so indexes, loop bounds and boundary checks
-retain their values. To mask sensitive numeric literals, set `"mask_numbers": true` in the
-subscription/API gateway JSON configuration or use `gateway run --mask-numbers` /
-`gateway api-run --mask-numbers`. The `--preserve-numbers` flag overrides configuration.
-This setting affects source-code masking only: prose numbers and JSON protocol/control
-fields retain their existing policies. Existing numeric aliases still restore; an actual
-source number colliding with a saved numeric alias requires a new session/conversation.
+Numbers and dates are public by default in prose **and** source code. Prose, Markdown,
+inline code, fenced code, JSON text, tool results and numeric/date tool-argument values
+forward quantities, amounts, dates, times, durations, versions, percentages and numbers
+with units with their exact spelling (digits, separators, sign, decimals, leading zeros).
+Before 2.18.0 the gateway replaced every prose number (and each date component) with a
+`732846…` numeric alias; source numbers were already preserved (#186, 0.7.0).
+
+Precedence, highest first:
+
+1. Forced rules: a digit-bearing rule is replaced as one whole alias before prose
+   tokenization ([forced numeric and date rules](#forced-numeric-and-date-rules), #363).
+2. Existing private mappings in the session (registered names, literals, identifiers).
+3. Clear sensitive numeric patterns, each bound as one whole alias (`secure_gateway.engine.numbers`):
+   card numbers (4-4-4-4 / 4-6-5 groups, or 15-19 Luhn-valid digits), Korean
+   resident/foreigner registration numbers (`YYMMDD-Gnnnnnn`, or 13 digits with a valid
+   checksum), business registration numbers (`nnn-nn-nnnnn`), hyphen-grouped account
+   numbers (three or more groups and 10-20 digits), phone numbers (the existing phone
+   pattern, `010…` without separators, `+` E.164), credentials/tokens, and a number after a
+   sensitive label (`account`, `card`, `phone`, `token`, `PIN`, `password`,
+   `customer`/`device`/`employee` ID, serial, IMEI, `계좌번호`, `카드번호`, `주민번호`,
+   `전화번호`, `사업자번호` …) joined by `:`/`=`/`#`/`is`, or by a space for values of four
+   or more digits. Tool-argument fields named like these labels keep their literal alias.
+4. The public-number policy above.
+
+Alphanumeric identifiers (`ABC-123`, `7730abc`, a lone `v2`) keep the identifier policy
+(#326); `v2.17.0` is a version and is public. Korean numbers followed by a counter or unit
+(`2026년`, `3시간`, `1,250개`, `12500원으로`) are public; address components (`동`, `호`,
+`번지`) keep the identifier policy. A free-text tool-argument string remains one literal
+alias as before; only an argument value that is exactly one number/date is forwarded.
+JSON numbers stay JSON numbers and are masked only by forced rules (#363). Source-like
+text is lexed as code: its numbers are public without the prose pattern checks.
+
+`"mask_numbers": true` in the subscription/API gateway configuration, or
+`gateway run --mask-numbers` / `gateway api-run --mask-numbers`, is the explicit opt-in to
+mask every number in prose and source code (the pre-2.18 prose behavior). The
+`--preserve-numbers` flag overrides configuration. Provider protocol/control fields are
+never masked.
+
+#### Upgrading to 2.18.0
+
+- Default change: new requests forward public numbers and dates. Nothing to migrate.
+- Numeric aliases issued before the upgrade (saved encrypted sessions, earlier turns of a
+  conversation) still restore exactly, including in split SSE responses and tool
+  arguments. The same numbers are simply not re-aliased in later requests.
+- To keep the old behavior, set `"mask_numbers": true` (or `--mask-numbers`) and restart.
+- A source number colliding with a saved numeric alias still requires a new
+  session/conversation.
+- Measured effect: on the independently authored #312 public-number controls the default
+  now hides 0 of 160 public spans (95 before); none of the 180 #312 sensitive spans became
+  visible (all are labelled values). CI privacy comparison: no new exposure. See
+  [ISSUE_RESOLUTION.md](ISSUE_RESOLUTION.md#numbers-and-dates-public-by-default-2180-374).
 
 ## Operational limits and retention (1.1.0)
 
@@ -943,8 +1041,9 @@ It asks the model to use visible actions, relations, order, conditions and outpu
 structure, completing supported work even when it cannot identify a hidden name.
 It prohibits guessing originals, inventing aliases or calculating with the displayed
 digits of numeric aliases. Tool permissions and approval requirements still apply.
-Repeated numeric references retain their aliases, and source numbers with separators
-remain locally restorable when mentioned in prose.
+Numbers are public by default (2.18.0, #374); with `mask_numbers` enabled, repeated numeric
+references retain their aliases, and source numbers with separators remain locally
+restorable when mentioned in prose.
 
 For a reproducible blind evaluation with synthetic data, run:
 
@@ -1053,6 +1152,14 @@ the gateway refuses forwarding with HTTP 503 and increments its audit write-erro
 counter; it does not leave an unreachable request marked in progress.
 Retrying admission after the storage failure clears creates one new request.
 Existing live requests remain protected from retention and crash recovery.
+
+Since 2.17.2, admission, completion and completion retries of one gateway enter
+the SQLite writer lock in arrival order. SQLite's busy wait polls with growing
+sleeps and no ordering, so on a slow disk an early request could lose every race
+to later writers for seconds before it was forwarded. The ordered queue keeps
+the same time limits (5 seconds for admission, 50 ms for completion, which is
+retried in the background when the limit passes); writers in other processes
+still wait through SQLite's busy timeout.
 
 
 ### Audit completion retries (2.1.0)

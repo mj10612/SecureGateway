@@ -274,7 +274,7 @@ The earlier screening is retained only as [pilot evidence](evaluations/comprehen
 | #319 local arithmetic | REJECT, underpowered | 4 solvable eligible cases; replication blocked by #363 |
 | #291 multilingual baseline | descriptive | no candidate |
 
-Adopted toggles stay off until a joint evaluation of all adopted candidates enabled together (requires the per-instance feature flags of #354).
+Adopted toggles stayed off until a joint evaluation of all adopted candidates enabled together (requires the per-instance feature flags of #354). That joint decision, ADOPT-JOINT, was made in 2.17.0 without a model run because the joint input was identical to each candidate's own input ([decision](evaluations/joint-adopted-2.16/DECISION.md)). The gateway defaults changed accordingly; see "Adopted features enabled by default (2.17.0)" below.
 
 
 ### Coordinator-directed preflight decisions (not LLM results)
@@ -302,17 +302,17 @@ Both `instruction_concise` and `instruction_examples` are **REJECT** under the f
 
 ### #310 real-LLM name-context comparison
 
-**ADOPT** under the frozen protection-target rule: 88 of 132 sensitive spans became protected, none became exposed, public overmasking stayed 0/132, exact restoration was 22/22 in both arms, and CI passed. Among 30 original-control-eligible cases A/C/D passed 30/27/27, with 0/0 discordances. All 96 C/D payloads matched current main modulo alias renaming and original bindings. The original run identity could not be re-derived after rebasing; saved responses, rubric digest and adapter were verified, and the decision file matches the pre-rebase backup and approved summary, but its bytes at run creation cannot be proven. The same model family interpreted and graded; see [evidence](evaluations/comprehension-2.11.1/310/comprehension/summary.md). The toggle remains off pending the separate activation PR.
+**ADOPT** under the frozen protection-target rule: 88 of 132 sensitive spans became protected, none became exposed, public overmasking stayed 0/132, exact restoration was 22/22 in both arms, and CI passed. Among 30 original-control-eligible cases A/C/D passed 30/27/27, with 0/0 discordances. All 96 C/D payloads matched current main modulo alias renaming and original bindings. The original run identity could not be re-derived after rebasing; saved responses, rubric digest and adapter were verified, and the decision file matches the pre-rebase backup and approved summary, but its bytes at run creation cannot be proven. The same model family interpreted and graded; see [evidence](evaluations/comprehension-2.11.1/310/comprehension/summary.md). The toggle stayed off pending the activation PR; from 2.17.0 `contextual_name_spans` is **on by default** in gateway settings (joint ADOPT).
 
 
 ### #316 real-LLM scoped-correction comparison
 
-**ADOPT** under the frozen protection-target rule: an independently authored correction-sensitive replacement protected 104/104 previously exposed spans with zero new exposures, 0/104 public overmasks in both arms, 208/208 exact restoration in both, and a passing CI comparison. The earlier REJECT was withdrawn because its protection set had no baseline exposures. Existing comprehension results were reused: 35 A-eligible cases, A/C/D 35/31/29 and D-only/C-only 0/2, within the two-case non-inferiority bound. Interpreter and grader share a model family. See [evidence](evaluations/comprehension-2.11.1/316/comprehension/summary.md); the toggle remains off.
+**ADOPT** under the frozen protection-target rule: an independently authored correction-sensitive replacement protected 104/104 previously exposed spans with zero new exposures, 0/104 public overmasks in both arms, 208/208 exact restoration in both, and a passing CI comparison. The earlier REJECT was withdrawn because its protection set had no baseline exposures. Existing comprehension results were reused: 35 A-eligible cases, A/C/D 35/31/29 and D-only/C-only 0/2, within the two-case non-inferiority bound. Interpreter and grader share a model family. See [evidence](evaluations/comprehension-2.11.1/316/comprehension/summary.md). From 2.17.0 `scoped_corrections` (protect-only) is on by default in gateway settings and active whenever a records file is configured; without one it is a no-op.
 
 
 ### #318 real-LLM bundle comparison
 
-**ADOPT** under the frozen protection-target and attack rules. The replacement offline set newly protected 108/108 baseline-exposed targets, introduced zero exposures and zero public overmasks among 108 controls, restored 27/27 in both arms, and passed CI. Of 36 original-control-eligible comprehension cases A/C/D passed 36/29/29 with 0/0 discordances. In the independent 48-case synthetic catalogue attack, top-1 baseline/candidate/prior was 39/8/0; top-3 was also 39/8/0. Field groups were previously baseline-screened in a failed form format, limiting offline holdout independence; interpreter, grader and attacker share a model family. See [evidence](evaluations/comprehension-2.11.1/318/comprehension/summary.md). The toggle remains off.
+**ADOPT** under the frozen protection-target and attack rules. The replacement offline set newly protected 108/108 baseline-exposed targets, introduced zero exposures and zero public overmasks among 108 controls, restored 27/27 in both arms, and passed CI. Of 36 original-control-eligible comprehension cases A/C/D passed 36/29/29 with 0/0 discordances. In the independent 48-case synthetic catalogue attack, top-1 baseline/candidate/prior was 39/8/0; top-3 was also 39/8/0. Field groups were previously baseline-screened in a failed form format, limiting offline holdout independence; interpreter, grader and attacker share a model family. See [evidence](evaluations/comprehension-2.11.1/318/comprehension/summary.md). From 2.17.0 its gateway default is "on, policy-gated". Gateway settings have no per-document policy source, so it is inactive at gateway level and applies only where a session is created with a trusted policy.
 
 
 ### #317 real-LLM document-structure policy comparison
@@ -344,6 +344,10 @@ Default engine only, 17 languages × 2 everyday requests plus known requests: 72
 
 From 2.15.0 evaluations use the lean transport validated in `evaluations/eval-cost-364/` (about −53% raw tokens per case versus the native one-call-per-item method, with the lean grader somewhat stricter). Runs never mix transports or models inside one comparison.
 
+### Isolation correction (#372, 2.17.1)
+
+The statements above that interpretations "used zero tools" mean zero tool events. Guaranteed in every run: a fresh ephemeral session, an empty temporary working directory, the read-only sandbox, subscription login only and no user/project configuration; the lean transport also disabled 27 tool features. Not guaranteed: on codex-cli 0.167.x the evaluation models run in code mode, and calls to its `exec` tool (and the tools it calls) leave no `--json` event, so the event check could not see them. Offline (real CLI, fake model endpoint, no account), lean `exec` could reach only a patch tool rejected by the sandbox, a clock and empty MCP resource listing; native `exec` also reached a command tool (rejected by policy in the probe; the owner's setup was not tested) and an image viewer. No saved evidence suggests a tool was used: a tool round trip at least doubles a call's reported input tokens, and no saved call without an MCP tool arm shows that (details in `docs/EVALUATION_COST.md`). From 2.17.1 the lean session disables `code_mode_host` so `exec` cannot run, and fails closed on the CLI's stderr tool-router log. Recorded results and their adapter hashes are unchanged and are not re-run.
+
 
 ## #354 opt-in feature foundation (2.16.0)
 
@@ -361,3 +365,51 @@ Not done / limits:
 - #318 needs a per-document trusted policy and is available per session only; enabling it gateway-wide is refused. #319 has no gateway-level per-alias unit policy, so gateway-enabled tool calls are refused (fail closed). #316 at gateway level loads one project's encrypted records with a password from `SECURE_GATEWAY_CORRECTIONS_PASSWORD`; record expiry is evaluated at start.
 - #313 was rejected and was not migrated; it and #311, #312, #314, #315, #317 remain process-global evaluation profiles.
 - The Korean/English corpus expansion, holdout and real-LLM comprehension, Claude/Codex protocol tool-use evaluation and OFF/ON latency/memory measurements required by #354 are not part of this change.
+
+
+## Adopted features enabled by default (2.17.0)
+
+Joint decision: **ADOPT-JOINT** for #310, #316 B and #318, made without a model run ([decision](evaluations/joint-adopted-2.16/DECISION.md)). With 2.16.0 per-session flags, the joint configuration produced model-visible input identical to each candidate's own frozen D on 144/144 comprehension cases (alias-canonicalized), and joint outbound payloads identical to single-candidate payloads on all 257 protection cases. The offline gate passed on every set (newly protected 88/104/108, 0 new exposures, 0 public overmask, exact restore unchanged), and the CI compare with all three on passed. Comprehension non-inferiority transfers from each candidate's measured result (A/C/D 30/27/27, 35/31/29, 36/29/29). Limits: those runs used `gpt-6.1-sol` on the native transport, and #316/#318 never co-occur on a case, so their interaction is tested only on the CI corpus. The prepared preregistration was never frozen.
+
+Gateway setting defaults (`SETTING_DEFAULTS`):
+
+- #310 `contextual_name_spans`: **on** for new installs and for existing configurations without an explicit value. An explicit `false`/`off` (config, environment, `--feature`) is preserved, and `--features-off` restores the 2.15/2.16 path byte-for-byte (`tests/test_feature_defaults.py`).
+- #316 `scoped_corrections` (protect-only B): on, but active only with a configured records file. Without one it is a byte-identical no-op and never blocks start. An explicit enable without records, or a configured file that cannot be loaded, still stops the gateway.
+- #318 `attribute_bundle`: on, but policy-gated. Gateway settings have no per-document policy source, so it is **inactive at gateway level** (`inactive_reason: per-session-policy-only`) and applies only to sessions created with a trusted policy. Explicit gateway-wide enabling is still refused.
+- #309 and #319 stay off. The library default (`GatewaySession()`/`PrivacyGateway()` without `features`) stays all-off.
+- Diagnostics add `default_mode`, `active` and `inactive_reason`.
+
+#310 predicate guard (same release): the unchanged #310 rule masked the prohibition verb `바꾸지` in `파일 이름은 바꾸지 말며` on the CI corpus (public overmask 3 → 4/117). It also masked the modifiers `가상`/`차량`/`반도체` in `가상 (차량) 프로젝트 <name>의`. `experiment_context.name_spans` now rejects:
+
+- predicate values after an introducer: Korean conjugated, negated or request forms via the `grammar_ko` ending table, connective plus negation or auxiliary, `-ㄹ` plus bound noun, and English modals;
+- spaced premodifiers in `<word> 프로젝트 <name>의`.
+
+Forced rules and earlier registrations still win.
+
+Evidence ([defaults-2.17.0](evaluations/defaults-2.17.0/README.md)):
+
+- **(a)** Re-captured frozen comprehension inputs: C 144/144 unchanged; J equals the original D on 143/144. The only change is `310:targeted-H30`, where the masked prohibition verb `덧붙이지` is now visible. That case was a three-arm all-pass tie in the original run, so the transferred result is unaffected.
+- **(b)** Offline protection is unchanged: 88/132, 104/104 and 108/108 newly protected, with 0 new exposure, 0 public overmask and exact restore unchanged.
+- **(c)** CI privacy comparison, new versus old default: every metric is identical (exit 0, no regression, 0 new/resolved exposures, 57/66 protected, public overmask 3/117).
+
+Remaining ambiguity: a real name directly followed by `말고`/`않` (`사과 말고`) is treated as a predicate. Regression tests: `tests/test_name_context_predicates.py`. Rollback: `"contextual_name_spans": false` or `--features-off`, then restart.
+
+
+## Numbers and dates public by default (2.18.0, #374)
+
+Owner decision (2026-11-13): numbers and dates are public by default in text and code, because hiding them removes the meaning of quantities, amounts, periods, versions and boundaries. Before 2.18.0 every prose number and each date component became a `732846…` alias (2.1.0-2.17.0); code numbers were already preserved (#186).
+
+Change (`secure_gateway/engine/numbers.py`, `MaskingEngine.mask_text`, `GatewaySession._mask_prose_core` and tool-argument `values`):
+
+- With `mask_numbers=False` (default) the engine preserves every chunk inside a public numeric expression: integers/decimals with separators, sign and leading zeros, currency and percent, dates, ISO date-times, times, ranges, versions (`v2.17.0`), numbers with a known unit (`30s`, `5kg`, `3pm`, `2.5GB`) and Korean numbers with a counter/unit and particles (`2026년`, `1,250개`, `12500원으로`). The gateway no longer turns those chunks into identifier aliases. A tool-argument string that is exactly one number/date is forwarded; free-text argument strings remain one literal alias.
+- Protected first, in order: forced rules (#363 whole-span binding, unchanged), existing private mappings, then clear sensitive numeric patterns bound as one whole alias: card numbers, Korean resident/foreigner and business registration numbers, hyphen-grouped account numbers, phone numbers, and values after a sensitive label (the #312 field names plus their head nouns `account`, `card`, `phone`, `token`, `PIN`, `customer`/`device`/`employee` ID, Korean `계좌번호`/`카드번호`/`주민번호`...). Sensitive tool-argument field names keep their literal alias. Alphanumeric identifiers keep #326.
+- `mask_numbers=True` (config, `--mask-numbers`, CLI `mask --mask-numbers`, MCP/Python) masks numbers in text as well as code; its text output is the pre-2.18 behavior. Numeric aliases issued earlier keep restoring; a number with an earlier numeric alias is forwarded unmasked in new requests.
+
+Evidence:
+
+- #312 independently authored public-number controls (`312/plan/protection-cases-corrected.json`, default gateway, no candidate profile): public spans hidden **95/160 → 0/160** (prose quantities 25, durations/dates 25, versions 20, JSON numbers 25 now visible; code 65 unchanged). Exact restore 62/62 → 62/62.
+- #312 sensitive-number set: **0/180 visible** before and after. All 162 numeric sensitive spans in that set are `label=value` (`account`, `customer`, `device`, `phone`, `token`, `pin`) and stay protected by the label rule; the 18 alphabetic values are unaffected. With only the original #312 field names (`phone`, `pin`, `account_number`, `customer_id`, ...), 108 of them (`account=`, `customer=`, `device=`, `token=`) would have become visible; the head nouns were added for that reason. An unlabelled plain number is public under this policy.
+- CI privacy comparison exactly as CI runs it (`evaluate --suite privacy --profile release`, then `evaluate compare --baseline docs/evaluations/issue324-2.7.0/legacy-privacy/report.json`): comparable, no regression, **0 new exposures**, 0 integrity regressions; privacy 57/66 and public overmask 3/117 as in 2.17.0. The frozen corpus has no digit-bearing secret, so no baseline item counts a public number as sensitive and the baseline is unchanged.
+- Regression tests: `tests/test_issue374_public_numbers.py` (English/Korean prose, Markdown, inline/fenced code, JSON text, tool arguments/results, split SSE at 1/3/7 characters, forced numbers next to public numbers, 15 sensitive shapes, `mask_numbers=True`, old numeric aliases after upgrade, alias-range literals, feature flags, library API). The #363 tests are unchanged and pass.
+
+Limits: plain unlabelled numbers that a user considers private (an unlabelled customer number in a sentence) are public; use a forced rule or `mask_numbers=true`. Source-like text is lexed as code, where numbers have been public since #186 without the prose pattern checks. Account detection requires three or more hyphen groups and 10-20 digits; card detection requires 4-4-4-4/4-6-5 grouping or 15-19 Luhn-valid digits. Address components (`101동`, `1203호`) keep the identifier policy.

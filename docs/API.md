@@ -1,6 +1,6 @@
 # Public API Reference
 
-This document describes the supported public Python surface, CLI entry points, and MCP tools for **SecureGateway 2.16.3**. It is checked by `tests/test_api_doc_331.py` against the real package exports.
+This document describes the supported public Python surface, CLI entry points, and MCP tools for **SecureGateway 2.18.0**. It is checked by `tests/test_api_doc_331.py` against the real package exports.
 
 ## Package exports (`secure_gateway.__all__`)
 
@@ -40,6 +40,8 @@ with LocalPrivacyClient() as client:
 ### `MaskingEngine`
 
 `MaskingEngine(...)` (see source for budget/restore limits) provides `mask_text(...)`, `mask_code(...)`, and `unmask(...)` for trusted local use. Engine operations expect the session/generator/store locking contract documented in `docs/ARCHITECTURE.md`.
+
+`mask_numbers` (default `False`) applies to text and code since 2.18.0 (#374): by default numbers, dates, times, versions and quantities with units are preserved, while `sensitive_terms` and clear sensitive numeric patterns (card, phone, account, resident/business registration numbers and labelled IDs/PINs/tokens) are masked as one whole alias. `mask_numbers=True` masks every number. The same option is exposed by `LocalPrivacyClient.request`, the CLI (`mask --mask-numbers`) and the MCP `mask_text`/`mask_code` tools.
 
 ```python
 from secure_gateway import MaskingEngine, MaskMode, SurrogateStrategy

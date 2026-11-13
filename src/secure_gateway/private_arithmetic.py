@@ -15,6 +15,31 @@ from secure_gateway.models import TokenType
 
 LOCAL_ARITHMETIC_TOOL_NAME = "local_alias_arithmetic"
 
+# Accepted operand spellings (#375): an alias exactly as the model sees it in
+# masked text. Forced/partial-word aliases are displayed wrapped in U+27E6/U+27E7
+# (``⟦private_symbol_N⟧``, see ``GatewaySession._forced_alias``); the wrapped
+# and bare spellings name the same alias. Nothing else is normalized.
+ALIASES_DESCRIPTION = (
+    "Exactly two issued private aliases as operands, copied exactly as they appear in the conversation. "
+    "An alias displayed between ⟦ and ⟧ may be passed with those brackets (⟦alias⟧) "
+    "or without them (alias); both name the same alias. Any other spelling, partial alias or extra text is rejected."
+)
+_DISPLAYED_ALIAS = re.compile(r"⟦(private_symbol_[0-9]+)⟧")
+
+
+def canonical_alias(alias: Any) -> Any:
+    """Return the issued alias named by a displayed operand spelling.
+
+    ``⟦private_symbol_N⟧`` (the exact form the gateway emits) becomes
+    ``private_symbol_N``; any other value is returned unchanged so the normal
+    authorization and session checks accept or reject it.
+    """
+    if isinstance(alias, str):
+        match = _DISPLAYED_ALIAS.fullmatch(alias)
+        if match:
+            return match[1]
+    return alias
+
 LOCAL_ARITHMETIC_TOOL_OPENAI = {
     "type": "function",
     "function": {
@@ -33,7 +58,7 @@ LOCAL_ARITHMETIC_TOOL_OPENAI = {
                     "items": {"type": "string"},
                     "minItems": 2,
                     "maxItems": 2,
-                    "description": "Exactly two issued private aliases as operands."
+                    "description": ALIASES_DESCRIPTION
                 }
             },
             "required": ["operation", "aliases"]
@@ -57,7 +82,7 @@ LOCAL_ARITHMETIC_TOOL_CLAUDE = {
                 "items": {"type": "string"},
                 "minItems": 2,
                 "maxItems": 2,
-                "description": "Exactly two issued private aliases as operands."
+                "description": ALIASES_DESCRIPTION
             }
         },
         "required": ["operation", "aliases"]
@@ -211,7 +236,9 @@ class PrivateArithmetic:
         Args:
             operation: One of ``add``, ``subtract``, ``multiply``, or
                 ``date_difference``.
-            aliases: Exactly two session aliases authorized by the unit policy.
+            aliases: Exactly two session aliases authorized by the unit policy,
+                each bare (``private_symbol_N``) or exactly as displayed in
+                masked text (``⟦private_symbol_N⟧``).
 
         Returns:
             ``{"alias": <result_alias>}`` containing a new session-local alias
@@ -223,6 +250,7 @@ class PrivateArithmetic:
         """
         if operation not in {"add", "subtract", "multiply", "date_difference"} or not isinstance(aliases, list) or len(aliases) != 2:
             raise ValueError("Unsupported local arithmetic operation")
+        aliases = [canonical_alias(alias) for alias in aliases]
         if any(not isinstance(alias, str) or alias not in self.allowed for alias in aliases):
             raise ValueError("Unknown or unauthorized arithmetic alias")
         with self.session.lock:

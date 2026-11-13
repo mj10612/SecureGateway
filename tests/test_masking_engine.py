@@ -27,7 +27,8 @@ def test_roundtrip_english_text():
     assert mask_res.masked_tokens > 0
     assert "Pfizer" not in mask_res.masked_text
     assert "Seagen" not in mask_res.masked_text
-    assert "$43,000,000" not in mask_res.masked_text
+    # #374: amounts are public by default (mask_numbers=True opts back in).
+    assert "$43,000,000" in mask_res.masked_text
     # Prepositions and grammar words preserved
     assert " of " in mask_res.masked_text
     assert " to " in mask_res.masked_text

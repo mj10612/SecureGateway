@@ -97,14 +97,17 @@ def test_number_identity_entries_and_legacy_aliases_survive_snapshots(tmp_path):
     assert engine.unmask(legacy, loaded.session_id, loaded.reverse_store, strict=True).unmasked_text == '42'
 
 
-def test_default_preserves_code_numbers_but_prose_policy_is_unchanged():
+def test_default_preserves_numbers_in_code_and_prose_and_opt_in_masks_both():
+    # #374 (2.18.0): the prose default follows the code default.
     from secure_gateway.models import MaskMode
     engine = MaskingEngine()
     for mode in [MaskMode.CODE_AWARE, MaskMode.CONTENT_WORDS]:
-        session = PrivacySession('number-mode')
-        result = engine.mask_text('42', session.session_id, session.generator,
-                                  session.forward_store, session.reverse_store, mode=mode)
-        assert (result.masked_text == '42') is (mode == MaskMode.CODE_AWARE)
+        for mask_numbers in (False, True):
+            session = PrivacySession('number-mode')
+            result = engine.mask_text('42', session.session_id, session.generator,
+                                      session.forward_store, session.reverse_store, mode=mode,
+                                      mask_numbers=mask_numbers)
+            assert (result.masked_text == '42') is (not mask_numbers)
 
 @pytest.mark.parametrize('command', ['run', 'api-run'])
 @pytest.mark.parametrize('configured', [False, True])

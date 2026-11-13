@@ -175,11 +175,16 @@ def test_settings_precedence_and_sources():
     assert features.enabled_names() == ("local_arithmetic",)
     assert {name: (item["enabled"], item["source"]) for name, item in report.items()} == {
         "ko_conjugation_split": (False, "cli"), "contextual_name_spans": (False, "env"),
-        "scoped_corrections": (False, "default"), "attribute_bundle": (False, "default"),
+        "scoped_corrections": (True, "default"), "attribute_bundle": (True, "default"),
         "local_arithmetic": (True, "env")}
-    assert all(item["default"] is False for item in report.values())
+    # 2.17.0 defaults: #310 on, #316/#318 policy-gated (inactive without a policy), others off.
+    assert {name: item["default"] for name, item in report.items()} == {
+        "ko_conjugation_split": False, "contextual_name_spans": True, "scoped_corrections": True,
+        "attribute_bundle": True, "local_arithmetic": False}
+    assert not report["scoped_corrections"]["active"] and not report["attribute_bundle"]["active"]
     defaults = resolve_settings({}, environ={})[1]
-    assert all(not item["enabled"] and item["source"] == "default" for item in defaults.values())
+    assert all(item["source"] == "default" for item in defaults.values())
+    assert {name for name, item in defaults.items() if item["active"]} == {"contextual_name_spans"}
     for bad in ({"features": {"unknown": True}}, {"features": {"ko_conjugation_split": "maybe"}}, {"features": []},
                 {"features": {"attribute_bundle": True}}):
         with pytest.raises(ValueError):
@@ -204,7 +209,7 @@ def test_scoped_corrections_load_encrypted_records(tmp_path):
     masked = gateway.GatewaySession(natural_language="en", features=features).mask(CORRECTION)
     assert "meadow" not in masked
     disabled = {"features": {"scoped_corrections": {"enabled": False, "project": "alpha"}}}
-    assert resolve_settings(disabled, environ={})[0].enabled_names() == ()
+    assert resolve_settings(disabled, environ={})[0].enabled_names() == ("contextual_name_spans",)
 
 
 def make_gateway(tmp_path, features=None, report=None):
@@ -255,11 +260,12 @@ def test_diagnostics_report_sources_without_policy_contents(tmp_path):
         headers = {"X-SecureGateway-Token": server.token}
         with urllib.request.urlopen(urllib.request.Request(url + "/admin/api/features", headers=headers), timeout=5) as response:
             settings = json.loads(response.read())
-        assert settings["enabled"] == ["ko_conjugation_split", "local_arithmetic"]
+        assert settings["enabled"] == ["ko_conjugation_split", "contextual_name_spans", "local_arithmetic"]
         assert settings["settings"]["ko_conjugation_split"]["source"] == "cli"
         assert settings["settings"]["local_arithmetic"]["source"] == "config"
         assert settings["settings"]["contextual_name_spans"] == {
-            "issue": 310, "default": False, "enabled": False, "source": "default", "gateway_setting": "boolean"}
+            "issue": 310, "default": True, "default_mode": "on", "enabled": True, "active": True,
+            "source": "default", "gateway_setting": "boolean"}
         with pytest.raises(urllib.error.HTTPError) as denied:
             urllib.request.urlopen(url + "/admin/api/features", timeout=5)
         assert denied.value.code == 401
@@ -269,7 +275,8 @@ def test_diagnostics_report_sources_without_policy_contents(tmp_path):
         from secure_gateway.cli import main
         result = CliRunner().invoke(main, ["gateway", "diagnostics", "--config", str(config)])
         assert result.exit_code == 0, result.output
-        assert json.loads(result.output)["features"]["enabled"] == ["ko_conjugation_split", "local_arithmetic"]
+        assert json.loads(result.output)["features"]["enabled"] == [
+            "ko_conjugation_split", "contextual_name_spans", "local_arithmetic"]
     finally:
         server.shutdown()
         thread.join(2)
@@ -294,7 +301,8 @@ def test_cli_features_command_reports_configured_state(tmp_path, monkeypatch):
     assert json.loads(result.output)["configured"]["ko_conjugation_split"]["source"] == "config"
     off = runner.invoke(main, ["gateway", "features", "--config", str(config), "--features-off"])
     assert json.loads(off.output)["configured"]["ko_conjugation_split"] == {
-        "issue": 309, "default": False, "enabled": False, "source": "cli-off", "gateway_setting": "boolean"}
+        "issue": 309, "default": False, "default_mode": "off", "enabled": False, "active": False,
+        "source": "cli-off", "gateway_setting": "boolean"}
     flag = runner.invoke(main, ["gateway", "features", "--config", str(config), "--feature", "ko_conjugation_split=off"])
     assert json.loads(flag.output)["configured"]["ko_conjugation_split"]["source"] == "cli"
     bad = runner.invoke(main, ["gateway", "features", "--config", str(config), "--feature", "nope=on"])

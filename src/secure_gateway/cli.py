@@ -502,7 +502,7 @@ def restore_hook_text(agent, state_dir, session_id):
 @click.option("--language", default="auto", help="Natural language tag (for example en, ko, es, zh-Hant, pt-BR).")
 @click.option("--code-language", default="auto")
 @click.option("--sql-dialect", type=click.Choice(["standard", "postgresql", "sqlite"]), default="sqlite")
-@click.option("--mask-numbers", is_flag=True, help="Mask numeric literals in code mode (default: preserve).")
+@click.option("--mask-numbers", is_flag=True, help="Mask numbers and dates in text and code (default: preserve; sensitive numbers stay masked).")
 @click.option("--max-mapping-bytes", type=click.IntRange(1), default=None,
               help="Lower the session logical mapping byte budget.")
 @click.option("--max-snapshot-bytes", type=click.IntRange(1, 128 * 1024 * 1024), default=None,
@@ -763,11 +763,12 @@ def gateway_ensure(config):
 
 
 def _feature_options(function):
-    """Shared opt-in feature flags (#354); every feature defaults to OFF."""
+    """Shared feature flags (#354); defaults are SETTING_DEFAULTS (2.17.0)."""
     function = click.option("--features-off", is_flag=True,
-                            help="Disable every opt-in feature regardless of config or environment.")(function)
+                            help="Disable every masking feature (including default-on ones) regardless of "
+                                 "config or environment; restores the 2.15 masking path.")(function)
     return click.option("--feature", "feature_flags", multiple=True, metavar="NAME=on|off",
-                        help="Enable or disable one opt-in feature for this run (repeatable).")(function)
+                        help="Enable or disable one masking feature for this run (repeatable).")(function)
 
 
 def _resolve_features(settings, feature_flags, features_off):
@@ -786,7 +787,7 @@ def _resolve_features(settings, feature_flags, features_off):
 @click.option("--config", type=click.Path(path_type=Path))
 @_feature_options
 def gateway_features(config, feature_flags, features_off):
-    """Show opt-in feature defaults, sources and the state the next start would use."""
+    """Show masking feature defaults, sources and the state the next start would use."""
     from secure_gateway.gateway_install import default_config, load_config
 
     try:
@@ -801,7 +802,7 @@ def gateway_features(config, feature_flags, features_off):
 @gateway.command("run")
 @click.option("--config", type=click.Path(path_type=Path))
 @click.option("--mapping-limit", type=click.IntRange(1), default=None)
-@click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
+@click.option("--mask-numbers/--preserve-numbers", default=None, help="Number policy for text and code; defaults to preserving numbers and dates.")
 @_feature_options
 def gateway_run(config, mapping_limit, mask_numbers, feature_flags, features_off):
     """Run the subscription gateway in the foreground (normally auto-started)."""
@@ -1125,7 +1126,7 @@ def gateway_api_install(provider, model, config, grok_home, port):
 
 @gateway.command("api-run")
 @click.option("--config", type=click.Path(path_type=Path))
-@click.option("--mask-numbers/--preserve-numbers", default=None, help="Code number policy; defaults to preserving numbers.")
+@click.option("--mask-numbers/--preserve-numbers", default=None, help="Number policy for text and code; defaults to preserving numbers and dates.")
 @_feature_options
 def gateway_api_run(config, mask_numbers, feature_flags, features_off):
     """Run the isolated xAI API gateway in the foreground; Ctrl+C stops it."""

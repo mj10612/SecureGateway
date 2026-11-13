@@ -54,7 +54,7 @@ def test_lean_worker_overrides_only_its_own_argv(tmp_path, monkeypatch):
     assert args[args.index('--sandbox') + 1] == 'read-only'
     assert 'forced_login_method="chatgpt"' in args
     disabled = [args[i + 1] for i, a in enumerate(args) if a == '--disable']
-    assert 'shell_tool' in disabled and 'code_mode_host' not in disabled
+    assert 'shell_tool' in disabled and 'code_mode_host' in disabled
     setting = next(a for a in args if a.startswith('model_instructions_file='))
     instructions = pathlib.Path(json.loads(setting.split('=', 1)[1]))
     assert instructions.read_text(encoding='utf-8').startswith('You are a careful assistant.')
@@ -118,6 +118,63 @@ def test_other_failures_and_warning_items_fail_closed():
         batch.parse_events((warning + "\n").encode())
     with pytest.raises(ValueError, match="complete"):
         batch.parse_events(b'{"type":"thread.started"}\n')
+
+
+def events(*lines):
+    return ("\n".join(json.dumps(line) for line in lines) + "\n").encode()
+
+
+THREAD = {"type": "thread.started", "thread_id": "t"}
+TURN = {"type": "turn.started"}
+MESSAGE = {"type": "item.completed", "item": {"id": "item_1", "type": "agent_message", "text": "x"}}
+DONE = {"type": "turn.completed", "usage": {"input_tokens": 3, "output_tokens": 1}}
+
+
+def code_mode_warning(message=batch.CODE_MODE_HOST_DISABLED_WARNING, **extra):
+    return {"type": "item.completed", "item": {"id": "item_0", "type": "error", "message": message, **extra}}
+
+
+def test_only_the_exact_code_mode_host_warning_is_accepted_once_before_the_turn():
+    # Shape recorded from codex-cli 0.167.2 with --disable code_mode_host (issue #372).
+    assert batch.parse_events(events(THREAD, code_mode_warning(), TURN, MESSAGE, DONE))["total_tokens"] == 4
+    for stream in [
+        events(THREAD, TURN, code_mode_warning(), MESSAGE, DONE),  # inside the turn
+        events(THREAD, code_mode_warning(), code_mode_warning(), TURN, MESSAGE, DONE),  # repeated
+        events(THREAD, code_mode_warning(batch.CODE_MODE_HOST_DISABLED_WARNING + " "), TURN, DONE),
+        events(THREAD, code_mode_warning("Code Mode is unavailable."), TURN, DONE),
+        events(THREAD, code_mode_warning(extra="x"), TURN, DONE),
+        events(THREAD, {"type": "item.started", "item": code_mode_warning()["item"]}, TURN, DONE),
+    ]:
+        with pytest.raises(ValueError, match="tool"):
+            batch.parse_events(stream)
+
+
+def test_tool_router_log_fails_closed_even_with_clean_events(tmp_path, monkeypatch):
+    # codex-cli 0.167.2 emits no event for a rejected exec/apply_patch/unsupported call,
+    # only this stderr line (offline probe, issue #372).
+    fake_codex(tmp_path, monkeypatch, CLI_HEADER + f"""
+    out.write_text('looks fine', encoding='utf-8')
+    for line in {[THREAD, code_mode_warning(), TURN, MESSAGE, DONE]!r}:
+        print(json.dumps(line))
+    sys.stderr.write('2026-11-12T22:50:38.300015Z ERROR codex_core::tools::router: '
+                     'error=code-mode host is disabled\\n')
+    """)
+    with pytest.raises(ValueError) as caught:
+        batch.run_lean_worker(interpret_request())
+    assert str(caught.value) == "Codex used a tool during a semantic task."
+
+
+def test_code_mode_warning_alone_is_accepted_and_recorded(tmp_path, monkeypatch):
+    fake_codex(tmp_path, monkeypatch, CLI_HEADER + f"""
+    out.write_text('Meaning preserved.', encoding='utf-8')
+    for line in {[THREAD, code_mode_warning(), TURN, MESSAGE, DONE]!r}:
+        print(json.dumps(line))
+    sys.stderr.write('WARNING: proceeding, even though we could not create PATH aliases\\n')
+    """)
+    result = batch.run_lean_worker(interpret_request())
+    assert result["response"] == "Meaning preserved."
+    assert "code_mode_host" in result["metadata"]["disabled_features"]
+    assert "cli tool-router log" in result["metadata"]["tool_call_checks"]
 
 
 def items(count):

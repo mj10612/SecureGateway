@@ -22,7 +22,7 @@ from secure_gateway.engine.grammar_ko import (
 )
 from secure_gateway.engine.strategies import StrategyGenerator, mapping_key
 from secure_gateway.engine.tokenizer import MultilingualTokenizer, TextChunk
-from secure_gateway.engine import natural_languages, common_words
+from secure_gateway.engine import natural_languages, common_words, numbers
 from secure_gateway.mapping_budget import check_mapping_budget, mapping_transaction, record_mapping
 from secure_gateway.models import (
     MaskMode,
@@ -145,7 +145,18 @@ class MaskingEngine:
                     mask_numbers=mask_numbers,
                     sql_dialect=sql_dialect,
                 )
+            if type(mask_numbers) is not bool:
+                raise ValueError("mask_numbers must be a boolean.")
             terms = sensitive_terms or set()
+            # Issue #374: numbers and dates are public by default. Clear
+            # sensitive numeric patterns are bound as whole private spans
+            # first; mask_numbers=True keeps the legacy numeric aliases.
+            public_numbers: list[tuple[int, int]] = []
+            if not mask_numbers:
+                sensitive_numbers = numbers.sensitive_number_spans(text)
+                public_numbers = numbers.public_number_spans(text, sensitive_numbers)
+                if sensitive_numbers:
+                    terms = terms | {text[start:end] for start, end in sensitive_numbers}
             preserve = {word.casefold() for word in (custom_preserve or set())}
             # Source text can itself contain a reserved surrogate spelling. Treat
             # it as an opaque entity so strict restoration never confuses it
@@ -188,6 +199,12 @@ class MaskingEngine:
                 }
                 token_type = TokenType.ENTITY if force else TokenType.NOUN
                 should_mask = force
+                if not force and public_numbers and numbers.within(public_numbers, start, offset):
+                    # A literal number in the reserved alias range must never
+                    # be read back as an alias (same rule as code numbers).
+                    self._preserve_number(word, generator, mapping_store, reverse_store)
+                    output.append(word)
+                    continue
                 if chunk.is_number:
                     token_type, should_mask = TokenType.NUMBER, True
                 elif not force and is_hangul_string(word):
