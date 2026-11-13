@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 import sqlite3
 import stat
+from threading import Condition
 import time
 
 from secure_gateway.audit_retry import CompletionRetries
@@ -22,6 +23,46 @@ from uuid import uuid4
 
 class AuditMaintenanceError(ResourceError, sqlite3.OperationalError):
     """Completion is committed; bounded post-completion maintenance was deferred."""
+
+
+class _WriterQueue:
+    """First-come admission of this process's writers to the SQLite write lock.
+
+    SQLite's busy handler sleeps with growing intervals and grants the lock to
+    whichever connection retries first. When commits are slow (fsync on a busy
+    disk), a request that waits early can lose every race for seconds while
+    later writers proceed. Writers of one store take a ticket here and enter
+    in arrival order; other processes still contend through the busy timeout.
+    """
+
+    def __init__(self):
+        self._condition = Condition()
+        self._issued = 0
+        self._serving = 0
+        self._abandoned: set[int] = set()
+
+    def acquire(self, timeout):
+        """Wait at most ``timeout`` seconds for this caller's turn."""
+        deadline = time.monotonic() + timeout
+        with self._condition:
+            ticket = self._issued
+            self._issued += 1
+            while ticket != self._serving:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    self._abandoned.add(ticket)
+                    return False
+                self._condition.wait(remaining)
+            return True
+
+    def release(self):
+        """Pass the turn to the next waiting writer."""
+        with self._condition:
+            self._serving += 1
+            while self._serving in self._abandoned:
+                self._abandoned.remove(self._serving)
+                self._serving += 1
+            self._condition.notify_all()
 
 
 class AuditStore:
@@ -43,6 +84,7 @@ class AuditStore:
         self.owner = uuid4().hex
         self._owner_file = None
         self._export_key = os.urandom(32)
+        self._writers = _WriterQueue()
         self.completion_retries = CompletionRetries(self._retry_completion)
         if read_only:
             if path.exists():
@@ -238,11 +280,26 @@ class AuditStore:
         finally:
             db.close()
 
+    @contextmanager
+    def _write_turn(self, timeout):
+        """Enter this store's writers in arrival order within ``timeout`` seconds.
+
+        Yields the time left for SQLite's own busy wait, which still orders
+        writers from other processes. Raises like SQLite when the turn expires.
+        """
+        deadline = time.monotonic() + timeout
+        if not self._writers.acquire(timeout):
+            raise sqlite3.OperationalError("database is locked")
+        try:
+            yield max(0.0, deadline - time.monotonic())
+        finally:
+            self._writers.release()
+
     def begin(self, agent, provider, subscription, endpoint, destination, content_audit=None):
         """Handle begin."""
         if self.read_only or self._owner_file is None:
             raise ValueError("Audit store is read-only or closed.")
-        with self.connect() as db:
+        with self._write_turn(5) as remaining, self.connect(timeout=remaining) as db:
             # Check under the same writer lock as insertion so other stores
             # cannot make retention due between the check and admission.
             db.execute("BEGIN IMMEDIATE")
@@ -267,17 +324,26 @@ class AuditStore:
             raise ValueError("Audit store is read-only or closed.")
         # Keep only the ledger's fixed metadata fields, never the caller's extras.
         completion = {field: metadata.get(field) for field in self._COMPLETION_FIELDS}
-        try:
-            with self.connect(timeout=0.05) as db:
-                self._write_completion(db, request_id, completion)
-        except sqlite3.Error:
+        deadline = time.monotonic() + 0.05
+        if not self._writers.acquire(0.05):
             self.completion_retries.enqueue(request_id, completion)
-            raise  # Preserve the existing visible failure counter at the caller.
+            raise sqlite3.OperationalError("database is locked")
+        # Maintenance shares the completion's turn so queued writers of this
+        # store cannot make its zero-wait transaction fail.
         try:
-            self._completion_maintenance(time.monotonic() + 0.05)
-        except sqlite3.Error:
-            self.completion_retries.maintenance_failed()
-            raise AuditMaintenanceError("Audit maintenance deferred.") from None
+            try:
+                with self.connect(timeout=max(0.0, deadline - time.monotonic())) as db:
+                    self._write_completion(db, request_id, completion)
+            except sqlite3.Error:
+                self.completion_retries.enqueue(request_id, completion)
+                raise  # Preserve the existing visible failure counter at the caller.
+            try:
+                self._completion_maintenance(time.monotonic() + 0.05)
+            except sqlite3.Error:
+                self.completion_retries.maintenance_failed()
+                raise AuditMaintenanceError("Audit maintenance deferred.") from None
+        finally:
+            self._writers.release()
 
     def _write_completion(self, db, request_id, metadata, *, retry=False):
         fields = self._COMPLETION_FIELDS
@@ -293,15 +359,16 @@ class AuditStore:
         # Commit completion before optional maintenance: a large retention query
         # must not roll back an otherwise successful recovery.
         deadline = time.monotonic() + 0.05
-        with self.connect(timeout=0.05) as db:
-            db.set_progress_handler(lambda: time.monotonic() >= deadline, 1000)
-            db.execute("BEGIN IMMEDIATE")
-            changed = self._write_completion(db, request_id, metadata, retry=True)
-        try:
-            self._completion_maintenance(deadline)
-        except sqlite3.Error:
-            self.completion_retries.maintenance_failed()
-            # Normal admission/completion will run retention again.
+        with self._write_turn(0.05) as remaining:
+            with self.connect(timeout=remaining) as db:
+                db.set_progress_handler(lambda: time.monotonic() >= deadline, 1000)
+                db.execute("BEGIN IMMEDIATE")
+                changed = self._write_completion(db, request_id, metadata, retry=True)
+            try:
+                self._completion_maintenance(deadline)
+            except sqlite3.Error:
+                self.completion_retries.maintenance_failed()
+                # Normal admission/completion will run retention again.
         return bool(changed)
 
     def _completion_maintenance(self, deadline):
