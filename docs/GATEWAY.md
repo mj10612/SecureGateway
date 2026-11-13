@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.17.2 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.17.3 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -602,7 +602,12 @@ The Python library default is unchanged: `GatewaySession()` and
   blocked by #363. Since 2.16.3 (#371) the injected tool definition is
   trusted gateway data and is forwarded exactly as defined; earlier versions
   masked its `operation` enum, so a model could not name a valid operation.
-  Client-supplied tool definitions are masked as before.
+  Client-supplied tool definitions are masked as before. Since 2.17.3 (#375)
+  the tool accepts each operand exactly as the model sees it: an alias shown as
+  `⟦private_symbol_N⟧` may be passed with or without the `⟦`/`⟧` brackets
+  (numeric aliases are shown bare and passed bare). Any other spelling, partial
+  alias, extra text or another session's alias is still refused; the injected
+  schema description states the accepted forms.
 - #311, #312, #313, #314, #315 and #317 were rejected and remain
   evaluation-only `candidate_profile` arms; they are not settings.
 
