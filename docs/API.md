@@ -1,6 +1,6 @@
 # Public API Reference
 
-This document describes the supported public Python surface, CLI entry points, and MCP tools for **SecureGateway 2.18.1**. It is checked by `tests/test_api_doc_331.py` against the real package exports.
+This document describes the supported public Python surface, CLI entry points, and MCP tools for **SecureGateway 2.18.2**. It is checked by `tests/test_api_doc_331.py` against the real package exports.
 
 ## Package exports (`secure_gateway.__all__`)
 

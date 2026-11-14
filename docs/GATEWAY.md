@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.18.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.18.2 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -1160,6 +1160,16 @@ to later writers for seconds before it was forwarded. The ordered queue keeps
 the same time limits (5 seconds for admission, 50 ms for completion, which is
 retried in the background when the limit passes); writers in other processes
 still wait through SQLite's busy timeout.
+
+Since 2.18.1, the completion retry queue exposes a condition-based
+`wait_idle(timeout)` that returns once no queued or in-flight completion
+remains. A caller that must observe the durable state of every request
+written so far (for example the concurrent-request durability test) waits on
+the queue and on the active audit handlers instead of a fixed clock, so a
+completion that had to take the background retry path is still observed. The
+queue's bounded size, bounded attempts, attempt cap and shutdown flush are
+unchanged; a pending entry that outlives its retries is still dropped and
+counted, never silently waited on forever.
 
 
 ### Audit completion retries (2.1.0)

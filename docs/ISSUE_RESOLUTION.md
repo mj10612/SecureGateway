@@ -395,6 +395,22 @@ Evidence ([defaults-2.17.0](evaluations/defaults-2.17.0/README.md)):
 Remaining ambiguity: a real name directly followed by `말고`/`않` (`사과 말고`) is treated as a predicate. Regression tests: `tests/test_name_context_predicates.py`. Rollback: `"contextual_name_spans": false` or `--features-off`, then restart.
 
 
+## Audit completion durability for concurrent requests (2.18.1, #352)
+
+Recurrence of the #352 Windows CI failure after #358 (PR #376 included): the client no longer timed out, but the 12 audit rows for `tests/test_gateway_admin.py::test_concurrent_requests_are_durable_and_separately_attributed` were all read while still `incomplete` (`upstream_attempted: 0`), failing the assertion. A 2026-11-13 `main` run (cd06337) failed that way on Windows Python 3.12; earlier recurrences were 5 s client timeouts.
+
+Cause: not a lost write. #376 deliberately moves a completion that cannot take the writer turn within 50 ms to the bounded background retry queue. Under load on a slow Windows runner that path is taken, but the test polled the ledger against a fixed clock (3 s) and did not wait for the retry worker to finish. The background retry then landed after the assertion had already read the rows, leaving every row `incomplete` at read time.
+
+Change (`secure_gateway/audit_retry.py`, `tests/test_gateway_admin.py`):
+
+- `CompletionRetries.wait_idle(timeout)` waits on the retry queue's condition variable and returns once no queued or in-flight completion remains (`True`) or the timeout expires (`False`). It replaces any fixed-clock wait and is not a timeout increase, retry, skip or xfail.
+- The test's `ledger()` now returns only after the active audit handlers have drained (gateway admission condition) and the completion retry queue is idle before reading rows. Row observation still has its own bounded poll for the final assertion; nothing is retried or replayed, and inference is never re-issued.
+- The bounded queue itself is unchanged: 256 entries / 1 MiB, delays 0.25/0.5/1/2/4 s, attempt cap, shutdown flush and drop accounting. A pending entry that outlives its retries is still dropped and counted; `wait_idle` returns `False` rather than waiting forever.
+- New unit coverage in `tests/test_audit_completion_retry.py`: idle on empty queue, timeout report while a retry is pending, and wake-on-recovery.
+- No change to request handling, forwarding, timeouts or CI policy.
+
+Evidence: local Windows run (Python 3.11) of the previously failing test plus the audit retry/writer-order/admin/shutdown suites (61 passed); 50× repetition of the target test (0 failures); full suite with the CI invocation (`pytest -W error --cov=secure_gateway --cov-report=term-missing --cov-fail-under=85`): **5364 passed, 288 skipped**, coverage 90.41%; `uv lock --check`, ruff and mypy clean. CI matrix (15 OS × Python) is the authority for runner-specific load.
+
 ## Numbers and dates public by default (2.18.0, #374)
 
 Owner decision (2026-11-13): numbers and dates are public by default in text and code, because hiding them removes the meaning of quantities, amounts, periods, versions and boundaries. Before 2.18.0 every prose number and each date component became a `732846…` alias (2.1.0-2.17.0); code numbers were already preserved (#186).

@@ -69,7 +69,12 @@ def call(gateway, path, data=None, headers=None):
 
 
 def ledger(gateway, count):
-    deadline = time.monotonic() + 3
+    # A completion may be written synchronously or land through the bounded
+    # background retry queue; wait on those conditions instead of a clock.
+    with gateway.admission:
+        assert gateway.admission.wait_for(lambda: gateway.active_audit_handlers == 0, timeout=5)
+    assert gateway.audit.completion_retries.wait_idle(5), gateway.audit.completion_retries.diagnostics()
+    deadline = time.monotonic() + 5
     while True:
         result = gateway.audit.query({})
         if len(result["rows"]) == count and all(row["status"] is not None for row in result["rows"]):
