@@ -271,7 +271,7 @@ The earlier screening is retained only as [pilot evidence](evaluations/comprehen
 | #314 vocabulary calibration | REJECT (activation preflight) | 6/309 inputs changed |
 | #315 instruction wording | REJECT | both variants worse than baseline |
 | #317 tables/forms | REJECT | doc_structure: 4/165 changed; doc_structure_policy A/C/D 46/46/44 |
-| #319 local arithmetic | REJECT, underpowered | 4 solvable eligible cases; replication blocked by #363 |
+| #319 local arithmetic | REJECT | natural holdout 23/35 = 65.7% correct restored (gate 80%); 8/17 eligible controls with a D tool call; A/C/D 52/12/32 |
 | #291 multilingual baseline | descriptive | no candidate |
 
 Adopted toggles stayed off until a joint evaluation of all adopted candidates enabled together (requires the per-instance feature flags of #354). That joint decision, ADOPT-JOINT, was made in 2.17.0 without a model run because the joint input was identical to each candidate's own input ([decision](evaluations/joint-adopted-2.16/DECISION.md)). The gateway defaults changed accordingly; see "Adopted features enabled by default (2.17.0)" below.
@@ -332,7 +332,7 @@ Both `instruction_concise` and `instruction_examples` are **REJECT** under the f
 
 ### #319 real-LLM local arithmetic comparison
 
-**REJECT under the frozen rule but underpowered**: only 4 tool-solvable A-eligible cases (3 correct restored results, upper bound 75% < 80% gate); A/C/D 13/8/11 on the verified set; 3 ungraded. A replication needs at least 40 tool-solvable cases whose operands bind to single aliases; authoring found partial alias binding and protocol-field collisions for forced numeric/date values, now tracked in #363. See [evidence](evaluations/comprehension-2.11.1/319/comprehension/report.json) and `319/plan/alias-binding-findings.json`.
+**REJECT** on the natural-wording holdout (`gpt-6-luna`, 2.18.0): 80 fresh cases (40 tool-solvable, 14 no-calculation, 26 impossible) whose text never names a tool, an alias or a mask. Among 52 A-eligible cases A/C/D passed 52/12/32; 23 of 35 eligible tool-solvable cases had a correct locally restored result with every applicable criterion passing (65.7%, gate 80%), D-only/C-only 23/0 (p = 1.2e-07), and 8 of 17 A-eligible controls made a tool call (gate <= 1). No C/D trajectory exposed an original or computed value; 7 cases stayed ungraded and the decision is identical under all five bounds. Mechanically the tool path worked (34/35 correct tool calls, 32/35 restored to the gold, A 35/35 on answer value) and the masking baseline could not compute at all (C 0/35); the gate failed mostly on `scope` verdicts that quote the sanitized tool transcript only D has, and on an unnecessary-call cost. Candidate stays default off. See [evidence](evaluations/comprehension-2.11.1/319/comprehension-natural/report.json) and `319/plan-natural/README.md`. The earlier 2.16.3 replication is recorded as **INVALID** in the issue (bracketed alias rejection #375 + tool-instructing cases), and the 2.11.1 pilot as **REJECT, underpowered** (4 solvable A-eligible cases; `319/comprehension/report.json`).
 
 
 ### #291 multilingual baseline (descriptive)

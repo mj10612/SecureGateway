@@ -1,0 +1,433 @@
+{
+  "probe": "offline fake Responses endpoint; real Codex CLI, real stdio MCP fixture; no model, no account",
+  "codex_cli": "codex-cli 0.167.2",
+  "case": "b1:ts01",
+  "first_response_delay_seconds": 5.0,
+  "fake_model": "If the MCP tool is offered directly it is called; otherwise the fake calls the code-mode exec tool with JavaScript that lists ALL_TOOLS and calls the nested MCP tool if present; it then answers with the tool output.",
+  "results": [
+    {
+      "lean": true,
+      "arm": "D",
+      "mcp_required": true,
+      "exit_code": 0,
+      "event_shapes": [
+        "item.completed/agent_message",
+        "item.completed/mcp_tool_call",
+        "item.started/mcp_tool_call",
+        "thread.started",
+        "turn.completed",
+        "turn.started"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 36341,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": false,
+          "tools_count": 10
+        },
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 37382,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": true,
+          "tools_count": 10
+        }
+      ],
+      "final_answer": "Protected result alias: private_symbol_7",
+      "audit": "accepted",
+      "mcp_tool_calls": 1,
+      "mcp_results": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"alias\": \"private_symbol_7\"\n}"
+            }
+          ],
+          "structured_content": {
+            "alias": "private_symbol_7"
+          }
+        }
+      ],
+      "mcp_errors": [
+        false
+      ],
+      "restored_equals_gold": true,
+      "fixture_calls": 1
+    },
+    {
+      "lean": true,
+      "arm": "C",
+      "mcp_required": null,
+      "exit_code": 0,
+      "event_shapes": [
+        "item.completed/agent_message",
+        "thread.started",
+        "turn.completed",
+        "turn.started"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 36047,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": false,
+          "tools_count": 10
+        },
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 36799,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": true,
+          "tools_count": 10
+        }
+      ],
+      "final_answer": "No result: [{\"type\": \"input_text\", \"text\": \"Script completed\\nWall time 0.0 seconds\\nOutput:\\n\"}, {\"type\": \"input_text\", \"text\": \"[\\\"apply_patch\\\",\\\"clock__curr_time\\\",\\\"list_mcp_resource_templates\\\",\\\"list_mcp_resources\\\",\\\"read_mcp_resource\\\"]\"}, {\"type\": \"input_text\", \"text\": \"undefined\"}]",
+      "audit": "accepted",
+      "mcp_tool_calls": 0,
+      "mcp_results": [],
+      "mcp_errors": []
+    },
+    {
+      "lean": false,
+      "arm": "D",
+      "mcp_required": true,
+      "exit_code": 0,
+      "event_shapes": [
+        "item.completed/agent_message",
+        "item.completed/mcp_tool_call",
+        "item.started/mcp_tool_call",
+        "thread.started",
+        "turn.completed",
+        "turn.started"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 63048,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "clock/sleep",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": false,
+          "tools_count": 11
+        },
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 64182,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "clock/sleep",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": true,
+          "tools_count": 11
+        }
+      ],
+      "final_answer": "Protected result alias: private_symbol_7",
+      "audit": "accepted",
+      "mcp_tool_calls": 1,
+      "mcp_results": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"alias\": \"private_symbol_7\"\n}"
+            }
+          ],
+          "structured_content": {
+            "alias": "private_symbol_7"
+          }
+        }
+      ],
+      "mcp_errors": [
+        false
+      ],
+      "restored_equals_gold": true,
+      "fixture_calls": 1
+    },
+    {
+      "lean": false,
+      "arm": "C",
+      "mcp_required": null,
+      "exit_code": 0,
+      "event_shapes": [
+        "item.completed/agent_message",
+        "thread.started",
+        "turn.completed",
+        "turn.started"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 62605,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "clock/sleep",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": false,
+          "tools_count": 11
+        },
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 63450,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "clock/sleep",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": true,
+          "tools_count": 11
+        }
+      ],
+      "final_answer": "No result: [{\"type\": \"input_text\", \"text\": \"Script completed\\nWall time 0.0 seconds\\nOutput:\\n\"}, {\"type\": \"input_text\", \"text\": \"[\\\"apply_patch\\\",\\\"clock__curr_time\\\",\\\"create_goal\\\",\\\"exec_command\\\",\\\"get_goal\\\",\\\"list_mcp_resource_templates\\\",\\\"list_mcp_resources\\\",\\\"read_mcp_resource\\\",\\\"update_goal\\\",\\\"vi",
+      "audit": "accepted",
+      "mcp_tool_calls": 0,
+      "mcp_results": [],
+      "mcp_errors": []
+    },
+    {
+      "lean": true,
+      "arm": "D",
+      "mcp_required": false,
+      "exit_code": 0,
+      "event_shapes": [
+        "item.completed/agent_message",
+        "thread.started",
+        "turn.completed",
+        "turn.started"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 36341,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": false,
+          "tools_count": 10
+        },
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 37655,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": true,
+          "tools_count": 10
+        }
+      ],
+      "final_answer": "No result: [{\"type\": \"input_text\", \"text\": \"Script completed\\nWall time 0.0 seconds\\nOutput:\\n\"}, {\"type\": \"input_text\", \"text\": \"[\\\"apply_patch\\\",\\\"clock__curr_time\\\",\\\"list_mcp_resource_templates\\\",\\\"list_mcp_resources\\\",\\\"read_mcp_resource\\\"]\"}, {\"type\": \"input_text\", \"text\": \"undefined\"}]",
+      "audit": "accepted",
+      "mcp_tool_calls": 0,
+      "mcp_results": [],
+      "mcp_errors": [],
+      "restored_equals_gold": false,
+      "fixture_calls": 0
+    },
+    {
+      "lean": false,
+      "arm": "D",
+      "mcp_required": false,
+      "exit_code": 0,
+      "event_shapes": [
+        "item.completed/agent_message",
+        "thread.started",
+        "turn.completed",
+        "turn.started"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 62899,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "clock/sleep",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": false,
+          "tools_count": 11
+        },
+        {
+          "method": "POST",
+          "path": "/v1/responses",
+          "request_bytes": 63991,
+          "instructions_chars": 0,
+          "tools": [
+            "functions/exec",
+            "functions/wait",
+            "functions/request_user_input",
+            "functions/request_user_input_async",
+            "clock/sleep",
+            "collaboration/followup_task",
+            "collaboration/interrupt_agent",
+            "collaboration/list_agents",
+            "collaboration/send_message",
+            "collaboration/spawn_agent",
+            "collaboration/wait_agent"
+          ],
+          "mcp_tool_offered_directly": false,
+          "mcp_tool_named_in_request": 0,
+          "has_tool_output": true,
+          "tools_count": 11
+        }
+      ],
+      "final_answer": "No result: [{\"type\": \"input_text\", \"text\": \"Script completed\\nWall time 0.0 seconds\\nOutput:\\n\"}, {\"type\": \"input_text\", \"text\": \"[\\\"apply_patch\\\",\\\"clock__curr_time\\\",\\\"create_goal\\\",\\\"exec_command\\\",\\\"get_goal\\\",\\\"list_mcp_resource_templates\\\",\\\"list_mcp_resources\\\",\\\"read_mcp_resource\\\",\\\"update_goal\\\",\\\"vi",
+      "audit": "accepted",
+      "mcp_tool_calls": 0,
+      "mcp_results": [],
+      "mcp_errors": [],
+      "restored_equals_gold": false,
+      "fixture_calls": 0
+    }
+  ]
+}

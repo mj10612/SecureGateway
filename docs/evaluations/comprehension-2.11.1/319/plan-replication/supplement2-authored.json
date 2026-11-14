@@ -1,0 +1,590 @@
+{
+  "provenance": "Fresh isolated author received issue title/body and case-format specification only.",
+  "batch": "supplement2-authored",
+  "model": "gpt-6-luna",
+  "format_specification": "Author exactly 14 original synthetic, self-contained holdout cases: 14 tool_solvable, 0 no_calculation, 0 impossible.\nUse fictional scenarios only. Every confidential operand must be a plain standalone numeric token (digits, optional single decimal point) surrounded by spaces or punctuation, at most one decimal point, never inside a word, never repeated elsewhere in the text, and never adjacent to a unit, currency symbol or percent sign.\nReturn one JSON object with a cases array and no markdown.\nPer case include: id (unique string), original (English task text), human_masked (replace exactly the confidential numeric operands with [PRIVATE_1], [PRIVATE_2], ... in order of appearance, preserving all other text), negative_control (true only for no_calculation, otherwise false), applicable (array chosen from intent, action, conditions, prohibition, order, clarification, scope), expected (specific correct behavior), label (tool_solvable, no_calculation or impossible), operation (add, subtract or multiply for solvable; a short description otherwise), unit (USD, EUR or KRW for monetary tasks; another unit word otherwise), gold (exact correct result for solvable; the correct limitation or required question otherwise), sensitive_spans and public_spans arrays of {start,end,text} with zero-based Unicode code point offsets, end exclusive.\nPublic spans must be ordinary task words, never numeric values, never private identifiers, must not overlap sensitive spans, and every span text must occur exactly once in original.\ntool_solvable cases must supply every operand needed for the arithmetic in the text, must require using the local arithmetic tool with the supplied aliases, and must ask for a protected result with no intermediate values exposed.\nno_calculation cases must require no arithmetic and must forbid unnecessary tool use.\nimpossible cases must lack a required operand or explicitly prohibit the operation, and must require asking instead of computing.\nDo not use tools, browsing, files, prior context or implementation code. Do not include real personal information.",
+  "reported_usage": {
+    "input_tokens": 17722,
+    "cached_input_tokens": 9344,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 3004,
+    "reasoning_output_tokens": 0
+  },
+  "tool_events": 0,
+  "cases": [
+    {
+      "id": "case-01",
+      "original": "For fictional Cedar Archive, multiply the protected storage rate 12.5 by the protected volume 8. Return only the protected total under the authorized alias; do not show either input or any intermediate value.",
+      "human_masked": "For fictional Cedar Archive, multiply the protected storage rate [PRIVATE_1] by the protected volume [PRIVATE_2]. Return only the protected total under the authorized alias; do not show either input or any intermediate value.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Use the local tool to multiply the two supplied aliases and return only the protected result alias for local restoration.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "100",
+      "sensitive_spans": [
+        {
+          "start": 59,
+          "end": 63,
+          "text": "12.5"
+        },
+        {
+          "start": 91,
+          "end": 92,
+          "text": "8"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 5,
+          "end": 19,
+          "text": "fictional Cedar"
+        },
+        {
+          "start": 113,
+          "end": 117,
+          "text": "only"
+        }
+      ]
+    },
+    {
+      "id": "case-02",
+      "original": "In fictional Lumen Works, add the protected shift allowance 1450 and protected travel allowance 275. Give the protected combined amount as an alias only, without exposing either amount or a subtotal.",
+      "human_masked": "In fictional Lumen Works, add the protected shift allowance [PRIVATE_1] and protected travel allowance [PRIVATE_2]. Give the protected combined amount as an alias only, without exposing either amount or a subtotal.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Add the supplied aliases with the local tool and provide only the protected result alias.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "KRW",
+      "gold": "1725",
+      "sensitive_spans": [
+        {
+          "start": 61,
+          "end": 65,
+          "text": "1450"
+        },
+        {
+          "start": 99,
+          "end": 102,
+          "text": "275"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 6,
+          "end": 17,
+          "text": "fictional"
+        },
+        {
+          "start": 151,
+          "end": 156,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-03",
+      "original": "For fictional North Quay, subtract the protected reserve 240.75 from the protected starting balance 980.5. Return only the protected remainder by alias, with no operands or intermediate figures shown.",
+      "human_masked": "For fictional North Quay, subtract the protected reserve [PRIVATE_1] from the protected starting balance [PRIVATE_2]. Return only the protected remainder by alias, with no operands or intermediate figures shown.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Subtract reserve from starting balance through the local tool and return only the result alias.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "EUR",
+      "gold": "739.75",
+      "sensitive_spans": [
+        {
+          "start": 55,
+          "end": 61,
+          "text": "240.75"
+        },
+        {
+          "start": 102,
+          "end": 107,
+          "text": "980.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 7,
+          "end": 18,
+          "text": "fictional"
+        },
+        {
+          "start": 122,
+          "end": 127,
+          "text": "only"
+        }
+      ]
+    },
+    {
+      "id": "case-04",
+      "original": "In the fictional Juniper Lab ledger, multiply protected batch price 36 by protected batch count 14. Provide the protected product as an alias only; reveal no input values or working.",
+      "human_masked": "In the fictional Juniper Lab ledger, multiply protected batch price [PRIVATE_1] by protected batch count [PRIVATE_2]. Provide the protected product as an alias only; reveal no input values or working.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Multiply the two aliases locally and provide only the protected result alias.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "504",
+      "sensitive_spans": [
+        {
+          "start": 69,
+          "end": 71,
+          "text": "36"
+        },
+        {
+          "start": 103,
+          "end": 105,
+          "text": "14"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 11,
+          "end": 26,
+          "text": "fictional Juniper"
+        },
+        {
+          "start": 138,
+          "end": 143,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-05",
+      "original": "For fictional Blue Fern Transit, add protected fuel allocation 87.25 to protected maintenance allocation 112.5. Return the protected total as an alias and keep both inputs and all intermediate values hidden.",
+      "human_masked": "For fictional Blue Fern Transit, add protected fuel allocation [PRIVATE_1] to protected maintenance allocation [PRIVATE_2]. Return the protected total as an alias and keep both inputs and all intermediate values hidden.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Use local addition on the aliases and return only the protected total alias.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "EUR",
+      "gold": "199.75",
+      "sensitive_spans": [
+        {
+          "start": 63,
+          "end": 68,
+          "text": "87.25"
+        },
+        {
+          "start": 107,
+          "end": 112,
+          "text": "112.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 5,
+          "end": 21,
+          "text": "fictional Blue"
+        },
+        {
+          "start": 145,
+          "end": 150,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-06",
+      "original": "At fictional Sable Orchard, subtract protected returned units 18.5 from protected dispatched units 64.25. State only the protected net units using its alias; do not reveal inputs or intermediate arithmetic.",
+      "human_masked": "At fictional Sable Orchard, subtract protected returned units [PRIVATE_1] from protected dispatched units [PRIVATE_2]. State only the protected net units using its alias; do not reveal inputs or intermediate arithmetic.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Compute dispatched minus returned with the local tool and return the protected result alias only.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "units",
+      "gold": "45.75",
+      "sensitive_spans": [
+        {
+          "start": 63,
+          "end": 67,
+          "text": "18.5"
+        },
+        {
+          "start": 106,
+          "end": 111,
+          "text": "64.25"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 11,
+          "end": 27,
+          "text": "fictional Sable"
+        },
+        {
+          "start": 126,
+          "end": 130,
+          "text": "only"
+        }
+      ]
+    },
+    {
+      "id": "case-07",
+      "original": "For fictional Ember Books, multiply protected print cost 2.4 by protected copy count 325. Return the protected total as an alias only; expose no operands or intermediate values.",
+      "human_masked": "For fictional Ember Books, multiply protected print cost [PRIVATE_1] by protected copy count [PRIVATE_2]. Return the protected total as an alias only; expose no operands or intermediate values.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Multiply the supplied aliases locally and return only the protected total alias.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "780",
+      "sensitive_spans": [
+        {
+          "start": 57,
+          "end": 60,
+          "text": "2.4"
+        },
+        {
+          "start": 92,
+          "end": 95,
+          "text": "325"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 5,
+          "end": 20,
+          "text": "fictional Ember"
+        },
+        {
+          "start": 129,
+          "end": 134,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-08",
+      "original": "In fictional Marigold Clinic scheduling, add protected morning capacity 17 and protected afternoon capacity 23. Give only the protected combined capacity by alias, with no inputs or intermediate values exposed.",
+      "human_masked": "In fictional Marigold Clinic scheduling, add protected morning capacity [PRIVATE_1] and protected afternoon capacity [PRIVATE_2]. Give only the protected combined capacity by alias, with no inputs or intermediate values exposed.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Add the capacity aliases with the local tool and provide only the protected result alias.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "slots",
+      "gold": "40",
+      "sensitive_spans": [
+        {
+          "start": 71,
+          "end": 73,
+          "text": "17"
+        },
+        {
+          "start": 107,
+          "end": 109,
+          "text": "23"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 6,
+          "end": 21,
+          "text": "fictional Marigold"
+        },
+        {
+          "start": 130,
+          "end": 134,
+          "text": "only"
+        }
+      ]
+    },
+    {
+      "id": "case-09",
+      "original": "For fictional Mosslight Press, subtract protected canceled pages 48 from protected planned pages 230. Return the protected remaining page count as an alias only, without disclosing operands or intermediate figures.",
+      "human_masked": "For fictional Mosslight Press, subtract protected canceled pages [PRIVATE_1] from protected planned pages [PRIVATE_2]. Return the protected remaining page count as an alias only, without disclosing operands or intermediate figures.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Subtract canceled from planned using the local tool and return only the protected result alias.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "pages",
+      "gold": "182",
+      "sensitive_spans": [
+        {
+          "start": 65,
+          "end": 67,
+          "text": "48"
+        },
+        {
+          "start": 106,
+          "end": 109,
+          "text": "230"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 5,
+          "end": 21,
+          "text": "fictional Mosslight"
+        },
+        {
+          "start": 126,
+          "end": 131,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-10",
+      "original": "At fictional Copper Finch Studio, multiply protected material rate 19.6 by protected order quantity 12. Provide the protected charge through its alias only; reveal no input or intermediate number.",
+      "human_masked": "At fictional Copper Finch Studio, multiply protected material rate [PRIVATE_1] by protected order quantity [PRIVATE_2]. Provide the protected charge through its alias only; reveal no input or intermediate number.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Multiply the supplied aliases locally and provide only the protected charge alias.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "USD",
+      "gold": "235.2",
+      "sensitive_spans": [
+        {
+          "start": 68,
+          "end": 72,
+          "text": "19.6"
+        },
+        {
+          "start": 106,
+          "end": 108,
+          "text": "12"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 9,
+          "end": 26,
+          "text": "fictional Copper"
+        },
+        {
+          "start": 143,
+          "end": 148,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-11",
+      "original": "For fictional Willow Circuit, add protected evening energy 305.5 and protected overnight energy 194.25. Return just the protected total under an alias, keeping both operands and intermediate values private.",
+      "human_masked": "For fictional Willow Circuit, add protected evening energy [PRIVATE_1] and protected overnight energy [PRIVATE_2]. Return just the protected total under an alias, keeping both operands and intermediate values private.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Add the energy aliases locally and return only the protected total alias.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "kWh",
+      "gold": "499.75",
+      "sensitive_spans": [
+        {
+          "start": 59,
+          "end": 64,
+          "text": "305.5"
+        },
+        {
+          "start": 98,
+          "end": 104,
+          "text": "194.25"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 5,
+          "end": 21,
+          "text": "fictional Willow"
+        },
+        {
+          "start": 129,
+          "end": 134,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-12",
+      "original": "In fictional Amber Kite Logistics, subtract protected damaged crates 7.25 from protected received crates 58.5. Respond with the protected usable count as an alias only; expose no operands or intermediate results.",
+      "human_masked": "In fictional Amber Kite Logistics, subtract protected damaged crates [PRIVATE_1] from protected received crates [PRIVATE_2]. Respond with the protected usable count as an alias only; expose no operands or intermediate results.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Subtract damaged from received with the local tool and respond with only the protected result alias.",
+      "label": "tool_solvable",
+      "operation": "subtract",
+      "unit": "crates",
+      "gold": "51.25",
+      "sensitive_spans": [
+        {
+          "start": 68,
+          "end": 72,
+          "text": "7.25"
+        },
+        {
+          "start": 108,
+          "end": 112,
+          "text": "58.5"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 6,
+          "end": 22,
+          "text": "fictional Amber"
+        },
+        {
+          "start": 131,
+          "end": 136,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-13",
+      "original": "For fictional Silver Meadow Cooperative, multiply protected seed price 4.75 by protected packet count 28. Provide only the protected order total as an alias; do not expose either input or any intermediate value.",
+      "human_masked": "For fictional Silver Meadow Cooperative, multiply protected seed price [PRIVATE_1] by protected packet count [PRIVATE_2]. Provide only the protected order total as an alias; do not expose either input or any intermediate value.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Multiply both supplied aliases locally and provide only the protected result alias.",
+      "label": "tool_solvable",
+      "operation": "multiply",
+      "unit": "EUR",
+      "gold": "133",
+      "sensitive_spans": [
+        {
+          "start": 71,
+          "end": 75,
+          "text": "4.75"
+        },
+        {
+          "start": 106,
+          "end": 108,
+          "text": "28"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 5,
+          "end": 22,
+          "text": "fictional Silver"
+        },
+        {
+          "start": 143,
+          "end": 148,
+          "text": "alias"
+        }
+      ]
+    },
+    {
+      "id": "case-14",
+      "original": "At fictional Cloudberry Workshop, add protected repair labor 68.25 to protected parts credit 31.75. Return the protected net credit as an alias only, with neither input nor intermediate amount revealed.",
+      "human_masked": "At fictional Cloudberry Workshop, add protected repair labor [PRIVATE_1] to protected parts credit [PRIVATE_2]. Return the protected net credit as an alias only, with neither input nor intermediate amount revealed.",
+      "negative_control": false,
+      "applicable": [
+        "intent",
+        "action",
+        "prohibition",
+        "scope"
+      ],
+      "expected": "Add the labor and credit aliases locally, returning only the protected result alias.",
+      "label": "tool_solvable",
+      "operation": "add",
+      "unit": "USD",
+      "gold": "100",
+      "sensitive_spans": [
+        {
+          "start": 63,
+          "end": 68,
+          "text": "68.25"
+        },
+        {
+          "start": 96,
+          "end": 101,
+          "text": "31.75"
+        }
+      ],
+      "public_spans": [
+        {
+          "start": 8,
+          "end": 26,
+          "text": "fictional Cloudberry"
+        },
+        {
+          "start": 130,
+          "end": 135,
+          "text": "alias"
+        }
+      ]
+    }
+  ]
+}
