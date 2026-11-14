@@ -51,6 +51,41 @@ def row(store, request_id):
         return dict(value) if value is not None else None
 
 
+def test_wait_idle_returns_immediately_when_nothing_is_pending(tmp_path):
+    store = AuditStore(tmp_path / "audit.sqlite")
+    try:
+        assert store.completion_retries.wait_idle(timeout=0) is True
+    finally:
+        store.close()
+
+
+def test_wait_idle_returns_false_before_the_retry_delay_elapses(tmp_path, monkeypatch):
+    monkeypatch.setattr(CompletionRetries, "DELAYS", (30.0,))
+    store = AuditStore(tmp_path / "audit.sqlite")
+    try:
+        request_id = begin(store)
+        with locked(store, monkeypatch):
+            with pytest.raises(sqlite3.OperationalError, match="locked"):
+                store.finish(request_id, metadata())
+            assert store.completion_retries.wait_idle(timeout=0.2) is False
+    finally:
+        store.close()
+
+
+def test_wait_idle_wakes_when_the_retry_lands(tmp_path, monkeypatch):
+    monkeypatch.setattr(CompletionRetries, "DELAYS", (.01,))
+    store = AuditStore(tmp_path / "audit.sqlite")
+    try:
+        request_id = begin(store)
+        with locked(store, monkeypatch):
+            with pytest.raises(sqlite3.OperationalError, match="locked"):
+                store.finish(request_id, metadata())
+        assert store.completion_retries.wait_idle(timeout=5) is True
+        assert row(store, request_id)["status"] == 200
+    finally:
+        store.close()
+
+
 def test_real_lock_recovers_snapshot_without_extra_payloads(tmp_path, monkeypatch):
     store = AuditStore(tmp_path / "audit.sqlite")
     try:

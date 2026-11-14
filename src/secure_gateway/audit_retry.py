@@ -83,6 +83,17 @@ class CompletionRetries:
     def _remove(self, request_id):
         self._bytes -= self._pending.pop(request_id).size
 
+    def wait_idle(self, timeout):
+        """Wait until no completion is queued or in flight; return whether the queue drained."""
+        deadline = time.monotonic() + timeout
+        with self._condition:
+            while self._pending:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    return False
+                self._condition.wait(remaining)
+            return True
+
     def maintenance_failed(self):
         """Handle maintenance failed."""
         with self._condition:
