@@ -53,6 +53,7 @@ def test_lean_worker_overrides_only_its_own_argv(tmp_path, monkeypatch):
         assert flag in args
     assert args[args.index('--sandbox') + 1] == 'read-only'
     assert 'forced_login_method="chatgpt"' in args
+    assert 'skills.include_instructions=false' in args
     disabled = [args[i + 1] for i, a in enumerate(args) if a == '--disable']
     assert 'shell_tool' in disabled and 'code_mode_host' in disabled
     setting = next(a for a in args if a.startswith('model_instructions_file='))
@@ -75,9 +76,21 @@ def test_lean_worker_overrides_only_its_own_argv(tmp_path, monkeypatch):
     assert meta["adapter"] == "lean-batch" and meta["tool_events"] == 0
     assert meta["adapter_source_sha256"] == batch.adapter_hash()
     assert meta["task_response_mode"] == "answer_visible_task"
+    assert meta["skill_catalog_instructions"] == "disabled via skills.include_instructions=false"
     # The user's own Codex configuration is never touched.
     assert config.read_text(encoding="utf-8") == 'model = "user-choice"\n'
     assert sorted(p.name for p in home.iterdir()) == ["config.toml"]
+
+
+@pytest.mark.parametrize("version", ["codex-cli 0.168.0", "unknown-build"])
+def test_lean_worker_rejects_unverified_skill_isolation_before_inference(tmp_path, monkeypatch, version):
+    fake_codex(tmp_path, monkeypatch, f"""
+    import sys
+    assert sys.argv[1:] == ['--version'], 'inference must not start'
+    print({version!r})
+    """)
+    with pytest.raises(ValueError, match="Codex CLI >= 0.169.0 is required for skill catalog isolation"):
+        batch.run_lean_worker(interpret_request())
 
 
 @pytest.mark.parametrize("message", [

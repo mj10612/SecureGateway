@@ -59,7 +59,12 @@ First produce baseline and candidate privacy reports with the same corpus and pr
 | C | Task text captured from the baseline gateway's outbound request. |
 | D | Task text captured from the candidate gateway's outbound request. |
 
-The interpreter receives its assigned task only. It must not receive another arm's text, the original secret for a masked arm, the gold rubric, a prior answer, or the parent agent's conversation. Opaque shuffled job identifiers separate jobs from arm labels. Each response is stored before a separate fresh grader receives that response and its criteria. Comprehension profiles select the first 1, 4 or 8 smoke prose cases respectively, across all four arms and the configured repeats.
+The interpreter must receive only its assigned task as evaluation material. It must not receive another arm's text, the original secret for a masked arm, the gold rubric, a prior answer, or the parent agent's conversation. Opaque shuffled job identifiers separate jobs from arm labels. Each response is stored before a separate fresh grader receives that response and its criteria. Comprehension profiles select the first 1, 4 or 8 smoke prose cases respectively, across all four arms and the configured repeats.
+
+CLI-provided context is an additional isolation concern: historical Codex native
+and lean runs included user skill catalog instructions (#380). From 2.19.2 the
+lean adapter disables that automatic context and requires CLI >= 0.169.0; the
+frozen native adapter does not. See [the reproduction and historical correction](evaluations/issue380/README.md).
 
 For the automated Codex CLI adapter:
 

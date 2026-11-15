@@ -94,6 +94,14 @@ results from different transports are never mixed.
 
 ## Limitations
 
+Correction for #380 (2026-11-16): the Codex CLI also included the host user's
+skill catalog in interpreter and grader inputs despite ignored configuration
+and an empty workspace. The fixed per-call token figures in this report include
+that extra context and are not host-independent or skill-free overhead. This
+does not automatically invalidate the recorded outcomes. The original artifacts
+and source hashes are preserved; see [probe and correction](../issue380/README.md)
+before planning a comparison with the corrected lean adapter (2.19.2).
+
 No test–retest of the individual method exists, so part of every disagreement
 is ordinary run-to-run variation. One task family (#313). Interpreter and grader
 are the same model family. Accounts were selected per command with `CODEX_HOME`;

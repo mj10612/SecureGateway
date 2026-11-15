@@ -34,6 +34,25 @@ run, set `CODEX_HOME` for that command only.
 - Any event other than an agent message or reasoning fails the call closed,
   including CLI warnings, with one exact exception described below.
 
+## Skill catalog isolation (issue #380, corrected in 2.19.2)
+
+The lean adapter now passes `-c skills.include_instructions=false` and requires
+Codex CLI >= 0.169.0 (the first version verified locally). Older or unrecognized
+CLI versions are rejected before inference. The setting affects only evaluation
+subprocesses; ordinary skill contents and tool names are not masked or changed.
+It removes automatic skill catalog instructions, not all local skill discovery.
+The frozen native adapter keeps its historical behavior; use the lean adapter
+for new text evaluations requiring this isolation.
+
+Ignoring user configuration and rules did not prevent `~/.agents/skills` names
+and descriptions from reaching either adapter's model requests. Historical
+evaluations, including the #364 token figures above, therefore included this
+extra interpreter/grader context. This qualifies isolation and cost claims; it
+does not by itself invalidate scores. A real CLI 0.169.0/local fake endpoint
+probe measured 34,417 -> 24,276 request bytes with the fix and no skill catalog
+markers. Fake usage is not a token measurement, so no new fixed token count is
+claimed. See [reproduction and limitations](evaluations/issue380/README.md).
+
 ## Code-mode tool calls (issue #372)
 
 What the event check did **not** cover before 2.17.1: on codex-cli 0.167.x the

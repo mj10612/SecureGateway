@@ -38,6 +38,7 @@ import math
 import os
 from pathlib import Path
 import random
+import re
 import shutil
 import tempfile
 from typing import Any
@@ -123,6 +124,7 @@ def lean_command(
         "--model", model, "--json", "--output-last-message", str(output),
         "-c", 'forced_login_method="chatgpt"',
         "-c", "project_doc_max_bytes=0", "-c", 'developer_instructions=""',
+        "-c", "skills.include_instructions=false",
         "-c", 'web_search="disabled"',
         "-c", "model_instructions_file=" + json.dumps(str(instructions_file)),
     ]
@@ -252,6 +254,11 @@ def run_lean_worker(request: dict, *, batch: bool = False) -> dict:
         ).stdout.decode("utf-8").strip()
         if not version or len(version) > 200:
             raise ValueError("Codex CLI returned an invalid version.")
+        # Older CLIs can silently ignore unknown settings. Require the first
+        # version verified with a real request capture for #380 before inference.
+        release = re.fullmatch(r"codex-cli (\d+)\.(\d+)\.(\d+)", version)
+        if release is None or tuple(map(int, release.groups())) < (0, 169, 0):
+            raise ValueError("Codex CLI >= 0.169.0 is required for skill catalog isolation.")
         output = root / "last-message.txt"
         command = lean_command(
             codex, model=request["model"], output=output, instructions_file=instructions,
@@ -289,6 +296,7 @@ def run_lean_worker(request: dict, *, batch: bool = False) -> dict:
             "adapter": "lean-batch", "adapter_source_sha256": adapter_hash(),
             "disabled_features": list(LEAN_DISABLED_FEATURES),
             "tool_call_checks": ["json events", "cli tool-router log", "code_mode_host disabled"],
+            "skill_catalog_instructions": "disabled via skills.include_instructions=false",
             "base_instructions_sha256": sha256(LEAN_BASE_INSTRUCTIONS.encode("utf-8")).hexdigest(),
             "task_response_mode": (
                 "independent_grade" if request["role"] == "grade"
