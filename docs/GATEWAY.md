@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.19.0 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.19.1 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -608,6 +608,9 @@ The Python library default is unchanged: `GatewaySession()` and
   (numeric aliases are shown bare and passed bare). Any other spelling, partial
   alias, extra text or another session's alias is still refused; the injected
   schema description states the accepted forms.
+  The 100 ms arithmetic computation budget measures CPU time on the calling
+  thread after acquiring the session lock; it is checked after bounded arithmetic
+  and does not impose a wall-clock deadline on scheduling, waiting or restoration.
 - #311, #312, #313, #314, #315 and #317 were rejected and remain
   evaluation-only `candidate_profile` arms; they are not settings.
 

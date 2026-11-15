@@ -259,7 +259,9 @@ class PrivateArithmetic:
             if self.calls >= self.max_calls:
                 raise ValueError("Local arithmetic call budget exceeded")
             self.calls += 1
-            started = time.perf_counter()
+            # Limit computation by this thread, excluding OS scheduling pauses.
+            # This is a post-computation CPU budget, not a wall-clock timeout.
+            started = time.thread_time()
             values = []
             units = [self.allowed[alias] for alias in aliases]
             for alias in aliases:
@@ -298,7 +300,7 @@ class PrivateArithmetic:
                         result = format(value, "f")
                 except InvalidOperation:
                     raise ValueError("Invalid decimal arithmetic") from None
-            if time.perf_counter() - started > .1:
+            if time.thread_time() - started > .1:
                 raise ValueError("Local arithmetic time budget exceeded")
             alias = self.session.engine._get_or_create_surrogate(
                 result, TokenType.LITERAL, self.session.session.generator,

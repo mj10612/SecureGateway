@@ -111,3 +111,40 @@ def test_cli_fixture_persists_alias_only_result_and_encrypted_restart(tmp_path, 
     saved = json.loads(fixture.read_text(encoding="utf8"))
     assert saved["calls"] == 1 and saved["transcript"][0]["result"] == result
     assert b"12.75" not in (tmp_path / "session.enc").read_bytes()
+
+
+def test_wall_clock_pause_does_not_consume_arithmetic_cpu_budget(monkeypatch):
+    import time
+    import secure_gateway.private_arithmetic as arithmetic
+
+    real_decimal = arithmetic.Decimal
+    paused = False
+
+    def delayed_decimal(value):
+        nonlocal paused
+        if not paused:
+            paused = True
+            time.sleep(0.15)
+        return real_decimal(value)
+
+    session = GatewaySession(mask_numbers=True)
+    left, right = session.values('2'), session.values('3')
+    tool = arithmetic.PrivateArithmetic(session, allowed={left: 'count', right: 'count'})
+    monkeypatch.setattr(arithmetic, 'Decimal', delayed_decimal)
+    assert session.restore(tool.call('add', [left, right])['alias']) == '5'
+    assert paused
+
+
+def test_arithmetic_thread_cpu_budget_is_enforced(monkeypatch):
+    import time
+    from types import SimpleNamespace
+    import secure_gateway.private_arithmetic as arithmetic
+
+    times = iter((0.0, 0.2))
+    monkeypatch.setattr(arithmetic, 'time', SimpleNamespace(perf_counter=time.perf_counter, thread_time=lambda: next(times)))
+    session = GatewaySession(mask_numbers=True)
+    left, right = session.values('2'), session.values('3')
+    tool = arithmetic.PrivateArithmetic(session, allowed={left: 'count', right: 'count'})
+    with pytest.raises(ValueError, match='time budget exceeded'):
+        tool.call('add', [left, right])
+    assert tool.allowed == {left: 'count', right: 'count'}
