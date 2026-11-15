@@ -44,7 +44,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         run: |
           uv run --locked --all-extras secure-gateway evaluate --suite privacy --profile release --output-dir "${{ runner.temp }}/sg-evaluation"
-          uv run --locked --all-extras secure-gateway evaluate compare --baseline docs/evaluations/issue324-2.7.0/legacy-privacy/report.json --candidate "${{ runner.temp }}/sg-evaluation/report.json"
+          uv run --locked --all-extras secure-gateway evaluate compare --allow-dictionary-change --baseline docs/evaluations/issue324-2.7.0/legacy-privacy/report.json --candidate "${{ runner.temp }}/sg-evaluation/report.json"
 
       - name: Lint
         run: uv run --locked --all-extras python -m ruff check src tests examples

@@ -29,7 +29,9 @@ _CLAUSE_DELIMITERS = frozenset(".!?。！？;\n\r")
 
 class DomainSpans(list):
     """Spans produced by the domain catalog, with common-word policy already applied."""
-    pass
+    def __init__(self, spans=(), explicit=()):
+        super().__init__(spans)
+        self.explicit = frozenset(explicit)
 
 
 class _IdentityOffsets:
@@ -197,11 +199,12 @@ class TermIndex:
         self.build_count = len(terms)
 
         for item in terms:
-            if len(item) == 5:
-                term, domain, case_sensitive, boundary, is_ambiguous = item
+            if len(item) >= 5:
+                term, domain, case_sensitive, boundary, is_ambiguous = item[:5]
             else:
                 term, domain, case_sensitive, boundary = item[:4]
                 is_ambiguous = False
+            protect_public = len(item) >= 6 and item[5]
             key = _normalize_term_key(term)
             is_multiword = (" " in key)
             state = 0
@@ -237,7 +240,7 @@ class TermIndex:
             if state not in self.term_at_state:
                 self.term_at_state[state] = []
             self.term_at_state[state].append(
-                (len(key), domain, _case_form(term) if case_sensitive else term, case_sensitive, boundary, is_ambiguous, is_multiword)
+                (len(key), domain, _case_form(term) if case_sensitive else term, case_sensitive, boundary, is_ambiguous, is_multiword, protect_public)
             )
 
         # Aho–Corasick failure links: on mismatch, fall back to the longest proper
@@ -310,7 +313,7 @@ class TermIndex:
             while curr:
                 outputs = self.term_at_state.get(curr)
                 if outputs:
-                    for length, domain, term, sensitive_case, boundary, is_ambiguous, is_multiword in outputs:
+                    for length, domain, term, sensitive_case, boundary, is_ambiguous, is_multiword, protect_public in outputs:
                         count += 1
                         if count > max_matches:
                             raise ValueError("Dictionary matching budget exceeded")
@@ -331,20 +334,23 @@ class TermIndex:
                                     continue
                         if sensitive_case and _case_form(text[start:end]) != term:
                             continue
-                        raw_matches.append((start, end, domain, is_ambiguous, is_multiword))
+                        raw_matches.append((start, end, domain, is_ambiguous, is_multiword, protect_public))
                 curr = self.dict_link[curr]
 
         if not raw_matches:
             return DomainSpans()
 
         accepted_spans = []
+        explicit_spans = set()
         accepted_distinctive_by_domain: dict[str, list[tuple[int, int]]] = {}
         accepted_multiword_spans = []
         ambiguous_matches = []
 
-        for start, end, domain, is_ambiguous, is_multiword in raw_matches:
+        for start, end, domain, is_ambiguous, is_multiword, protect_public in raw_matches:
             if not is_ambiguous or is_multiword:
                 accepted_spans.append((start, end))
+                if protect_public:
+                    explicit_spans.add((start, end))
                 if not is_ambiguous:
                     accepted_distinctive_by_domain.setdefault(domain, []).append((start, end))
                 if is_multiword:
@@ -402,7 +408,7 @@ class TermIndex:
                 output.append((start, end))
             else:
                 output[-1] = (output[-1][0], max(output[-1][1], end))
-        return DomainSpans(output)
+        return DomainSpans(output, (span for span in output if span in explicit_spans))
 
 
 def _read(path):
@@ -544,7 +550,7 @@ class DomainCatalog:
                     raise ValueError("Invalid domain match form")
                 is_single = _is_single_word_term(term)
                 is_ambig = is_concept_ambiguous and is_single
-                terms.append((term, domain, form["case_sensitive"], form["boundary"], is_ambig))
+                terms.append((term, domain, form["case_sensitive"], form["boundary"], is_ambig, form.get("protect_public_prose", False)))
                 self._term_to_concept[(term, domain)] = cid
         self._domain_terms[domain] = terms
         del value

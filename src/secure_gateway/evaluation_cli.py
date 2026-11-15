@@ -97,12 +97,13 @@ def evaluate(ctx, suite, profile, output_dir, corpus_path, real_llm, provider, m
 @click.option('--baseline', required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
 @click.option('--candidate', required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
 @click.option('--output-dir', type=click.Path(path_type=Path))
+@click.option('--allow-dictionary-change', is_flag=True, help='Compare reports whose only settings difference is the domain dictionary manifest.')
 @click.pass_context
-def compare(ctx, baseline, candidate, output_dir):
+def compare(ctx, baseline, candidate, output_dir, allow_dictionary_change):
     """Reject incompatible reports and report new privacy/meaning regressions."""
     from secure_gateway.evaluation import compare_reports, write_json
     try:
-        report = compare_reports(json.loads(baseline.read_text(encoding='utf-8')), json.loads(candidate.read_text(encoding='utf-8')))
+        report = compare_reports(json.loads(baseline.read_text(encoding='utf-8')), json.loads(candidate.read_text(encoding='utf-8')), allow_dictionary_change=allow_dictionary_change)
         if output_dir:
             write_json(output_dir / 'comparison.json', report)
         click.echo(json.dumps(report, ensure_ascii=False, indent=2))

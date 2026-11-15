@@ -186,3 +186,13 @@ Request transformation and response restoration timings are measured separately 
 Prepared-run model/profile/repeats/output settings are immutable; explicitly conflicting resume options fail instead of silently using old settings. Use a fresh output directory to change them. Rubric criteria and repeated trials are correlated; the report supplies request counts and descriptive paired outcomes, not a generalization confidence interval.
 
 `--prepare-only` and a response import awaiting grades intentionally produce an incomplete report and exit `2`. This signals pending interpretation/grading, not a completed comprehension measurement; orchestration scripts should handle that status before proceeding to the next phase.
+
+
+### Comparing a changed domain dictionary
+
+`secure-gateway evaluate compare --allow-dictionary-change --baseline BASE --candidate CANDIDATE`
+compares reports when the domain dictionary manifest is the only settings change.
+The comparison validates each settings hash, still requires the same corpus,
+profile, scoring version and other settings, and reports `dictionary_manifest_changed`.
+Without the flag, settings hashes must match exactly. This supports measuring
+dictionary updates against an immutable baseline; it does not accept new exposures.

@@ -15,7 +15,7 @@ import unicodedata
 
 
 SCHEMA_VERSION = 1
-DICTIONARY_VERSION = "1.0.1"
+DICTIONARY_VERSION = "1.0.2"
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_CANDIDATES = 100_000
 MAX_ENTRIES = 30_000
@@ -209,6 +209,35 @@ production|semiconductor lot tracking|반도체로트추적|
 # generated to fill a quota. These bilingual forms are independently compiled;
 # primary references establish the public subject matter, not certification of
 # every Korean translation or the confidentiality of an occurrence.
+SEEDS["defense"] += """
+project_korean|Hyunmoo missile|현무|Hyunmoo
+project_korean|Haegung missile|해궁|Haegung
+company|Lockheed Martin|록히드마틴|
+company|Raytheon|레이시온|
+company|Hyundai Rotem|현대로템|
+company|Korea Aerospace Industries|한국항공우주산업|KAI
+project_defense|Patriot missile system|패트리엇|Patriot
+project_defense|Aegis combat system|이지스|Aegis
+organization|Defense Advanced Research Projects Agency|미국방위고등연구계획국|DARPA
+intelligence|imagery intelligence|영상정보|IMINT
+intelligence|measurement and signature intelligence|계측신호정보|MASINT
+intelligence|open-source intelligence|공개출처정보|OSINT
+component_warhead|missile fuze|유도탄신관|신관
+component_propulsion|missile propellant|유도탄추진체|추진체
+navigation|guidance and navigation|유도항법|
+project_korean|Terminal High Altitude Area Defense|사드|THAAD
+organization|Republic of Korea Joint Chiefs of Staff|합동참모본부|
+organization|Defense Acquisition Program Administration|방위사업청|DAPA
+organization|Agency for Defense Development|국방과학연구소|
+company|LIG Nex1|LIG넥스원|
+company|Hanwha Aerospace|한화에어로스페이스|
+intelligence|signals intelligence|신호정보|SIGINT
+component_fire_control|fire control unit|사격통제장치|
+component_sensor|radar seeker|레이더탐색기|
+component_propulsion|solid rocket motor|고체로켓모터|
+component_warhead|warhead|탄두|
+"""
+
 SEEDS["defense"] += """
 component_sensor|radar antenna|레이더안테나|
 component_sensor|antenna array|배열안테나|
@@ -602,6 +631,13 @@ def curate(domain: str, rows: list[dict]) -> dict:
         for acronym in filter(None, acronyms.split(",")):
             language = "ko" if any("가" <= char <= "힣" for char in acronym) else "en"
             _add_form(entry, _form(acronym, language, acronym=True))
+        # Explicitly reviewed, case-sensitive proper names only. Common words and
+        # generic technical terms retain the existing public vocabulary policy.
+        if domain == "defense":
+            for form in entry["forms"]:
+                if form["text"] in {"Raytheon", "Patriot", "Aegis", "DARPA", "KAI"}:
+                    form["case_sensitive"] = True
+                    form["protect_public_prose"] = True
         own_ref = {"source": "editorial", "id": domain + ":" + category + ":" + entry["id"], "url": PRIMARY_REFERENCES.get(category, SOURCES["editorial"]["url"]), "category": category}
         if own_ref not in entry["source_refs"]:
             entry["source_refs"].append(own_ref)

@@ -476,16 +476,30 @@ def run_privacy(data, *, output_dir, profile='smoke', max_seconds=300):
     return report
 
 
-def compare_reports(baseline, candidate):
+def compare_reports(baseline, candidate, *, allow_dictionary_change=False):
     """Handle compare reports."""
     if baseline.get('schema_version') != 1 or candidate.get('schema_version') != 1 or baseline.get('suite') != candidate.get('suite'):
         raise ValueError('Incompatible report schemas/suites.')
     if baseline.get('metadata', {}).get('scoring_version') != candidate.get('metadata', {}).get('scoring_version'):
         raise ValueError('Incompatible reports: scoring_version')
-    for key in ('corpus_hash', 'settings_hash', 'profile'):
+    for key in ('corpus_hash', 'profile'):
         if (not isinstance(baseline.get('metadata', {}).get(key), str) or not baseline['metadata'][key]
                 or baseline['metadata'].get(key) != candidate.get('metadata', {}).get(key)):
             raise ValueError('Incompatible reports: ' + key)
+    before = baseline['metadata']
+    after = candidate['metadata']
+    if not isinstance(before.get('settings_hash'), str) or not before['settings_hash']:
+        raise ValueError('Incompatible reports: settings_hash')
+    changed = before['settings_hash'] != after.get('settings_hash')
+    if changed:
+        old_settings, new_settings = before.get('settings'), after.get('settings')
+        if (not allow_dictionary_change or not isinstance(old_settings, dict) or not isinstance(new_settings, dict)
+                or before['settings_hash'] != digest(old_settings) or after.get('settings_hash') != digest(new_settings)
+                or not isinstance(old_settings.get('domain_dictionary_manifest'), str)
+                or not isinstance(new_settings.get('domain_dictionary_manifest'), str)
+                or {k: v for k, v in old_settings.items() if k != 'domain_dictionary_manifest'}
+                != {k: v for k, v in new_settings.items() if k != 'domain_dictionary_manifest'}):
+            raise ValueError('Incompatible reports: settings_hash')
     if [c['id'] for c in baseline['cases']] != [c['id'] for c in candidate['cases']]:
         raise ValueError('Incompatible case selection.')
     new: list[dict] = []
@@ -531,6 +545,7 @@ def compare_reports(baseline, candidate):
                         resolved.append(item)
     complete = baseline['status'] == candidate['status'] == 'completed'
     return {'schema_version': 1, 'suite': baseline['suite'], 'comparable': complete,
+            'dictionary_manifest_changed': changed,
             'regression': bool(new or integrity_regressions) or not complete,
             'integrity_regressions': integrity_regressions,
             'new_exposures' if baseline['suite'] == 'privacy' else 'regressed_criteria': new,

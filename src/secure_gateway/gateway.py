@@ -827,7 +827,9 @@ class SharedEngine(MaskingEngine):
             if public is not None and spans:
                 # A generic dictionary entry must not re-mask an ordinary public
                 # prose word; explicit/private rules are applied separately.
-                spans = [(start, end) for start, end in spans if not public(text[start:end])]
+                explicit: frozenset[tuple[int, int]] = getattr(spans, "explicit", frozenset())
+                spans = [(start, end) for start, end in spans
+                         if (start, end) in explicit or not public(text[start:end])]
             return protect_chunks(text, chunks, spans)
         finally:
             self._domain_depth -= 1

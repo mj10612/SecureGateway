@@ -239,3 +239,16 @@ term boundaries, translations, ambiguity and actual privacy/overmasking/
 comprehension results; retain their source and change history.
 
 The source snapshot additionally includes 6,306 automotive Wikidata labels from the motor-car hierarchy. Compressed raw candidate files and their uncompressed hashes are archived in `dictionary-sources/2026-11-09/`; decompress into a temporary source folder before reproducing. These are protected public model/component names, not 6,306 newly specialist-reviewed technical components.
+
+
+## Defense terms added for #384 (dictionary 1.0.2)
+
+The editorial core now includes additional Korean defense organizations, companies,
+platforms, intelligence and component terms. The small reviewed set `Raytheon`,
+`Patriot`, `Aegis`, `DARPA`, and `KAI` explicitly protects exact case-sensitive
+matches even when the prose public-word filter recognizes the spelling. These
+labels can still be ambiguous in context; enabling the defense dictionary can
+therefore overmask a public occurrence. The Korean word `신관` remains subject
+to the ordinary public-word policy because it also means a building annex.
+Dictionary matching is heuristic, is not specialist certification, and does not
+classify all defense information or protect dates and quantities by itself.

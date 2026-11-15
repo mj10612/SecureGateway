@@ -168,3 +168,28 @@ def test_unchanged_mapping_is_not_evidence_of_protection():
     from secure_gateway.evaluation import score_field
     result = score_field('drift', 'drift', [{'start': 0, 'end': 5, 'fragments': []}], [], aliases={'drift': 'drift'})
     assert result['secrets'][0]['full_exposure'] is True
+
+
+def test_comparison_allows_only_explicit_dictionary_manifest_change(tmp_path):
+    from secure_gateway.evaluation import compare_reports, digest, run_privacy
+
+    baseline = run_privacy(corpus(), output_dir=tmp_path / 'base', profile='smoke')
+    candidate = copy.deepcopy(baseline)
+    settings = candidate['metadata']['settings']
+    settings['domain_dictionary_manifest'] = 'changed-dictionary'
+    candidate['metadata']['settings_hash'] = digest(settings)
+    with pytest.raises(ValueError, match='settings_hash'):
+        compare_reports(baseline, candidate)
+    report = compare_reports(baseline, candidate, allow_dictionary_change=True)
+    assert not report['regression']
+    assert report['dictionary_manifest_changed']
+    candidate['cases'][0]['secrets'][0].update(full_exposure=True, partial_exposure=False)
+    assert compare_reports(baseline, candidate, allow_dictionary_change=True)['regression']
+    candidate['metadata']['settings_hash'] = 'forged'
+    with pytest.raises(ValueError, match='settings_hash'):
+        compare_reports(baseline, candidate, allow_dictionary_change=True)
+    candidate['metadata']['settings_hash'] = digest(settings)
+    settings['mask_numbers'] = not settings['mask_numbers']
+    candidate['metadata']['settings_hash'] = digest(settings)
+    with pytest.raises(ValueError, match='settings_hash'):
+        compare_reports(baseline, candidate, allow_dictionary_change=True)
