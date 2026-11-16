@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.19.2 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.19.3 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -863,6 +863,10 @@ never masked.
   conversation) still restore exactly, including in split SSE responses and tool
   arguments. The same numbers are simply not re-aliased in later requests.
 - To keep the old behavior, set `"mask_numbers": true` (or `--mask-numbers`) and restart.
+- For defense documents containing sensitive quantities or dates, enable
+  `"mask_numbers": true` in the gateway configuration and restart. This masks
+  numbers more broadly, including public ones; review the masked preview and
+  add forced rules for sensitive terms that domain matching can miss.
 - A source number colliding with a saved numeric alias still requires a new
   session/conversation.
 - Measured effect: on the independently authored #312 public-number controls the default

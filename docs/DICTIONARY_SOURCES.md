@@ -248,7 +248,12 @@ platforms, intelligence and component terms. The small reviewed set `Raytheon`,
 `Patriot`, `Aegis`, `DARPA`, and `KAI` explicitly protects exact case-sensitive
 matches even when the prose public-word filter recognizes the spelling. These
 labels can still be ambiguous in context; enabling the defense dictionary can
-therefore overmask a public occurrence. The Korean word `신관` remains subject
-to the ordinary public-word policy because it also means a building annex.
+therefore overmask a public occurrence. Since dictionary 1.0.3, the Korean
+word `신관` is protected when a distinctive active defense term appears in the
+same clause. Without that local anchor it remains public because it can also
+mean a building annex; a numeric designator alone does not activate it. This
+heuristic can overmask an unrelated annex in the same clause as a defense term,
+and can miss a fuze described without a recognized term in that clause. Use a
+forced rule for reliably confidential occurrences.
 Dictionary matching is heuristic, is not specialist certification, and does not
 classify all defense information or protect dates and quantities by itself.

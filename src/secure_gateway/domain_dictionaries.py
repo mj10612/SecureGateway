@@ -205,6 +205,7 @@ class TermIndex:
                 term, domain, case_sensitive, boundary = item[:4]
                 is_ambiguous = False
             protect_public = len(item) >= 6 and item[5]
+            require_anchor = len(item) >= 7 and item[6]
             key = _normalize_term_key(term)
             is_multiword = (" " in key)
             state = 0
@@ -240,7 +241,7 @@ class TermIndex:
             if state not in self.term_at_state:
                 self.term_at_state[state] = []
             self.term_at_state[state].append(
-                (len(key), domain, _case_form(term) if case_sensitive else term, case_sensitive, boundary, is_ambiguous, is_multiword, protect_public)
+                (len(key), domain, _case_form(term) if case_sensitive else term, case_sensitive, boundary, is_ambiguous, is_multiword, protect_public, require_anchor)
             )
 
         # Aho–Corasick failure links: on mismatch, fall back to the longest proper
@@ -313,7 +314,7 @@ class TermIndex:
             while curr:
                 outputs = self.term_at_state.get(curr)
                 if outputs:
-                    for length, domain, term, sensitive_case, boundary, is_ambiguous, is_multiword, protect_public in outputs:
+                    for length, domain, term, sensitive_case, boundary, is_ambiguous, is_multiword, protect_public, require_anchor in outputs:
                         count += 1
                         if count > max_matches:
                             raise ValueError("Dictionary matching budget exceeded")
@@ -334,7 +335,7 @@ class TermIndex:
                                     continue
                         if sensitive_case and _case_form(text[start:end]) != term:
                             continue
-                        raw_matches.append((start, end, domain, is_ambiguous, is_multiword, protect_public))
+                        raw_matches.append((start, end, domain, is_ambiguous, is_multiword, protect_public, require_anchor))
                 curr = self.dict_link[curr]
 
         if not raw_matches:
@@ -346,7 +347,7 @@ class TermIndex:
         accepted_multiword_spans = []
         ambiguous_matches = []
 
-        for start, end, domain, is_ambiguous, is_multiword, protect_public in raw_matches:
+        for start, end, domain, is_ambiguous, is_multiword, protect_public, require_anchor in raw_matches:
             if not is_ambiguous or is_multiword:
                 accepted_spans.append((start, end))
                 if protect_public:
@@ -356,9 +357,9 @@ class TermIndex:
                 if is_multiword:
                     accepted_multiword_spans.append((start, end))
             else:
-                ambiguous_matches.append((start, end, domain))
+                ambiguous_matches.append((start, end, domain, require_anchor))
 
-        for start, end, domain in ambiguous_matches:
+        for start, end, domain, require_anchor in ambiguous_matches:
             # Anchor 1: Membership in a multi-word dictionary term that matches as a whole
             if any(m_start <= start and end <= m_end for m_start, m_end in accepted_multiword_spans):
                 accepted_spans.append((start, end))
@@ -380,6 +381,11 @@ class TermIndex:
             distinctive_in_domain = accepted_distinctive_by_domain.get(domain, [])
             if any(c_start <= d_start and d_end <= c_end for d_start, d_end in distinctive_in_domain):
                 accepted_spans.append((start, end))
+                if require_anchor:
+                    explicit_spans.add((start, end))
+                continue
+
+            if require_anchor:
                 continue
 
             # Anchor 3: Adjacent model/part-number/designation token
@@ -549,8 +555,9 @@ class DomainCatalog:
                 if not isinstance(term, str) or not 2 <= len(term) <= 256 or form.get("boundary") not in {"word", "hangul"}:
                     raise ValueError("Invalid domain match form")
                 is_single = _is_single_word_term(term)
-                is_ambig = is_concept_ambiguous and is_single
-                terms.append((term, domain, form["case_sensitive"], form["boundary"], is_ambig, form.get("protect_public_prose", False)))
+                require_anchor = form.get("protect_with_domain_anchor", False)
+                is_ambig = (is_concept_ambiguous and is_single) or require_anchor
+                terms.append((term, domain, form["case_sensitive"], form["boundary"], is_ambig, form.get("protect_public_prose", False), require_anchor))
                 self._term_to_concept[(term, domain)] = cid
         self._domain_terms[domain] = terms
         del value

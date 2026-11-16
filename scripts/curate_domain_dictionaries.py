@@ -15,7 +15,7 @@ import unicodedata
 
 
 SCHEMA_VERSION = 1
-DICTIONARY_VERSION = "1.0.2"
+DICTIONARY_VERSION = "1.0.3"
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_CANDIDATES = 100_000
 MAX_ENTRIES = 30_000
@@ -226,7 +226,7 @@ component_warhead|missile fuze|유도탄신관|신관
 component_propulsion|missile propellant|유도탄추진체|추진체
 navigation|guidance and navigation|유도항법|
 project_korean|Terminal High Altitude Area Defense|사드|THAAD
-organization|Republic of Korea Joint Chiefs of Staff|합동참모본부|
+organization|Republic of Korea Joint Chiefs of Staff|합동참모본부|Joint Chiefs
 organization|Defense Acquisition Program Administration|방위사업청|DAPA
 organization|Agency for Defense Development|국방과학연구소|
 company|LIG Nex1|LIG넥스원|
@@ -635,6 +635,8 @@ def curate(domain: str, rows: list[dict]) -> dict:
         # generic technical terms retain the existing public vocabulary policy.
         if domain == "defense":
             for form in entry["forms"]:
+                if category == "component_warhead" and form["text"] == "신관":
+                    form["protect_with_domain_anchor"] = True
                 if form["text"] in {"Raytheon", "Patriot", "Aegis", "DARPA", "KAI"}:
                     form["case_sensitive"] = True
                     form["protect_public_prose"] = True
