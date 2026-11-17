@@ -1245,6 +1245,8 @@ class GatewaySession:
 
         Never returns ``None``.
         """
+        if not code and not self._feature_request and self.features.attribute_bundle is not None:
+            _features.register_bundle(self, text, strict=True)
         key = self._mask_cache_key(text, code, language)
         cached = self._mask_cache.get(key)
         if cached is not None:
@@ -1359,7 +1361,7 @@ class GatewaySession:
 
     def _mask_unforced(self, text: str, code: bool = False, language: str = "auto",
                        *, complete: bool = True, detect_source: bool = True) -> str:
-        if self.features.contextual_name_spans or self.features.attribute_bundle is not None:
+        if self.features.contextual_name_spans:
             _features.before_mask_unforced(self, text, code)
         if code:
             return self._mask_source(text, language)

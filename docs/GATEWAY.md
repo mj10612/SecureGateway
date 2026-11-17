@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.19.3 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.20.0 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -532,7 +532,7 @@ blocks gateway start. #309 and #319 stay opt-in.
 | `ko_conjugation_split` | #309 | reject | off | boolean |
 | `contextual_name_spans` | #310 | adopt (joint) | **on** | boolean |
 | `scoped_corrections` | #316 | adopt, protect-only condition B (joint) | on, active only with a configured records file | encrypted records file |
-| `attribute_bundle` | #318 | adopt (joint) | on, active only with a per-session policy; gateway settings have no policy source, so it is inactive at gateway level | not available; per-session only |
+| `attribute_bundle` | #318 | adopt (joint) | on, active only with a trusted document policy | local `policy` object (2.20.0) or session policy |
 | `local_arithmetic` | #319 | blocked by #363 | off | boolean |
 
 These defaults apply to the gateway (`gateway run`, `gateway api-run`, auto-start).
@@ -575,7 +575,7 @@ The Python library default is unchanged: `GatewaySession()` and
   show per feature `default` (on by default), `default_mode` (`on`, `policy`,
   `off`), `enabled` (requested), `active` (applied to sessions), `source`, and for
   an inactive policy-gated default an `inactive_reason` (`no-policy-configured`,
-  `per-session-policy-only`). The top-level `enabled` list names only active features.
+  `no-policy-configured`). The top-level `enabled` list names only active features.
 
 - `ko_conjugation_split` keeps reviewed Korean condition/negation/request
   endings public while the stem is judged by the normal policy. Forced rules,
@@ -591,9 +591,10 @@ The Python library default is unchanged: `GatewaySession()` and
   is accepted by the session API for frozen evaluations but never by gateway
   settings.
 - `attribute_bundle` protects co-present form/table fields under a trusted
-  policy bound to one document hash and scope. Such a policy cannot be a
-  gateway-wide setting, so explicitly enabling it in gateway settings is refused
-  at start (its policy-gated default is simply inactive); use
+  policy bound to one document hash and scope. From 2.20.0 local gateway settings
+  accept `{"attribute_bundle": {"policy": POLICY}}` inside `features`.
+  Without a configured policy the default stays inactive. Explicitly enabling
+  it without a policy still refuses startup. Direct callers can continue to use
   `GatewaySession(features=GatewayFeatures(attribute_bundle=policy))`.
 - `local_arithmetic` injects the `local_alias_arithmetic` tool and executes
   calls locally, returning only a result alias. Gateway settings provide no
@@ -615,6 +616,55 @@ The Python library default is unchanged: `GatewaySession()` and
   evaluation-only `candidate_profile` arms; they are not settings.
 
 ### Enabling, disabling and rollback
+
+#### Approving a document bundle (#318, 2.20.0)
+
+The local gateway configuration is the authority; a model request, tool result,
+or document claiming a policy cannot install one. Approve an exact UTF-8 user
+text block locally, for example:
+
+```python
+from hashlib import sha256
+
+text = "Customer: meadow; Site: grove; Due: 2034-04-18"
+policy = {
+    "document_sha256": sha256(text.encode("utf-8")).hexdigest(),
+    "scope": [0, len(text)],
+    "required_fields": ["Customer", "Site", "Due"],
+    "protect_fields": ["Customer", "Site", "Due"],
+}
+# Merge this entry into the existing local config's features object, then restart:
+entry = {"enabled": True, "policy": policy}
+# config["features"]["attribute_bundle"] = entry
+```
+
+One gateway configuration approves one document policy; use separate local
+gateway configurations for different trust scopes. It is not a policy registry
+or an Admin/model API for changing approvals. The full original block must match
+the lowercase SHA-256 digest exactly, including whitespace and Unicode form;
+blocks are not concatenated. Only user text blocks (Claude `text`, Codex
+`input_text`, or string content/input) can activate it. Other documents and
+assistant/system/tool content cannot activate the bundle; ordinary protection
+rules continue to apply. Hashing and field matching run before forced numeric
+rules split the text, so an approved date can also be a forced rule.
+
+Policies require a character-offset `[start, end]` scope, and 1–32 distinct
+normalized names per required/protected field list, each 1–64 characters. The
+existing parser accepts documents up to 1 MiB, values up to 256 characters and
+bounded tables; missing or duplicate fields and excluded code/opaque spans keep
+their existing behavior. A matched document with an invalid actual scope is
+rejected, not sent upstream without the requested protection. Diagnostics expose
+only state/source, never the document digest, scope or field names.
+
+New aliases remain conversation-local and survive encrypted snapshots/restart.
+After a document matches, existing aliases protect the same values in later
+turns; matching is not authorization to expose them elsewhere. A fresh conversation
+has no such aliases. Changing config takes effect after restart, including for
+resumed sessions, while old aliases remain restorable. Disable with
+`{"enabled": false}` / the existing environment or CLI override / `--features-off`.
+This is an additional protection path, not automatic inference of confidentiality
+or a guarantee against all reconstruction attacks. The existing ADOPT experiment
+is historical evidence; this integration does not claim a new real-model score.
 
 Each feature has its own setting. Precedence is CLI > environment > config
 file > default (see the table above):

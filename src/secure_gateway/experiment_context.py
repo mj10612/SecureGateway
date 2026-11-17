@@ -374,22 +374,16 @@ def numeric_spans(text: str) -> list[tuple[int, int]]:
     return _finish(spans, excluded)
 
 
-def bundle_spans(text: str, policy: dict) -> list[tuple[int, int]]:
-    """Protect co-present form fields in a locally supplied hash-bound scope.
-
-    Policy keys: document_sha256, scope=[start,end], required_fields and
-    protect_fields. A caller supplies this trusted local policy; text claiming
-    its own project/scope does not establish authority. No generalized category
-    is substituted, and missing/duplicate fields add no protection proposals.
-    """
-    excluded = _check(text)
+def validate_bundle_policy(policy: dict) -> tuple[set[str], set[str]]:
+    """Validate trusted policy structure before any request supplies its document."""
     if not isinstance(policy, dict) or set(policy) != {"document_sha256", "scope", "required_fields", "protect_fields"}:
         raise ValueError("Invalid bundle policy")
-    if policy["document_sha256"] != sha256(text.encode("utf-8")).hexdigest():
-        raise ValueError("Bundle document identity mismatch")
+    digest = policy["document_sha256"]
+    if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+        raise ValueError("Invalid bundle document identity")
     scope = policy["scope"]
     if (not isinstance(scope, (list, tuple)) or len(scope) != 2
-            or any(type(value) is not int for value in scope) or not 0 <= scope[0] <= scope[1] <= len(text)):
+            or any(type(value) is not int for value in scope) or not 0 <= scope[0] <= scope[1] <= MAX_INPUT_BYTES):
         raise ValueError("Invalid bundle scope")
     fields = []
     for key in ("required_fields", "protect_fields"):
@@ -401,7 +395,18 @@ def bundle_spans(text: str, policy: dict) -> list[tuple[int, int]]:
         if len(normalized) != len(values):
             raise ValueError("Duplicate bundle field policy")
         fields.append(normalized)
-    required, protected = fields
+    return fields[0], fields[1]
+
+
+def bundle_spans(text: str, policy: dict) -> list[tuple[int, int]]:
+    """Protect co-present form fields only within the trusted document and scope."""
+    excluded = _check(text)
+    required, protected = validate_bundle_policy(policy)
+    if policy["document_sha256"] != sha256(text.encode("utf-8")).hexdigest():
+        raise ValueError("Bundle document identity mismatch")
+    scope = policy["scope"]
+    if scope[1] > len(text):
+        raise ValueError("Invalid bundle scope")
     records = _fields(text, *scope)
     labels = [record[0] for record in records]
     if len(set(labels)) != len(labels) or not (required | protected).issubset(labels):

@@ -31,6 +31,7 @@ import unicodedata
 
 from secure_gateway.domain_dictionaries import protect_chunks
 from secure_gateway.experiment_bundle import bundle_spans
+from secure_gateway.experiment_context import validate_bundle_policy
 from secure_gateway.experiment_korean import preserve_spans as korean_spans
 from secure_gateway.experiment_name_context import trusted_name_spans, user_texts
 from secure_gateway.gateway_source import looks_like_source
@@ -41,7 +42,7 @@ FEATURES: dict[str, tuple[int, str]] = {
     "ko_conjugation_split": (309, "boolean"),
     "contextual_name_spans": (310, "boolean"),
     "scoped_corrections": (316, "records-file"),
-    "attribute_bundle": (318, "session-only"),
+    "attribute_bundle": (318, "document-policy"),
     "local_arithmetic": (319, "boolean"),
 }
 # Gateway-settings defaults (2.17.0, after the joint ADOPT of #310/#316 B/#318):
@@ -264,12 +265,17 @@ def before_mask_unforced(session, text, code):
     features = session.features
     if features.contextual_name_spans and not code and not session._feature_request:
         register_introductions(session, text)
-    if features.attribute_bundle is not None and not code:
-        policy = features.attribute_bundle
-        matches_document = sha256(text.encode()).hexdigest() == policy.get("document_sha256")
-        spans = [] if session._feature_request and not matches_document else bundle_spans(text, dict(policy))
-        for start, end in spans:
-            _register(session, text, start, end)
+
+
+def register_bundle(session, text, *, strict=False):
+    """Match original user documents before any forced-span or prose splitting."""
+    policy = session.features.attribute_bundle
+    if policy is None:
+        return
+    if not strict and sha256(text.encode("utf-8")).hexdigest() != policy["document_sha256"]:
+        return
+    for start, end in bundle_spans(text, dict(policy)):
+        _register(session, text, start, end)
 
 
 def mask_prose(session, text, preserve_task_words, skill_verbs, model_context_complete):
@@ -318,6 +324,9 @@ def begin_request(session, payload):
     if features.contextual_name_spans:
         for text in user_texts(payload):
             register_introductions(session, text)
+    if features.attribute_bundle is not None:
+        for text in user_texts(payload):
+            register_bundle(session, text)
 
 
 def tool_dispatcher(session):
@@ -350,6 +359,10 @@ def _config_value(name, raw):
     if name == "scoped_corrections" and isinstance(raw, dict):
         if set(raw) - {"enabled", "project", "language", "records_file"}:
             raise ValueError("Unsupported scoped_corrections settings")
+        return _parse_bool(raw.get("enabled", True), name), dict(raw)
+    if name == "attribute_bundle" and isinstance(raw, dict):
+        if set(raw) - {"enabled", "policy"}:
+            raise ValueError("Unsupported attribute_bundle settings")
         return _parse_bool(raw.get("enabled", True), name), dict(raw)
     return _parse_bool(raw, name), {}
 
@@ -409,11 +422,15 @@ def resolve_settings(config: Mapping[str, Any] | None = None, *, environ: Mappin
             enabled, source = False, "cli-off"
         active, reason = enabled, None
         if enabled:
-            if support == "session-only":
-                if source != "default":
-                    raise ValueError(name + " requires a per-document trusted policy; enable it per session, not gateway-wide.")
-                # Default-on, policy-gated: gateway settings have no per-document policy source.
-                active, reason = False, "per-session-policy-only"
+            if name == "attribute_bundle":
+                if source == "default" and not options:
+                    active, reason = False, "no-policy-configured"
+                else:
+                    policy = options.get("policy")
+                    if not isinstance(policy, dict):
+                        raise ValueError("attribute_bundle requires a per-document trusted policy in local settings.")
+                    validate_bundle_policy(policy)
+                    kwargs[name] = policy
             elif name == "scoped_corrections":
                 if source == "default" and not options:
                     active, reason = False, "no-policy-configured"

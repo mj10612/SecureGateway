@@ -64,7 +64,7 @@ def test_setting_defaults_and_report():
         "source": "default", "gateway_setting": "records-file", "inactive_reason": "no-policy-configured"}
     assert report["attribute_bundle"] == {
         "issue": 318, "default": True, "default_mode": "policy", "enabled": True, "active": False,
-        "source": "default", "gateway_setting": "session-only", "inactive_reason": "per-session-policy-only"}
+        "source": "default", "gateway_setting": "document-policy", "inactive_reason": "no-policy-configured"}
     for name in ("ko_conjugation_split", "local_arithmetic"):
         assert report[name]["default"] is False and not report[name]["enabled"] and not report[name]["active"]
 

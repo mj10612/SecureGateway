@@ -1,5 +1,39 @@
 # Issue review and resolution (0.2.0)
 
+## #318 gateway document-policy integration (2.20.0)
+
+The remaining gateway integration now accepts one trusted, hash-bound bundle
+policy through local `features.attribute_bundle.policy` configuration. Structural
+validation happens at settings resolution. Only exact original user text blocks
+can activate the configured policy; assistant/system/tool data cannot supply an
+approval. Without a policy the default remains inactive; explicit enabling with
+no policy is rejected. State/source diagnostics omit policy contents. The normal
+CLI/environment/off overrides, restart and encrypted alias persistence apply.
+
+Bundle protection registers against the original document before forced numeric
+rules split it (#363 interaction). Direct `mask()` retains strict document hash
+validation, while request processing skips unrelated documents. Regression tests
+cover both providers' outbound HTTP payloads and exact response restoration,
+forced dates, unapproved text/roles, malformed settings, CLI diagnostics,
+conversation separation and restart. Existing adopted experiment/attack results
+and frozen artifacts remain historical evidence; no new model run or accuracy
+claim is attached to this integration. One policy per gateway and exact text-block
+matching are explicit limits, not support for arbitrary natural-language
+relations, cross-document inference or coarse-category generalization (arm C).
+See `tests/test_bundle_gateway_policy.py` and `docs/GATEWAY.md` for operation and
+rollback. This supersedes the earlier "per-session-policy-only" integration limit
+recorded below without rewriting historical decisions.
+
+Local validation (Windows, 2026-11-17): 239 focused tests passed, including
+gateway HTTP, streaming resources/edges, forced numeric binding, feature defaults,
+frozen off-profile bytes, CLI/MCP and API checks. Ruff/mypy and wheel/sdist builds
+passed; CLI/MCP/installed metadata all report 2.20.0. The release privacy comparison
+against `issue324-2.7.0/legacy-privacy/report.json` (dictionary changes explicitly
+allowed) reported no new exposures or integrity regressions. Existing limitations
+remain visible: 57/66 protected, nine existing exposures, 3/117 public overmasks,
+31/32 exact and 32/32 semantic restorations. This synthetic offline result is not
+a new LLM comprehension or inference-attack measurement.
+
 ## Host expansion follow-up (2026-10-07)
 
 | Issue | Implemented evidence | Remaining boundary |
