@@ -18,7 +18,7 @@ Stages (milliseconds, per request, measured inside the gateway process):
     restore        EventRestorer.feed/finish (restore + tool-argument groups, incl. lock waits)
     save           encrypted snapshot save (gateway timing)
     audit_begin / audit_finish   metadata audit ledger writes (separate samples)
-    client_first_content  client request start -> first text_delta frame received
+    client_first_content  client request start -> first nonempty text_delta received
     client_total          client request start -> stream end
 Only synthetic, generated text is used; output contains timings and counts only.
 """
@@ -357,7 +357,7 @@ def send(port: int, payload: dict[str, Any], conversation: str, request_key: str
         if line.startswith(b"data:"):
             event = json.loads(line[5:])
             if event.get("type") == "content_block_delta" and event["delta"].get("type") == "text_delta":
-                if first_content is None:
+                if first_content is None and event["delta"]["text"]:
                     first_content = (time.perf_counter() - started) * 1000
                 restored_text.append(event["delta"]["text"])
     total = (time.perf_counter() - started) * 1000
@@ -365,7 +365,7 @@ def send(port: int, payload: dict[str, Any], conversation: str, request_key: str
     expected = payload["messages"][-1]["content"][0]["text"] + " Done."
     if "".join(restored_text) != expected:
         raise RuntimeError("restored stream differs from the synthetic original")
-    return {"client_first_content_ms": first_content or float("nan"), "client_total_ms": total,
+    return {"client_first_content_ms": first_content if first_content is not None else float("nan"), "client_total_ms": total,
             "request_bytes": len(data)}
 
 

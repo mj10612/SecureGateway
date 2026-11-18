@@ -35,7 +35,13 @@ Stages per request (median/p95/max with sample counts in the JSON report):
 | `restore` | `EventRestorer.feed/finish`: text restoration and tool-argument groups |
 | `save` | encrypted session snapshot save |
 | `audit_begin/finish` | metadata audit ledger writes (separate samples) |
-| `client_first_content` / `client_total` | client start to first `text_delta` frame / stream end |
+| `client_first_content` / `client_total` | client start to first nonempty `text_delta` / stream end |
+
+From 2.20.1, an empty text delta does not count as first content, and a measured
+zero-millisecond delay remains zero instead of being discarded as missing. SSE
+comments and non-text lifecycle events also do not count as content. This corrects
+the benchmark's measurement; it does not change gateway streaming or demonstrate
+a latency improvement. Historical results below are preserved, not recomputed.
 
 Not measured: real upstream connection reuse, TLS, DNS, model time, heartbeat
 gaps of a slow model, client cancellation, process start and Claude Code/Codex
