@@ -1,5 +1,19 @@
 # Issue review and resolution (0.2.0)
 
+## #319 experiment disposition and status correction (2.20.2)
+
+The current user guide now reflects the already-recorded natural-wording
+experiment instead of saying local arithmetic is unmeasured or blocked by #363.
+The tested candidate is not adopted; `local_arithmetic` stays default off, and
+its explicit experimental API is retained. See the
+[disposition](evaluations/issue319-disposition.md) for the 23/35 all-criteria result,
+8/17 eligible control calls, incomplete grading (7 cases), grading/host/isolation
+limits and prerequisites for a new candidate. The report's REJECT label under all
+five bounds does not satisfy the frozen protocol's complete-grading requirement.
+This is a conservative no-adoption decision, not an assertion of complete
+measurement or a new runtime fix. Earlier entries below are historical snapshots;
+the archived evidence and defaults are unchanged.
+
 ## #318 gateway document-policy integration (2.20.0)
 
 The remaining gateway integration now accepts one trusted, hash-bound bundle

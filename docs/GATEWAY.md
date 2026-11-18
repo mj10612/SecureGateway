@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.20.1 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.20.2 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -533,7 +533,7 @@ blocks gateway start. #309 and #319 stay opt-in.
 | `contextual_name_spans` | #310 | adopt (joint) | **on** | boolean |
 | `scoped_corrections` | #316 | adopt, protect-only condition B (joint) | on, active only with a configured records file | encrypted records file |
 | `attribute_bundle` | #318 | adopt (joint) | on, active only with a trusted document policy | local `policy` object (2.20.0) or session policy |
-| `local_arithmetic` | #319 | blocked by #363 | off | boolean |
+| `local_arithmetic` | #319 | reject (natural-wording holdout, 2.18.0); experimental opt-in retained | off | boolean |
 
 These defaults apply to the gateway (`gateway run`, `gateway api-run`, auto-start).
 The Python library default is unchanged: `GatewaySession()` and
@@ -599,8 +599,15 @@ The Python library default is unchanged: `GatewaySession()` and
 - `local_arithmetic` injects the `local_alias_arithmetic` tool and executes
   calls locally, returning only a result alias. Gateway settings provide no
   per-alias unit policy, so calls are refused (fail closed) until a policy
-  path exists; real-model tool use is unmeasured and the feature remains
-  blocked by #363. Since 2.16.3 (#371) the injected tool definition is
+  path exists. Actual model tool use was measured through a local MCP fixture,
+  but the natural-wording experiment was rejected for default activation:
+  23/35 eligible tasks passed all criteria (65.7%, required 80%), and 8/17
+  eligible controls called the tool (allowed at most one). This is not a
+  certification of the default gateway or every native host. The feature stays
+  off and its explicit session API remains experimental. See the
+  [experiment disposition and limitations](evaluations/issue319-disposition.md).
+  #363's numeric-binding fix and #375's displayed-alias fix are already merged;
+  they are not current blockers. Since 2.16.3 (#371) the injected tool definition is
   trusted gateway data and is forwarded exactly as defined; earlier versions
   masked its `operation` enum, so a model could not name a valid operation.
   Client-supplied tool definitions are masked as before. Since 2.17.3 (#375)
