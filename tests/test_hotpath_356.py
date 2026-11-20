@@ -236,3 +236,36 @@ def test_memo_is_identical_for_sessions_with_features_enabled(features, monkeypa
         return output, sorted((key, mapping.original, mapping.surrogate) for key, mapping in store.items())
 
     assert run(full_scan=False) == run(full_scan=True)
+
+def test_repeated_korean_morphology_is_reused_only_within_one_fragment(monkeypatch):
+    import secure_gateway.gateway as module
+
+    original = module.is_ordinary_form
+    calls = []
+
+    def observed(word, language, public, private):
+        if word == '검토합니다':
+            calls.append(word)
+        return original(word, language, public, private)
+
+    monkeypatch.setattr(module, 'is_ordinary_form', observed)
+    session = module.GatewaySession(natural_language='ko')
+    text = '검토합니다 ' * 20
+    masked = session.mask(text)
+    assert session.restore(masked) == text
+    assert len(calls) == 1
+    # A new fragment recomputes against current session state and policies.
+    session._mask_prose('검토합니다 다시 확인합니다')
+    assert len(calls) == 2
+
+
+def test_korean_morphology_memo_does_not_survive_changed_private_rules():
+    session = GatewaySession(natural_language='ko')
+    text = '검토합니다 검토합니다'
+    assert session.mask(text) == text
+    session.forced_rules = lambda: ('검토',)
+    masked = session.mask(text)
+    assert '검토' not in masked
+    assert session.restore(masked) == text
+    other = GatewaySession(natural_language='ko')
+    assert other.mask(text) == text

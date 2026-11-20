@@ -182,3 +182,30 @@ this change.
 enabled alone and all together, comparing the memoized path with the full scan.
 It also checks that #363 digit rules give identical output and aliases with
 and without the pattern cache.
+
+
+## Korean morphology within-fragment memo (#355, 2.20.3)
+
+The gateway memoizes public and private Korean morphology decisions separately
+within a single prose fragment, up to 4,096 entries per decision type. Entries
+are discarded after that fragment; they are not shared across requests or
+sessions. Private-rule and existing-mapping checks still take precedence. This
+does not change the provider or model and does not cache whole conversations.
+
+On 2026-11-20, CPython 3.11.15 on Linux x86-64 (6 logical CPUs, about 8 GiB
+RAM), the existing `benchmark_gateway_latency.py --profile --profile-language
+ko --profile-length medium --repeat 8` ran against base commit `9a1daf8` and
+this change in base/new/new/base order, each with `PYTHONHASHSEED=0`, eight
+synthetic turns, and no forced rules. Per-run median conversation times in ms:
+
+| Order | Base | New | New | Base |
+| --- | ---: | ---: | ---: | ---: |
+| Median ms | 546.412 | 581.137 | 489.421 | 575.669 |
+| Total request-thread CPU ms, 8 runs | 4637.85 | 4712.92 | 4078.42 | 4797.84 |
+
+Under profiling, `is_ordinary_form` calls were 872 per base run and 677 per new
+run; the masked-output digest was identical in all four runs. Timing varies
+substantially and this small synthetic sample does not establish a reliable
+real-world speedup or explain multi-minute delays. It excludes actual client,
+network and model inference latency. #355 remains open for the remaining
+end-to-end, memory, concurrency and real-host measurements.

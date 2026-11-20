@@ -1076,6 +1076,21 @@ class GatewaySession:
             # Name evidence is not a veto: public words and typed predicates win.
             return vocabulary is not None and _public_root(root, selected, vocabulary)
 
+        # Fragment-local only: roots and vocabulary are stable while scanning
+        # these chunks. Never retain private prose across requests or sessions.
+        public_forms: dict[str, bool] = {}
+        private_forms: dict[str, bool] = {}
+
+        def ordinary_form(word, *, private):
+            cache = private_forms if private else public_forms
+            if selected == "ko" and word in cache:
+                return cache[word]
+            value = (is_ordinary_form(word, selected, private_root, lambda _: False)
+                     if private else is_ordinary_form(word, selected, public_root, private_root))
+            if selected == "ko" and len(cache) < 4096:
+                cache[word] = value
+            return value
+
         offset = 0
         for chunk in chunks:
             start = offset
@@ -1084,7 +1099,7 @@ class GatewaySession:
                 continue
             key = unicodedata.normalize("NFC", chunk.text).casefold()
             if (vocabulary is not None and chunk.is_word and (s.forward_store or private_roots)
-                    and is_ordinary_form(chunk.text, selected, private_root, lambda _: False)):
+                    and ordinary_form(chunk.text, private=True)):
                 # Inflections of an actual private registration/mapping stay private.
                 terms.add(chunk.text)
                 continue
@@ -1095,7 +1110,7 @@ class GatewaySession:
                 relevant.add(key)
                 relevant.add(chunk.text.casefold())
             elif (vocabulary is not None and chunk.is_word
-                  and is_ordinary_form(chunk.text, selected, public_root, private_root)):
+                  and ordinary_form(chunk.text, private=False)):
                 relevant.add(key)
                 relevant.add(chunk.text.casefold())
             elif vocabulary is not None and chunk.is_word and chunk.kind in {"WORD", "HANGUL_WORD"}:
