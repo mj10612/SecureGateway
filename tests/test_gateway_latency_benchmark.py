@@ -55,3 +55,41 @@ def test_zero_first_content_latency_is_a_valid_measurement(monkeypatch, benchmar
     fake_stream(monkeypatch, benchmark, [(0.0, text_delta("Hello Done.")), (0.0, b"")])
     result = benchmark.send(12345, {"messages": [{"content": [{"text": "Hello"}]}]}, "synthetic")
     assert result["client_first_content_ms"] == 0.0
+
+
+def test_direct_request_uses_mock_route_without_gateway_headers(monkeypatch, benchmark):
+    fake_stream(monkeypatch, benchmark, [(0.01, text_delta("Hello Done.")), (0.02, b"")])
+    connection = benchmark.http.client.HTTPConnection()
+    requests = []
+    connection.request = lambda method, path, **kwargs: requests.append((method, path, kwargs))
+
+    result = benchmark.send(
+        12345, {"messages": [{"content": [{"text": "Hello"}]}]}, "synthetic", direct=True
+    )
+
+    assert result["client_first_content_ms"] == pytest.approx(10)
+    method, path, kwargs = requests[0]
+    assert (method, path) == ("POST", "/v1/messages")
+    assert kwargs["headers"] == {"Content-Type": "application/json"}
+
+
+def test_direct_comparison_alternates_order_and_pairs_same_inputs(monkeypatch, benchmark):
+    calls = []
+    log = benchmark.TimingLog()
+
+    def send(port, payload, conversation, request_key, *, direct=False):
+        calls.append((port, payload, conversation, request_key))
+        if not direct:
+            log.by_request[request_key] = {"mask_ms": 2.0, "provider": "claude"}
+        return {"client_first_content_ms": 1.0, "client_total_ms": 5.0}
+
+    monkeypatch.setattr(benchmark, "send", send)
+    rows, _, direct_rows, _ = benchmark.run_workload(
+        1001, SimpleNamespace(recent_timings=log), "en", "short", 1, 2, 356, direct_port=1002
+    )
+
+    assert [port for port, *_ in calls] == [1001, 1001, 1002, 1002, 1002, 1002, 1001, 1001]
+    assert [call[1:] for call in calls if call[0] == 1001] == [call[1:] for call in calls if call[0] == 1002]
+    assert len(rows) == len(direct_rows) == 4
+    assert rows[0]["mask_ms"] == 2.0
+    assert "mask_ms" not in direct_rows[0]

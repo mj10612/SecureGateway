@@ -337,17 +337,24 @@ class MemorySampler:
 
 # ------------------------------------------------------------------- client side
 
-def send(port: int, payload: dict[str, Any], conversation: str, request_key: str = "") -> dict[str, float]:
+def send(port: int, payload: dict[str, Any], conversation: str, request_key: str = "",
+         *, direct: bool = False) -> dict[str, float]:
     data = json.dumps(payload, ensure_ascii=False).encode()
     connection = http.client.HTTPConnection("127.0.0.1", port, timeout=120)
+    path = "/v1/messages"
+    headers = {"Content-Type": "application/json"}
+    if not direct:
+        path = "/claude" + path
+        headers.update({
+            "X-SecureGateway-Token": TOKEN, "Authorization": AUTH,
+            "X-SecureGateway-Session": conversation, "anthropic-version": "2023-06-01",
+            "X-Benchmark-Request": request_key or conversation,
+        })
     started = time.perf_counter()
-    connection.request("POST", "/claude/v1/messages", body=data, headers={
-        "X-SecureGateway-Token": TOKEN, "Content-Type": "application/json", "Authorization": AUTH,
-        "X-SecureGateway-Session": conversation, "anthropic-version": "2023-06-01",
-        "X-Benchmark-Request": request_key or conversation})
+    connection.request("POST", path, body=data, headers=headers)
     response = connection.getresponse()
     if response.status != 200:
-        raise RuntimeError(f"gateway status {response.status}")
+        raise RuntimeError(f"HTTP status {response.status}")
     first_content = None
     restored_text = []
     while True:
@@ -387,42 +394,57 @@ STAGES = [("lock_wait", "mask_lock_wait_ms"), ("mask", "mask_ms"), ("serialize",
 
 
 def run_workload(port: int, gateway: PrivacyGateway, language: str, length: str, concurrency: int,
-                 repeat: int, seed: int) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
+                 repeat: int, seed: int, *, direct_port: int | None = None
+                 ) -> tuple[list[dict[str, Any]], float, list[dict[str, Any]], float]:
+    samples: dict[bool, list[dict[str, Any]]] = {False: [], True: []}
+    elapsed = {False: 0.0, True: 0.0}
     rows_lock = Lock()
     errors: list[BaseException] = []
 
-    def conversation(worker: int, run: int):
+    def conversation(worker: int, run: int, direct: bool, target_port: int):
         conv_seed = seed * 1000 + worker * 37 + run
         turns = build_turns(language, LENGTHS[length], conv_seed)
         name = f"bench-{language}-{length}-{concurrency}-{worker}-{run}-{seed}"
         try:
             for index in range(len(turns)):
                 key = f"{name}#{index}"
-                client = send(port, payload_for(turns, index), name, key)
+                client = send(target_port, payload_for(turns, index), name, key, direct=direct)
                 with rows_lock:
-                    rows.append({"turn": index, "worker": worker, "key": key, **client})
+                    samples[direct].append({"turn": index, "worker": worker, "key": key, **client})
         except BaseException as exc:  # reported, never hidden
             errors.append(exc)
 
-    log = gateway.recent_timings
+    gateway_path = (False, port)
     for run in range(repeat):
-        threads = [Thread(target=conversation, args=(worker, run)) for worker in range(concurrency)]
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
-        if errors:
-            detail = str(errors[0]) if isinstance(errors[0], RuntimeError) else type(errors[0]).__name__
-            raise RuntimeError(f"benchmark request failed ({language}/{length}/c{concurrency}): {detail}")
-    for row in rows:
-        # The handler appends its timings in a finally block that may finish just
-        # after the client has read the closed stream.
-        deadline = time.monotonic() + 5
-        while row["key"] not in log.by_request and time.monotonic() < deadline:
-            time.sleep(0.001)
-        row.update({key: value for key, value in log.by_request.pop(row["key"]).items() if key != "provider"})
-    return rows
+        paths = [gateway_path]
+        if direct_port is not None:
+            paths.append((True, direct_port))
+            if run % 2:
+                paths.reverse()
+        for direct, target_port in paths:
+            started = time.perf_counter()
+            previous_count = len(samples[direct])
+            threads = [Thread(target=conversation, args=(worker, run, direct, target_port))
+                       for worker in range(concurrency)]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
+            if errors:
+                detail = str(errors[0]) if isinstance(errors[0], RuntimeError) else type(errors[0]).__name__
+                path = "direct" if direct else "gateway"
+                raise RuntimeError(f"{path} benchmark request failed ({language}/{length}/c{concurrency}): {detail}")
+            if not direct:
+                log = gateway.recent_timings
+                for row in samples[direct][previous_count:]:
+                    # The handler may append timings after the client reads the closed stream.
+                    deadline = time.monotonic() + 5
+                    while row["key"] not in log.by_request and time.monotonic() < deadline:
+                        time.sleep(0.001)
+                    row.update({key: value for key, value in log.by_request.pop(row["key"]).items()
+                                if key != "provider"})
+            elapsed[direct] += time.perf_counter() - started
+    return samples[False], elapsed[False], samples[True], elapsed[True]
 
 
 def code_sha() -> str:
@@ -496,10 +518,10 @@ def benchmark(args) -> dict[str, Any]:
                     probes.audit["audit_begin_ms"].clear()
                     probes.audit["audit_finish_ms"].clear()
                     with MemorySampler() as memory:
-                        wall = time.perf_counter()
-                        rows = run_workload(gateway.server_port, gateway, language, length, concurrency,
-                                            args.repeat, args.seed)
-                        wall = time.perf_counter() - wall
+                        rows, wall, direct_rows, direct_wall = run_workload(
+                            gateway.server_port, gateway, language, length, concurrency, args.repeat, args.seed,
+                            direct_port=upstream.server_port if args.compare_direct else None,
+                        )
                     last_turn = LENGTHS[length] - 1
                     entry = {
                         "language": language, "length": length, "turns": LENGTHS[length],
@@ -515,6 +537,19 @@ def benchmark(args) -> dict[str, Any]:
                         "audit": {key: summarize(list(values)) for key, values in probes.audit.items()
                                   if key.startswith("audit_")},
                     }
+                    if direct_rows:
+                        direct_by_key = {row["key"]: row for row in direct_rows}
+                        client_stages = STAGES[-2:]
+                        entry["direct"] = {
+                            "requests": len(direct_rows), "wall_s": round(direct_wall, 3),
+                            "throughput_rps": round(len(direct_rows) / direct_wall, 2) if direct_wall else None,
+                            "stages": {name: summarize([row[key] for row in direct_rows])
+                                       for name, key in client_stages},
+                            "paired_gateway_minus_direct_ms": {
+                                name: summarize([row[key] - direct_by_key[row["key"]][key] for row in rows])
+                                for name, key in client_stages
+                            },
+                        }
                     if memory.available:
                         entry["memory"] = {"rss_before_bytes": memory.base, "rss_peak_bytes": memory.peak,
                                            "rss_peak_delta_bytes": memory.peak - memory.base}
@@ -698,6 +733,8 @@ def main() -> None:
     parser.add_argument("--concurrency-language", default="mixed", choices=LANGUAGES)
     parser.add_argument("--concurrency-length", default="medium", choices=list(LENGTHS))
     parser.add_argument("--upstream-delay-ms", type=float, default=0.0, help="mock delay per SSE event")
+    parser.add_argument("--compare-direct", action="store_true",
+                        help="pair each HTTP workload with a direct request baseline against the loopback mock")
     parser.add_argument("--profile", action="store_true", help="cProfile input masking instead of the HTTP run")
     parser.add_argument("--profile-language", default="mixed", choices=LANGUAGES)
     parser.add_argument("--profile-length", default="long", choices=list(LENGTHS))
@@ -708,6 +745,8 @@ def main() -> None:
     args = parser.parse_args()
     if not 1 <= args.repeat <= 50 or any(not 1 <= c <= 16 for c in args.concurrency) or not 0 <= args.mask_rules <= 256:
         parser.error("--repeat must be 1..50, --concurrency values 1..16 and --mask-rules 0..256")
+    if args.profile and args.compare_direct:
+        parser.error("--compare-direct requires the HTTP benchmark")
     report = profile(args) if args.profile else benchmark(args)
     report["label"] = args.label
     text = json.dumps(report, indent=2, ensure_ascii=False, default=str)

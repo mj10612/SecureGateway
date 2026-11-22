@@ -13,6 +13,9 @@ network latency and client-side (Claude Code/Codex) work are **not measured**.
 # split SSE responses with a split tool-argument stream, 1/2/4 concurrent sessions.
 PYTHONHASHSEED=0 uv run --locked --all-extras python scripts/benchmark_gateway_latency.py --repeat 3 --output report.json
 
+# Compare matched requests through the gateway and directly to the loopback mock.
+uv run --locked --all-extras python scripts/benchmark_gateway_latency.py --compare-direct --repeat 4 --output paired.json
+
 # cProfile of input masking on the long (24-turn) conversation, in process.
 # Also reports an output digest and a paired memo-vs-full-scan comparison.
 PYTHONHASHSEED=0 uv run --locked --all-extras python scripts/benchmark_gateway_latency.py --profile --repeat 8 \
@@ -46,6 +49,22 @@ a latency improvement. Historical results below are preserved, not recomputed.
 Not measured: real upstream connection reuse, TLS, DNS, model time, heartbeat
 gaps of a slow model, client cancellation, process start and Claude Code/Codex
 internal time. `--upstream-delay-ms` adds a fixed per-event mock delay only.
+
+From 2.21.0, `--compare-direct` runs each synthetic workload through the gateway
+and directly against the same loopback mock. The paths run one at a time at the
+same concurrency and alternate which path goes first on each repetition. Use an
+even repeat count to balance the order. Both paths receive the same generated
+client payloads and must return the expected synthetic text. The mock receives
+the gateway's masked request on one path and the original synthetic request on
+the other. Masking can change the size and number of SSE chunks, especially with
+`--upstream-delay-ms`.
+
+Each workload's `direct` section reports first nonempty text and completion
+times, throughput, and gateway-minus-direct differences matched by worker,
+repetition and turn. Positive differences mean the gateway path took longer.
+The process-level RSS sample covers both paths in this mode. This comparison
+measures the loopback setup and cannot quantify real provider, network or host
+client latency.
 
 ## Environment of the numbers below
 
