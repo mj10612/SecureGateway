@@ -1,4 +1,4 @@
-"""First-content measurements exclude empty deltas without losing zero latency."""
+"""Regression tests for gateway latency benchmark measurements."""
 
 import importlib.util
 import json
@@ -93,3 +93,34 @@ def test_direct_comparison_alternates_order_and_pairs_same_inputs(monkeypatch, b
     assert len(rows) == len(direct_rows) == 4
     assert rows[0]["mask_ms"] == 2.0
     assert "mask_ms" not in direct_rows[0]
+
+
+def test_workload_wall_time_excludes_wait_for_gateway_timings(monkeypatch, benchmark):
+    log = benchmark.TimingLog()
+    pending = {}
+    now = 0.0
+
+    def send(port, payload, conversation, request_key, *, direct=False):
+        nonlocal now
+        now += 0.25
+        if not direct:
+            pending[request_key] = {"mask_ms": 2.0}
+        return {"client_first_content_ms": 1.0, "client_total_ms": 5.0}
+
+    def publish_timings(_interval):
+        nonlocal now
+        now += 0.5
+        log.by_request.update(pending)
+        pending.clear()
+
+    monkeypatch.setattr(benchmark, "send", send)
+    monkeypatch.setattr(benchmark, "time", SimpleNamespace(
+        perf_counter=lambda: now, monotonic=lambda: now, sleep=publish_timings
+    ))
+    rows, gateway_wall, direct_rows, direct_wall = benchmark.run_workload(
+        1001, SimpleNamespace(recent_timings=log), "en", "short", 1, 2, 356, direct_port=1002
+    )
+
+    assert len(rows) == len(direct_rows) == 4
+    assert all(row["mask_ms"] == 2.0 for row in rows)
+    assert gateway_wall == direct_wall == 1.0

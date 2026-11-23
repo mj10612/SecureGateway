@@ -62,6 +62,10 @@ the other. Masking can change the size and number of SSE chunks, especially with
 Each workload's `direct` section reports first nonempty text and completion
 times, throughput, and gateway-minus-direct differences matched by worker,
 repetition and turn. Positive differences mean the gateway path took longer.
+From 2.21.1, `wall_s` sums the time from worker setup through worker completion
+in each repetition for the given path. `throughput_rps` divides request count
+by that time. Gateway timing records collected after the workers finish still
+contribute to the stage summaries, outside the throughput measurement.
 The process-level RSS sample covers both paths in this mode. This comparison
 measures the loopback setup and cannot quantify real provider, network or host
 client latency.

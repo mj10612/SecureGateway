@@ -430,6 +430,7 @@ def run_workload(port: int, gateway: PrivacyGateway, language: str, length: str,
                 thread.start()
             for thread in threads:
                 thread.join()
+            elapsed[direct] += time.perf_counter() - started
             if errors:
                 detail = str(errors[0]) if isinstance(errors[0], RuntimeError) else type(errors[0]).__name__
                 path = "direct" if direct else "gateway"
@@ -443,7 +444,6 @@ def run_workload(port: int, gateway: PrivacyGateway, language: str, length: str,
                         time.sleep(0.001)
                     row.update({key: value for key, value in log.by_request.pop(row["key"]).items()
                                 if key != "provider"})
-            elapsed[direct] += time.perf_counter() - started
     return samples[False], elapsed[False], samples[True], elapsed[True]
 
 
