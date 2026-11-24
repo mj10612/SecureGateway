@@ -124,3 +124,13 @@ def test_workload_wall_time_excludes_wait_for_gateway_timings(monkeypatch, bench
     assert len(rows) == len(direct_rows) == 4
     assert all(row["mask_ms"] == 2.0 for row in rows)
     assert gateway_wall == direct_wall == 1.0
+
+
+@pytest.mark.parametrize(("count", "expected"), [(1, 1), (19, 19), (20, 19), (21, 20), (60, 57)])
+def test_p95_uses_nearest_rank_of_measured_samples(benchmark, count, expected):
+    samples = [float(value) for value in range(count, 0, -1)] + [float("nan")]
+
+    summary = benchmark.summarize(samples)
+
+    assert summary["n"] == count
+    assert summary["p95"] == expected

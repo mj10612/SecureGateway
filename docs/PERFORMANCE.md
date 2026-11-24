@@ -26,6 +26,11 @@ The report records the code SHA, package version, Python version, OS, CPU and
 memory size. Each request is checked: the client must receive exactly the
 original synthetic text back after restoration, otherwise the run fails.
 
+From 2.21.2, p95 uses the nearest-rank method. For `n` measured samples it
+selects the `ceil(0.95 × n)`th value in ascending order. Missing samples
+are excluded from the count. Historical results below retain their original
+calculation.
+
 Stages per request (median/p95/max with sample counts in the JSON report):
 
 | Stage | Source |

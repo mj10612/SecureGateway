@@ -31,6 +31,7 @@ import datetime as dt
 import http.client
 import io
 import json
+import math
 import os
 from pathlib import Path
 import platform
@@ -382,7 +383,7 @@ def summarize(values: list[float]) -> dict[str, float | int]:
     values = sorted(value for value in values if value == value)
     if not values:
         return {"n": 0}
-    p95 = values[min(len(values) - 1, max(0, round(0.95 * len(values) + 0.5) - 1))]
+    p95 = values[math.ceil(0.95 * len(values)) - 1]
     return {"n": len(values), "median": round(statistics.median(values), 3),
             "p95": round(p95, 3), "max": round(values[-1], 3)}
 
