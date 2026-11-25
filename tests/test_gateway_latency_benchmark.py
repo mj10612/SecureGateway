@@ -134,3 +134,30 @@ def test_p95_uses_nearest_rank_of_measured_samples(benchmark, count, expected):
 
     assert summary["n"] == count
     assert summary["p95"] == expected
+
+
+def test_cold_request_waits_for_delayed_gateway_timings(monkeypatch, benchmark):
+    log = benchmark.TimingLog()
+    gateway = SimpleNamespace(
+        server_port=12345, recent_timings=log, shutdown=lambda: None, server_close=lambda: None
+    )
+    now = 0.0
+
+    def sleep(interval):
+        nonlocal now
+        now += interval
+        if now >= 0.075:
+            log.by_request["bench-cold"] = {"mask_ms": 2.0, "provider": "claude"}
+
+    monkeypatch.setattr(benchmark, "environment", lambda: {})
+    monkeypatch.setattr(benchmark, "start_gateway", lambda *_: (gateway, SimpleNamespace(join=lambda: None)))
+    monkeypatch.setattr(benchmark, "send", lambda *_: {"client_total_ms": 12.0})
+    monkeypatch.setattr(benchmark, "time", SimpleNamespace(
+        perf_counter=lambda: now, monotonic=lambda: now, sleep=sleep
+    ))
+    args = SimpleNamespace(upstream_delay_ms=0, mask_rules=0, lengths=[], concurrency=[])
+
+    result = benchmark.benchmark(args)
+
+    assert result["cold_first_request"] == {"client_total_ms": 12.0, "mask_ms": 2.0}
+    assert not log.by_request

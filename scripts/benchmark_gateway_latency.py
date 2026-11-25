@@ -304,6 +304,16 @@ class TimingLog(deque):
             self.by_request[key] = timings
         super().append(timings)
 
+    def take(self, request_key: str) -> dict[str, Any]:
+        # The handler may append timings after the client reads the closed stream.
+        deadline = time.monotonic() + 5
+        while request_key not in self.by_request:
+            if time.monotonic() >= deadline:
+                raise RuntimeError(f"missing gateway timings for {request_key} after 5 seconds")
+            time.sleep(0.001)
+        timings = self.by_request.pop(request_key)
+        return {key: value for key, value in timings.items() if key != "provider"}
+
 
 class MemorySampler:
     def __init__(self, interval=0.005):
@@ -439,12 +449,7 @@ def run_workload(port: int, gateway: PrivacyGateway, language: str, length: str,
             if not direct:
                 log = gateway.recent_timings
                 for row in samples[direct][previous_count:]:
-                    # The handler may append timings after the client reads the closed stream.
-                    deadline = time.monotonic() + 5
-                    while row["key"] not in log.by_request and time.monotonic() < deadline:
-                        time.sleep(0.001)
-                    row.update({key: value for key, value in log.by_request.pop(row["key"]).items()
-                                if key != "provider"})
+                    row.update(log.take(row["key"]))
     return samples[False], elapsed[False], samples[True], elapsed[True]
 
 
@@ -506,10 +511,10 @@ def benchmark(args) -> dict[str, Any]:
             try:
                 cold_turns = build_turns("mixed", 1, 99)
                 cold = send(gateway.server_port, payload_for(cold_turns, 0), "bench-cold")
-                time.sleep(0.05)
-                results["cold_first_request"] = {"client_total_ms": round(cold["client_total_ms"], 2),
-                                                 **{k: v for k, v in gateway.recent_timings.by_request.pop(
-                                                     "bench-cold").items() if k != "provider"}}
+                results["cold_first_request"] = {
+                    "client_total_ms": round(cold["client_total_ms"], 2),
+                    **gateway.recent_timings.take("bench-cold"),
+                }
                 matrix = [(language, length, 1) for length in args.lengths for language in args.languages]
                 matrix += [(args.concurrency_language, args.concurrency_length, c)
                            for c in args.concurrency if c != 1]

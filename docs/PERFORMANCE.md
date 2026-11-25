@@ -25,6 +25,9 @@ PYTHONHASHSEED=0 uv run --locked --all-extras python scripts/benchmark_gateway_l
 The report records the code SHA, package version, Python version, OS, CPU and
 memory size. Each request is checked: the client must receive exactly the
 original synthetic text back after restoration, otherwise the run fails.
+After the client receives the stream, the benchmark waits up to five seconds
+for the gateway's timing record, including on the first request. If the record
+does not arrive, the run reports an error.
 
 From 2.21.2, p95 uses the nearest-rank method. For `n` measured samples it
 selects the `ceil(0.95 × n)`th value in ascending order. Missing samples
