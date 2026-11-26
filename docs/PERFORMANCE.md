@@ -1,5 +1,11 @@
 # Gateway performance measurement (issues #355 and #356)
 
+The [live client report](evaluations/issue355-claude-live/EXPANDED.md) covers
+Claude Code and Codex. SecureGateway 2.21.4 relays recognized Codex SSE as it
+arrives when the upstream omits Content-Type or sends text/plain.
+The [fix verification](evaluations/issue355-claude-live/FIX.md) records the
+latency observed in the live retest.
+
 This page reports **gateway-side** time only. Every number below comes from
 synthetic data, a loopback mock upstream that answers immediately, and no real
 model, account, DNS, TLS or Internet path. Model inference, provider queueing,

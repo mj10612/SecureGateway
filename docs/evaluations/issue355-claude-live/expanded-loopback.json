@@ -1,0 +1,1596 @@
+{
+  "environment": {
+    "code_sha": "e7ead1c9ca1fed0cc5ac3dde01661ef4915e2483",
+    "package_version": "2.21.3",
+    "python": "3.11.15",
+    "package_from_checkout": true,
+    "implementation": "CPython",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD",
+    "cpu_count": 24,
+    "measured_at": "2026-11-26T08:12:05+00:00",
+    "memory_total_bytes": 68625809408,
+    "cpu_physical": 12
+  },
+  "parameters": {
+    "repeat": 2,
+    "seed": 356,
+    "languages": [
+      "en",
+      "ko",
+      "mixed"
+    ],
+    "lengths": [
+      "short",
+      "long"
+    ],
+    "concurrency": [
+      1,
+      2,
+      4
+    ],
+    "concurrency_language": "mixed",
+    "concurrency_length": "short",
+    "upstream_delay_ms": 2.0,
+    "compare_direct": true,
+    "profile": false,
+    "profile_language": "mixed",
+    "profile_length": "long",
+    "top": 25,
+    "mask_rules": 0,
+    "output": "docs\\evaluations\\issue355-claude-live\\expanded-loopback.json",
+    "label": ""
+  },
+  "workloads": [
+    {
+      "language": "en",
+      "length": "short",
+      "turns": 2,
+      "concurrency": 1,
+      "conversations": 2,
+      "requests": 4,
+      "wall_s": 1.666,
+      "throughput_rps": 2.4,
+      "request_bytes": {
+        "n": 4,
+        "median": 1984.5,
+        "p95": 2902,
+        "max": 2902
+      },
+      "stages": {
+        "lock_wait": {
+          "n": 4,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 4,
+          "median": 16.35,
+          "p95": 50.41,
+          "max": 50.41
+        },
+        "serialize": {
+          "n": 4,
+          "median": 0.036,
+          "p95": 0.04,
+          "max": 0.04
+        },
+        "upstream_send": {
+          "n": 4,
+          "median": 1.34,
+          "p95": 22.44,
+          "max": 22.44
+        },
+        "first_event": {
+          "n": 4,
+          "median": 0.57,
+          "p95": 0.64,
+          "max": 0.64
+        },
+        "restore": {
+          "n": 4,
+          "median": 7.385,
+          "p95": 8.296,
+          "max": 8.296
+        },
+        "save": {
+          "n": 4,
+          "median": 47.91,
+          "p95": 86.72,
+          "max": 86.72
+        },
+        "gateway_total": {
+          "n": 4,
+          "median": 398.345,
+          "p95": 416.29,
+          "max": 416.29
+        },
+        "client_first_content": {
+          "n": 4,
+          "median": 50.576,
+          "p95": 68.375,
+          "max": 68.375
+        },
+        "client_total": {
+          "n": 4,
+          "median": 415.888,
+          "p95": 437.179,
+          "max": 437.179
+        }
+      },
+      "last_turn_stages": {
+        "lock_wait": {
+          "n": 2,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 2,
+          "median": 36.86,
+          "p95": 50.41,
+          "max": 50.41
+        },
+        "serialize": {
+          "n": 2,
+          "median": 0.037,
+          "p95": 0.04,
+          "max": 0.04
+        },
+        "upstream_send": {
+          "n": 2,
+          "median": 11.78,
+          "p95": 22.44,
+          "max": 22.44
+        },
+        "first_event": {
+          "n": 2,
+          "median": 0.53,
+          "p95": 0.62,
+          "max": 0.62
+        },
+        "restore": {
+          "n": 2,
+          "median": 7.636,
+          "p95": 8.296,
+          "max": 8.296
+        },
+        "save": {
+          "n": 2,
+          "median": 10.135,
+          "p95": 11.7,
+          "max": 11.7
+        },
+        "gateway_total": {
+          "n": 2,
+          "median": 398.32,
+          "p95": 416.29,
+          "max": 416.29
+        },
+        "client_first_content": {
+          "n": 2,
+          "median": 65.629,
+          "p95": 68.375,
+          "max": 68.375
+        },
+        "client_total": {
+          "n": 2,
+          "median": 412.764,
+          "p95": 430.252,
+          "max": 430.252
+        }
+      },
+      "audit": {
+        "audit_begin_ms": {
+          "n": 4,
+          "median": 7.369,
+          "p95": 8.107,
+          "max": 8.107
+        },
+        "audit_finish_ms": {
+          "n": 4,
+          "median": 6.263,
+          "p95": 7.387,
+          "max": 7.387
+        }
+      },
+      "direct": {
+        "requests": 4,
+        "wall_s": 1.156,
+        "throughput_rps": 3.46,
+        "stages": {
+          "client_first_content": {
+            "n": 4,
+            "median": 6.217,
+            "p95": 6.309,
+            "max": 6.309
+          },
+          "client_total": {
+            "n": 4,
+            "median": 289.078,
+            "p95": 306.999,
+            "max": 306.999
+          }
+        },
+        "paired_gateway_minus_direct_ms": {
+          "client_first_content": {
+            "n": 4,
+            "median": 44.359,
+            "p95": 62.066,
+            "max": 62.066
+          },
+          "client_total": {
+            "n": 4,
+            "median": 128.065,
+            "p95": 156.827,
+            "max": 156.827
+          }
+        }
+      },
+      "memory": {
+        "rss_before_bytes": 152543232,
+        "rss_peak_bytes": 152858624,
+        "rss_peak_delta_bytes": 315392
+      }
+    },
+    {
+      "language": "ko",
+      "length": "short",
+      "turns": 2,
+      "concurrency": 1,
+      "conversations": 2,
+      "requests": 4,
+      "wall_s": 1.451,
+      "throughput_rps": 2.76,
+      "request_bytes": {
+        "n": 4,
+        "median": 2199.5,
+        "p95": 3214,
+        "max": 3214
+      },
+      "stages": {
+        "lock_wait": {
+          "n": 4,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 4,
+          "median": 20.36,
+          "p95": 38.09,
+          "max": 38.09
+        },
+        "serialize": {
+          "n": 4,
+          "median": 0.032,
+          "p95": 0.038,
+          "max": 0.038
+        },
+        "upstream_send": {
+          "n": 4,
+          "median": 1.185,
+          "p95": 15.49,
+          "max": 15.49
+        },
+        "first_event": {
+          "n": 4,
+          "median": 0.51,
+          "p95": 0.54,
+          "max": 0.54
+        },
+        "restore": {
+          "n": 4,
+          "median": 6.104,
+          "p95": 6.418,
+          "max": 6.418
+        },
+        "save": {
+          "n": 4,
+          "median": 45.775,
+          "p95": 84.97,
+          "max": 84.97
+        },
+        "gateway_total": {
+          "n": 4,
+          "median": 348.25,
+          "p95": 355.54,
+          "max": 355.54
+        },
+        "client_first_content": {
+          "n": 4,
+          "median": 48.576,
+          "p95": 53.32,
+          "max": 53.32
+        },
+        "client_total": {
+          "n": 4,
+          "median": 362.049,
+          "p95": 391.179,
+          "max": 391.179
+        }
+      },
+      "last_turn_stages": {
+        "lock_wait": {
+          "n": 2,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 2,
+          "median": 34.66,
+          "p95": 38.09,
+          "max": 38.09
+        },
+        "serialize": {
+          "n": 2,
+          "median": 0.037,
+          "p95": 0.038,
+          "max": 0.038
+        },
+        "upstream_send": {
+          "n": 2,
+          "median": 1.185,
+          "p95": 1.21,
+          "max": 1.21
+        },
+        "first_event": {
+          "n": 2,
+          "median": 0.51,
+          "p95": 0.53,
+          "max": 0.53
+        },
+        "restore": {
+          "n": 2,
+          "median": 6.243,
+          "p95": 6.418,
+          "max": 6.418
+        },
+        "save": {
+          "n": 2,
+          "median": 9.025,
+          "p95": 9.03,
+          "max": 9.03
+        },
+        "gateway_total": {
+          "n": 2,
+          "median": 330.69,
+          "p95": 342.23,
+          "max": 342.23
+        },
+        "client_first_content": {
+          "n": 2,
+          "median": 48.576,
+          "p95": 51.572,
+          "max": 51.572
+        },
+        "client_total": {
+          "n": 2,
+          "median": 344.649,
+          "p95": 355.053,
+          "max": 355.053
+        }
+      },
+      "audit": {
+        "audit_begin_ms": {
+          "n": 4,
+          "median": 6.273,
+          "p95": 6.727,
+          "max": 6.727
+        },
+        "audit_finish_ms": {
+          "n": 4,
+          "median": 7.65,
+          "p95": 12.021,
+          "max": 12.021
+        }
+      },
+      "direct": {
+        "requests": 4,
+        "wall_s": 0.93,
+        "throughput_rps": 4.3,
+        "stages": {
+          "client_first_content": {
+            "n": 4,
+            "median": 5.545,
+            "p95": 5.973,
+            "max": 5.973
+          },
+          "client_total": {
+            "n": 4,
+            "median": 229.545,
+            "p95": 248.969,
+            "max": 248.969
+          }
+        },
+        "paired_gateway_minus_direct_ms": {
+          "client_first_content": {
+            "n": 4,
+            "median": 43.184,
+            "p95": 47.729,
+            "max": 47.729
+          },
+          "client_total": {
+            "n": 4,
+            "median": 127.226,
+            "p95": 171.01,
+            "max": 171.01
+          }
+        }
+      },
+      "memory": {
+        "rss_before_bytes": 152735744,
+        "rss_peak_bytes": 152965120,
+        "rss_peak_delta_bytes": 229376
+      }
+    },
+    {
+      "language": "mixed",
+      "length": "short",
+      "turns": 2,
+      "concurrency": 1,
+      "conversations": 2,
+      "requests": 4,
+      "wall_s": 1.57,
+      "throughput_rps": 2.55,
+      "request_bytes": {
+        "n": 4,
+        "median": 2101.5,
+        "p95": 3091,
+        "max": 3091
+      },
+      "stages": {
+        "lock_wait": {
+          "n": 4,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 4,
+          "median": 20.13,
+          "p95": 42.03,
+          "max": 42.03
+        },
+        "serialize": {
+          "n": 4,
+          "median": 0.033,
+          "p95": 0.049,
+          "max": 0.049
+        },
+        "upstream_send": {
+          "n": 4,
+          "median": 1.295,
+          "p95": 1.4,
+          "max": 1.4
+        },
+        "first_event": {
+          "n": 4,
+          "median": 0.495,
+          "p95": 0.57,
+          "max": 0.57
+        },
+        "restore": {
+          "n": 4,
+          "median": 6.795,
+          "p95": 8.727,
+          "max": 8.727
+        },
+        "save": {
+          "n": 4,
+          "median": 45.565,
+          "p95": 83.96,
+          "max": 83.96
+        },
+        "gateway_total": {
+          "n": 4,
+          "median": 373.56,
+          "p95": 408.38,
+          "max": 408.38
+        },
+        "client_first_content": {
+          "n": 4,
+          "median": 36.769,
+          "p95": 57.453,
+          "max": 57.453
+        },
+        "client_total": {
+          "n": 4,
+          "median": 390.72,
+          "p95": 425.904,
+          "max": 425.904
+        }
+      },
+      "last_turn_stages": {
+        "lock_wait": {
+          "n": 2,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 2,
+          "median": 35.935,
+          "p95": 42.03,
+          "max": 42.03
+        },
+        "serialize": {
+          "n": 2,
+          "median": 0.043,
+          "p95": 0.049,
+          "max": 0.049
+        },
+        "upstream_send": {
+          "n": 2,
+          "median": 1.305,
+          "p95": 1.4,
+          "max": 1.4
+        },
+        "first_event": {
+          "n": 2,
+          "median": 0.505,
+          "p95": 0.57,
+          "max": 0.57
+        },
+        "restore": {
+          "n": 2,
+          "median": 7.957,
+          "p95": 8.727,
+          "max": 8.727
+        },
+        "save": {
+          "n": 2,
+          "median": 8.845,
+          "p95": 9.71,
+          "max": 9.71
+        },
+        "gateway_total": {
+          "n": 2,
+          "median": 390.585,
+          "p95": 408.38,
+          "max": 408.38
+        },
+        "client_first_content": {
+          "n": 2,
+          "median": 51.343,
+          "p95": 57.453,
+          "max": 57.453
+        },
+        "client_total": {
+          "n": 2,
+          "median": 408.192,
+          "p95": 425.904,
+          "max": 425.904
+        }
+      },
+      "audit": {
+        "audit_begin_ms": {
+          "n": 4,
+          "median": 7.554,
+          "p95": 7.703,
+          "max": 7.703
+        },
+        "audit_finish_ms": {
+          "n": 4,
+          "median": 8.705,
+          "p95": 9.204,
+          "max": 9.204
+        }
+      },
+      "direct": {
+        "requests": 4,
+        "wall_s": 1.076,
+        "throughput_rps": 3.72,
+        "stages": {
+          "client_first_content": {
+            "n": 4,
+            "median": 5.814,
+            "p95": 6.236,
+            "max": 6.236
+          },
+          "client_total": {
+            "n": 4,
+            "median": 273.186,
+            "p95": 293.131,
+            "max": 293.131
+          }
+        },
+        "paired_gateway_minus_direct_ms": {
+          "client_first_content": {
+            "n": 4,
+            "median": 30.916,
+            "p95": 51.633,
+            "max": 51.633
+          },
+          "client_total": {
+            "n": 4,
+            "median": 127.24,
+            "p95": 132.773,
+            "max": 132.773
+          }
+        }
+      },
+      "memory": {
+        "rss_before_bytes": 152829952,
+        "rss_peak_bytes": 153260032,
+        "rss_peak_delta_bytes": 430080
+      }
+    },
+    {
+      "language": "en",
+      "length": "long",
+      "turns": 24,
+      "concurrency": 1,
+      "conversations": 2,
+      "requests": 48,
+      "wall_s": 17.817,
+      "throughput_rps": 2.69,
+      "request_bytes": {
+        "n": 48,
+        "median": 21309.5,
+        "p95": 39799,
+        "max": 41586
+      },
+      "stages": {
+        "lock_wait": {
+          "n": 48,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 48,
+          "median": 17.425,
+          "p95": 26.2,
+          "max": 80.73
+        },
+        "serialize": {
+          "n": 48,
+          "median": 0.131,
+          "p95": 0.235,
+          "max": 0.3
+        },
+        "upstream_send": {
+          "n": 48,
+          "median": 1.275,
+          "p95": 21.37,
+          "max": 25.61
+        },
+        "first_event": {
+          "n": 48,
+          "median": 0.48,
+          "p95": 0.57,
+          "max": 0.72
+        },
+        "restore": {
+          "n": 48,
+          "median": 6.874,
+          "p95": 8.526,
+          "max": 9.674
+        },
+        "save": {
+          "n": 48,
+          "median": 9.875,
+          "p95": 13.72,
+          "max": 82.1
+        },
+        "gateway_total": {
+          "n": 48,
+          "median": 352.785,
+          "p95": 402.37,
+          "max": 428.95
+        },
+        "client_first_content": {
+          "n": 48,
+          "median": 36.933,
+          "p95": 63.399,
+          "max": 122.36
+        },
+        "client_total": {
+          "n": 48,
+          "median": 374.177,
+          "p95": 419.539,
+          "max": 450.597
+        }
+      },
+      "last_turn_stages": {
+        "lock_wait": {
+          "n": 2,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 2,
+          "median": 17.86,
+          "p95": 18.32,
+          "max": 18.32
+        },
+        "serialize": {
+          "n": 2,
+          "median": 0.233,
+          "p95": 0.235,
+          "max": 0.235
+        },
+        "upstream_send": {
+          "n": 2,
+          "median": 1.37,
+          "p95": 1.4,
+          "max": 1.4
+        },
+        "first_event": {
+          "n": 2,
+          "median": 0.47,
+          "p95": 0.48,
+          "max": 0.48
+        },
+        "restore": {
+          "n": 2,
+          "median": 7.049,
+          "p95": 7.27,
+          "max": 7.27
+        },
+        "save": {
+          "n": 2,
+          "median": 10.59,
+          "p95": 11.1,
+          "max": 11.1
+        },
+        "gateway_total": {
+          "n": 2,
+          "median": 352.905,
+          "p95": 367.23,
+          "max": 367.23
+        },
+        "client_first_content": {
+          "n": 2,
+          "median": 34.781,
+          "p95": 36.252,
+          "max": 36.252
+        },
+        "client_total": {
+          "n": 2,
+          "median": 369.573,
+          "p95": 384.83,
+          "max": 384.83
+        }
+      },
+      "audit": {
+        "audit_begin_ms": {
+          "n": 48,
+          "median": 7.602,
+          "p95": 8.591,
+          "max": 13.78
+        },
+        "audit_finish_ms": {
+          "n": 48,
+          "median": 8.595,
+          "p95": 9.227,
+          "max": 10.323
+        }
+      },
+      "direct": {
+        "requests": 48,
+        "wall_s": 13.894,
+        "throughput_rps": 3.45,
+        "stages": {
+          "client_first_content": {
+            "n": 48,
+            "median": 5.833,
+            "p95": 16.95,
+            "max": 29.105
+          },
+          "client_total": {
+            "n": 48,
+            "median": 289.627,
+            "p95": 307.513,
+            "max": 311.556
+          }
+        },
+        "paired_gateway_minus_direct_ms": {
+          "client_first_content": {
+            "n": 48,
+            "median": 30.773,
+            "p95": 57.684,
+            "max": 116.326
+          },
+          "client_total": {
+            "n": 48,
+            "median": 82.77,
+            "p95": 124.649,
+            "max": 157.53
+          }
+        }
+      },
+      "memory": {
+        "rss_before_bytes": 153120768,
+        "rss_peak_bytes": 154701824,
+        "rss_peak_delta_bytes": 1581056
+      }
+    },
+    {
+      "language": "ko",
+      "length": "long",
+      "turns": 24,
+      "concurrency": 1,
+      "conversations": 2,
+      "requests": 48,
+      "wall_s": 16.312,
+      "throughput_rps": 2.94,
+      "request_bytes": {
+        "n": 48,
+        "median": 23578.0,
+        "p95": 43854,
+        "max": 45803
+      },
+      "stages": {
+        "lock_wait": {
+          "n": 48,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 48,
+          "median": 20.93,
+          "p95": 35.96,
+          "max": 62.13
+        },
+        "serialize": {
+          "n": 48,
+          "median": 0.139,
+          "p95": 0.265,
+          "max": 0.298
+        },
+        "upstream_send": {
+          "n": 48,
+          "median": 1.325,
+          "p95": 1.59,
+          "max": 22.83
+        },
+        "first_event": {
+          "n": 48,
+          "median": 0.465,
+          "p95": 0.62,
+          "max": 0.8
+        },
+        "restore": {
+          "n": 48,
+          "median": 6.255,
+          "p95": 6.91,
+          "max": 8.021
+        },
+        "save": {
+          "n": 48,
+          "median": 9.935,
+          "p95": 10.75,
+          "max": 82.69
+        },
+        "gateway_total": {
+          "n": 48,
+          "median": 319.415,
+          "p95": 348.66,
+          "max": 367.55
+        },
+        "client_first_content": {
+          "n": 48,
+          "median": 36.975,
+          "p95": 60.055,
+          "max": 77.61
+        },
+        "client_total": {
+          "n": 48,
+          "median": 339.276,
+          "p95": 364.667,
+          "max": 385.214
+        }
+      },
+      "last_turn_stages": {
+        "lock_wait": {
+          "n": 2,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 2,
+          "median": 23.775,
+          "p95": 26.07,
+          "max": 26.07
+        },
+        "serialize": {
+          "n": 2,
+          "median": 0.281,
+          "p95": 0.298,
+          "max": 0.298
+        },
+        "upstream_send": {
+          "n": 2,
+          "median": 1.385,
+          "p95": 1.41,
+          "max": 1.41
+        },
+        "first_event": {
+          "n": 2,
+          "median": 0.45,
+          "p95": 0.47,
+          "max": 0.47
+        },
+        "restore": {
+          "n": 2,
+          "median": 6.425,
+          "p95": 6.592,
+          "max": 6.592
+        },
+        "save": {
+          "n": 2,
+          "median": 10.25,
+          "p95": 10.61,
+          "max": 10.61
+        },
+        "gateway_total": {
+          "n": 2,
+          "median": 322.735,
+          "p95": 327.75,
+          "max": 327.75
+        },
+        "client_first_content": {
+          "n": 2,
+          "median": 39.336,
+          "p95": 41.593,
+          "max": 41.593
+        },
+        "client_total": {
+          "n": 2,
+          "median": 339.735,
+          "p95": 343.554,
+          "max": 343.554
+        }
+      },
+      "audit": {
+        "audit_begin_ms": {
+          "n": 48,
+          "median": 7.734,
+          "p95": 8.202,
+          "max": 10.489
+        },
+        "audit_finish_ms": {
+          "n": 48,
+          "median": 8.815,
+          "p95": 9.281,
+          "max": 9.511
+        }
+      },
+      "direct": {
+        "requests": 48,
+        "wall_s": 11.59,
+        "throughput_rps": 4.14,
+        "stages": {
+          "client_first_content": {
+            "n": 48,
+            "median": 5.932,
+            "p95": 28.941,
+            "max": 29.409
+          },
+          "client_total": {
+            "n": 48,
+            "median": 240.616,
+            "p95": 266.974,
+            "max": 276.499
+          }
+        },
+        "paired_gateway_minus_direct_ms": {
+          "client_first_content": {
+            "n": 48,
+            "median": 31.015,
+            "p95": 49.49,
+            "max": 72.237
+          },
+          "client_total": {
+            "n": 48,
+            "median": 101.166,
+            "p95": 128.56,
+            "max": 142.622
+          }
+        }
+      },
+      "memory": {
+        "rss_before_bytes": 154566656,
+        "rss_peak_bytes": 155406336,
+        "rss_peak_delta_bytes": 839680
+      }
+    },
+    {
+      "language": "mixed",
+      "length": "long",
+      "turns": 24,
+      "concurrency": 1,
+      "conversations": 2,
+      "requests": 48,
+      "wall_s": 17.476,
+      "throughput_rps": 2.75,
+      "request_bytes": {
+        "n": 48,
+        "median": 22421.0,
+        "p95": 42064,
+        "max": 43924
+      },
+      "stages": {
+        "lock_wait": {
+          "n": 48,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 48,
+          "median": 24.25,
+          "p95": 60.37,
+          "max": 77.01
+        },
+        "serialize": {
+          "n": 48,
+          "median": 0.145,
+          "p95": 0.258,
+          "max": 0.332
+        },
+        "upstream_send": {
+          "n": 48,
+          "median": 1.35,
+          "p95": 16.06,
+          "max": 17.79
+        },
+        "first_event": {
+          "n": 48,
+          "median": 0.47,
+          "p95": 0.6,
+          "max": 0.87
+        },
+        "restore": {
+          "n": 48,
+          "median": 6.799,
+          "p95": 7.988,
+          "max": 8.32
+        },
+        "save": {
+          "n": 48,
+          "median": 10.185,
+          "p95": 11.18,
+          "max": 84.62
+        },
+        "gateway_total": {
+          "n": 48,
+          "median": 341.435,
+          "p95": 404.12,
+          "max": 413.04
+        },
+        "client_first_content": {
+          "n": 48,
+          "median": 41.361,
+          "p95": 81.105,
+          "max": 97.821
+        },
+        "client_total": {
+          "n": 48,
+          "median": 361.007,
+          "p95": 422.522,
+          "max": 430.203
+        }
+      },
+      "last_turn_stages": {
+        "lock_wait": {
+          "n": 2,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 2,
+          "median": 26.395,
+          "p95": 26.85,
+          "max": 26.85
+        },
+        "serialize": {
+          "n": 2,
+          "median": 0.257,
+          "p95": 0.264,
+          "max": 0.264
+        },
+        "upstream_send": {
+          "n": 2,
+          "median": 1.845,
+          "p95": 1.95,
+          "max": 1.95
+        },
+        "first_event": {
+          "n": 2,
+          "median": 0.55,
+          "p95": 0.63,
+          "max": 0.63
+        },
+        "restore": {
+          "n": 2,
+          "median": 6.197,
+          "p95": 6.772,
+          "max": 6.772
+        },
+        "save": {
+          "n": 2,
+          "median": 10.135,
+          "p95": 11.18,
+          "max": 11.18
+        },
+        "gateway_total": {
+          "n": 2,
+          "median": 333.81,
+          "p95": 358.04,
+          "max": 358.04
+        },
+        "client_first_content": {
+          "n": 2,
+          "median": 47.777,
+          "p95": 48.418,
+          "max": 48.418
+        },
+        "client_total": {
+          "n": 2,
+          "median": 352.865,
+          "p95": 376.91,
+          "max": 376.91
+        }
+      },
+      "audit": {
+        "audit_begin_ms": {
+          "n": 48,
+          "median": 7.791,
+          "p95": 8.859,
+          "max": 11.956
+        },
+        "audit_finish_ms": {
+          "n": 48,
+          "median": 8.857,
+          "p95": 9.664,
+          "max": 9.825
+        }
+      },
+      "direct": {
+        "requests": 48,
+        "wall_s": 12.542,
+        "throughput_rps": 3.83,
+        "stages": {
+          "client_first_content": {
+            "n": 48,
+            "median": 5.869,
+            "p95": 23.009,
+            "max": 26.63
+          },
+          "client_total": {
+            "n": 48,
+            "median": 261.005,
+            "p95": 288.601,
+            "max": 291.118
+          }
+        },
+        "paired_gateway_minus_direct_ms": {
+          "client_first_content": {
+            "n": 48,
+            "median": 34.789,
+            "p95": 75.558,
+            "max": 91.905
+          },
+          "client_total": {
+            "n": 48,
+            "median": 106.434,
+            "p95": 155.11,
+            "max": 166.524
+          }
+        }
+      },
+      "memory": {
+        "rss_before_bytes": 155271168,
+        "rss_peak_bytes": 157487104,
+        "rss_peak_delta_bytes": 2215936
+      }
+    },
+    {
+      "language": "mixed",
+      "length": "short",
+      "turns": 2,
+      "concurrency": 2,
+      "conversations": 4,
+      "requests": 8,
+      "wall_s": 1.627,
+      "throughput_rps": 4.92,
+      "request_bytes": {
+        "n": 8,
+        "median": 2015.0,
+        "p95": 3091,
+        "max": 3091
+      },
+      "stages": {
+        "lock_wait": {
+          "n": 8,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 8,
+          "median": 15.69,
+          "p95": 33.15,
+          "max": 33.15
+        },
+        "serialize": {
+          "n": 8,
+          "median": 0.033,
+          "p95": 0.036,
+          "max": 0.036
+        },
+        "upstream_send": {
+          "n": 8,
+          "median": 1.17,
+          "p95": 13.86,
+          "max": 13.86
+        },
+        "first_event": {
+          "n": 8,
+          "median": 0.455,
+          "p95": 8.96,
+          "max": 8.96
+        },
+        "restore": {
+          "n": 8,
+          "median": 5.807,
+          "p95": 7.064,
+          "max": 7.064
+        },
+        "save": {
+          "n": 8,
+          "median": 49.07,
+          "p95": 105.49,
+          "max": 105.49
+        },
+        "gateway_total": {
+          "n": 8,
+          "median": 374.615,
+          "p95": 387.4,
+          "max": 387.4
+        },
+        "client_first_content": {
+          "n": 8,
+          "median": 46.689,
+          "p95": 67.549,
+          "max": 67.549
+        },
+        "client_total": {
+          "n": 8,
+          "median": 403.345,
+          "p95": 414.001,
+          "max": 414.001
+        }
+      },
+      "last_turn_stages": {
+        "lock_wait": {
+          "n": 4,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 4,
+          "median": 29.78,
+          "p95": 33.15,
+          "max": 33.15
+        },
+        "serialize": {
+          "n": 4,
+          "median": 0.036,
+          "p95": 0.036,
+          "max": 0.036
+        },
+        "upstream_send": {
+          "n": 4,
+          "median": 1.17,
+          "p95": 7.38,
+          "max": 7.38
+        },
+        "first_event": {
+          "n": 4,
+          "median": 0.45,
+          "p95": 8.96,
+          "max": 8.96
+        },
+        "restore": {
+          "n": 4,
+          "median": 6.322,
+          "p95": 7.064,
+          "max": 7.064
+        },
+        "save": {
+          "n": 4,
+          "median": 9.235,
+          "p95": 11.54,
+          "max": 11.54
+        },
+        "gateway_total": {
+          "n": 4,
+          "median": 368.3,
+          "p95": 387.4,
+          "max": 387.4
+        },
+        "client_first_content": {
+          "n": 4,
+          "median": 56.426,
+          "p95": 67.549,
+          "max": 67.549
+        },
+        "client_total": {
+          "n": 4,
+          "median": 388.975,
+          "p95": 404.398,
+          "max": 404.398
+        }
+      },
+      "audit": {
+        "audit_begin_ms": {
+          "n": 8,
+          "median": 11.426,
+          "p95": 35.859,
+          "max": 35.859
+        },
+        "audit_finish_ms": {
+          "n": 8,
+          "median": 8.554,
+          "p95": 15.401,
+          "max": 15.401
+        }
+      },
+      "direct": {
+        "requests": 8,
+        "wall_s": 1.052,
+        "throughput_rps": 7.61,
+        "stages": {
+          "client_first_content": {
+            "n": 8,
+            "median": 6.265,
+            "p95": 6.777,
+            "max": 6.777
+          },
+          "client_total": {
+            "n": 8,
+            "median": 258.845,
+            "p95": 285.237,
+            "max": 285.237
+          }
+        },
+        "paired_gateway_minus_direct_ms": {
+          "client_first_content": {
+            "n": 8,
+            "median": 40.996,
+            "p95": 60.772,
+            "max": 60.772
+          },
+          "client_total": {
+            "n": 8,
+            "median": 130.146,
+            "p95": 182.13,
+            "max": 182.13
+          }
+        }
+      },
+      "memory": {
+        "rss_before_bytes": 157351936,
+        "rss_peak_bytes": 158388224,
+        "rss_peak_delta_bytes": 1036288
+      }
+    },
+    {
+      "language": "mixed",
+      "length": "short",
+      "turns": 2,
+      "concurrency": 4,
+      "conversations": 8,
+      "requests": 16,
+      "wall_s": 1.949,
+      "throughput_rps": 8.21,
+      "request_bytes": {
+        "n": 16,
+        "median": 2015.0,
+        "p95": 3091,
+        "max": 3091
+      },
+      "stages": {
+        "lock_wait": {
+          "n": 16,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 16,
+          "median": 15.325,
+          "p95": 70.79,
+          "max": 70.79
+        },
+        "serialize": {
+          "n": 16,
+          "median": 0.033,
+          "p95": 0.038,
+          "max": 0.038
+        },
+        "upstream_send": {
+          "n": 16,
+          "median": 1.525,
+          "p95": 32.9,
+          "max": 32.9
+        },
+        "first_event": {
+          "n": 16,
+          "median": 0.505,
+          "p95": 14.55,
+          "max": 14.55
+        },
+        "restore": {
+          "n": 16,
+          "median": 5.608,
+          "p95": 6.516,
+          "max": 6.516
+        },
+        "save": {
+          "n": 16,
+          "median": 54.99,
+          "p95": 140.87,
+          "max": 140.87
+        },
+        "gateway_total": {
+          "n": 16,
+          "median": 405.76,
+          "p95": 473.54,
+          "max": 473.54
+        },
+        "client_first_content": {
+          "n": 16,
+          "median": 68.494,
+          "p95": 132.93,
+          "max": 132.93
+        },
+        "client_total": {
+          "n": 16,
+          "median": 462.309,
+          "p95": 547.681,
+          "max": 547.681
+        }
+      },
+      "last_turn_stages": {
+        "lock_wait": {
+          "n": 8,
+          "median": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "mask": {
+          "n": 8,
+          "median": 34.485,
+          "p95": 70.79,
+          "max": 70.79
+        },
+        "serialize": {
+          "n": 8,
+          "median": 0.035,
+          "p95": 0.038,
+          "max": 0.038
+        },
+        "upstream_send": {
+          "n": 8,
+          "median": 1.855,
+          "p95": 32.9,
+          "max": 32.9
+        },
+        "first_event": {
+          "n": 8,
+          "median": 0.51,
+          "p95": 14.55,
+          "max": 14.55
+        },
+        "restore": {
+          "n": 8,
+          "median": 6.157,
+          "p95": 6.516,
+          "max": 6.516
+        },
+        "save": {
+          "n": 8,
+          "median": 9.565,
+          "p95": 11.75,
+          "max": 11.75
+        },
+        "gateway_total": {
+          "n": 8,
+          "median": 401.705,
+          "p95": 473.54,
+          "max": 473.54
+        },
+        "client_first_content": {
+          "n": 8,
+          "median": 107.313,
+          "p95": 132.93,
+          "max": 132.93
+        },
+        "client_total": {
+          "n": 8,
+          "median": 461.342,
+          "p95": 506.141,
+          "max": 506.141
+        }
+      },
+      "audit": {
+        "audit_begin_ms": {
+          "n": 16,
+          "median": 34.865,
+          "p95": 87.167,
+          "max": 87.167
+        },
+        "audit_finish_ms": {
+          "n": 16,
+          "median": 13.483,
+          "p95": 89.613,
+          "max": 89.613
+        }
+      },
+      "direct": {
+        "requests": 16,
+        "wall_s": 1.079,
+        "throughput_rps": 14.82,
+        "stages": {
+          "client_first_content": {
+            "n": 16,
+            "median": 6.484,
+            "p95": 7.958,
+            "max": 7.958
+          },
+          "client_total": {
+            "n": 16,
+            "median": 263.863,
+            "p95": 298.453,
+            "max": 298.453
+          }
+        },
+        "paired_gateway_minus_direct_ms": {
+          "client_first_content": {
+            "n": 16,
+            "median": 62.291,
+            "p95": 127.444,
+            "max": 127.444
+          },
+          "client_total": {
+            "n": 16,
+            "median": 210.342,
+            "p95": 310.205,
+            "max": 310.205
+          }
+        }
+      },
+      "memory": {
+        "rss_before_bytes": 158142464,
+        "rss_peak_bytes": 161452032,
+        "rss_peak_delta_bytes": 3309568
+      }
+    }
+  ],
+  "gateway_start_with_dictionary_preload_ms": 672.59,
+  "cold_first_request": {
+    "client_total_ms": 651.26,
+    "mask_lock_wait_ms": 0.0,
+    "mask_ms": 275.51,
+    "upstream_headers_ms": 1.51,
+    "save_ms": 88.33,
+    "first_event_ms": 2.49,
+    "upstream_body_ms": 357.45,
+    "total_ms": 633.97,
+    "serialize_ms": 0.032,
+    "restore_ms": 8.365
+  },
+  "label": ""
+}

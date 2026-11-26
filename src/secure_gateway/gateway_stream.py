@@ -155,7 +155,25 @@ class EventRestorer:
         return output
 
 
-def relay_stream(handler, upstream, session, dialect=None, *, limit=DEFAULT_STREAM_LIMIT_BYTES, heartbeat=5, before_complete=None):
+SSE_PREFIXES = (b"event:", b"data:", b":")
+SSE_PREFIX_LIMIT = max(map(len, SSE_PREFIXES))
+
+
+def read_stream_prefix(upstream):
+    """Read just enough bytes to recognize the existing SSE fallback prefixes."""
+    prefix = b""
+    while any(marker.startswith(prefix) for marker in SSE_PREFIXES):
+        chunk = upstream.read1(SSE_PREFIX_LIMIT - len(prefix))
+        if not chunk:
+            break
+        prefix += chunk
+        if prefix.startswith(SSE_PREFIXES):
+            break
+    return prefix
+
+
+def relay_stream(handler, upstream, session, dialect=None, *, limit=DEFAULT_STREAM_LIMIT_BYTES,
+                 heartbeat=5, before_complete=None, initial_bytes=b""):
     """Send headers now and safe events as they arrive, with local heartbeats."""
     chunks: queue.Queue = queue.Queue(maxsize=4)
     cancelled = Event()
@@ -176,6 +194,8 @@ def relay_stream(handler, upstream, session, dialect=None, *, limit=DEFAULT_STRE
 
     def read():
         try:
+            if initial_bytes:
+                put(initial_bytes)
             while True:
                 with state_lock:
                     if cancelled.is_set():

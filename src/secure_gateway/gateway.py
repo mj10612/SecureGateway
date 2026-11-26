@@ -66,7 +66,7 @@ from secure_gateway.gateway_task_operators import operator_words, operator_capit
 from secure_gateway.mapping_budget import DEFAULT_MAPPING_BYTES, DEFAULT_SNAPSHOT_BYTES, check_mapping_budget, positive_budget, snapshot_budget, record_mapping
 from secure_gateway.models import MaskMode, SurrogateStrategy, TokenMapping, TokenType
 from secure_gateway.session import PrivacySession
-from secure_gateway.gateway_stream import relay_stream
+from secure_gateway.gateway_stream import SSE_PREFIXES, read_stream_prefix, relay_stream
 from secure_gateway.gateway_errors import GatewayRequestError, public_request_error
 from secure_gateway.domain_dictionaries import (
     catalog as domain_catalog,
@@ -3726,8 +3726,20 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 return
             with upstream_response as upstream:
                 self.capture_response_headers(upstream.headers)
-                content_type = upstream.headers.get("Content-Type", "application/json")
-                if masked.get("stream") and content_type.split(";", 1)[0].strip().lower() == "text/event-stream":
+                raw_content_type = upstream.headers.get("Content-Type")
+                content_type = raw_content_type or "application/json"
+                mime = content_type.split(";", 1)[0].strip().lower()
+                prefix = b""
+                try:
+                    if (agent == "codex" and masked.get("stream")
+                            and (not raw_content_type or mime == "text/plain")):
+                        prefix = read_stream_prefix(upstream)
+                except (OSError, http.client.HTTPException) as exc:
+                    reason = getattr(exc, "reason", exc)
+                    status = 504 if isinstance(reason, TimeoutError) else 502
+                    self.send_body(status, b'{"error":"Upstream transport unavailable"}')
+                    return
+                if masked.get("stream") and (mime == "text/event-stream" or prefix.startswith(SSE_PREFIXES)):
                     try:
                         persisted_state = None
                         def persist_completion():
@@ -3740,7 +3752,8 @@ class GatewayHandler(BaseHTTPRequestHandler):
                                     self.server.save(agent, session)
                                     timings["save_ms"] = timings.get("save_ms", 0) + round((time.perf_counter() - save_started) * 1000, 2)
                                     persisted_state = state
-                        relay_stream(self, upstream, session, dialect, limit=LIMIT, before_complete=persist_completion)
+                        relay_stream(self, upstream, session, dialect, limit=LIMIT,
+                                     before_complete=persist_completion, initial_bytes=prefix)
                         timings["first_event_ms"] = self.stream_metrics["first_event_ms"]
                         timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                         persist_completion()
@@ -3754,7 +3767,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                         self.close_connection = True
                     return
                 try:
-                    body = upstream.read(LIMIT + 1)
+                    body = prefix + upstream.read(LIMIT + 1 - len(prefix))
                     timings["upstream_body_ms"] = round((time.perf_counter() - stage_started) * 1000, 2)
                     if len(body) <= LIMIT and getattr(upstream, "length", None) not in (None, 0):
                         raise http.client.IncompleteRead(body)
@@ -3766,12 +3779,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 if len(body) > LIMIT:
                     self.send_body(502, b'{"error":"Upstream response size limit exceeded"}')
                     return
-                content_type = upstream.headers.get(
-                    "Content-Type", "application/json"
-                )
-                if masked.get("stream") and body.startswith(
-                    (b"event:", b"data:", b":")
-                ):
+                if masked.get("stream") and body.startswith(SSE_PREFIXES):
                     content_type = "text/event-stream"
                 with session.lock:
                     stage_started = time.perf_counter()

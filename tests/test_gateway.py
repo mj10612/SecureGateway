@@ -1,6 +1,7 @@
 import json
 import re
-from threading import Thread
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event, Thread
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import urllib.error
 import urllib.request
@@ -394,6 +395,76 @@ class EchoProvider(BaseHTTPRequestHandler):
         self.send_header("anthropic-ratelimit-unified-status", "allowed")
         self.end_headers()
         self.wfile.write(body)
+
+
+@pytest.mark.parametrize("mime", ["text/plain; charset=utf-8", None])
+def test_codex_relays_sse_with_generic_content_type_before_upstream_finishes(mime):
+    release = Event()
+    original = "Review alice@example.com now."
+
+    class Provider(BaseHTTPRequestHandler):
+        def log_message(self, *_):
+            pass
+
+        def do_POST(self):
+            payload = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            masked = payload["input"][0]["content"]
+            assert original != masked
+            frame = b"data: " + json.dumps(
+                {"type": "response.output_text.delta", "item_id": "m1", "delta": masked}
+            ).encode() + b"\n\n"
+            self.send_response(200)
+            if mime:
+                self.send_header("Content-Type", mime)
+            self.end_headers()
+            self.wfile.write(frame[:2])
+            self.wfile.flush()
+            self.wfile.write(frame[2:])
+            self.wfile.flush()
+            release.wait(10)
+            self.wfile.write(b'data: {"type":"response.completed","response":{"output":[]}}\n\n')
+
+    with ThreadingHTTPServer(("127.0.0.1", 0), Provider) as provider, PrivacyGateway(
+        ("127.0.0.1", 0), "local-token", {"codex": f"http://127.0.0.1:{provider.server_port}"}
+    ) as gateway:
+        threads = [Thread(target=server.serve_forever, daemon=True) for server in (provider, gateway)]
+        for thread in threads:
+            thread.start()
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{gateway.server_port}/codex/responses",
+            json.dumps({"model": "fixture", "stream": True,
+                        "input": [{"role": "user", "content": original}]}).encode(),
+            {"X-SecureGateway-Token": "local-token", "Authorization": "Bearer eyJoffline.subscription",
+             "Content-Type": "application/json"},
+        )
+        first_text = Event()
+
+        def receive():
+            restored = []
+            with urllib.request.urlopen(request, timeout=8) as response:
+                assert response.headers.get_content_type() == "text/event-stream"
+                for line in response:
+                    if line.startswith(b"data:"):
+                        event = json.loads(line[5:])
+                        if event["type"] == "response.output_text.delta" and event.get("delta"):
+                            restored.append(event["delta"])
+                            first_text.set()
+                        if event["type"] == "response.completed":
+                            return "".join(restored)
+            raise AssertionError("Missing terminal event")
+
+        try:
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                result = pool.submit(receive)
+                try:
+                    assert first_text.wait(5), "Gateway withheld text until upstream completion"
+                finally:
+                    release.set()
+                assert result.result(timeout=5) == original
+        finally:
+            for server, thread in zip((provider, gateway), threads):
+                server.shutdown()
+                thread.join()
 
 
 def test_uninstalled_config_can_be_reinstalled_with_a_new_port(tmp_path):
