@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.21.4 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.21.5 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -539,6 +539,14 @@ These defaults apply to the gateway (`gateway run`, `gateway api-run`, auto-star
 The Python library default is unchanged: `GatewaySession()` and
 `PrivacyGateway(...)` without `features` enable nothing.
 
+| Entry point | Feature defaults and source |
+|---|---|
+| `gateway run`, `gateway api-run`, installed gateway | The gateway settings above apply to new and restored sessions. |
+| `gateway features` | Reports the next gateway start's requested and active state using the same resolver. |
+| Admin preview, Admin feature diagnostics, `gateway diagnostics` | Use or report the running gateway's effective feature selection. A policy-gated feature can be requested and inactive at the same time. |
+| Standalone `mask` CLI and stdio/HTTP MCP server | Use the base masking engine. The gateway feature settings do not apply. |
+| Direct Python API | `MaskingEngine()` uses base masking. `GatewaySession()` and `PrivacyGateway(...)` default all five gateway features off. Pass `GatewayFeatures` explicitly to opt in. |
+
 ### Upgrading to 2.17.0
 
 - **Existing installs with no `features` key, or no `contextual_name_spans`
@@ -693,9 +701,13 @@ file > default (see the table above):
   explicitly enabling `scoped_corrections` without records settings is refused.
 - CLI: `secure-gateway gateway run --feature contextual_name_spans=on` (repeatable,
   also on `gateway api-run`).
-- Disable everything: `secure-gateway gateway run --features-off` ignores the
-  config file, environment and 2.17.0 defaults and runs the 2.15 default path.
-- Rollback: remove the key (or set it to `false`) and restart the gateway.
+- Disable all five features with `secure-gateway gateway run --features-off`.
+  From 2.21.5, this also bypasses invalid feature entries in local config and
+  environment variables. The config file must still be readable and contain
+  valid server settings such as the port and token.
+- To disable one feature, set its key to `false` and restart the gateway.
+  Clear any environment or CLI override for that key. Removing the key
+  restores its default, which enables `contextual_name_spans`.
   Aliases created while a feature was on stay in the encrypted conversation
   snapshot and remain restorable after the feature is turned off.
 

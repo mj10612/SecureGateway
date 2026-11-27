@@ -394,12 +394,15 @@ def resolve_settings(config: Mapping[str, Any] | None = None, *, environ: Mappin
     Returns ``(GatewayFeatures, report)``. The report lists, per feature, its
     default (``SETTING_DEFAULTS``), requested and active state and source; it
     never contains policy contents. ``all_off`` (``--features-off``) disables
-    every feature regardless of source. A policy feature that is on only by
-    default and has no configured policy is inactive (a no-op); an explicit
-    request without a usable policy still stops the gateway.
+    every feature without reading feature settings from config or environment.
+    A policy feature enabled only by default is inactive without a configured
+    policy. An explicit request without a usable policy stops the gateway.
     """
-    environ = os.environ if environ is None else environ
-    section = (config or {}).get("features", {})
+    section = {} if all_off else (config or {}).get("features", {})
+    if all_off:
+        environ = {}
+    elif environ is None:
+        environ = os.environ
     if not isinstance(section, dict) or set(section) - set(FEATURES):
         raise ValueError("Unknown or invalid gateway feature settings.")
     cli = dict(cli or {})
