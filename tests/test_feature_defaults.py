@@ -111,6 +111,32 @@ def test_cli_features_off_flag_disables_default_on_features(tmp_path):
     assert not any(item["enabled"] for item in off["configured"].values())
 
 
+@pytest.mark.parametrize("features, env_value", [
+    ({"contextual_name_spans": "maybe"}, None),
+    ({"unknown_feature": True}, None),
+    ({}, "maybe"),
+])
+def test_cli_features_off_can_bypass_broken_feature_settings(tmp_path, monkeypatch, features, env_value):
+    from click.testing import CliRunner
+
+    from secure_gateway.cli import main
+
+    if env_value is not None:
+        monkeypatch.setenv("SECURE_GATEWAY_FEATURE_CONTEXTUAL_NAME_SPANS", env_value)
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"port": 38117, "token": "t" * 40, "features": features}))
+    args = ["gateway", "features", "--config", str(config)]
+    runner = CliRunner()
+
+    assert runner.invoke(main, args).exit_code == 1
+    off = runner.invoke(main, [*args, "--features-off"])
+    assert off.exit_code == 0, off.output
+    settings = json.loads(off.output)["configured"]
+    assert settings["contextual_name_spans"]["default"] is True
+    assert all(item["source"] == "cli-off" and not item["active"] and not item["enabled"]
+               for item in settings.values())
+
+
 @pytest.mark.parametrize("text", [CORRECTION, BUNDLE, NAMES])
 def test_policy_features_without_policy_are_byte_identical_noops(text, nonce):
     # Default-on #316/#318 with no policy configured; #310 turned off to isolate them.
