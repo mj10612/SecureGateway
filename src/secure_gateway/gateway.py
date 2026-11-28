@@ -1918,7 +1918,11 @@ class GatewaySession:
             return deepcopy(item)
         keep = key == "type" and isinstance(item, str) and item in kinds
         if key == "role":
-            keep = ("content" in envelope or kind == "additional_tools") and isinstance(item, str) and item in {
+            # Chat Completions assistant history may omit content when it
+            # contains tool calls. Its role still binds the calls to the model.
+            tool_only_assistant = (item == "assistant" and isinstance(envelope.get("tool_calls"), list)
+                                   and bool(envelope["tool_calls"]))
+            keep = ("content" in envelope or kind == "additional_tools" or tool_only_assistant) and isinstance(item, str) and item in {
                 "system", "developer", "user", "assistant", "tool",
             }
         elif key == "id":

@@ -1,6 +1,6 @@
 # Automatic subscription integration
 
-SecureGateway 2.21.4 provides an experimental authenticated loopback gateway for Claude Code and
+SecureGateway 2.21.6 provides an experimental authenticated loopback gateway for Claude Code and
 Codex. Set it up once, then use their normal commands. Requests are masked automatically;
 replies and tool arguments are restored before the CLI displays or executes them. The next
 request masks restored history again. No agent hooks are registered.
@@ -467,6 +467,12 @@ references (`#node`, `$anchor`) are not supported; use root or `#/...` pointers.
 Ordinary content/tool blocks validate `cache_control` as public `ephemeral` controls
 with optional `5m`/`1h` TTL; private extra fields are refused before forwarding.
 Protocol-named extra fields in tool output are masked rather than copied verbatim.
+Chat Completions assistant history containing nonempty `tool_calls` preserves
+its `assistant` role even when `content` is omitted, null, or empty. Tool call IDs
+remain aligned with the following tool results; arguments and results still
+pass through masking and local restoration. This protocol rule does not apply
+to tool-call-shaped objects inside data payloads.
+
 Chat Completions supports validated `reasoning_effort` and `response_format` (`text`,
 `json_object`, or `json_schema`); schema names, descriptions and private properties
 still pass through masking. These controls are not accepted on Responses endpoints.
